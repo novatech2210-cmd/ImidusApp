@@ -1,5 +1,7 @@
+using System.Data;
 using IntegrationService.Core.Interfaces;
 using IntegrationService.Core.Services;
+using OrderModels = IntegrationService.Core.Models;
 using Moq;
 using Xunit;
 
@@ -17,6 +19,12 @@ public class OrderServiceTests
 
     public OrderServiceTests()
     {
+        // Setup common mocks for order repository
+        var mockTransaction = new Mock<IDbTransaction>();
+        _orderRepoMock.Setup(r => r.BeginTransactionAsync()).ReturnsAsync(mockTransaction.Object);
+        _orderRepoMock.Setup(r => r.GetNextDailyOrderNumberAsync()).ReturnsAsync(1);
+        _orderRepoMock.Setup(r => r.InsertTicketAsync(It.IsAny<IntegrationService.Core.Domain.Entities.PosTicket>(), It.IsAny<IDbTransaction>())).ReturnsAsync(100);
+
         _orderService = new OrderService(
             _orderRepoMock.Object,
             _menuRepoMock.Object,
@@ -38,16 +46,16 @@ public class OrderServiceTests
         };
         _miscRepoMock.Setup(r => r.GetTaxRatesAsync()).ReturnsAsync(taxRates);
 
-        var item = new Core.Models.MenuItem
+        var item = new OrderModels.MenuItem
         {
             ItemID = 1,
             IName = "Test Coffee",
             ApplyGST = true,
             ApplyPST = true,
             ApplyPST2 = true,
-            AvailableSizes = new List<Core.Models.AvailableSize>
+            AvailableSizes = new List<OrderModels.AvailableSize>
             {
-                new Core.Models.AvailableSize { SizeID = 1, SizeName = "Large", UnitPrice = 10.0m }
+                new OrderModels.AvailableSize { SizeID = 1, SizeName = "Large", UnitPrice = 10.0m }
             },
             KitchenB = true
         };
@@ -56,11 +64,11 @@ public class OrderServiceTests
         _paymentServiceMock.Setup(p => p.ProcessPaymentAsync(It.IsAny<decimal>(), It.IsAny<string>()))
             .ReturnsAsync((true, "AUTH123", (string?)null));
 
-        var request = new OrderRequest
+        var request = new OrderModels.OrderRequest
         {
-            Items = new List<OrderItemRequest>
+            Items = new List<OrderModels.OrderItemRequest>
             {
-                new OrderItemRequest { ItemId = 1, SizeId = 1, Quantity = 1 }
+                new OrderModels.OrderItemRequest { ItemId = 1, SizeId = 1, Quantity = 1 }
             },
             TipAmount = 2.0m,
             PaymentToken = "tok_123"
@@ -86,18 +94,18 @@ public class OrderServiceTests
         var taxRates = new Dictionary<string, decimal> { { "GST", 0.05m }, { "PST", 0m }, { "PST2", 0m } };
         _miscRepoMock.Setup(r => r.GetTaxRatesAsync()).ReturnsAsync(taxRates);
 
-        var item = new Core.Models.MenuItem
+        var item = new OrderModels.MenuItem
         {
             ItemID = 1, IName = "Coffee", ApplyGST = true,
-            AvailableSizes = new List<Core.Models.AvailableSize> { new() { SizeID = 1, UnitPrice = 10.0m } }
+            AvailableSizes = new List<OrderModels.AvailableSize> { new() { SizeID = 1, UnitPrice = 10.0m } }
         };
         _menuRepoMock.Setup(r => r.GetItemByIdAsync(1)).ReturnsAsync(item);
         _paymentServiceMock.Setup(p => p.ProcessPaymentAsync(It.IsAny<decimal>(), It.IsAny<string>())).ReturnsAsync((true, "AUTH124", (string?)null));
 
-        var request = new OrderRequest
+        var request = new OrderModels.OrderRequest
         {
             CustomerId = 1,
-            Items = new List<OrderItemRequest> { new() { ItemId = 1, SizeId = 1, Quantity = 1 } },
+            Items = new List<OrderModels.OrderItemRequest> { new() { ItemId = 1, SizeId = 1, Quantity = 1 } },
             PointsToRedeem = 500 // $5.00
         };
 
