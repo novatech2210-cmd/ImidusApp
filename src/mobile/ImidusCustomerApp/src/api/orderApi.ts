@@ -1,7 +1,5 @@
 import { CreateOrderRequest, CreateOrderResponse } from '../types/cart.types';
-
-// Use the local backend port 5004 as configured in previous steps
-const API_BASE_URL = 'http://localhost:5004/api';
+import { ENV } from '../config/environment';
 
 export const orderApi = {
   /**
@@ -14,7 +12,7 @@ export const orderApi = {
       .toString(36)
       .substr(2, 9)}`;
 
-    const response = await fetch(`${API_BASE_URL}/Orders`, {
+    const response = await fetch(`${ENV.API_BASE_URL}/Orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

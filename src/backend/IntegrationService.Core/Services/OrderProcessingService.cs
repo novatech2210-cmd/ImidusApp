@@ -9,6 +9,15 @@ using Microsoft.Extensions.Logging;
 
 namespace IntegrationService.Core.Services
 {
+    /// <summary>
+    /// Service for creating orders in the INI POS system.
+    ///
+    /// ORDER LIFECYCLE (per IMIDUS_Project_Analysis.md):
+    /// 1. Create tblSales with TransType=2 (Open)
+    /// 2. Insert items into tblPendingOrders (active items in kitchen)
+    /// 3. Process payment → Insert tblPayment
+    /// 4. Complete order → Update TransType=1, move items to tblSalesDetail
+    /// </summary>
     public class OrderProcessingService : IOrderProcessingService
     {
         private readonly IPosRepository _posRepo;
@@ -23,22 +32,30 @@ namespace IntegrationService.Core.Services
         }
 
         /// <summary>
-        /// Create a new order in the POS system
+        /// Create a new order in the POS system.
+        /// This creates an OPEN order (TransType=2) with items in tblPendingOrders.
+        /// Call CompleteOrderAsync after payment to finalize.
         /// </summary>
         public async Task<OrderResult> CreateOrderAsync(CreateOrderRequest request, string idempotencyKey)
         {
             _logger.LogInformation("Creating order with idempotency key: {IdempotencyKey}", idempotencyKey);
 
-            // Validate request
             if (request == null || !request.Items.Any())
             {
-                throw new ArgumentException("Order must contain at least one item");
+                return new OrderResult
+                {
+                    Success = false,
+                    ErrorMessage = "Order must contain at least one item"
+                };
             }
 
-            // Validate all items have SizeID
             if (request.Items.Any(i => i.SizeId <= 0))
             {
-                throw new ArgumentException("All items must have a valid SizeID");
+                return new OrderResult
+                {
+                    Success = false,
+                    ErrorMessage = "All items must have a valid SizeID"
+                };
             }
 
             using var transaction = await _posRepo.BeginTransactionAsync();
@@ -51,48 +68,77 @@ namespace IntegrationService.Core.Services
                 // 2. Get tax rates from POS configuration
                 var taxRates = await _posRepo.GetTaxRatesAsync();
 
-                // 3. Calculate order totals
-                var orderTotals = CalculateOrderTotals(request.Items, taxRates, request.DiscountAmount);
+                // 3. Get menu items for tax flags and kitchen routing
+                var menuItems = (await _posRepo.GetActiveMenuItemsAsync()).ToList();
 
-                // 4. Get next daily order number
+                // 4. Calculate order totals with per-item tax flags
+                var orderTotals = await CalculateOrderTotalsAsync(request.Items, taxRates, menuItems);
+
+                // 5. Get next daily order number
                 var dailyOrderNumber = await _posRepo.GetNextDailyOrderNumberAsync();
 
-                // 5. Create sale record
+                // 6. Create sale record with TransType=2 (OPEN ORDER)
                 var sale = new PosTicket
                 {
                     SaleDateTime = DateTime.Now,
-                    TransType = 0,  // 0 = Sale
+                    TransType = (int)TransactionType.OpenOrder,  // 2 = Open
                     DailyOrderNumber = dailyOrderNumber,
                     SubTotal = orderTotals.SubTotal,
-                    DSCAmt = request.DiscountAmount,
+                    DSCAmt = 0,
+                    AlcoholDSCAmt = 0,
                     GSTAmt = orderTotals.GSTAmt,
                     PSTAmt = orderTotals.PSTAmt,
                     PST2Amt = orderTotals.PST2Amt,
-                    CustomerID = request.CustomerID ?? 1,  // Default customer
-                    CashierID = request.CashierID ?? 1,    // Get from auth context
-                    TableID = null,  // Online orders don't have table
+                    GSTRate = taxRates.GST,
+                    PSTRate = taxRates.PST,
+                    PST2Rate = taxRates.PST2,
+                    CustomerID = request.CustomerID ?? 1,
+                    CashierID = 1,  // System user for online orders
+                    TableID = null,
+                    StationID = 1,
                     Guests = 1,
-                    TakeOutOrder = true  // Online orders are takeout
+                    TakeOutOrder = request.IsTakeout,
+                    DeliveryChargeAmt = request.DeliveryCharge,
+                    OnlineOrderCompanyID = request.OnlineOrderCompanyID,
+                    Locked = false,
+                    PaymentCount = 0
                 };
 
-                var salesId = await _posRepo.InsertTicketAsync(sale, transaction);
+                var salesId = await _posRepo.CreateOpenOrderAsync(sale, transaction);
 
-                _logger.LogInformation("Created sale {SalesId} with order number {OrderNumber}",
+                _logger.LogInformation("Created open order {SalesId} with order number {OrderNumber}",
                     salesId, dailyOrderNumber);
 
-                // 6. Insert line items
-                await InsertOrderItemsAsync(salesId, request.Items, transaction);
+                // 7. Insert items into tblPendingOrders (NOT tblSalesDetail!)
+                await InsertPendingOrderItemsAsync(salesId, request.Items, menuItems, transaction);
 
-                // 7. Decrease stock quantities
+                // 8. Decrease stock quantities
                 await DecreaseInventoryAsync(request.Items, transaction);
 
-                // 8. Record payment if provided
-                if (!string.IsNullOrEmpty(request.PaymentAuthorizationNo))
+                // 9. Process payment if auth code provided
+                if (!string.IsNullOrEmpty(request.PaymentAuthCode))
                 {
                     await RecordPaymentAsync(salesId, orderTotals.TotalAmount, request, transaction);
+
+                    // 10. Complete the order (move items to tblSalesDetail, update TransType)
+                    await CompleteOrderInternalAsync(salesId, transaction);
                 }
 
-                // 9. Commit transaction
+                // 11. Link to online order if applicable
+                if (request.OnlineOrderCompanyID.HasValue && !string.IsNullOrEmpty(request.OnlineOrderNumber))
+                {
+                    await _posRepo.InsertOnlineSalesLinkAsync(new SalesOfOnlineOrder
+                    {
+                        SalesID = salesId,
+                        OnlineOrderCompanyID = request.OnlineOrderCompanyID.Value,
+                        OnlineOrderNumber = request.OnlineOrderNumber,
+                        OnlineOrderCustomerName = request.CustomerName,
+                        DineInOrder = false,
+                        ReservedTipAmt = request.TipAmount,
+                        DeliveryChargeAmt = request.DeliveryCharge
+                    }, transaction);
+                }
+
                 transaction.Commit();
 
                 _logger.LogInformation("Order {SalesId} created successfully", salesId);
@@ -100,10 +146,10 @@ namespace IntegrationService.Core.Services
                 return new OrderResult
                 {
                     Success = true,
-                    SalesId = salesId,
-                    OrderNumber = dailyOrderNumber.ToString(),
-                    TotalAmount = orderTotals.TotalAmount,
-                    Message = $"Order #{dailyOrderNumber} created successfully"
+                    SalesID = salesId,
+                    DailyOrderNumber = dailyOrderNumber,
+                    TicketNumber = dailyOrderNumber.ToString(),
+                    TotalAmount = orderTotals.TotalAmount
                 };
             }
             catch (InsufficientStockException ex)
@@ -114,7 +160,7 @@ namespace IntegrationService.Core.Services
                 return new OrderResult
                 {
                     Success = false,
-                    Message = ex.Message
+                    ErrorMessage = ex.Message
                 };
             }
             catch (Exception ex)
@@ -125,24 +171,110 @@ namespace IntegrationService.Core.Services
                 return new OrderResult
                 {
                     Success = false,
-                    Message = "Failed to create order. Please try again."
+                    ErrorMessage = "Failed to create order. Please try again."
                 };
             }
         }
 
         /// <summary>
-        /// Validate that all items are in stock
+        /// Complete an open order: move items from tblPendingOrders to tblSalesDetail
+        /// and update TransType from 2 (Open) to 1 (Completed)
         /// </summary>
+        public async Task<bool> CompleteOrderAsync(int salesId)
+        {
+            using var transaction = await _posRepo.BeginTransactionAsync();
+
+            try
+            {
+                await CompleteOrderInternalAsync(salesId, transaction);
+                transaction.Commit();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError(ex, "Failed to complete order {SalesId}", salesId);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Cancel an open order: delete pending items and mark as refund
+        /// </summary>
+        public async Task<bool> CancelOrderAsync(int salesId)
+        {
+            using var transaction = await _posRepo.BeginTransactionAsync();
+
+            try
+            {
+                // Delete pending order items
+                await _posRepo.DeletePendingOrderItemsAsync(salesId, transaction);
+
+                // Update TransType to Refund (0)
+                await _posRepo.UpdateSaleTransTypeAsync(salesId, (int)TransactionType.Refund, transaction);
+
+                transaction.Commit();
+
+                _logger.LogInformation("Order {SalesId} cancelled", salesId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError(ex, "Failed to cancel order {SalesId}", salesId);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Get order details including items
+        /// </summary>
+        public async Task<PosTicket?> GetOrderAsync(int salesId)
+        {
+            var ticket = await _posRepo.GetTicketByIdAsync(salesId);
+            if (ticket == null) return null;
+
+            // Load items based on order status
+            if (ticket.IsOpen)
+            {
+                // Open orders have items in tblPendingOrders
+                ticket.PendingItems = (await _posRepo.GetPendingOrderItemsAsync(salesId)).ToList();
+            }
+            else
+            {
+                // Completed orders have items in tblSalesDetail
+                ticket.Items = (await _posRepo.GetSalesDetailItemsAsync(salesId)).ToList();
+            }
+
+            // Load payments
+            ticket.Payments = (await _posRepo.GetPaymentsAsync(salesId)).ToList();
+
+            return ticket;
+        }
+
+        // =========================================================================
+        // PRIVATE METHODS
+        // =========================================================================
+
+        private async Task CompleteOrderInternalAsync(int salesId, IDbTransaction transaction)
+        {
+            // Move items from tblPendingOrders to tblSalesDetail
+            await _posRepo.MovePendingOrdersToSalesDetailAsync(salesId, transaction);
+
+            // Update TransType from Open (2) to Completed (1)
+            await _posRepo.UpdateSaleTransTypeAsync(salesId, (int)TransactionType.CompletedSale, transaction);
+
+            _logger.LogInformation("Order {SalesId} completed - items moved to sales detail", salesId);
+        }
+
         private async Task ValidateInventoryAsync(List<OrderItemRequest> items)
         {
             foreach (var item in items)
             {
                 var stock = await _posRepo.GetItemStockAsync(item.MenuItemId, item.SizeId);
 
-                // NULL = unlimited, otherwise check quantity
                 if (stock.HasValue && stock.Value < item.Quantity)
                 {
-                    // Get item name for error message
                     var itemSizes = await _posRepo.GetItemSizesAsync(item.MenuItemId);
                     var size = itemSizes.FirstOrDefault(s => s.SizeID == item.SizeId);
                     var itemName = size?.Size?.SizeName ?? $"Item {item.MenuItemId}";
@@ -152,24 +284,36 @@ namespace IntegrationService.Core.Services
             }
         }
 
-        /// <summary>
-        /// Calculate order subtotal and taxes
-        /// </summary>
-        private OrderTotals CalculateOrderTotals(List<OrderItemRequest> items, TaxRates taxRates, decimal discountAmount)
+        private async Task<OrderTotals> CalculateOrderTotalsAsync(
+            List<OrderItemRequest> items,
+            TaxRates taxRates,
+            List<MenuItem> menuItems)
         {
-            // Calculate subtotal
-            var subtotal = items.Sum(i => i.UnitPrice * i.Quantity);
+            decimal subtotal = 0;
+            decimal gstAmt = 0;
+            decimal pstAmt = 0;
+            decimal pst2Amt = 0;
 
-            // Apply discount
-            var discountedSubtotal = subtotal - discountAmount;
+            foreach (var item in items)
+            {
+                var lineTotal = item.UnitPrice * item.Quantity;
+                subtotal += lineTotal;
 
-            // Calculate taxes on discounted subtotal
-            var gstAmt = discountedSubtotal * taxRates.GST;
-            var pstAmt = discountedSubtotal * taxRates.PST;
-            var pst2Amt = discountedSubtotal * taxRates.PST2;
-
-            // Total includes taxes
-            var totalAmount = discountedSubtotal + gstAmt + pstAmt + pst2Amt;
+                // Get menu item for tax flags
+                var menuItem = menuItems.FirstOrDefault(m => m.ItemID == item.MenuItemId);
+                if (menuItem != null)
+                {
+                    if (menuItem.ApplyGST) gstAmt += lineTotal * taxRates.GST;
+                    if (menuItem.ApplyPST) pstAmt += lineTotal * taxRates.PST;
+                    if (menuItem.ApplyPST2) pst2Amt += lineTotal * taxRates.PST2;
+                }
+                else
+                {
+                    // Default: apply GST and PST
+                    gstAmt += lineTotal * taxRates.GST;
+                    pstAmt += lineTotal * taxRates.PST;
+                }
+            }
 
             return new OrderTotals
             {
@@ -177,60 +321,59 @@ namespace IntegrationService.Core.Services
                 GSTAmt = Math.Round(gstAmt, 2),
                 PSTAmt = Math.Round(pstAmt, 2),
                 PST2Amt = Math.Round(pst2Amt, 2),
-                TotalAmount = Math.Round(totalAmount, 2)
+                TotalAmount = Math.Round(subtotal + gstAmt + pstAmt + pst2Amt, 2)
             };
         }
 
-        /// <summary>
-        /// Insert all line items for the order
-        /// </summary>
-        private async Task InsertOrderItemsAsync(int salesId, List<OrderItemRequest> items, IDbTransaction transaction)
+        private async Task InsertPendingOrderItemsAsync(
+            int salesId,
+            List<OrderItemRequest> items,
+            List<MenuItem> menuItems,
+            IDbTransaction transaction)
         {
             foreach (var item in items)
             {
-                // Get item details for denormalization
-                var menuItem = await _posRepo.GetActiveMenuItemsAsync();
-                var menuItemData = menuItem.FirstOrDefault(m => m.ItemID == item.MenuItemId);
-
+                var menuItem = menuItems.FirstOrDefault(m => m.ItemID == item.MenuItemId);
                 var itemSizes = await _posRepo.GetItemSizesAsync(item.MenuItemId);
                 var sizeData = itemSizes.FirstOrDefault(s => s.SizeID == item.SizeId);
 
-                var detail = new PosTicketItem
+                var pendingItem = new PendingOrderItem
                 {
                     SalesID = salesId,
                     ItemID = item.MenuItemId,
                     SizeID = item.SizeId,
-                    Quantity = item.Quantity,
+                    Qty = item.Quantity,
                     UnitPrice = item.UnitPrice,
-                    DSCAmt = 0,  // Line-item discounts handled separately
-                    PersonIndex = 1,  // Single person for online orders
-
-                    // Denormalized data
-                    ItemName = menuItemData?.IName ?? $"Item {item.MenuItemId}",
+                    ItemName = menuItem?.IName ?? $"Item {item.MenuItemId}",
+                    ItemName2 = menuItem?.IName2,
                     SizeName = sizeData?.Size?.SizeName ?? "Regular",
+                    Tastes = item.Tastes,
+                    SideDishes = item.SideDishes,
 
-                    // Tax application (typically all items taxed the same way)
-                    ApplyGST = true,
-                    ApplyPST = true,
-                    ApplyPST2 = false,
+                    // Tax flags from menu item
+                    ApplyGST = menuItem?.ApplyGST ?? true,
+                    ApplyPST = menuItem?.ApplyPST ?? true,
+                    ApplyPST2 = menuItem?.ApplyPST2 ?? false,
 
-                    // Kitchen routing (copy from menu item defaults)
-                    KitchenB = menuItemData?.KitchenB ?? false,
-                    KitchenF = menuItemData?.KitchenF ?? false,
-                    KitchenE = menuItemData?.KitchenE ?? false,
-                    Kitchen5 = menuItemData?.Kitchen5 ?? false,
-                    Kitchen6 = menuItemData?.Kitchen6 ?? false,
+                    // Kitchen routing from menu item
+                    KitchenB = menuItem?.KitchenB ?? false,
+                    KitchenF = menuItem?.KitchenF ?? false,
+                    KitchenE = menuItem?.KitchenE ?? false,
+                    Bar = menuItem?.Bar ?? false,
 
-                    OpenItem = false
+                    // Defaults for online orders
+                    DSCAmt = 0,
+                    ApplyNoDSC = sizeData?.ApplyNoDSC ?? false,
+                    PersonIndex = 1,
+                    SeparateBillPrint = false,
+                    OpenItem = menuItem?.OpenItem ?? false,
+                    ExtraChargeItem = false
                 };
 
-                await _posRepo.InsertTicketItemAsync(detail, transaction);
+                await _posRepo.InsertPendingOrderItemAsync(pendingItem, transaction);
             }
         }
 
-        /// <summary>
-        /// Decrease inventory quantities for ordered items
-        /// </summary>
         private async Task DecreaseInventoryAsync(List<OrderItemRequest> items, IDbTransaction transaction)
         {
             foreach (var item in items)
@@ -244,17 +387,14 @@ namespace IntegrationService.Core.Services
 
                 if (!success)
                 {
-                    _logger.LogWarning(
-                        "Failed to decrease stock for item {ItemId} size {SizeId} (may be unlimited stock)",
+                    _logger.LogDebug(
+                        "Stock not decreased for item {ItemId} size {SizeId} (may be unlimited)",
                         item.MenuItemId, item.SizeId
                     );
                 }
             }
         }
 
-        /// <summary>
-        /// Record payment for the order
-        /// </summary>
         private async Task RecordPaymentAsync(
             int salesId,
             decimal totalAmount,
@@ -268,68 +408,28 @@ namespace IntegrationService.Core.Services
                 PaidAmount = totalAmount,
                 TipAmount = request.TipAmount,
                 Voided = false,
-                AuthorizationNo = request.PaymentAuthorizationNo,
+                AuthorizationNo = request.PaymentAuthCode,
                 BatchNo = request.PaymentBatchNo,
-                CreatedDate = DateTime.Now
+                SequenceNo = 1,
+                StationName = "ONLINE"
             };
 
             await _posRepo.InsertPaymentAsync(payment, transaction);
 
+            // Update sale payment totals
+            await _posRepo.UpdateSalePaymentTotalsAsync(salesId, payment, transaction);
+
             _logger.LogInformation(
                 "Payment recorded: ${Amount} (Type: {PaymentType}, Auth: {AuthNo})",
-                totalAmount, request.PaymentTypeID, request.PaymentAuthorizationNo
+                totalAmount, request.PaymentTypeID, request.PaymentAuthCode
             );
         }
     }
 
-    #region Request/Response Models
+    // =========================================================================
+    // INTERNAL HELPER CLASSES
+    // =========================================================================
 
-    /// <summary>
-    /// Request model for creating an order
-    /// </summary>
-    public class CreateOrderRequest
-    {
-        public int? CustomerID { get; set; }
-        public int? CashierID { get; set; }
-        public List<OrderItemRequest> Items { get; set; } = new();
-
-        // Payment info
-        public byte PaymentTypeID { get; set; } // Default: Visa
-        public string? PaymentAuthorizationNo { get; set; }  // From Authorize.net
-        public string? PaymentBatchNo { get; set; }
-        public decimal TipAmount { get; set; }
-
-        // Discounts
-        public decimal DiscountAmount { get; set; }
-    }
-
-    /// <summary>
-    /// Individual order item
-    /// CRITICAL: Now requires SizeId
-    /// </summary>
-    public class OrderItemRequest
-    {
-        public int MenuItemId { get; set; }
-        public int SizeId { get; set; }  // ← NOW REQUIRED
-        public decimal Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-    }
-
-    /// <summary>
-    /// Result of order creation
-    /// </summary>
-    public class OrderResult
-    {
-        public bool Success { get; set; }
-        public int SalesId { get; set; }
-        public string OrderNumber { get; set; } = string.Empty;
-        public decimal TotalAmount { get; set; }
-        public string Message { get; set; } = string.Empty;
-    }
-
-    /// <summary>
-    /// Internal class for order total calculations
-    /// </summary>
     internal class OrderTotals
     {
         public decimal SubTotal { get; set; }
@@ -339,13 +439,10 @@ namespace IntegrationService.Core.Services
         public decimal TotalAmount { get; set; }
     }
 
-    #endregion
+    // =========================================================================
+    // EXCEPTIONS
+    // =========================================================================
 
-    #region Exceptions
-
-    /// <summary>
-    /// Exception thrown when item is out of stock
-    /// </summary>
     public class InsufficientStockException : Exception
     {
         public int ItemId { get; }
@@ -358,6 +455,4 @@ namespace IntegrationService.Core.Services
             SizeId = sizeId;
         }
     }
-
-    #endregion
 }

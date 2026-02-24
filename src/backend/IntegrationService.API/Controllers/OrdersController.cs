@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IntegrationService.Core.Interfaces;
+using IntegrationService.Core.Domain.Entities;
 using IntegrationService.API.DTOs;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,21 +60,21 @@ namespace IntegrationService.API.Controllers
             try
             {
                 // Map DTOs to service models
-                var serviceRequest = new Core.Services.CreateOrderRequest
+                var serviceRequest = new Core.Domain.Entities.CreateOrderRequest
                 {
                     CustomerID = request.CustomerId,
-                    Items = request.Items.Select(i => new Core.Services.OrderItemRequest
+                    Items = request.Items.Select(i => new Core.Domain.Entities.OrderItemRequest
                     {
                         MenuItemId = i.MenuItemId,
-                        SizeId = i.SizeId,  // ← NOW REQUIRED
+                        SizeId = i.SizeId,
                         Quantity = i.Quantity,
                         UnitPrice = i.UnitPrice
                     }).ToList(),
-                    PaymentAuthorizationNo = request.PaymentAuthorizationNo,
+                    PaymentAuthCode = request.PaymentAuthorizationNo,
                     PaymentBatchNo = request.PaymentBatchNo,
                     PaymentTypeID = request.PaymentTypeId,
                     TipAmount = request.TipAmount,
-                    DiscountAmount = request.DiscountAmount
+                    IsTakeout = true
                 };
 
                 var result = await _orderService.CreateOrderAsync(serviceRequest, idempotencyKey);
@@ -83,9 +84,9 @@ namespace IntegrationService.API.Controllers
                     return Ok(new CreateOrderResponse
                     {
                         Success = true,
-                        Message = result.Message,
-                        SalesId = result.SalesId,
-                        OrderNumber = result.OrderNumber,
+                        Message = $"Order #{result.DailyOrderNumber} created successfully",
+                        SalesId = result.SalesID,
+                        OrderNumber = result.TicketNumber,
                         TotalAmount = result.TotalAmount,
                         CreatedAt = DateTime.Now
                     });
@@ -95,7 +96,7 @@ namespace IntegrationService.API.Controllers
                     return BadRequest(new CreateOrderResponse
                     {
                         Success = false,
-                        Message = result.Message
+                        Message = result.ErrorMessage ?? "Order creation failed"
                     });
                 }
             }

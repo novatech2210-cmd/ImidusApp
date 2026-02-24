@@ -12,6 +12,16 @@ using Microsoft.Extensions.Logging;
 
 namespace IntegrationService.Infrastructure.Data
 {
+    /// <summary>
+    /// Repository for INI POS database operations
+    /// Database: TPPro (SQL Server 2005 Express)
+    ///
+    /// ORDER LIFECYCLE:
+    /// 1. Create tblSales with TransType=2 (Open)
+    /// 2. Insert items into tblPendingOrders (active items)
+    /// 3. Process payment → Insert tblPayment
+    /// 4. Complete order → Update TransType=1, move items to tblSalesDetail
+    /// </summary>
     public class PosRepository : IPosRepository
     {
         private readonly string _connectionString;
@@ -36,16 +46,21 @@ namespace IntegrationService.Infrastructure.Data
             return connection.BeginTransaction();
         }
 
+        // =============================================================================
+        // MENU ITEMS
+        // =============================================================================
+
         #region Menu Items
 
         /// <summary>
         /// Get all active menu items available for online ordering
+        /// Joins with tblAvailableSize for pricing and stock
         /// </summary>
         public async Task<IEnumerable<MenuItem>> GetActiveMenuItemsAsync()
         {
             const string sql = @"
                 SELECT
-                    i.ItemID,
+                    i.ID AS ItemID,
                     i.IName,
                     i.IName2,
                     i.ItemDescription,
@@ -56,26 +71,67 @@ namespace IntegrationService.Infrastructure.Data
                     i.Alcohol,
                     i.BarCode,
                     i.ManageInv,
+                    i.ApplyGST,
+                    i.ApplyPST,
+                    i.ApplyPST2,
                     i.KitchenB,
                     i.KitchenF,
                     i.KitchenE,
-                    i.Kitchen5,
-                    i.Kitchen6
+                    i.Bar,
+                    i.Taste,
+                    i.OpenItem,
+                    i.ScaleItem
                 FROM dbo.tblItem i
-                WHERE i.Status = 1              -- Active
-                  AND i.OnlineItem = 1          -- Available online
+                WHERE i.Status = 1
+                  AND i.OnlineItem = 1
                 ORDER BY i.CategoryID, i.IName";
 
             using var connection = CreateConnection();
             var items = await connection.QueryAsync<MenuItem>(sql);
 
             _logger.LogInformation("Retrieved {Count} active menu items", items.Count());
-
             return items;
         }
 
         /// <summary>
-        /// Get all available sizes for a specific menu item
+        /// Get menu item by ID with all sizes
+        /// </summary>
+        public async Task<MenuItem?> GetMenuItemByIdAsync(int itemId)
+        {
+            const string sql = @"
+                SELECT
+                    i.ID AS ItemID,
+                    i.IName,
+                    i.IName2,
+                    i.ItemDescription,
+                    i.ImageFilePath,
+                    i.CategoryID,
+                    i.Status,
+                    i.OnlineItem,
+                    i.Alcohol,
+                    i.ApplyGST,
+                    i.ApplyPST,
+                    i.ApplyPST2,
+                    i.KitchenB,
+                    i.KitchenF,
+                    i.KitchenE,
+                    i.Bar
+                FROM dbo.tblItem i
+                WHERE i.ID = @ItemId";
+
+            using var connection = CreateConnection();
+            var item = await connection.QueryFirstOrDefaultAsync<MenuItem>(sql, new { ItemId = itemId });
+
+            if (item != null)
+            {
+                item.AvailableSizes = (await GetItemSizesAsync(itemId)).ToList();
+            }
+
+            return item;
+        }
+
+        /// <summary>
+        /// Get all available sizes for a menu item
         /// </summary>
         public async Task<IEnumerable<AvailableSize>> GetItemSizesAsync(int itemId)
         {
@@ -88,14 +144,13 @@ namespace IntegrationService.Infrastructure.Data
                     a.UnitPrice3,
                     a.OnHandQty,
                     a.ApplyNoDSC,
-                    s.SizeID,
+                    s.ID AS SizeID,
                     s.SizeName,
                     s.ShortName,
                     s.DisplayOrder
                 FROM dbo.tblAvailableSize a
-                INNER JOIN dbo.tblSize s ON a.SizeID = s.SizeID
+                INNER JOIN dbo.tblSize s ON a.SizeID = s.ID
                 WHERE a.ItemID = @ItemId
-                  AND (a.OnHandQty > 0 OR a.OnHandQty IS NULL)  -- In stock
                 ORDER BY s.DisplayOrder";
 
             using var connection = CreateConnection();
@@ -115,6 +170,25 @@ namespace IntegrationService.Infrastructure.Data
         }
 
         /// <summary>
+        /// Get all categories with active items
+        /// </summary>
+        public async Task<IEnumerable<Category>> GetCategoriesAsync()
+        {
+            const string sql = @"
+                SELECT
+                    ID AS CategoryID,
+                    CatName AS CName,
+                    PrintOrder,
+                    CategoryImageFilePath
+                FROM dbo.tblCategory
+                WHERE Status = 1
+                ORDER BY PrintOrder";
+
+            using var connection = CreateConnection();
+            return await connection.QueryAsync<Category>(sql);
+        }
+
+        /// <summary>
         /// Get stock quantity for specific item and size
         /// </summary>
         public async Task<int?> GetItemStockAsync(int itemId, int sizeId)
@@ -129,21 +203,16 @@ namespace IntegrationService.Infrastructure.Data
         }
 
         /// <summary>
-        /// Check if item is in stock (considering size)
+        /// Check if item is in stock
         /// </summary>
         public async Task<bool> IsItemInStockAsync(int itemId, int sizeId, decimal quantity)
         {
             var stock = await GetItemStockAsync(itemId, sizeId);
-
-            // NULL = unlimited stock
-            if (stock == null) return true;
-
-            // Check if sufficient quantity available
-            return stock.Value >= quantity;
+            return stock == null || stock.Value >= quantity;
         }
 
         /// <summary>
-        /// Decrease stock quantity for an item/size
+        /// Decrease stock quantity
         /// </summary>
         public async Task<bool> DecreaseStockAsync(int itemId, int sizeId, decimal quantity, IDbTransaction? transaction = null)
         {
@@ -155,18 +224,37 @@ namespace IntegrationService.Infrastructure.Data
                   AND OnHandQty IS NOT NULL
                   AND OnHandQty >= @Quantity";
 
-            using var connection = transaction?.Connection ?? CreateConnection();
+            IDbConnection connection;
+            bool shouldDispose = false;
 
-            var rowsAffected = await connection.ExecuteAsync(
-                sql,
-                new { ItemId = itemId, SizeId = sizeId, Quantity = quantity },
-                transaction
-            );
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
 
-            return rowsAffected > 0;
+            try
+            {
+                var rowsAffected = await connection.ExecuteAsync(sql,
+                    new { ItemId = itemId, SizeId = sizeId, Quantity = quantity },
+                    transaction);
+                return rowsAffected > 0;
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
         }
 
         #endregion
+
+        // =============================================================================
+        // ORDERS - CREATE & MANAGE
+        // =============================================================================
 
         #region Orders
 
@@ -185,51 +273,86 @@ namespace IntegrationService.Infrastructure.Data
         }
 
         /// <summary>
-        /// Insert new sale/order into tblSales
+        /// Create new sale/order with TransType=2 (Open)
         /// </summary>
-        public async Task<int> InsertTicketAsync(PosTicket ticket, IDbTransaction? transaction = null)
+        public async Task<int> CreateOpenOrderAsync(PosTicket ticket, IDbTransaction? transaction = null)
         {
+            // SQL Server 2005 compatible - no OUTPUT clause in some versions
             const string sql = @"
                 INSERT INTO dbo.tblSales (
                     SaleDateTime,
                     TransType,
                     SubTotal,
                     DSCAmt,
+                    AlcoholDSCAmt,
                     GSTAmt,
                     PSTAmt,
                     PST2Amt,
+                    GSTRate,
+                    PSTRate,
+                    PST2Rate,
                     CustomerID,
                     CashierID,
                     TableID,
+                    StationID,
                     Guests,
                     TakeOutOrder,
-                    DailyOrderNumber
+                    DailyOrderNumber,
+                    DeliveryChargeAmt,
+                    OnlineOrderCompanyID,
+                    Locked,
+                    PaymentCount
                 )
-                OUTPUT INSERTED.ID
                 VALUES (
                     @SaleDateTime,
-                    @TransType,
+                    2,  -- TransType=2 (Open Order)
                     @SubTotal,
                     @DSCAmt,
+                    @AlcoholDSCAmt,
                     @GSTAmt,
                     @PSTAmt,
                     @PST2Amt,
+                    @GSTRate,
+                    @PSTRate,
+                    @PST2Rate,
                     @CustomerID,
                     @CashierID,
                     @TableID,
+                    @StationID,
                     @Guests,
                     @TakeOutOrder,
-                    @DailyOrderNumber
-                )";
+                    @DailyOrderNumber,
+                    @DeliveryChargeAmt,
+                    @OnlineOrderCompanyID,
+                    0,  -- Not locked
+                    0   -- No payments yet
+                );
+                SELECT SCOPE_IDENTITY();";
 
-            using var connection = transaction?.Connection ?? CreateConnection();
+            IDbConnection connection;
+            bool shouldDispose = false;
 
-            var salesId = await connection.QuerySingleAsync<int>(sql, ticket, transaction);
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
 
-            _logger.LogInformation("Created sale ID {SalesId} with order number {OrderNumber}",
-                salesId, ticket.DailyOrderNumber);
-
-            return salesId;
+            try
+            {
+                var salesId = await connection.QuerySingleAsync<int>(sql, ticket, transaction);
+                _logger.LogInformation("Created open order ID {SalesId} with order number {OrderNumber}",
+                    salesId, ticket.DailyOrderNumber);
+                return salesId;
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
         }
 
         /// <summary>
@@ -245,19 +368,113 @@ namespace IntegrationService.Infrastructure.Data
                     DailyOrderNumber,
                     SubTotal,
                     DSCAmt,
+                    AlcoholDSCAmt,
                     GSTAmt,
                     PSTAmt,
                     PST2Amt,
+                    GSTRate,
+                    PSTRate,
+                    PST2Rate,
                     CustomerID,
                     CashierID,
                     TableID,
+                    StationID,
                     Guests,
-                    TakeOutOrder
+                    TakeOutOrder,
+                    DeliveryChargeAmt,
+                    OnlineOrderCompanyID,
+                    Locked,
+                    PaymentCount,
+                    CashPaidAmt,
+                    DebitPaidAmt,
+                    AmexPaidAmt,
+                    McPaidAmt,
+                    CashTipPaidAmt,
+                    CreditTipPaidAmt,
+                    DebitTipPaidAmt
                 FROM dbo.tblSales
                 WHERE ID = @SalesId";
 
             using var connection = CreateConnection();
             return await connection.QueryFirstOrDefaultAsync<PosTicket>(sql, new { SalesId = salesId });
+        }
+
+        /// <summary>
+        /// Update sale TransType (for order completion/refund)
+        /// </summary>
+        public async Task<bool> UpdateSaleTransTypeAsync(int salesId, int transType, IDbTransaction? transaction = null)
+        {
+            const string sql = @"
+                UPDATE dbo.tblSales
+                SET TransType = @TransType
+                WHERE ID = @SalesId";
+
+            IDbConnection connection;
+            bool shouldDispose = false;
+
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
+
+            try
+            {
+                var rows = await connection.ExecuteAsync(sql,
+                    new { SalesId = salesId, TransType = transType },
+                    transaction);
+                return rows > 0;
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Update sale totals after calculating taxes/discounts
+        /// </summary>
+        public async Task<bool> UpdateSaleTotalsAsync(int salesId, decimal subTotal, decimal gstAmt,
+            decimal pstAmt, decimal pst2Amt, decimal dscAmt, IDbTransaction? transaction = null)
+        {
+            const string sql = @"
+                UPDATE dbo.tblSales
+                SET SubTotal = @SubTotal,
+                    GSTAmt = @GstAmt,
+                    PSTAmt = @PstAmt,
+                    PST2Amt = @Pst2Amt,
+                    DSCAmt = @DscAmt
+                WHERE ID = @SalesId";
+
+            IDbConnection connection;
+            bool shouldDispose = false;
+
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
+
+            try
+            {
+                var rows = await connection.ExecuteAsync(sql,
+                    new { SalesId = salesId, SubTotal = subTotal, GstAmt = gstAmt,
+                          PstAmt = pstAmt, Pst2Amt = pst2Amt, DscAmt = dscAmt },
+                    transaction);
+                return rows > 0;
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
         }
 
         /// <summary>
@@ -279,11 +496,11 @@ namespace IntegrationService.Infrastructure.Data
                     CustomerID,
                     CashierID,
                     Guests,
-                    TakeOutOrder
+                    TakeOutOrder,
+                    DeliveryChargeAmt
                 FROM dbo.tblSales
                 WHERE SaleDateTime >= @StartDate
                   AND SaleDateTime < @EndDate
-                  AND TransType = 0
                 ORDER BY SaleDateTime DESC";
 
             using var connection = CreateConnection();
@@ -292,66 +509,245 @@ namespace IntegrationService.Infrastructure.Data
 
         #endregion
 
-        #region Ticket Items
+        // =============================================================================
+        // PENDING ORDERS - Active items in kitchen
+        // =============================================================================
+
+        #region Pending Orders
 
         /// <summary>
-        /// Insert line item into tblSalesDetail
+        /// Insert item into tblPendingOrders (for active/open orders)
+        /// CRITICAL: Items go here while order is open (TransType=2)
         /// </summary>
-        public async Task InsertTicketItemAsync(PosTicketItem item, IDbTransaction? transaction = null)
+        public async Task InsertPendingOrderItemAsync(PendingOrderItem item, IDbTransaction? transaction = null)
         {
             const string sql = @"
-                INSERT INTO dbo.tblSalesDetail (
+                INSERT INTO dbo.tblPendingOrders (
                     SalesID,
                     ItemID,
                     SizeID,
-                    Quantity,
+                    Qty,
                     UnitPrice,
                     ItemName,
+                    ItemName2,
                     SizeName,
-                    DSCAmt,
-                    PersonIndex,
+                    Tastes,
+                    SideDishes,
                     ApplyGST,
                     ApplyPST,
                     ApplyPST2,
-                    OpenItem,
+                    DSCAmt,
+                    ApplyNoDSC,
                     KitchenB,
                     KitchenF,
                     KitchenE,
-                    Kitchen5,
-                    Kitchen6
+                    Bar,
+                    PersonIndex,
+                    SeparateBillPrint,
+                    OpenItem,
+                    ExtraChargeItem
                 )
                 VALUES (
                     @SalesID,
                     @ItemID,
                     @SizeID,
-                    @Quantity,
+                    @Qty,
                     @UnitPrice,
                     @ItemName,
+                    @ItemName2,
                     @SizeName,
-                    @DSCAmt,
-                    @PersonIndex,
+                    @Tastes,
+                    @SideDishes,
                     @ApplyGST,
                     @ApplyPST,
                     @ApplyPST2,
-                    @OpenItem,
+                    @DSCAmt,
+                    @ApplyNoDSC,
                     @KitchenB,
                     @KitchenF,
                     @KitchenE,
-                    @Kitchen5,
-                    @Kitchen6
+                    @Bar,
+                    @PersonIndex,
+                    @SeparateBillPrint,
+                    @OpenItem,
+                    @ExtraChargeItem
                 )";
 
-            using var connection = transaction?.Connection ?? CreateConnection();
-            await connection.ExecuteAsync(sql, item, transaction);
+            IDbConnection connection;
+            bool shouldDispose = false;
 
-            _logger.LogDebug("Inserted ticket item: {ItemName} ({SizeName}) x{Quantity}",
-                item.ItemName, item.SizeName, item.Quantity);
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
+
+            try
+            {
+                await connection.ExecuteAsync(sql, item, transaction);
+                _logger.LogDebug("Inserted pending order item: {ItemName} ({SizeName}) x{Qty}",
+                    item.ItemName, item.SizeName, item.Qty);
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
         }
 
         /// <summary>
-        /// Get all items for a specific sale
+        /// Get all pending (active) items for a sale
         /// </summary>
-        public async Task<IEnumerable<PosTicketItem>> GetTicketItemsAsync(int salesId)
+        public async Task<IEnumerable<PendingOrderItem>> GetPendingOrderItemsAsync(int salesId)
+        {
+            const string sql = @"
+                SELECT
+                    SalesID,
+                    ItemID,
+                    SizeID,
+                    Qty,
+                    UnitPrice,
+                    ItemName,
+                    ItemName2,
+                    SizeName,
+                    Tastes,
+                    SideDishes,
+                    ApplyGST,
+                    ApplyPST,
+                    ApplyPST2,
+                    DSCAmt,
+                    ApplyNoDSC,
+                    KitchenB,
+                    KitchenF,
+                    KitchenE,
+                    Bar,
+                    PersonIndex,
+                    SeparateBillPrint,
+                    OpenItem,
+                    ExtraChargeItem
+                FROM dbo.tblPendingOrders
+                WHERE SalesID = @SalesId";
+
+            using var connection = CreateConnection();
+            return await connection.QueryAsync<PendingOrderItem>(sql, new { SalesId = salesId });
+        }
+
+        /// <summary>
+        /// Move items from tblPendingOrders to tblSalesDetail
+        /// Called when order is completed (TransType changes from 2 to 1)
+        /// </summary>
+        public async Task MovePendingOrdersToSalesDetailAsync(int salesId, IDbTransaction? transaction = null)
+        {
+            // First, insert into tblSalesDetail from tblPendingOrders
+            const string insertSql = @"
+                INSERT INTO dbo.tblSalesDetail (
+                    SalesID,
+                    ItemID,
+                    SizeID,
+                    Qty,
+                    UnitPrice,
+                    ItemName,
+                    ItemName2,
+                    SizeName,
+                    Tastes,
+                    DiscountAmt,
+                    SequenceNo,
+                    PersonIndex,
+                    Voided
+                )
+                SELECT
+                    SalesID,
+                    ItemID,
+                    SizeID,
+                    Qty,
+                    UnitPrice,
+                    ItemName,
+                    ItemName2,
+                    SizeName,
+                    Tastes,
+                    DSCAmt,
+                    ROW_NUMBER() OVER (ORDER BY (SELECT NULL)),  -- SequenceNo
+                    PersonIndex,
+                    0  -- Not voided
+                FROM dbo.tblPendingOrders
+                WHERE SalesID = @SalesId";
+
+            // Then delete from tblPendingOrders
+            const string deleteSql = @"
+                DELETE FROM dbo.tblPendingOrders
+                WHERE SalesID = @SalesId";
+
+            IDbConnection connection;
+            bool shouldDispose = false;
+
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
+
+            try
+            {
+                await connection.ExecuteAsync(insertSql, new { SalesId = salesId }, transaction);
+                await connection.ExecuteAsync(deleteSql, new { SalesId = salesId }, transaction);
+
+                _logger.LogInformation("Moved pending orders to sales detail for SalesID {SalesId}", salesId);
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Delete pending order items (for order cancellation)
+        /// </summary>
+        public async Task DeletePendingOrderItemsAsync(int salesId, IDbTransaction? transaction = null)
+        {
+            const string sql = "DELETE FROM dbo.tblPendingOrders WHERE SalesID = @SalesId";
+
+            IDbConnection connection;
+            bool shouldDispose = false;
+
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
+
+            try
+            {
+                await connection.ExecuteAsync(sql, new { SalesId = salesId }, transaction);
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
+        }
+
+        #endregion
+
+        // =============================================================================
+        // SALES DETAIL - Completed order items
+        // =============================================================================
+
+        #region Sales Detail
+
+        /// <summary>
+        /// Get all items for a completed sale (from tblSalesDetail)
+        /// </summary>
+        public async Task<IEnumerable<PosTicketItem>> GetSalesDetailItemsAsync(int salesId)
         {
             const string sql = @"
                 SELECT
@@ -360,28 +756,91 @@ namespace IntegrationService.Infrastructure.Data
                     ItemID,
                     SizeID,
                     ItemName,
+                    ItemName2,
                     SizeName,
-                    Quantity,
+                    Qty,
                     UnitPrice,
-                    DSCAmt,
+                    DiscountAmt,
+                    DiscountPercent,
+                    Tastes,
+                    SequenceNo,
                     PersonIndex,
-                    ApplyGST,
-                    ApplyPST,
-                    ApplyPST2,
-                    KitchenB,
-                    KitchenF,
-                    KitchenE,
-                    Kitchen5,
-                    Kitchen6
+                    Voided
                 FROM dbo.tblSalesDetail
                 WHERE SalesID = @SalesId
-                ORDER BY ID";
+                  AND Voided = 0
+                ORDER BY SequenceNo";
 
             using var connection = CreateConnection();
             return await connection.QueryAsync<PosTicketItem>(sql, new { SalesId = salesId });
         }
 
+        /// <summary>
+        /// Direct insert into tblSalesDetail (for immediate completion without pending state)
+        /// Use sparingly - prefer the pending orders workflow
+        /// </summary>
+        public async Task InsertSalesDetailItemAsync(PosTicketItem item, IDbTransaction? transaction = null)
+        {
+            const string sql = @"
+                INSERT INTO dbo.tblSalesDetail (
+                    SalesID,
+                    ItemID,
+                    SizeID,
+                    Qty,
+                    UnitPrice,
+                    ItemName,
+                    ItemName2,
+                    SizeName,
+                    DiscountAmt,
+                    Tastes,
+                    SequenceNo,
+                    PersonIndex,
+                    Voided
+                )
+                VALUES (
+                    @SalesID,
+                    @ItemID,
+                    @SizeID,
+                    @Qty,
+                    @UnitPrice,
+                    @ItemName,
+                    @ItemName2,
+                    @SizeName,
+                    @DiscountAmt,
+                    @Tastes,
+                    @SequenceNo,
+                    @PersonIndex,
+                    0
+                )";
+
+            IDbConnection connection;
+            bool shouldDispose = false;
+
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
+
+            try
+            {
+                await connection.ExecuteAsync(sql, item, transaction);
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
+        }
+
         #endregion
+
+        // =============================================================================
+        // PAYMENTS
+        // =============================================================================
 
         #region Payments
 
@@ -396,29 +855,100 @@ namespace IntegrationService.Infrastructure.Data
                     PaymentTypeID,
                     PaidAmount,
                     TipAmount,
-                    Voided,
                     AuthorizationNo,
-                    BatchNo
+                    BatchNo,
+                    SequenceNo,
+                    StationName,
+                    Voided,
+                    TipAdjusted,
+                    PaidDateTime
                 )
                 VALUES (
                     @SalesID,
                     @PaymentTypeID,
                     @PaidAmount,
                     @TipAmount,
-                    0,
                     @AuthorizationNo,
-                    @BatchNo
+                    @BatchNo,
+                    @SequenceNo,
+                    @StationName,
+                    0,  -- Not voided
+                    0,  -- Tip not adjusted
+                    GETDATE()
                 )";
 
-            using var connection = transaction?.Connection ?? CreateConnection();
-            await connection.ExecuteAsync(sql, payment, transaction);
+            IDbConnection connection;
+            bool shouldDispose = false;
 
-            _logger.LogInformation("Recorded payment of {Amount} for sale {SalesId}",
-                payment.PaidAmount, payment.SalesID);
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
+
+            try
+            {
+                await connection.ExecuteAsync(sql, payment, transaction);
+                _logger.LogInformation("Recorded payment of {Amount} (Type: {Type}) for SalesID {SalesId}",
+                    payment.PaidAmount, payment.PaymentTypeID, payment.SalesID);
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
         }
 
         /// <summary>
-        /// Get all payments for a specific sale
+        /// Update sale payment totals after payment is recorded
+        /// </summary>
+        public async Task UpdateSalePaymentTotalsAsync(int salesId, PosTender payment, IDbTransaction? transaction = null)
+        {
+            string updateColumn = payment.PaymentTypeID switch
+            {
+                1 => "CashPaidAmt = CashPaidAmt + @Amount, CashTipPaidAmt = CashTipPaidAmt + @Tip",
+                2 => "DebitPaidAmt = DebitPaidAmt + @Amount, DebitTipPaidAmt = DebitTipPaidAmt + @Tip",
+                5 => "AmexPaidAmt = AmexPaidAmt + @Amount, CreditTipPaidAmt = CreditTipPaidAmt + @Tip",
+                4 => "McPaidAmt = McPaidAmt + @Amount, CreditTipPaidAmt = CreditTipPaidAmt + @Tip",
+                _ => "CreditTipPaidAmt = CreditTipPaidAmt + @Tip"  // Other credit cards
+            };
+
+            var sql = $@"
+                UPDATE dbo.tblSales
+                SET {updateColumn},
+                    PaymentCount = PaymentCount + 1
+                WHERE ID = @SalesId";
+
+            IDbConnection connection;
+            bool shouldDispose = false;
+
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
+
+            try
+            {
+                await connection.ExecuteAsync(sql,
+                    new { SalesId = salesId, Amount = payment.PaidAmount, Tip = payment.TipAmount },
+                    transaction);
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Get all payments for a sale
         /// </summary>
         public async Task<IEnumerable<PosTender>> GetPaymentsAsync(int salesId)
         {
@@ -429,58 +959,183 @@ namespace IntegrationService.Infrastructure.Data
                     PaymentTypeID,
                     PaidAmount,
                     TipAmount,
-                    Voided,
                     AuthorizationNo,
-                    BatchNo
+                    BatchNo,
+                    SequenceNo,
+                    StationName,
+                    Voided,
+                    TipAdjusted,
+                    PaidDateTime
                 FROM dbo.tblPayment
                 WHERE SalesID = @SalesId
                   AND Voided = 0
-                ORDER BY ID";
+                ORDER BY SequenceNo";
 
             using var connection = CreateConnection();
             return await connection.QueryAsync<PosTender>(sql, new { SalesId = salesId });
         }
 
+        /// <summary>
+        /// Void a payment
+        /// </summary>
+        public async Task<bool> VoidPaymentAsync(int paymentId, IDbTransaction? transaction = null)
+        {
+            const string sql = "UPDATE dbo.tblPayment SET Voided = 1 WHERE ID = @PaymentId";
+
+            IDbConnection connection;
+            bool shouldDispose = false;
+
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
+
+            try
+            {
+                var rows = await connection.ExecuteAsync(sql, new { PaymentId = paymentId }, transaction);
+                return rows > 0;
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
+        }
+
         #endregion
+
+        // =============================================================================
+        // ONLINE ORDERS
+        // =============================================================================
+
+        #region Online Orders
+
+        /// <summary>
+        /// Insert link between sale and online order
+        /// </summary>
+        public async Task InsertOnlineSalesLinkAsync(SalesOfOnlineOrder link, IDbTransaction? transaction = null)
+        {
+            const string sql = @"
+                INSERT INTO dbo.tblSalesOfOnlineOrders (
+                    SalesID,
+                    OnlineOrderCompanyID,
+                    OnlineOrderNumber,
+                    OnlineOrderCustomerName,
+                    DineInOrder,
+                    ReservedTipAmt,
+                    DeliveryChargeAmt
+                )
+                VALUES (
+                    @SalesID,
+                    @OnlineOrderCompanyID,
+                    @OnlineOrderNumber,
+                    @OnlineOrderCustomerName,
+                    @DineInOrder,
+                    @ReservedTipAmt,
+                    @DeliveryChargeAmt
+                )";
+
+            IDbConnection connection;
+            bool shouldDispose = false;
+
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
+
+            try
+            {
+                await connection.ExecuteAsync(sql, link, transaction);
+                _logger.LogInformation("Linked SalesID {SalesId} to online order {OrderNumber}",
+                    link.SalesID, link.OnlineOrderNumber);
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Get online order companies
+        /// </summary>
+        public async Task<IEnumerable<OnlineOrderCompany>> GetOnlineOrderCompaniesAsync()
+        {
+            const string sql = @"
+                SELECT ID, CompanyName, IsActive, CommissionRate
+                FROM dbo.tblOnlineOrderCompany
+                WHERE IsActive = 1";
+
+            using var connection = CreateConnection();
+            return await connection.QueryAsync<OnlineOrderCompany>(sql);
+        }
+
+        #endregion
+
+        // =============================================================================
+        // TAX CONFIGURATION
+        // =============================================================================
 
         #region Tax Configuration
 
         /// <summary>
-        /// Get tax rate from tblMisc configuration
+        /// Get tax rate from tblMisc
         /// </summary>
         public async Task<decimal> GetTaxRateAsync(string taxCode)
         {
+            // INI POS stores tax rates in tblMisc with MiscName like 'GSTPercentage'
+            var miscName = taxCode switch
+            {
+                "GST" => "GSTPercentage",
+                "PST" => "PSTPercentage",
+                "PST2" => "PST2Percentage",
+                _ => taxCode + "Percentage"
+            };
+
             const string sql = @"
-                SELECT ISNULL(Value, 0)
+                SELECT CAST(ISNULL(Value, '0') AS DECIMAL(10,5))
                 FROM dbo.tblMisc
-                WHERE Code = @TaxCode";
+                WHERE MiscName = @MiscName";
 
             using var connection = CreateConnection();
-            return await connection.QueryFirstOrDefaultAsync<decimal>(sql, new { TaxCode = taxCode });
+            return await connection.QueryFirstOrDefaultAsync<decimal>(sql, new { MiscName = miscName });
         }
 
         /// <summary>
-        /// Get all tax rates at once
+        /// Get all tax rates at once from tblMisc
+        /// INI POS stores these as 'GSTPercentage', 'PSTPercentage', 'PST2Percentage'
         /// </summary>
         public async Task<TaxRates> GetTaxRatesAsync()
         {
             const string sql = @"
-                SELECT Code, Value
+                SELECT MiscName, CAST(ISNULL(Value, '0') AS DECIMAL(10,5)) AS Value
                 FROM dbo.tblMisc
-                WHERE Code IN ('GST', 'PST', 'PST2')";
+                WHERE MiscName IN ('GSTPercentage', 'PSTPercentage', 'PST2Percentage')";
 
             using var connection = CreateConnection();
-            var rates = await connection.QueryAsync<(string Code, decimal Value)>(sql);
+            var rates = await connection.QueryAsync<(string MiscName, decimal Value)>(sql);
 
             return new TaxRates
             {
-                GST = rates.FirstOrDefault(r => r.Code == "GST").Value,
-                PST = rates.FirstOrDefault(r => r.Code == "PST").Value,
-                PST2 = rates.FirstOrDefault(r => r.Code == "PST2").Value
+                GST = rates.FirstOrDefault(r => r.MiscName == "GSTPercentage").Value,
+                PST = rates.FirstOrDefault(r => r.MiscName == "PSTPercentage").Value,
+                PST2 = rates.FirstOrDefault(r => r.MiscName == "PST2Percentage").Value
             };
         }
 
         #endregion
+
+        // =============================================================================
+        // CUSTOMERS
+        // =============================================================================
 
         #region Customers
 
@@ -491,16 +1146,8 @@ namespace IntegrationService.Infrastructure.Data
         {
             const string sql = @"
                 SELECT
-                    ID,
-                    FName,
-                    LName,
-                    Phone,
-                    Email,
-                    Address,
-                    CustomerNum,
-                    EarnedPoints,
-                    PointsManaged,
-                    Gender
+                    ID, FName, LName, Phone, Email, Address,
+                    CustomerNum, EarnedPoints, PointsManaged, Gender
                 FROM dbo.tblCustomer
                 WHERE Phone = @Phone";
 
@@ -515,16 +1162,8 @@ namespace IntegrationService.Infrastructure.Data
         {
             const string sql = @"
                 SELECT
-                    ID,
-                    FName,
-                    LName,
-                    Phone,
-                    Email,
-                    Address,
-                    CustomerNum,
-                    EarnedPoints,
-                    PointsManaged,
-                    Gender
+                    ID, FName, LName, Phone, Email, Address,
+                    CustomerNum, EarnedPoints, PointsManaged, Gender
                 FROM dbo.tblCustomer
                 WHERE ID = @Id";
 
@@ -539,26 +1178,14 @@ namespace IntegrationService.Infrastructure.Data
         {
             const string sql = @"
                 INSERT INTO dbo.tblCustomer (
-                    FName,
-                    LName,
-                    Phone,
-                    Email,
-                    Address,
-                    CustomerNum,
-                    EarnedPoints,
-                    PointsManaged
+                    FName, LName, Phone, Email, Address,
+                    CustomerNum, EarnedPoints, PointsManaged
                 )
-                OUTPUT INSERTED.ID
                 VALUES (
-                    @FName,
-                    @LName,
-                    @Phone,
-                    @Email,
-                    @Address,
-                    @CustomerNum,
-                    0,
-                    1
-                )";
+                    @FName, @LName, @Phone, @Email, @Address,
+                    @CustomerNum, 0, 1
+                );
+                SELECT SCOPE_IDENTITY();";
 
             using var connection = CreateConnection();
             return await connection.QuerySingleAsync<int>(sql, customer);
@@ -567,16 +1194,127 @@ namespace IntegrationService.Infrastructure.Data
         /// <summary>
         /// Update customer loyalty points
         /// </summary>
-        public async Task<bool> UpdateLoyaltyPointsAsync(int customerId, decimal points)
+        public async Task<bool> UpdateLoyaltyPointsAsync(int customerId, int points, IDbTransaction? transaction = null)
         {
             const string sql = @"
                 UPDATE dbo.tblCustomer
-                SET EarnedPoints = @Points
+                SET EarnedPoints = EarnedPoints + @Points
                 WHERE ID = @CustomerId";
 
+            IDbConnection connection;
+            bool shouldDispose = false;
+
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
+
+            try
+            {
+                var rows = await connection.ExecuteAsync(sql, new { CustomerId = customerId, Points = points }, transaction);
+                return rows > 0;
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Record loyalty point transaction
+        /// </summary>
+        public async Task InsertPointsDetailAsync(PointsDetail detail, IDbTransaction? transaction = null)
+        {
+            const string sql = @"
+                INSERT INTO dbo.tblPointsDetail (
+                    SalesID, CustomerID, PointUsed, PointSaved, TransactionDate
+                )
+                VALUES (
+                    @SalesID, @CustomerID, @PointUsed, @PointSaved, GETDATE()
+                )";
+
+            IDbConnection connection;
+            bool shouldDispose = false;
+
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
+
+            try
+            {
+                await connection.ExecuteAsync(sql, detail, transaction);
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
+        }
+
+        #endregion
+
+        // =============================================================================
+        // GIFT CARDS
+        // =============================================================================
+
+        #region Gift Cards
+
+        /// <summary>
+        /// Get gift card by barcode
+        /// </summary>
+        public async Task<PrepaidCard?> GetPrepaidCardAsync(string barcode)
+        {
+            const string sql = @"
+                SELECT ID, Barcode, Balance, CustomerID, ExpiryDate, IsActive
+                FROM dbo.tblPrepaidCards
+                WHERE Barcode = @Barcode AND IsActive = 1";
+
             using var connection = CreateConnection();
-            var rows = await connection.ExecuteAsync(sql, new { CustomerId = customerId, Points = (int)points });
-            return rows > 0;
+            return await connection.QueryFirstOrDefaultAsync<PrepaidCard>(sql, new { Barcode = barcode });
+        }
+
+        /// <summary>
+        /// Update gift card balance
+        /// </summary>
+        public async Task<bool> UpdatePrepaidCardBalanceAsync(int cardId, decimal amount, IDbTransaction? transaction = null)
+        {
+            const string sql = @"
+                UPDATE dbo.tblPrepaidCards
+                SET Balance = Balance + @Amount
+                WHERE ID = @CardId AND Balance + @Amount >= 0";
+
+            IDbConnection connection;
+            bool shouldDispose = false;
+
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                shouldDispose = true;
+            }
+
+            try
+            {
+                var rows = await connection.ExecuteAsync(sql, new { CardId = cardId, Amount = amount }, transaction);
+                return rows > 0;
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
         }
 
         #endregion

@@ -1,12 +1,17 @@
 import axios from 'axios';
-
-const BASE_URL = 'http://localhost:5004/api'; // Matched with backend launchSettings.json
+import { ENV } from '../config/environment';
 
 const apiClient = axios.create({
-  baseURL: BASE_URL,
+  baseURL: ENV.API_BASE_URL,
+  timeout: ENV.TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+// Log API URL in development
+if (ENV.IS_DEV) {
+  console.log('[API] Base URL:', ENV.API_BASE_URL);
+}
 
 export default apiClient;

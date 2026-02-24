@@ -1,0 +1,110 @@
+name: Android APK Build
+
+on:
+  push:
+    branches: [main, feature/*, develop]
+    paths:
+      - 'src/mobile/ImidusCustomerApp/**'
+      - '.github/workflows/android-build.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/mobile/ImidusCustomerApp/**'
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type (debug/release)'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+          - debug
+          - release
+
+env:
+  WORKING_DIR: src/mobile/ImidusCustomerApp
+  JAVA_VERSION: '17'
+  NODE_VERSION: '18'
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+          cache-dependency-path: ${{ env.WORKING_DIR }}/yarn.lock
+
+      - name: Install dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: yarn install --frozen-lockfile
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Decode keystore
+        working-directory: ${{ env.WORKING_DIR }}/android
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > app/imidus-release.keystore
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > keystore.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> keystore.properties
+          echo "storeFile=imidus-release.keystore" >> keystore.properties
+
+      - name: Make gradlew executable
+        working-directory: ${{ env.WORKING_DIR }}/android
+        run: chmod +x gradlew
+
+      - name: Build Release APK
+        if: ${{ github.event.inputs.build_type != 'debug' }}
+        working-directory: ${{ env.WORKING_DIR }}/android
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Build Debug APK
+        if: ${{ github.event.inputs.build_type == 'debug' }}
+        working-directory: ${{ env.WORKING_DIR }}/android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: List APK files
+        working-directory: ${{ env.WORKING_DIR }}/android
+        run: |
+          echo "Release APKs:"
+          find app/build/outputs/apk/release -name "*.apk" 2>/dev/null || echo "No release APKs"
+          echo "Debug APKs:"
+          find app/build/outputs/apk/debug -name "*.apk" 2>/dev/null || echo "No debug APKs"
+
+      - name: Upload Release APK
+        if: ${{ github.event.inputs.build_type != 'debug' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: imidus-customer-app-release
+          path: ${{ env.WORKING_DIR }}/android/app/build/outputs/apk/release/*.apk
+          retention-days: 30
+
+      - name: Upload Debug APK
+        if: ${{ github.event.inputs.build_type == 'debug' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: imidus-customer-app-debug
+          path: ${{ env.WORKING_DIR }}/android/app/build/outputs/apk/debug/*.apk
+          retention-days: 7
+
+      - name: Create Release (on tags)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.WORKING_DIR }}/android/app/build/outputs/apk/release/*.apk
+          generate_release_notes: true

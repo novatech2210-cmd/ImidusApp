@@ -50,6 +50,7 @@ builder.Services.AddCors(options =>
 
 // Repository Registrations
 builder.Services.AddScoped<IPosRepository, PosRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 // Service Registrations
 builder.Services.AddScoped<IOrderProcessingService, OrderProcessingService>();
