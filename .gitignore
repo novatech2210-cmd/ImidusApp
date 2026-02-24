@@ -1,0 +1,41 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.cache
+.vs/
+*.dll
+*.exe
+*.pdb
+
+# React Native
+mobile/node_modules/
+mobile/.expo/
+mobile/.expo-shared/
+mobile/ios/Pods/
+mobile/ios/build/
+mobile/android/app/build/
+mobile/android/.gradle/
+
+# Environment files (DO NOT COMMIT SECRETS)
+.env
+.env.local
+.env.production
+*.keystore
+*.p12
+*.mobileprovision
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

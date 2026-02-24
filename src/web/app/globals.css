@@ -1,0 +1,191 @@
+@import "tailwindcss";
+
+:root {
+  /* IMIDUS Core Brand */
+  --gold: #d4af37;
+  --gold-vibrant: #ffcf40;
+  --blue: #1a4a8e;
+  --blue-vibrant: #2d81ff;
+
+  /* POS Surface Colors (Dark Theme) */
+  --bg-main: #0a0a0b;
+  --bg-panel: #141417;
+  --bg-surface: #1c1c21;
+  --bg-active: #2a2a33;
+
+  /* Text & Hierarchy */
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-dim: #71717a;
+
+  /* Functional Logic */
+  --sellable: var(--gold);
+  --selection: var(--blue);
+  --divider: #27272a;
+
+  --radius-pos: 8px;
+  --radius-card: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden; /* POS apps are typically full-screen / no-scroll body */
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  cursor: pointer;
+  font-family: inherit;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── POS High-Speed Button (Sellable) ─────────────── */
+.btn-sellable {
+  background: linear-gradient(180deg, var(--gold-vibrant) 0%, var(--gold) 100%);
+  color: #000;
+  border: none;
+  border-radius: var(--radius-pos);
+  padding: 16px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 0 var(--gold-dark, #b8941f);
+  transition: all 0.1s active;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.btn-sellable:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--gold-dark, #b8941f);
+}
+
+/* ── POS Panel Button (Action) ────────────────────── */
+.btn-action {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-pos);
+  padding: 12px 24px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.btn-action:hover {
+  background: var(--bg-active);
+}
+.btn-action.active {
+  background: var(--blue);
+  border-color: var(--blue-vibrant);
+}
+
+/* ── Split Panel Architecture ────────────────────── */
+.pos-container {
+  display: grid;
+  grid-template-columns: 80px 1fr 380px; /* Sidebar | Grid | Order View */
+  height: 100vh;
+  background: var(--bg-main);
+}
+
+@media (max-width: 1024px) {
+  .pos-container {
+    grid-template-columns: 80px 1fr; /* On tablets, order view might be modal or separate */
+  }
+}
+
+.pos-sidebar {
+  background: var(--bg-panel);
+  border-right: 1px solid var(--divider);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+  gap: 20px;
+}
+
+.pos-grid {
+  padding: 24px;
+  overflow-y: auto;
+  background: var(--bg-main);
+}
+
+.pos-order-panel {
+  background: var(--bg-panel);
+  border-left: 1px solid var(--divider);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ── Product Tiles ───────────────────────────────── */
+.product-tile {
+  background: var(--bg-surface);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-card);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.product-tile:hover {
+  background: var(--bg-active);
+  border-color: var(--text-dim);
+}
+.product-tile .price-tag {
+  font-weight: 800;
+  color: var(--gold-vibrant);
+  font-size: 1.1rem;
+}
+
+/* ── Navbar (High Contrast) ──────────────────────── */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--divider);
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ── Scrollbar Styling (Dark) ────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-surface);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--divider);
+}
+
+/* Fix for Safari lint */
+.blurred {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}

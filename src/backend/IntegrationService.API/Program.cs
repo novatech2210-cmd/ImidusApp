@@ -1,0 +1,77 @@
+using IntegrationService.Core.Interfaces;
+using IntegrationService.Core.Services;
+using IntegrationService.Infrastructure.Data;
+using IntegrationService.Infrastructure.Services;
+using IntegrationService.API.BackgroundServices;
+using Serilog;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateLogger();
+builder.Host.UseSerilog();
+
+// Add services to the container.
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "TOAST POS Integration API",
+        Version = "v2.0",  // Increment version
+        Description = "Online ordering API with size-based pricing"
+    });
+
+    // Add XML comments
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+        c.IncludeXmlComments(xmlPath);
+    }
+});
+
+// CORS Policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowWebApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+// Repository Registrations
+builder.Services.AddScoped<IPosRepository, PosRepository>();
+
+// Service Registrations
+builder.Services.AddScoped<IOrderProcessingService, OrderProcessingService>();
+builder.Services.AddScoped<ILoyaltyService, LoyaltyService>();
+builder.Services.AddScoped<IUpsellService, UpsellService>();
+builder.Services.AddScoped<BirthdayRewardService>();
+builder.Services.AddHostedService<BirthdayRewardBackgroundService>();
+builder.Services.AddScoped<IPaymentService, MockPaymentService>();
+builder.Services.AddScoped<INotificationService, MockNotificationService>();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseCors("AllowWebApp");
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
