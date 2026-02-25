@@ -6,7 +6,19 @@ namespace IntegrationService.Core.Domain.Entities
     // =============================================================================
     // INI POS Database Schema - Entity Models
     // Based on: INI_Restaurant.Bak analysis & IMIDUS_Project_Analysis.md
-    // Database: TPPro (SQL Server 2005 Express)
+    // Database: TPPro (SQL Server 2005 Express, compatibility level 100)
+    //
+    // COLUMN MAPPING NOTES:
+    // - tblItem.ID -> MenuItem.ItemID (aliased in queries)
+    // - tblCategory.ID -> Category.CategoryID (aliased in queries)
+    // - tblCategory.CatName -> Category.CName (aliased in queries)
+    // - tblSize.ID -> Size.SizeID (aliased in queries)
+    //
+    // SQL SERVER 2005 COMPATIBILITY CONSTRAINTS:
+    // - No MERGE statements
+    // - No OFFSET/FETCH (use TOP)
+    // - No window functions like ROW_NUMBER() OVER
+    // - No TRY_CONVERT, use CONVERT with ISNULL
     // =============================================================================
 
     /// <summary>
@@ -287,10 +299,12 @@ namespace IntegrationService.Core.Domain.Entities
     // =============================================================================
 
     /// <summary>
-    /// Maps to tblItem - Menu items
+    /// Maps to dbo.tblItem - Menu items
+    /// Column mapping: tblItem.ID -> ItemID (via SQL alias)
     /// </summary>
     public class MenuItem
     {
+        /// <summary>Primary key. DB column is 'ID', aliased as ItemID in queries.</summary>
         public short ItemID { get; set; }
 
         // Names
@@ -373,10 +387,12 @@ namespace IntegrationService.Core.Domain.Entities
     }
 
     /// <summary>
-    /// Maps to tblSize - Size definitions
+    /// Maps to dbo.tblSize - Size definitions
+    /// Column mapping: tblSize.ID -> SizeID (via SQL alias)
     /// </summary>
     public class Size
     {
+        /// <summary>Primary key. DB column is 'ID', aliased as SizeID in queries.</summary>
         public short SizeID { get; set; }
         public string SizeName { get; set; } = string.Empty;
         public string? ShortName { get; set; }
@@ -384,11 +400,16 @@ namespace IntegrationService.Core.Domain.Entities
     }
 
     /// <summary>
-    /// Maps to tblCategory - Menu categories
+    /// Maps to dbo.tblCategory - Menu categories
+    /// Column mappings:
+    /// - tblCategory.ID -> CategoryID (via SQL alias)
+    /// - tblCategory.CatName -> CName (via SQL alias)
     /// </summary>
     public class Category
     {
+        /// <summary>Primary key. DB column is 'ID', aliased as CategoryID in queries.</summary>
         public byte CategoryID { get; set; }
+        /// <summary>Category name. DB column is 'CatName', aliased as CName in queries.</summary>
         public string CName { get; set; } = string.Empty;
         public int PrintOrder { get; set; }
         public bool Status { get; set; }

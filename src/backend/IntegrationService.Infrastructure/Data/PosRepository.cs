@@ -638,10 +638,30 @@ namespace IntegrationService.Infrastructure.Data
         /// <summary>
         /// Move items from tblPendingOrders to tblSalesDetail
         /// Called when order is completed (TransType changes from 2 to 1)
+        ///
+        /// NOTE: Uses application-side sequence numbering instead of ROW_NUMBER() OVER
+        /// for SQL Server 2005 compatibility (compatibility level 100).
         /// </summary>
         public async Task MovePendingOrdersToSalesDetailAsync(int salesId, IDbTransaction? transaction = null)
         {
-            // First, insert into tblSalesDetail from tblPendingOrders
+            // SQL Server 2005 compatible: Fetch pending items, assign sequence numbers in code,
+            // then insert into tblSalesDetail
+            const string selectSql = @"
+                SELECT
+                    SalesID,
+                    ItemID,
+                    SizeID,
+                    Qty,
+                    UnitPrice,
+                    ItemName,
+                    ItemName2,
+                    SizeName,
+                    Tastes,
+                    DSCAmt,
+                    PersonIndex
+                FROM dbo.tblPendingOrders
+                WHERE SalesID = @SalesId";
+
             const string insertSql = @"
                 INSERT INTO dbo.tblSalesDetail (
                     SalesID,
@@ -658,24 +678,22 @@ namespace IntegrationService.Infrastructure.Data
                     PersonIndex,
                     Voided
                 )
-                SELECT
-                    SalesID,
-                    ItemID,
-                    SizeID,
-                    Qty,
-                    UnitPrice,
-                    ItemName,
-                    ItemName2,
-                    SizeName,
-                    Tastes,
-                    DSCAmt,
-                    ROW_NUMBER() OVER (ORDER BY (SELECT NULL)),  -- SequenceNo
-                    PersonIndex,
-                    0  -- Not voided
-                FROM dbo.tblPendingOrders
-                WHERE SalesID = @SalesId";
+                VALUES (
+                    @SalesID,
+                    @ItemID,
+                    @SizeID,
+                    @Qty,
+                    @UnitPrice,
+                    @ItemName,
+                    @ItemName2,
+                    @SizeName,
+                    @Tastes,
+                    @DSCAmt,
+                    @SequenceNo,
+                    @PersonIndex,
+                    0
+                )";
 
-            // Then delete from tblPendingOrders
             const string deleteSql = @"
                 DELETE FROM dbo.tblPendingOrders
                 WHERE SalesID = @SalesId";
@@ -695,10 +713,35 @@ namespace IntegrationService.Infrastructure.Data
 
             try
             {
-                await connection.ExecuteAsync(insertSql, new { SalesId = salesId }, transaction);
+                // Fetch pending items
+                var pendingItems = await connection.QueryAsync<dynamic>(selectSql, new { SalesId = salesId }, transaction);
+
+                // Insert each item with application-assigned sequence number
+                int sequenceNo = 1;
+                foreach (var item in pendingItems)
+                {
+                    await connection.ExecuteAsync(insertSql, new
+                    {
+                        SalesID = (int)item.SalesID,
+                        ItemID = (int)item.ItemID,
+                        SizeID = (int)item.SizeID,
+                        Qty = (decimal)item.Qty,
+                        UnitPrice = (decimal)item.UnitPrice,
+                        ItemName = (string?)item.ItemName,
+                        ItemName2 = (string?)item.ItemName2,
+                        SizeName = (string?)item.SizeName,
+                        Tastes = (string?)item.Tastes,
+                        DSCAmt = (decimal)item.DSCAmt,
+                        SequenceNo = sequenceNo++,
+                        PersonIndex = (byte)item.PersonIndex
+                    }, transaction);
+                }
+
+                // Delete from pending orders
                 await connection.ExecuteAsync(deleteSql, new { SalesId = salesId }, transaction);
 
-                _logger.LogInformation("Moved pending orders to sales detail for SalesID {SalesId}", salesId);
+                _logger.LogInformation("Moved {Count} pending orders to sales detail for SalesID {SalesId}",
+                    sequenceNo - 1, salesId);
             }
             finally
             {
