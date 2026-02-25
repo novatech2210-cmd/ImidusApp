@@ -5,299 +5,210 @@
 ## Naming Patterns
 
 **Files:**
-- React components: PascalCase with `.tsx` extension (e.g., `Sidebar.tsx`, `CartContext.tsx`, `MenuItemCard.tsx`)
-- Utilities and services: camelCase with `.ts` extension (e.g., `apiClient.ts`, `environment.ts`)
-- Page routes: lowercase with directory structure (e.g., `/menu/page.tsx`, `/orders/page.tsx`)
-- Slices and store files: camelCase + descriptive suffix (e.g., `cartSlice.ts`, `authSlice.ts`, `index.ts`)
-- Type definition files: suffix with `.types.ts` (e.g., `cart.types.ts`, `menu.types.ts`)
+- TypeScript/React files use PascalCase for components: `OrderPanel.tsx`, `CartContext.tsx`
+- Utility/library files use camelCase: `api.ts`
+- Test files use `.test.ts` or `.test.tsx` suffix: `App.test.tsx`
+- C# files use PascalCase for classes: `OrderService.cs`, `OrdersController.cs`
 
 **Functions:**
-- Event handlers: `handle[Event]` prefix (e.g., `handleAdd`, `handleClearCart`, `handlePress`)
-- Fetch/API calls: `fetch[Resource]` prefix (e.g., `fetchCategories`, `fetchItems`)
-- Helper functions: descriptive camelCase (e.g., `calculateTotals`, `renderCategory`, `renderItem`)
-- Context consumers: `use[Context]` pattern for custom hooks (e.g., `useCart`, `useAuth`)
+- TypeScript: camelCase for all functions and methods: `addItem()`, `removeItem()`, `updateQty()`
+- C# async methods use Async suffix: `PlaceOrderAsync()`, `GetItemByIdAsync()`, `InsertTicketAsync()`
+- React hooks follow `useHookName` pattern: `useCart()`, `useAuth()`
 
 **Variables:**
-- State variables: camelCase (e.g., `items`, `selectedCategory`, `loading`, `isLoading`, `token`)
-- Boolean flags: `is[State]` or `has[Feature]` prefix (e.g., `isActive`, `isAvailable`, `isLoading`)
-- Constants: UPPER_SNAKE_CASE (e.g., `DEMO_MENU`, `API_BASE`, `ENV.IS_DEV`)
-- Environment variables: UPPER_SNAKE_CASE with ENV prefix (e.g., `ENV.API_BASE_URL`, `NEXT_PUBLIC_API_URL`)
+- TypeScript: camelCase for regular variables and constants: `total`, `items`, `count`
+- React state: camelCase: `const [error, setError] = useState()`
+- C# private fields prefixed with underscore: `_orderRepo`, `_menuRepo`, `_logger`
+- C# readonly properties: PascalCase: `Success`, `ErrorMessage`, `TotalAmount`
 
-**Types:**
-- Interface names: PascalCase with descriptive suffix (e.g., `CartContextType`, `User`, `MenuItem`, `MenuCategory`)
-- Type suffixes: `[Domain]Type` for context/state types (e.g., `CartContextType`, `AuthContextType`)
-- Prop interfaces: `[ComponentName]Props` (if defined separately)
+**Types/Interfaces:**
+- React/TypeScript interfaces prefixed with `I` is NOT used; use bare interface names: `CartContextType`, `User`, `CartItem`
+- C# interfaces prefixed with `I`: `IOrderRepository`, `IMenuRepository`, `IPaymentService`
+- C# domain entities use descriptive names: `PosTicket`, `PosTicketItem`, `PosTender`
+- DTOs use `DTO` suffix in C#: `CreateOrderRequest`, `OrderDTOs`
 
 ## Code Style
 
 **Formatting:**
-- Web project uses ESLint v9 with Next.js config
-- Mobile project uses ESLint v8 with React Native config
-- Prettier v2.8.8 configured for mobile development
-
-**Prettier Configuration (Mobile):**
-```javascript
-// .prettierrc.js
-{
-  arrowParens: 'avoid',        // Omit parens: x => x (not (x) => x)
-  bracketSameLine: true,       // <Component prop /> on same line
-  bracketSpacing: false,       // No spaces: {x} (not { x })
-  singleQuote: true,           // Use single quotes: 'string'
-  trailingComma: 'all',        // Trailing commas in all applicable places
-}
-```
+- TypeScript/React: Follows Next.js + ESLint defaults, no Prettier config found but styles are consistent
+- Target: ES2017 (TypeScript `target`)
+- JSX mode: `react-jsx` (automatic runtime)
+- Indentation: 2 spaces observed in all TypeScript files
+- C# follows standard .NET conventions with proper casing
 
 **Linting:**
-- Web: ESLint extends `eslint-config-next` (inherits strict TypeScript config)
-- Mobile: ESLint extends `@react-native/eslint-config` (React Native best practices)
-- Both enforce strict TypeScript checking via `tsconfig.json` with `strict: true`
-
-**TypeScript Strictness:**
-- `strict: true` - All strict type-checking options enabled
-- `noEmit: true` - Compilation check only, no build output
-- `esModuleInterop: true` - CommonJS/ES module interop
-- `isolatedModules: true` - Each file independently transpilable
+- ESLint (v9) with Next.js config: `eslint-config-next` core-web-vitals and TypeScript
+- Config file: `/home/kali/Desktop/TOAST/src/web/eslint.config.mjs`
+- Ignores: `.next/`, `out/`, `build/`, `next-env.d.ts`
+- React Native uses ESLint (v8) via `@react-native/eslint-config`
+- C# uses standard .NET naming and style conventions
 
 ## Import Organization
 
 **Order:**
-1. React/React Native imports (`import React from 'react'`)
-2. External libraries (`import { Provider } from 'react-redux'`, `import axios from 'axios'`)
-3. Relative imports (`import { useCart } from '@/context/CartContext'` or `import AppNavigator from './src/navigation'`)
-4. Type imports (after structural imports, using `import type` when available)
-5. Local assets/styles (stylesheets, config files last)
+1. React/external framework imports (e.g., `import React, { createContext }`)
+2. Next.js imports (e.g., `import type { Metadata }`)
+3. Absolute path imports using `@/` alias (e.g., `import { useCart } from "@/context/CartContext"`)
+4. Type imports and interfaces
+5. Custom relative imports (rarely used due to `@/` alias)
 
 **Path Aliases:**
-- Web: `@/*` resolves to root of `src/web/` directory
-- Mobile: No alias configuration observed; uses relative paths
-- Enables cleaner imports: `import { useCart } from '@/context/CartContext'` instead of `../../../context/CartContext`
+- Web: `@/*` resolves to `/home/kali/Desktop/TOAST/src/web/`
+- Used for `@/components/`, `@/context/`, `@/lib/`
 
-**Example Import Blocks:**
+**Example from `OrderPanel.tsx`:**
 ```typescript
-// Web (layout.tsx)
-import { OrderPanel } from "@/components/OrderPanel";
-import { Sidebar } from "@/components/Sidebar";
-import { AuthProvider } from "@/context/AuthContext";
-import { CartProvider } from "@/context/CartContext";
-import type { Metadata } from "next";
-import "./globals.css";
+"use client";
+import { useCart } from "@/context/CartContext";
 
-// Mobile (MenuScreen.tsx)
-import React, { useEffect, useState } from 'react';
-import {
-    ActivityIndicator,
-    FlatList,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
-import { useSelector } from 'react-redux';
-import apiClient from '../api/apiClient';
-import { MenuItemCard } from '../components/MenuItemCard';
+export function OrderPanel() {
+  // ...
+}
 ```
 
 ## Error Handling
 
 **Patterns:**
-- **Try-catch with fallback**: All API calls wrapped in try-catch, return `{ success: false, error: string }` objects
-- **Generic error messages for network**: Catch blocks return user-friendly messages (e.g., "Network error — is the backend running?")
-- **Status-based error handling**: HTTP errors parsed from response JSON (e.g., `err.error || err.message || \`HTTP ${res.status}\``)
-- **Context hook guards**: Custom hooks throw descriptive errors if used outside provider (e.g., `throw new Error("useCart must be inside CartProvider")`)
-
-**Examples:**
-```typescript
-// apiClient (web/lib/api.ts)
-const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
-if (!res.ok) {
-  const err = await res.json().catch(() => ({}));
-  throw new Error(err.error || err.message || `HTTP ${res.status}`);
-}
-
-// AuthContext (web/context/AuthContext.tsx)
-const login = async (email: string, password: string) => {
+- React components use try-catch in async functions with generic error state management:
+  ```typescript
+  // From AuthContext.tsx
   try {
-    const res = await apiClient("/auth/login", {...});
+    const res = await apiClient("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
     if (res.success && res.token) {
       // success path
-      return { success: true };
     }
     return { success: false, error: res.errorMessage || "Login failed" };
   } catch {
     return { success: false, error: "Network error — is the backend running?" };
   }
-};
+  ```
 
-// MenuScreen (mobile)
-try {
-  const response = await apiClient.get('/Menu/categories');
-  setCategories(response.data);
-} catch (error) {
-  console.error('Error fetching categories:', error);
-}
-```
+- API client throws on non-2xx responses with descriptive error messages:
+  ```typescript
+  // From lib/api.ts
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || err.message || `HTTP ${res.status}`);
+  }
+  ```
+
+- C# services return result objects with `Success` flag and `ErrorMessage`:
+  ```csharp
+  // From OrderService.cs
+  if (menuItem == null) {
+    return new OrderModels.OrderResult {
+      Success = false,
+      ErrorMessage = $"Item {itemRequest.ItemId} not found"
+    };
+  }
+  ```
+
+- C# controllers validate ModelState before processing:
+  ```csharp
+  if (!ModelState.IsValid) {
+    return BadRequest(ModelState);
+  }
+  ```
 
 ## Logging
 
-**Framework:** Native console methods (`console.log`, `console.error`)
+**Framework:** No explicit logging library used in TypeScript/React; standard `console` methods not observed
 
 **Patterns:**
-- **Development logging**: Conditional logs guarded by environment check (e.g., `if (ENV.IS_DEV) console.log(...)`)
-- **Error logging**: Explicit `console.error()` for error conditions
-- **Debug logging**: Prefixed logs for readability (e.g., `console.log('[API] Base URL:', ENV.API_BASE_URL)`)
-- **No production logging**: Production code removes debug logs; use proper observability tools in production
-
-**Examples:**
-```typescript
-// Development-only logging (mobile/src/api/apiClient.ts)
-if (ENV.IS_DEV) {
-  console.log('[API] Base URL:', ENV.API_BASE_URL);
-}
-
-// Error logging (mobile/src/screens/MenuScreen.tsx)
-try {
-  const response = await apiClient.get('/Menu/items/{categoryId}');
-} catch (error) {
-  console.error('Error fetching items:', error);
-}
-
-// Mock notification logging (mobile)
-console.log('🔔 [MOCK NOTIFICATION RECEIVED]', {title, body, data});
-```
+- Error messages passed through state: React components set error state and display to UI
+- Backend uses `ILogger<T>` pattern in .NET Core via dependency injection
+- From `OrdersController.cs`: logger parameter injected through constructor, logged during processing
 
 ## Comments
 
 **When to Comment:**
-- **JSDoc for exported functions**: Use `/** ... */` format for public functions and hooks
-- **Algorithm explanations**: Comment complex logic or business rules
-- **Section dividers**: Use comment blocks to separate concerns (e.g., `// ── Typed API helpers ──────────────────────────────────────────────────`)
-- **Inline comments**: Use sparingly; prefer self-documenting code with clear naming
+- Inline comments are minimal; comments appear mainly for clarification of tax calculations
+- Comments mark UPDATED behavior in Redux slices: `// UPDATED: Now requires sizeId and sizeName`
+- Business logic comments explain tax application and discount calculations
 
-**JSDoc/TSDoc Usage:**
-- Applied to component entry points and root functions
-- Include `@format` tag for React components in mobile project
-- Type definitions include inline comments for field purposes
-
-**Example:**
-```typescript
-/**
- * IMIDUS Customer App — Root Entry Point
- * Wires Redux store and navigation.
- */
-function App(): React.JSX.Element {
-  // implementation
-}
-
-/**
- * @format
- */
-it('renders correctly', () => {
-  // test code
-});
-```
+**JSDoc/TSDoc:**
+- Minimal JSDoc usage observed
+- C# uses XML documentation comments for public APIs:
+  ```csharp
+  /// <summary>
+  /// Create a new order
+  /// </summary>
+  [HttpPost]
+  public async Task<IActionResult> CreateOrder(...)
+  ```
 
 ## Function Design
 
-**Size:**
-- Most functions remain under 50 lines
-- API client functions are typically single-purpose: one API call per function
-- Event handlers kept concise; delegate to helper functions for complex logic
+**Size:** Functions are generally small and focused
+- React components under 100 lines: `OrderPanel.tsx` (98 lines), `CartContext.tsx` (82 lines)
+- Service methods 30-150 lines with single responsibilities
+- Helper functions like `calculateTotals()` in Redux slice: 13 lines
 
 **Parameters:**
-- Use destructuring for object parameters (e.g., `{ children }` in component props)
-- Type all parameters explicitly (TypeScript strict mode enforced)
-- Avoid long parameter lists; pass objects for related parameters
+- React functions destructure props: `export function RootLayout({ children }: { children: React.ReactNode })`
+- Typed parameters via TypeScript interfaces
+- C# constructor injection pattern for dependencies:
+  ```csharp
+  public OrderService(
+    IOrderRepository orderRepo,
+    IMenuRepository menuRepo,
+    IPaymentService paymentService,
+    IMiscRepository miscRepo,
+    ILoyaltyService loyaltyService,
+    INotificationService notificationService)
+  ```
 
 **Return Values:**
-- Functions return typed objects (e.g., `{ success: boolean; error?: string }`)
-- API helper functions return Promise-wrapped JSON data
-- State update functions return void or undefined
-- Utility functions return computed values (numbers, strings, booleans, objects)
-
-**Example (CartContext):**
-```typescript
-const addItem = (item: Omit<CartItem, "quantity">) => {
-  setItems((prev) => {
-    const existing = prev.find((i) => i.menuItemId === item.menuItemId);
-    if (existing) {
-      return prev.map((i) =>
-        i.menuItemId === item.menuItemId
-          ? { ...i, quantity: i.quantity + 1 }
-          : i,
-      );
-    }
-    return [...prev, { ...item, quantity: 1 }];
-  });
-};
-```
+- React hooks return context values or hook functions: `const { items, addItem, removeItem } = useCart()`
+- Service methods return Promise-wrapped result objects with strongly typed responses
+- Async methods consistently named with `Async` suffix
 
 ## Module Design
 
 **Exports:**
-- Named exports for utilities, hooks, and components (enables better tree-shaking)
-- Default export for page components (Next.js convention)
-- Consistent export style: `export function Name() {}` over `export const Name = () => {}`
+- Context providers export both Provider component and custom hook:
+  ```typescript
+  export function CartProvider({ children }) { /* ... */ }
+  export const useCart = () => { /* ... */ }
+  ```
 
-**Barrel Files:**
-- Used for index files in store directories (e.g., `src/store/index.ts` exports all slices)
-- Enables cleaner imports: `import { store } from './src/store'`
+- API modules export object namespaces grouped by domain:
+  ```typescript
+  export const MenuAPI = { ... }
+  export const OrderAPI = { ... }
+  export const LoyaltyAPI = { ... }
+  ```
 
-**Example (Mobile Store):**
-```typescript
-// src/store/index.ts
-export { default as cartSlice } from './cartSlice';
-export { default as authSlice } from './authSlice';
+- Redux slices export slice reducer and destructured actions:
+  ```typescript
+  export const { addToCart, updateQuantity, removeFromCart, clearCart } = cartSlice.actions;
+  export default cartSlice.reducer;
+  ```
 
-// Usage:
-import { cartSlice, authSlice } from './src/store';
-```
+**Barrel Files:** Not used; direct imports from files preferred using `@/` path aliases
 
-**File Organization Patterns:**
-- API clients live in `api/` directory as single modules
-- Contexts and providers live in `context/` directory (web) or state management in Redux (mobile)
-- Types defined in `types/` directory or co-located in `.types.ts` files
-- Screens/Pages organized by feature or route (Next.js app directory structure for web)
+## Immutability Patterns
 
-## State Management Patterns
-
-**Web (React Context API):**
-- Contexts provide state + dispatch functions
-- Consumers use custom hooks (e.g., `useCart()`, `useAuth()`)
-- State persisted to localStorage for cart and auth
-- Context Provider wraps layout to make state globally available
-
-**Mobile (Redux Toolkit):**
-- Slices define reducers and actions
-- Store centralized in `src/store/index.ts`
-- State subscribed via `useSelector` hook
-- Dispatch via `useDispatch` hook
-- No persistence layer observed (state resets on app reload)
-
-## Immutability Practices
-
-**Context API (Web):**
-- Cart updates use spread operators: `{ ...item, quantity: i.quantity + 1 }`
-- State updates use functional setState: `setItems((prev) => [...prev, newItem])`
-- Item removal via `filter()` creating new arrays
-- No direct mutation of state objects
-
-**Redux (Mobile):**
-- Redux Toolkit uses Immer internally for immutable updates
-- Reducers can appear to mutate but are actually immutable (Immer transforms them)
-- State calculations use pure functions (e.g., `calculateTotals()`)
-
-**Example (Immutable Context Update):**
-```typescript
-const updateQty = (menuItemId: number, qty: number) => {
-  if (qty <= 0) return removeItem(menuItemId);
-  setItems((prev) =>
-    prev.map((i) =>
-      i.menuItemId === menuItemId ? { ...i, quantity: qty } : i,
-    ),
+**React/TypeScript:**
+- State updates use spread operators and mapping functions to create new objects:
+  ```typescript
+  // CartContext.tsx
+  return prev.map((i) =>
+    i.menuItemId === item.menuItemId
+      ? { ...i, quantity: i.quantity + 1 }
+      : i,
   );
-};
-```
+  ```
+
+- Redux slices use Immer (built into Redux Toolkit) enabling direct mutation syntax that creates new state:
+  ```typescript
+  // cartSlice.ts
+  existingItem.quantity += quantity;  // Immer handles immutability
+  state.items.push(newItem);
+  ```
 
 ---
 

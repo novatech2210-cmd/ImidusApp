@@ -4,253 +4,316 @@
 
 ## Tech Debt
 
-**Incomplete Login Implementation:**
-- Issue: Mobile login screen has placeholder logic that doesn't connect to backend
-- Files: `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/screens/LoginScreen.tsx` (line 23)
-- Impact: Mobile app login bypasses authentication with hardcoded 1.5s delay; app navigates regardless of credentials
-- Fix approach: Implement proper authentication flow connecting to `/auth/login` endpoint with real credential validation
-
-**Type Safety Issues with `any` Type:**
-- Issue: Widespread use of `any` type across mobile app eliminates TypeScript type checking
+**Unsafe TypeScript Typing (any types):**
+- Issue: Multiple components use `any` type, bypassing type safety
 - Files:
-  - `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/store/authSlice.ts` (line 4, 27)
-  - `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/screens/LoginScreen.tsx` (line 16)
-  - `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/screens/MenuScreen.tsx` (lines 19, 64)
-  - `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/screens/CartScreen.tsx` (lines 18, 91)
-  - `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/screens/ProfileScreen.tsx` (line 16)
-  - `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/screens/ItemDetailScreen.tsx` (lines 17, 60)
-- Impact: Prevents compile-time error detection; navigation props and API responses lack type safety; refactoring risk increases
-- Fix approach: Define proper TypeScript interfaces for navigation props (`RootStackParamList`, etc.) and API response types; migrate all `any` to concrete types
+  - `src/web/app/menu/page.tsx` (line 33): `handleAdd = (item: any)`
+  - `src/web/app/merchant/dashboard/page.tsx` (lines 14-16): Dashboard state uses `any` for summary, topProducts, trend
+  - `src/web/app/orders/page.tsx` (lines 13-15): Order state typed as `any[]`
+- Impact: Type checking failures hidden, prone to runtime errors when API responses change
+- Fix approach: Define proper interfaces for all API response types and component props
 
-**Inconsistent Error Handling in Mobile API Calls:**
-- Issue: API errors logged but not consistently presented to user; silent failures possible
-- Files: `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/screens/MenuScreen.tsx` (lines 44-48, 56-60)
-- Impact: Network failures or API errors may not display user feedback; loading state not always reset
-- Fix approach: Standardize error handling pattern; add error state to all API call sites; ensure loading flag resets on both success and error
+**Hardcoded Customer ID in Order History:**
+- Issue: Customer ID hardcoded to `1` instead of using authenticated user context
+- Files: `src/web/app/orders/page.tsx` (line 19): `OrderAPI.getOrderHistory(1)`
+- Impact: All users see same order history; breaks multi-user support
+- Fix approach: Extract `customerId` from `useAuth()` hook and pass to API
 
-## Security Considerations
+**Inline Styles Throughout Frontend:**
+- Issue: Components mix inline styles with Tailwind classes instead of using consistent styling approach
+- Files: `src/web/app/login/page.tsx`, `src/web/app/register/page.tsx`, `src/web/app/cart/page.tsx`, `src/web/components/Navbar.tsx`
+- Impact: Difficult to maintain, inconsistent styling, accessibility issues, poor component reusability
+- Fix approach: Move all styles to Tailwind/CSS classes, extract to separate component files with consistent patterns
 
-**Plain-Text Token Storage in localStorage:**
-- Risk: Auth tokens stored in browser localStorage accessible to XSS attacks
-- Files:
-  - `/home/kali/Desktop/TOAST/src/web/context/AuthContext.tsx` (lines 62-63, 84-85, 100-101)
-  - `/home/kali/Desktop/TOAST/src/web/lib/api.ts` (line 5)
-- Current mitigation: None; tokens stored as plain JSON strings
-- Recommendations:
-  - Use httpOnly cookies for token storage (inaccessible to JavaScript)
-  - Implement CSRF token rotation
-  - Add token expiration and refresh token mechanism
-  - Validate token signature on backend before accepting claims
-
-**Hardcoded API Endpoints in Environment Configuration:**
-- Risk: Production API URL exposed in mobile source code (ngrok endpoint visible)
-- Files: `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/config/environment.ts` (line 14)
-- Current mitigation: Environment variable switching (`__DEV__` check)
-- Recommendations:
-  - Remove test ngrok endpoint from production builds
-  - Use proper API gateway or reverse proxy URL in production
-  - Implement API endpoint configuration via build-time environment variables
-  - Consider certificate pinning for mobile app
-
-**Missing Request Input Validation on Web Frontend:**
-- Risk: User input not validated before sending to API; relies solely on backend validation
-- Files:
-  - `/home/kali/Desktop/TOAST/src/web/app/login/page.tsx` (lines 95-102, 116-123)
-  - `/home/kali/Desktop/TOAST/src/web/context/AuthContext.tsx` (lines 53-95)
-- Current mitigation: HTML5 `required` attributes only
-- Recommendations:
-  - Add client-side schema validation (Zod, Yup)
-  - Validate email format, password strength, field lengths
-  - Display validation errors before API call
-  - Match backend validation rules
-
-**Unencrypted Cart Data in localStorage:**
-- Risk: Shopping cart with prices stored in plain text localStorage
-- Files: `/home/kali/Desktop/TOAST/src/web/context/CartContext.tsx` (lines 29, 34)
-- Impact: User prices can be locally modified before checkout; customer data exposed in browser history
-- Fix approach:
-  - Calculate prices server-side at checkout (never trust client price)
-  - Consider removing price from cart state; fetch from API on checkout
-  - Add data integrity checks (HMAC signatures for sensitive state)
-
-## Performance Bottlenecks
-
-**Inefficient Loading State Logic in MenuScreen:**
-- Problem: Loading state set but never properly reset in one branch
-- Files: `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/screens/MenuScreen.tsx` (lines 37-62)
-- Cause: Line 61 `setLoading(false)` called unconditionally even if already in loading state from line 52
-- Impact: Component may appear stuck loading after switching categories
-- Improvement path: Remove redundant `setLoading(false)` call after try/catch; consolidate in finally block
-
-**Duplicate API Calls on Component Mount:**
-- Problem: Double fetch calls possible on React strict mode or re-renders
-- Files: `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/screens/MenuScreen.tsx` (lines 27-35)
-- Cause: Dependent useEffect (lines 31-35) triggers fetchItems but no guard against double-triggering
-- Impact: Unnecessary API calls; slower perceived performance; higher API cost
-- Improvement path: Use useCallback with proper dependency array; add isMounted guard; implement request deduplication
-
-**Large Repository Query Without Pagination:**
-- Problem: `GetActiveMenuItemsAsync()` retrieves all menu items into memory
-- Files: `/home/kali/Desktop/TOAST/src/backend/IntegrationService.Infrastructure/Data/PosRepository.cs` (lines 59-94)
-- Impact: Memory usage grows with menu size; slow API response time; potential timeout for large menus
-- Improvement path: Implement pagination or lazy-loading; add limit/offset parameters; cache frequently accessed categories
-
-**Synchronous Layout Calculations in Mobile Styles:**
-- Problem: StyleSheet.create() called on every component render
-- Files: Multiple screen files use inline StyleSheet.create() in render scope
-- Impact: Style object recreated on each render, preventing React.memo optimization
-- Improvement path: Move StyleSheet definitions outside component function; use memoization
-
-## Fragile Areas
-
-**Cart State Management Without Persistence Boundaries:**
-- Files: `/home/kali/Desktop/TOAST/src/web/context/CartContext.tsx` (lines 28-35)
-- Why fragile: Direct localStorage writes on every item change; no error handling if storage quota exceeded
-- Safe modification: Add try/catch around localStorage operations; implement localStorage quota check; debounce writes
-- Test coverage: No unit tests for cart persistence/restoration scenarios
-
-**Order Processing Transaction Management:**
-- Files: `/home/kali/Desktop/TOAST/src/backend/IntegrationService.Core/Services/OrderProcessingService.cs` (lines 61-150+)
-- Why fragile: Transaction rollback on exception, but partial payment processing possible if payment service fails mid-transaction
-- Safe modification: Ensure payment service calls atomic; implement compensating transactions for failed payments; add idempotency key validation for deduplication
-- Test coverage: Transaction rollback scenarios not covered
-
-**PosRepository Connection Management:**
-- Files: `/home/kali/Desktop/TOAST/src/backend/IntegrationService.Infrastructure/Data/PosRepository.cs` (lines 37-46)
-- Why fragile: Manual SqlConnection management; BeginTransactionAsync opens connection without guaranteed disposal on exception
-- Safe modification: Use using statement wrapper; implement proper async disposal; add connection pooling configuration
-- Test coverage: Connection leak and timeout scenarios missing
-
-**Loyalty Points Calculation Without Overflow Checks:**
-- Files: `/home/kali/Desktop/TOAST/src/backend/IntegrationService.Core/Services/OrderService.cs` (line 98)
-- Why fragile: Points redemption calculation (points / 100) has no bounds checking; rounding errors possible
-- Safe modification: Validate redemption amount doesn't exceed customer balance; use decimal arithmetic with explicit rounding; add audit logging
-- Test coverage: Edge cases (negative points, max int values) not tested
-
-## Scaling Limits
-
-**Fixed Hardcoded CORS Origin:**
-- Current capacity: Single hardcoded origin (`http://localhost:3000`)
-- Limit: Cannot support multiple environments (staging, production) or domains
-- Files: `/home/kali/Desktop/TOAST/src/backend/IntegrationService.API/Program.cs` (lines 40-49)
-- Scaling path:
-  - Move CORS origins to configuration
-  - Support multiple origins via environment variable
-  - Implement dynamic origin validation based on environment
-
-**Mock Payment Service Won't Scale to Production:**
-- Current capacity: Development/testing only
-- Limit: No real payment processing; randomly fails with `tok_error` prefix
-- Files: `/home/kali/Desktop/TOAST/src/backend/IntegrationService.Infrastructure/Services/MockPaymentService.cs`
-- Impact: Cannot accept real payments; blocks production deployment
-- Scaling path:
-  - Implement real Authorize.net or Stripe integration
-  - Add payment service factory for environment-specific selection
-  - Implement PCI compliance and tokenization
-
-**Fixed Daily Order Number Without Multi-Instance Support:**
-- Current capacity: Single instance only
-- Limit: Multiple API instances will generate duplicate daily order numbers (race condition)
-- Files: `/home/kali/Desktop/TOAST/src/backend/IntegrationService.Core/Services/OrderProcessingService.cs` (line 78)
-- Scaling path:
-  - Implement database-level sequence with locking
-  - Use IDENTITY column with application logic for daily reset
-  - Consider distributed counter pattern for multi-region
-
-**Mobile App Hardcoded to Single Backend:**
-- Current capacity: One API endpoint per build configuration
-- Limit: Cannot dynamically switch between backends; requires rebuild
-- Files: `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/config/environment.ts` (lines 13-14)
-- Scaling path:
-  - Implement server discovery endpoint
-  - Add runtime configuration fetch
-  - Support endpoint switching via deep links
-
-## Missing Critical Features
-
-**No Test Coverage for Web Frontend:**
-- Problem: Web application has no unit tests, integration tests, or E2E tests
-- Blocks: Cannot confidently refactor frontend; bugs slip through; no regression prevention
-- Impact: High risk of breaking changes; slow iteration speed
-- Priority: HIGH - Add Jest/Vitest tests for React Context, pages, and components (target 80%+ coverage)
-
-**No Test Coverage for Mobile App Logic:**
-- Problem: Mobile app has jest config but no actual test files beyond boilerplate
-- Blocks: Cannot validate cart logic, state management, or API integration
-- Impact: Regression risk high; Redux state changes may break silently
-- Priority: HIGH - Add Redux store tests, navigation tests, and screen component tests
-
-**No Input Validation/Zod Schemas on Backend DTOs:**
-- Problem: Backend accepts API requests without strong validation; relies on ModelState
-- Blocks: Cannot reject malformed requests early; validation errors unclear
-- Impact: API contracts not enforced; frontend may send invalid data without feedback
-- Priority: MEDIUM - Add FluentValidation or similar for DTOs
-
-**No Rate Limiting on API Endpoints:**
-- Problem: No rate limiting protection on any endpoint
-- Blocks: API vulnerable to brute force attacks, DoS
-- Impact: Server can be overwhelmed; authentication endpoints unprotected
-- Priority: HIGH - Implement rate limiting middleware (Authorize.net-style throttling)
-
-**No Audit Logging for Financial Transactions:**
-- Problem: Order creation, payment processing, and loyalty redemption have no audit trail
-- Blocks: Cannot investigate disputes or fraud; compliance/audit requirements unmet
-- Impact: Cannot prove what happened in production incidents
-- Priority: CRITICAL - Add comprehensive transaction logging with customer/operator tracking
-
-## Test Coverage Gaps
-
-**Authentication Flow Not Covered:**
-- What's not tested: Login/register happy path, error states, token refresh, logout
-- Files: `/home/kali/Desktop/TOAST/src/web/context/AuthContext.tsx`
-- Risk: Auth bugs can lock users out or cause privilege escalation
-- Priority: HIGH
-
-**Cart State Mutations Under Edge Cases:**
-- What's not tested: Adding same item multiple times, removing non-existent items, clearing empty cart, localStorage recovery from corruption
-- Files: `/home/kali/Desktop/TOAST/src/web/context/CartContext.tsx`
-- Risk: Cart could enter invalid state (negative quantity, NaN total)
-- Priority: MEDIUM
-
-**Order Processing Concurrency:**
-- What's not tested: Simultaneous order requests from same customer, duplicate idempotency keys, transaction deadlocks
-- Files: `/home/kali/Desktop/TOAST/src/backend/IntegrationService.Core/Services/OrderProcessingService.cs`
-- Risk: Race conditions could cause duplicate charges or missing orders
-- Priority: CRITICAL
-
-**Payment Service Integration:**
-- What's not tested: Payment failures, retries, timeout handling, partial payment states
-- Files: `/home/kali/Desktop/TOAST/src/backend/IntegrationService.Infrastructure/Services/MockPaymentService.cs`
-- Risk: Customers could be charged without order confirmation or not charged when order created
-- Priority: CRITICAL
-
-**Loyalty Points Redemption:**
-- What's not tested: Insufficient balance handling, negative values, overflow, concurrent redemptions
-- Files: `/home/kali/Desktop/TOAST/src/backend/IntegrationService.Core/Services/LoyaltyService.cs`
-- Risk: Points could be double-redeemed or negative balances allowed
-- Priority: HIGH
-
-**Database Connection Failures:**
-- What's not tested: Connection timeouts, SQL Server down, network partition during transaction
-- Files: `/home/kali/Desktop/TOAST/src/backend/IntegrationService.Infrastructure/Data/PosRepository.cs`
-- Risk: Unhandled exceptions could crash API; transactions left open
-- Priority: MEDIUM
+**Hardcoded Demo Menu Data:**
+- Issue: Fallback demo menu defined inline in component and used when API fails
+- Files: `src/web/app/menu/page.tsx` (lines 152-196): `DEMO_MENU` constant
+- Impact: Production code contains test data, misleads users when backend unavailable
+- Fix approach: Remove demo data or move to proper test fixtures
 
 ## Known Bugs
 
-**Double-Loading in MenuScreen:**
-- Symptoms: Final loading state may not clear correctly when switching categories
-- Files: `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/screens/MenuScreen.tsx` (line 61)
-- Trigger: Rapidly switch categories; setLoading(false) called twice in race condition
-- Workaround: Refresh/reload screen to reset state
+**Login Screen TODO Unimplemented:**
+- Symptoms: Mobile login screen doesn't perform actual authentication
+- Files: `src/mobile/ImidusCustomerApp/src/screens/LoginScreen.tsx` (line 23): `// TODO: Implement actual login logic`
+- Trigger: Any login attempt on mobile app
+- Workaround: None - automatically navigates after timeout
+- Impact: Mobile app cannot authenticate users
 
-**Cart Persistence After Failed Login:**
-- Symptoms: Cart items remain visible after logout but cannot be purchased
+**Tax Calculation Hardcoded:**
+- Symptoms: Tax rate hardcoded to 12% in multiple places without configuration
 - Files:
-  - `/home/kali/Desktop/TOAST/src/web/context/CartContext.tsx` (persists to localStorage)
-  - `/home/kali/Desktop/TOAST/src/web/context/AuthContext.tsx` (logout clears auth but not cart)
-- Trigger: Login fails; cart remains from previous session
-- Workaround: Manually clear cart or reload page
+  - `src/web/components/OrderPanel.tsx` (line 79): `(total * 1.12)`
+  - `src/web/app/cart/page.tsx` (line 32): `tax = subtotal * 0.12`
+  - `src/mobile/ImidusCustomerApp/src/store/cartSlice.ts` (line 98): `state.tax = state.subtotal * 0.12`
+- Trigger: Any order calculation
+- Impact: Incorrect tax when jurisdiction changes, no way to adjust without code changes
+
+**Missing Input Validation:**
+- Symptoms: Forms accept invalid input without feedback
+- Files:
+  - `src/web/app/login/page.tsx`: Email field has `type="email"` only, no validation library
+  - `src/web/app/register/page.tsx`: Same issue - password strength not validated
+  - `src/mobile/ImidusCustomerApp/src/screens/LoginScreen.tsx`: Email/password validation missing
+- Trigger: Submit invalid data in login/register forms
+- Impact: Backend receives garbage data, users get confusing server errors
+
+**Unhandled Promise Rejections:**
+- Symptoms: Catch blocks swallow errors without proper logging or recovery
+- Files:
+  - `src/web/context/AuthContext.tsx` (lines 67-72, 92-94): Generic error messages, no specific error handling
+  - `src/web/app/menu/page.tsx` (line 25): `.catch()` blocks use generic fallback
+- Impact: Difficult to debug issues in production, users see unclear error messages
+
+## Security Considerations
+
+**Sensitive Auth Token in LocalStorage (No Encryption):**
+- Risk: JWT tokens stored in plaintext localStorage; vulnerable to XSS attacks
+- Files:
+  - `src/web/context/AuthContext.tsx` (lines 62-63, 84-85): `localStorage.setItem("auth_token", res.token)`
+  - `src/web/lib/api.ts` (line 5): `localStorage.getItem("auth_token")`
+- Current mitigation: None
+- Recommendations:
+  - Use httpOnly cookies with secure flag (requires backend support)
+  - If localStorage required, implement XSS protection headers (CSP)
+  - Add token expiration and refresh logic
+
+**User Data Persisted to LocalStorage Unencrypted:**
+- Risk: Full user profile (email, name, points) stored plaintext in localStorage
+- Files: `src/web/context/AuthContext.tsx` (lines 63, 85): `localStorage.setItem("auth_user", JSON.stringify(res.profile))`
+- Current mitigation: None
+- Recommendations:
+  - Store minimal data locally (ID only)
+  - Fetch user profile from server on app load
+  - Never persist sensitive PII to localStorage
+
+**Cart Persisted Across Users:**
+- Risk: Cart stored in localStorage with no user isolation; shared devices leak previous customer's orders
+- Files: `src/web/context/CartContext.tsx` (lines 29-30, 34)
+- Current mitigation: None
+- Recommendations:
+  - Clear cart on logout
+  - Use session-scoped storage or server-side cart
+  - Add explicit user confirmation on login if cart exists
+
+**Missing CSRF Protection:**
+- Risk: No CSRF tokens in POST requests (create order, login, register)
+- Files:
+  - `src/web/lib/api.ts`: `apiClient()` doesn't include CSRF token
+  - Forms in login/register/cart pages send POST without protection
+- Current mitigation: None
+- Recommendations:
+  - Implement CSRF token validation with backend
+  - Use SameSite cookie attribute (requires backend)
+
+**No API Rate Limiting on Client:**
+- Risk: Frontend doesn't throttle requests; could hammer backend during demo mode
+- Files: Multiple API calls without request debouncing or rate limiting
+- Current mitigation: None
+- Recommendations:
+  - Implement request throttling for sensitive endpoints
+  - Add exponential backoff for failed requests
+
+**Environment Variables Exposed to Client:**
+- Risk: If `NEXT_PUBLIC_API_URL` is set to local dev URL in production, internal infrastructure exposed
+- Files: `src/web/lib/api.ts` (line 1): `process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"`
+- Current mitigation: Fallback to localhost (somewhat safe but confusing)
+- Recommendations:
+  - Never use localhost in production
+  - Validate environment is properly set during build
+  - Consider API gateway/proxy instead
+
+## Performance Bottlenecks
+
+**Inefficient Menu Rendering:**
+- Problem: Menu page renders entire category and items on every render, no memoization
+- Files: `src/web/app/menu/page.tsx`: ProductGrid maps all items for every category switch
+- Cause: Missing React.memo on menu item components
+- Improvement path:
+  - Wrap item components in React.memo
+  - Memoize category filtering logic
+  - Implement virtual scrolling if categories are large
+
+**Cart Recalculation on Every State Change:**
+- Problem: Total/count recalculated for entire cart on each item modification
+- Files: `src/web/context/CartContext.tsx` (lines 65-66): Runs reduce on every item update
+- Cause: Totals computed in component render, not memoized
+- Improvement path:
+  - Use useMemo for total/count calculations
+  - Move calculation to reducer (already done in mobile cartSlice, web should match)
+
+**Large Page Components (200+ lines):**
+- Problem: Cart, menu, orders pages are monolithic with inline styles and logic
+- Files:
+  - `src/web/app/cart/page.tsx` (233 lines)
+  - `src/web/app/orders/page.tsx` (203 lines)
+  - `src/web/app/menu/page.tsx` (196 lines)
+- Cause: No component extraction, mixed concerns
+- Improvement path:
+  - Extract cart item row into CartItemRow component
+  - Extract order summary into OrderSummary component
+  - Extract menu category selector into CategoryNav component
+  - Target: <100 lines per page component
+
+**API Calls Without Caching:**
+- Problem: Menu fetched every time menu page loads, no caching or SWR
+- Files: `src/web/app/menu/page.tsx` (useEffect): `MenuAPI.getFullMenu()` runs on every mount
+- Cause: No query caching library (React Query, SWR)
+- Improvement path:
+  - Integrate React Query or SWR
+  - Cache menu data for session
+  - Invalidate cache on logout
+
+## Fragile Areas
+
+**Auth Context Initialization Race Condition:**
+- Files: `src/web/context/AuthContext.tsx` (lines 43-51)
+- Why fragile: `useEffect` reads localStorage but doesn't check if app is hydrated; SSR/client mismatch possible
+- Safe modification:
+  - Add explicit hydration check
+  - Set `isLoading` state initially to prevent component render before hydration
+  - Consider moving to layout component after auth check
+- Test coverage: No tests for auth flow
+
+**Order History with Any Types:**
+- Files: `src/web/app/orders/page.tsx` (lines 13-15, 127)
+- Why fragile: Uses `any` for orders and details; accessing `order.details.map()` could fail if API response structure changes
+- Safe modification:
+  - Define OrderResponse interface with required fields
+  - Add optional chaining for safety
+  - Test with mock API that returns different structures
+- Test coverage: No integration tests for orders page
+
+**Inline Date Formatting:**
+- Files: `src/web/app/orders/page.tsx` (line 88): `.toLocaleDateString()`, (line 122): `.toLocaleString()`
+- Why fragile: Browser locale affects output; no timezone handling, breaks in different regions
+- Safe modification:
+  - Extract to utility function with consistent locale/timezone
+  - Test with different Intl.DateTimeFormat options
+- Test coverage: No tests
+
+**Naive JSON.parse on LocalStorage:**
+- Files: `src/web/context/CartContext.tsx` (line 30): `JSON.parse(saved)`
+- Why fragile: Throws if stored data is corrupted, no try/catch
+- Safe modification:
+  - Wrap in try/catch, clear cart if parse fails
+  - Add version field to stored data for migrations
+- Test coverage: No error case testing
+
+## Missing Critical Features
+
+**No Order Management After Creation:**
+- Problem: Users can't modify or cancel orders after submission
+- Blocks: Restaurant operations (no order rejection), customer satisfaction (no edits)
+
+**No Payment Integration:**
+- Problem: "Pay & Finalize" button disabled with no payment processing
+- Files: `src/web/components/OrderPanel.tsx` (line 88): Button exists but doesn't call payment API
+- Blocks: Cannot actually process payments, entire checkout flow incomplete
+
+**No Inventory/Stock Management:**
+- Problem: Menu items show no stock status, no handling for out-of-stock items
+- Files: `src/web/app/menu/page.tsx` (line 125): Green dot hardcoded, not real stock
+- Blocks: Cannot prevent overselling, no real-time availability
+
+**Mobile Authentication Not Connected:**
+- Problem: Mobile LoginScreen has TODO, register flow never implemented
+- Files: `src/mobile/ImidusCustomerApp/src/screens/LoginScreen.tsx` (line 23)
+- Blocks: Mobile app cannot authenticate users at all
+
+**No Loyalty Points Integration on Mobile:**
+- Problem: Mobile app has Redux store for auth but no loyalty balance fetching or redemption
+- Blocks: Mobile customers cannot see/use earned points
+
+**Missing Error Boundaries:**
+- Problem: App crashes propagate to user if components error; no error recovery UI
+- Files: No error boundaries in `src/web/app/layout.tsx`
+- Blocks: Component errors take down entire page
+
+## Test Coverage Gaps
+
+**No Unit Tests for Contexts:**
+- What's not tested: AuthContext login/register logic, CartContext item operations
+- Files: `src/web/context/AuthContext.tsx`, `src/web/context/CartContext.tsx`
+- Risk: Auth flow breaks silently, cart calculation errors undetected
+- Priority: HIGH - Core functionality
+
+**No Integration Tests for API Calls:**
+- What's not tested: Menu API data transformation, error handling, loading states
+- Files: `src/web/app/menu/page.tsx`, `src/web/app/orders/page.tsx`
+- Risk: API contract changes break UI, error states never triggered
+- Priority: HIGH - Data flow
+
+**No E2E Tests for Critical Flows:**
+- What's not tested: Login → Menu → Add to Cart → Checkout
+- Files: No E2E test files
+- Risk: Complete user flows fail unnoticed
+- Priority: CRITICAL - User experience
+
+**Mobile App Has Single Test File:**
+- What's not tested: Redux state, screen navigation, API integration
+- Files: `src/mobile/ImidusCustomerApp/__tests__/App.test.tsx` (likely skeleton)
+- Risk: Mobile app quality cannot be verified
+- Priority: CRITICAL - Platform
+
+**No Type Tests:**
+- What's not tested: API response types match interface definitions
+- Files: No `.test-d.ts` or similar
+- Risk: Type mismatches surface at runtime
+- Priority: MEDIUM
+
+**No Snapshot Tests for UI:**
+- What's not tested: Component rendering output, styling changes
+- Files: No `__snapshots__` directories
+- Risk: Visual regressions undetected
+- Priority: MEDIUM
+
+## Scaling Limits
+
+**LocalStorage Cart Limit:**
+- Current capacity: ~5-10MB depending on browser
+- Limit: With complex cart items (descriptions, images), ~50-100 items max
+- Scaling path: Move to server-side session cart
+
+**No Pagination on Order History:**
+- Current capacity: ~100 orders in memory before performance degrades
+- Limit: Customers with 500+ orders see lag
+- Scaling path: Implement pagination in OrderHistoryPage and API
+
+**Menu Data Not Paginated:**
+- Current capacity: Menu API returns all items at once
+- Limit: 1000+ items cause rendering lag
+- Scaling path:
+  - Paginate API response
+  - Implement virtual scrolling
+  - Cache categories separately
+
+**Analytics Dashboard Hard-codes 7-day Trend:**
+- Current capacity: Fixed 7 data points
+- Limit: No historical analysis beyond 7 days
+- Scaling path: Make date range configurable, paginate results
+
+## Dependencies at Risk
+
+**React 19.2.3 Early Adoption:**
+- Risk: Bleeding-edge version, limited real-world testing
+- Impact: Breaking changes in patch releases, third-party library incompatibilities
+- Migration plan: Pin to stable 18.x until React 19 proven in production
+
+**Next.js 16.1.6 (Very Recent):**
+- Risk: Latest major version, potential edge cases
+- Impact: Turbopack bundler less battle-tested than Webpack
+- Migration plan: Monitor release notes, maintain compatibility layer
+
+**No Testing Library Installed:**
+- Risk: Cannot run any tests without setting up vitest/jest
+- Impact: Testing roadmap blocked
+- Migration plan: Install @testing-library/react, vitest, MSW for API mocking
+
+**No Input Validation Library:**
+- Risk: Manual validation scattered or missing
+- Impact: Security gaps, poor UX
+- Migration plan: Install Zod or similar for form validation
 
 ---
 

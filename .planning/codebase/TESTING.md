@@ -5,347 +5,245 @@
 ## Test Framework
 
 **Runner:**
-- Mobile: Jest v29.6.3
-- Web: No test runner configured (ESLint only)
-- Config: `jest.config.js` (mobile only)
+- **Web (Next.js):** No test runner configured - ESLint only
+- **Mobile (React Native):** Jest v29.6.3
+  - Config: `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/jest.config.js`
+  - Preset: `react-native`
+- **Backend (.NET Core):** xUnit (v2 implied by `[Fact]` and `[Theory]` attributes)
+  - Test project: `/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests`
 
 **Assertion Library:**
-- Jest built-in matchers (mobile)
-- React Test Renderer for React component testing
+- Mobile/React Native: Jest built-in assertions
+- Backend: xUnit assertions (e.g., `Assert.Equal()`, `Assert.Single()`, `Assert.True()`)
 
 **Run Commands:**
 ```bash
-# Mobile (React Native)
-npm test                # Run all tests (Jest)
-npm run android         # Run on Android simulator
-npm run ios             # Run on iOS simulator
-npm start               # Start Metro bundler
+# Mobile app
+npm test                # Run all tests
+npm run test -- --watch # Watch mode
 
-# Web
-npm run lint            # ESLint only (no test runner)
-npm run build           # Type check via Next.js build
-npm run dev             # Development mode
+# Backend (.NET)
+dotnet test             # Run all tests
+
+# Web (Next.js)
+npm run lint            # ESLint only, no unit tests
 ```
 
 ## Test File Organization
 
 **Location:**
-- Mobile: Co-located in `__tests__/` directory at project root
-  - Test file: `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/__tests__/App.test.tsx`
-- Web: No test files present in codebase; testing not configured
+- Mobile: `__tests__/` directory co-located with source: `/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/__tests__/App.test.tsx`
+- Backend: Separate project `/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/`
+- Web: None detected
 
 **Naming:**
-- Pattern: `[ComponentName].test.tsx` or `[ComponentName].spec.tsx`
-- Mobile uses `.test.tsx` convention
+- Mobile: `*.test.tsx` suffix
+- Backend: `*Tests.cs` suffix (e.g., `OrderServiceTests.cs`, `LoyaltyServiceTests.cs`)
 
 **Structure:**
 ```
-src/mobile/ImidusCustomerApp/
+mobile/ImidusCustomerApp/
 ├── __tests__/
 │   └── App.test.tsx
 ├── src/
 │   ├── screens/
-│   ├── components/
 │   ├── store/
-│   ├── api/
-│   └── config/
-├── App.tsx
-├── jest.config.js
-└── package.json
+│   └── api/
+
+backend/
+├── IntegrationService.Tests/
+│   ├── OrderServiceTests.cs
+│   ├── LoyaltyServiceTests.cs
+│   └── UnitTest1.cs
 ```
 
 ## Test Structure
 
-**Suite Organization:**
-```typescript
-/**
- * @format
- */
+**Suite Organization (Backend - xUnit):**
+```csharp
+// From OrderServiceTests.cs
+public class OrderServiceTests
+{
+    private readonly Mock<IOrderRepository> _orderRepoMock = new();
+    private readonly Mock<IMenuRepository> _menuRepoMock = new();
+    private readonly OrderService _orderService;
 
+    // Constructor: One-time setup for all tests
+    public OrderServiceTests()
+    {
+        var mockTransaction = new Mock<IDbTransaction>();
+        _orderRepoMock.Setup(r => r.BeginTransactionAsync()).ReturnsAsync(mockTransaction.Object);
+
+        _orderService = new OrderService(
+            _orderRepoMock.Object,
+            _menuRepoMock.Object,
+            // ... other dependencies
+        );
+    }
+
+    [Fact]
+    public async Task PlaceOrder_ShouldCalculateTaxesCorrectly()
+    {
+        // Arrange
+        var taxRates = new Dictionary<string, decimal> { /* ... */ };
+
+        // Act
+        var result = await _orderService.PlaceOrderAsync(request);
+
+        // Assert
+        Assert.Equal(10.0m, result.SubTotal);
+    }
+}
+```
+
+**Patterns:**
+- Setup: Constructor runs once per test class; individual test setup via Arrange section
+- Teardown: No explicit teardown observed; mocks are reset between tests
+- Assertion: Direct assertions with descriptive messages via xUnit
+
+**Mobile Test (Jest - React Native):**
+```typescript
+// From App.test.tsx
 import 'react-native';
 import React from 'react';
 import App from '../App';
-
-// Jest globals import
-import {it} from '@jest/globals';
-
-// Test renderer import
+import { it } from '@jest/globals';
 import renderer from 'react-test-renderer';
 
-// Single test case
 it('renders correctly', () => {
   renderer.create(<App />);
 });
 ```
 
-**Patterns:**
-- JSDoc format comment (`@format`) at file start
-- Clear import organization: native, external, relative, types
-- Minimal test setup (no describe blocks in current codebase)
-- Single assertion per test (currently)
-- Uses React Test Renderer for snapshot/render testing
-
 ## Mocking
 
-**Framework:** Jest built-in mocking system
+**Framework:**
+- Backend: Moq (xUnit/C#)
+- Mobile/Jest: Jest mocking (not explicitly used in sample, but available)
 
-**Patterns:**
-Not extensively documented in codebase. However, based on structure:
-- Network calls would use `jest.mock()` for API client
-- Redux state would use `useSelector` mocking or store injection in tests
-- Component dependencies would use Jest mocks
+**Patterns (Backend - Moq):**
+```csharp
+// From OrderServiceTests.cs
+private readonly Mock<IOrderRepository> _orderRepoMock = new();
+
+// Setup mock behavior
+_orderRepoMock.Setup(r => r.GetTaxRatesAsync())
+    .ReturnsAsync(taxRates);
+
+_paymentServiceMock
+    .Setup(p => p.ProcessPaymentAsync(It.IsAny<decimal>(), It.IsAny<string>()))
+    .ReturnsAsync((true, "AUTH123", (string?)null));
+
+// Verify mock was called
+_loyaltyServiceMock.Verify(l => l.RedeemPointsAsync(1, 500), Times.Once);
+```
 
 **What to Mock:**
-- External API calls (`apiClient`)
-- Redux store and selectors
-- Navigation stack (for React Native screens)
-- Third-party services (NotificationService, etc.)
+- All repository dependencies
+- External service dependencies (payment, loyalty, notification)
+- Database transactions
 
 **What NOT to Mock:**
-- React Native components (use React Test Renderer)
-- Custom hooks with business logic
-- State management reducers (test in isolation or integration)
-- Utility functions (test directly)
-
-**Partial Mocking Example (based on codebase patterns):**
-```typescript
-// Would mock API but keep component logic
-jest.mock('../api/apiClient');
-
-// Would preserve NotificationService tests
-jest.mock('../services/NotificationService', () => ({
-  notify: jest.fn(),
-}));
-```
+- Service under test itself
+- Domain models/entities
+- Utility functions
+- Business logic calculations
 
 ## Fixtures and Factories
 
 **Test Data:**
-- Mobile uses inline mock data for Redux state
-- Web uses inline demo data (DEMO_MENU constant in menu/page.tsx)
+```csharp
+// From OrderServiceTests.cs - Inline model creation
+var item = new OrderModels.MenuItem
+{
+    ItemID = 1,
+    IName = "Test Coffee",
+    ApplyGST = true,
+    ApplyPST = true,
+    AvailableSizes = new List<OrderModels.AvailableSize>
+    {
+        new OrderModels.AvailableSize { SizeID = 1, SizeName = "Large", UnitPrice = 10.0m }
+    }
+};
+
+var request = new OrderModels.OrderRequest
+{
+    Items = new List<OrderModels.OrderItemRequest>
+    {
+        new OrderModels.OrderItemRequest { ItemId = 1, SizeId = 1, Quantity = 1 }
+    },
+    TipAmount = 2.0m,
+    PaymentToken = "tok_123"
+};
+```
 
 **Location:**
-- No centralized fixture directory observed
-- Mock data defined in test files or component files as needed
-- Example: `DEMO_MENU` array in `/home/kali/Desktop/TOAST/src/web/app/menu/page.tsx` (lines 152-196)
-
-**Pattern (from Web):**
-```typescript
-const DEMO_MENU: MenuCategory[] = [
-  {
-    categoryId: 1,
-    categoryName: "Burgers",
-    isActive: true,
-    itemCount: 3,
-    items: [
-      {
-        menuItemId: 1,
-        itemName: "Classic Smash Burger",
-        price: 14.99,
-        categoryId: 1,
-        categoryName: "Burgers",
-        isAvailable: true,
-        description: "Double smash patty, American cheese, pickles, special sauce",
-      },
-      // more items...
-    ],
-  },
-  // more categories...
-];
-```
+- Inline in test methods (current pattern)
+- No separate fixtures directory or factory classes detected
 
 ## Coverage
 
-**Requirements:** Not explicitly enforced (no coverage configuration in jest.config.js)
+**Requirements:** Not enforced - no coverage reporting configured
 
-**Minimum Recommendation:** 80% based on user's global testing rules
-
-**Current State:**
-- Mobile: 1 basic test (App.test.tsx renders the App component)
-- Web: No tests configured
-
-**View Coverage:**
-```bash
-# Mobile - requires coverage configuration
-npm test -- --coverage
-
-# Not available for web (no test runner)
-```
+**View Coverage:** Not configured for any test runner
 
 ## Test Types
 
 **Unit Tests:**
-- Scope: Individual functions, reducers, hooks
-- Approach: Test in isolation with mocked dependencies
-- Example structure: Test Redux reducers (cartSlice.ts, authSlice.ts) to verify state mutations
-- Current coverage: Minimal (only App render test exists)
+- Scope: Individual service methods in isolation with mocked dependencies
+- Approach: xUnit `[Fact]` tests with Arrange-Act-Assert pattern
+- Example: `PlaceOrder_ShouldCalculateTaxesCorrectly()` tests tax calculation logic with mocked repositories
 
 **Integration Tests:**
-- Scope: API calls + UI updates, Redux actions + component rendering
-- Approach: Mock API, render components with real Redux store
-- Example: Test MenuScreen loads categories, selects first, then loads items
-- Current coverage: Not present
+- Not detected; backend tests use mocks rather than real database
 
 **E2E Tests:**
-- Framework: Not configured (Playwright not in dependencies)
-- Approach: Would test full user flows (login → menu → cart → checkout)
-- Current coverage: Not implemented
+- Not detected; no Playwright or Cypress configuration found
 
 ## Common Patterns
 
 **Async Testing:**
-- Mobile would use Jest async/await pattern
-- Redux Toolkit supports async thunks but not currently used
-- API calls in components use `.then().catch().finally()` pattern
+```csharp
+// From OrderServiceTests.cs
+[Fact]
+public async Task PlaceOrder_ShouldCalculateTaxesCorrectly()
+{
+    // Use async/await naturally
+    var result = await _orderService.PlaceOrderAsync(request);
 
-**Pattern (Component-level):**
-```typescript
-// MenuScreen.tsx pattern (not in test, but async handling in component)
-useEffect(() => {
-  fetchCategories();
-}, []);
-
-const fetchCategories = async () => {
-  try {
-    const response = await apiClient.get('/Menu/categories');
-    setCategories(response.data);
-    if (response.data.length > 0) {
-      setSelectedCategory(response.data[0].categoryId);
-    }
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-  } finally {
-    if (!selectedCategory) setLoading(false);
-  }
-};
-
-// Test would mock apiClient.get and verify setCategories was called
+    // Assertions directly on result
+    Assert.Equal(10.0m, result.SubTotal);
+}
 ```
 
 **Error Testing:**
-- Current pattern uses try-catch blocks
-- Would test error paths by mocking API to reject
-- Example test:
-```typescript
-it('handles API errors gracefully', async () => {
-  // Mock apiClient.get to reject
-  jest.mock('../api/apiClient', () => ({
-    get: jest.fn().mockRejectedValueOnce(new Error('Network error')),
-  }));
+- Not explicitly demonstrated in samples
+- Likely follows Arrange-Act-Assert with expected error state in result object:
+  ```csharp
+  // Pattern inferred from OrderService.cs
+  if (menuItem == null)
+    return new OrderModels.OrderResult
+    {
+      Success = false,
+      ErrorMessage = $"Item {itemRequest.ItemId} not found"
+    };
+  ```
 
-  // Render component
-  const component = renderer.create(<MenuScreen />);
-
-  // Wait for async operations
-  // Verify error state or user message displayed
-});
-```
-
-## Debugging Tips
-
-**Jest Configuration (Mobile):**
-```javascript
-// jest.config.js
-module.exports = {
-  preset: 'react-native',
-};
-```
-- Uses React Native preset with sensible defaults
-- Automatically handles React Native module transformations
-- Can be extended with additional config as needed
-
-**Running Single Test:**
-```bash
-npm test -- App.test.tsx
-npm test -- --testNamePattern="renders correctly"
-```
-
-**Watch Mode:**
-```bash
-npm test -- --watch
-```
-
-**Debug Mode:**
-```bash
-node --inspect-brk node_modules/.bin/jest --runInBand
-```
+**Naming Convention:**
+- Test method names follow pattern: `[MethodUnderTest]_[Scenario]_[ExpectedBehavior]`
+- Examples:
+  - `PlaceOrder_ShouldCalculateTaxesCorrectly()`
+  - `PlaceOrder_ShouldApplyLoyaltyDiscount()`
 
 ## Coverage Gaps
 
-**Critical Test Needs:**
-1. **Redux Slices** (`src/mobile/ImidusCustomerApp/src/store/cartSlice.ts`, `authSlice.ts`)
-   - No unit tests for reducers
-   - Risk: State mutations break silently
-   - Action items: Test `addToCart`, `removeFromCart`, `updateQuantity`, `clearCart`
+**Not Tested:**
+- Web (Next.js) - No unit tests configured
+- Mobile - Only one smoke test (`App.test.tsx` renders without crashing)
+- Database integration - All tests use mocks
+- API endpoint behavior - No E2E tests
 
-2. **Context Hooks** (`src/web/context/CartContext.tsx`, `AuthContext.tsx`)
-   - No integration tests
-   - Risk: State management bugs in production
-   - Action items: Test `addItem`, `removeItem`, `updateQty`, `login`, `register`
-
-3. **API Client** (`src/web/lib/api.ts`, `src/mobile/ImidusCustomerApp/src/api/apiClient.ts`)
-   - No mocked API tests
-   - Risk: Network failures not caught before deployment
-   - Action items: Mock fetch/axios, test error handling
-
-4. **Pages/Screens** (`src/web/app/menu/page.tsx`, `src/mobile/ImidusCustomerApp/src/screens/MenuScreen.tsx`)
-   - No render or integration tests
-   - Risk: UI breaks undetected
-   - Action items: Mock API, render component, verify UI state transitions
-
-5. **Web App** (`src/web/`)
-   - No test infrastructure (Jest/Vitest not installed)
-   - Risk: Type errors only caught at build time
-   - Action items: Install test runner, configure test environment
-
-## Recommended Setup
-
-**For Web:**
-```bash
-npm install --save-dev vitest @testing-library/react @testing-library/jest-dom
-```
-
-Add `vitest.config.ts`:
-```typescript
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-import path from 'path';
-
-export default defineConfig({
-  plugins: [react()],
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './'),
-    },
-  },
-});
-```
-
-**For Mobile (Enhance):**
-```bash
-npm install --save-dev @testing-library/react-native
-```
-
-Extend `jest.config.js`:
-```javascript
-module.exports = {
-  preset: 'react-native',
-  setupFilesAfterEnv: ['<rootDir>/__tests__/setup.js'],
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-  },
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/**/index.ts',
-  ],
-};
-```
+**Risk:** Logic errors in untested layers could reach production undetected
 
 ---
 

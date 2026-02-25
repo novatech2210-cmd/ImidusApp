@@ -4,149 +4,199 @@
 
 ## APIs & External Services
 
-**Payment Processing:**
-- Square (payment API) - Referenced in order DTOs
-  - SDK/Client: Built-in via opaqueDataValue/opaqueDataDescriptor in `src/web/lib/api.ts` CreateOrderRequest
-  - Auth: Token-based via request body (opaque data token)
+**Restaurant POS System (Legacy):**
+- INI POS / TPPro database - Direct integration with legacy restaurant management system
+  - Connection: SQL Server 2005+ compatible
+  - Integration method: Dapper ORM with parameterized SQL queries
+  - Location: `src/backend/IntegrationService.Infrastructure/Data/PosRepository.cs`
+  - Purpose: Menu management, orders, inventory, customer data, loyalty points, prepaid cards
 
-**Delivery & Order Management:**
-- IMIDUS Technologies - Custom integration backend
-  - API Base URLs configured per environment
-  - Web: `NEXT_PUBLIC_API_URL` environment variable
-  - Mobile: `src/mobile/ImidusCustomerApp/src/config/environment.ts`
+**Payment Processing (Placeholder):**
+- Authorize.net (mentioned in UI as "PCI-Compliant sandbox")
+  - Status: Not yet implemented (using mock service)
+  - Mock service: `src/backend/IntegrationService.Infrastructure/Services/MockPaymentService.cs`
+  - Interface: `src/backend/IntegrationService.Core/Interfaces/IPaymentService.cs`
+  - Expected integration: Card tokenization and payment authorization
+  - Authorization format: Returns mock auth codes (e.g., `MOCK_AUTH_XXXXXXXX`)
 
-**Firebase Services:**
-- Firebase Admin SDK (version 2.4.0)
-  - Location: `src/backend/IntegrationService.Infrastructure/` (declared in IntegrationService.Infrastructure.csproj)
-  - Purpose: Likely for authentication, notifications, or real-time database (implementation details in Infrastructure layer)
+**Notifications (Placeholder):**
+- Firebase Cloud Messaging (FCM) - Referenced in csproj but not implemented
+  - Package: FirebaseAdmin 2.4.0 (included in `IntegrationService.Infrastructure.csproj`)
+  - Status: Mock service only
+  - Mock service: `src/backend/IntegrationService.Infrastructure/Services/MockNotificationService.cs`
+  - Interface: `src/backend/IntegrationService.Core/Interfaces/INotificationService.cs`
+  - Capability: Customer notifications, broadcast messages
 
 ## Data Storage
 
 **Databases:**
-- SQL Server
-  - Type: Microsoft SQL Server (on-premises or LocalDB)
-  - Connection: `PosDatabase` connection string in appsettings
-  - Development connection: `Server=(localdb)\\mssqllocaldb;Database=TPPro;Trusted_Connection=True;`
-  - Production connection: Environment-configured via `PosDatabase` in appsettings
-  - Client: Dapper ORM with Microsoft.Data.SqlClient
-  - Repository: `src/backend/IntegrationService.Infrastructure/Data/PosRepository.cs`
-  - Database name (development): `INI_Restaurant` per appsettings.Development.json
+- Microsoft SQL Server 2022 Express
+  - Connection: `ConnectionStrings__PosDatabase`
+  - Client: Microsoft.Data.SqlClient 6.1.4
+  - ORM: Dapper 2.1.66 (lightweight query mapper)
+  - Database name: `INI_Restaurant` (default, configurable)
+  - Location: Docker container `imidus-sqlserver` (dev environment)
+  - Port: 1433 (internal in Docker, mapped to 1433 on host)
 
 **File Storage:**
-- Local filesystem only (images served via imageUrl field in MenuItem)
-- No external storage provider detected (S3, Azure Blob, etc.)
+- Local filesystem only
+  - Menu item images: Paths stored in `tblItem.ImageFilePath` (referenced but not served)
+  - Category images: Paths stored in `tblCategory.CategoryImageFilePath`
+  - Storage location: Not externalized (no S3, Azure Blob, etc.)
 
 **Caching:**
-- None detected in current stack
-- In-memory only via ASP.NET Core defaults
+- None configured
+  - Frontend uses browser localStorage for auth tokens only
+  - Backend has no Redis or distributed cache configured
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- Custom JWT-based authentication
-  - Implementation: `src/web/context/AuthContext.tsx` (web) and `src/mobile/ImidusCustomerApp/src/store/authSlice.ts` (mobile)
-  - Approach: Bearer token stored in `localStorage` (web) and Redux store (mobile)
-  - JWT support: Microsoft.AspNetCore.Authentication.JwtBearer 8.0.0 in backend
-  - Token format: Standard Bearer token in Authorization header
+- Custom JWT-based implementation
+  - Tokens stored in client localStorage (`auth_token`)
+  - Token validation: `Microsoft.AspNetCore.Authentication.JwtBearer` 8.0.0
+  - Token usage: Bearer token in `Authorization` header
+  - Excluded from token injection: `/auth/login`, `/auth/register` endpoints
+  - Implementation: `src/web/lib/api.ts` (frontend token injection)
 
-**Auth Endpoints:**
-- `/auth/login` - Login endpoint (excluded from requiring token in `src/web/lib/api.ts`)
-- `/auth/register` - Registration endpoint (excluded from requiring token)
-- Tokens persisted in localStorage (web) after login
-
-**Firebase Auth Integration:**
-- Firebase Admin SDK available in infrastructure layer (FirebaseAdmin 2.4.0)
-- Specific integration pattern not yet implemented or marked for future use
+**Session Management:**
+- Client-side only
+  - Web: localStorage with key `auth_token`
+  - Mobile: Redux auth store
+  - No server-side session store
 
 ## Monitoring & Observability
 
+**Logging:**
+- Serilog 8.0.1 (structured logging)
+  - Configuration: Console output in development
+  - Logger setup: `src/backend/IntegrationService.API/Program.cs`
+  - Log level: Information and above for business events
+  - Mobile: console.log statements (development only)
+  - Web: No centralized logging configured
+
 **Error Tracking:**
-- None detected in current implementation
-- Error handling via standard .NET exception mechanisms
+- None configured (no Sentry, Application Insights, etc.)
+  - Error responses passed to client as JSON
+  - Client displays error messages from API response
 
-**Logs:**
-- Serilog (ASP.NET Core 8.0.1)
-  - Configuration: `src/backend/IntegrationService.API/Program.cs`
-  - Output: Console logging (WriteTo.Console())
-  - Log level: Information by default, Warning for ASP.NET Core infrastructure
-  - Structured logging enabled
-  - Mobile: console logging (React Native standard)
-
-**Request/Response Tracking:**
-- None detected (no correlation IDs, tracing headers visible in current config)
+**Health Check:**
+- HTTP health endpoint: `GET /health`
+  - Location: `src/backend/IntegrationService.API/Controllers/HealthController.cs`
+  - Docker health check: Curl-based check on health endpoint
+  - Check interval: 30s, timeout: 10s, retries: 3
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- Web: Node.js hosting (Next.js application) or static export
-- Mobile: iOS App Store and Google Play Store
-- Backend: ASP.NET Core hosting (cloud or self-hosted)
-- Docker support: `src/backend/IntegrationService.API/Dockerfile` exists
+- Docker containers (development)
+  - API container: `imidus-api` on port 5004 (mapped to 8080 internal)
+  - SQL Server container: `imidus-sqlserver` on port 1433
+  - Orchestration: docker-compose.yml in `src/backend/`
 
-**Deployment Database:**
-- Docker Compose configuration: `src/backend/docker-compose.yml` for local development
-- Migration/setup scripts: `src/backend/Database/init-db.sh` (SQL Server initialization)
+**Production Endpoints:**
+- Web API: Mobile app configured for ngrok tunnel (temporary test endpoint)
+  - Dev: `http://10.0.2.2:5004/api` (Android emulator)
+  - Prod: `https://eda7-105-184-203-108.ngrok-free.app/api` (test deployment)
+  - Web: `http://localhost:5000/api` (fallback from NEXT_PUBLIC_API_URL)
 
 **CI Pipeline:**
-- GitHub Actions configured: `.github/workflows/` directory exists
-- No detailed workflow analysis available without reading workflow files
+- None detected (GitHub Actions, GitLab CI, Jenkins not configured)
+
+**Dockerfile:**
+- Multi-stage build in `src/backend/IntegrationService.API/Dockerfile`
+  - Build stage: mcr.microsoft.com/dotnet/sdk:8.0
+  - Runtime stage: mcr.microsoft.com/dotnet/aspnet:8.0
+  - Non-root user: `appuser` (security best practice)
+  - Health check: HTTP curl to port 8080/health
+  - Entrypoint: `dotnet IntegrationService.API.dll`
 
 ## Environment Configuration
 
-**Required env vars:**
+**Required env vars (Backend):**
+- `ConnectionStrings__PosDatabase` - SQL Server connection string
+  - Format: `Server=sqlserver;Database=INI_Restaurant;User Id=sa;Password=...;TrustServerCertificate=True;`
+  - Required: Yes
+- `ASPNETCORE_ENVIRONMENT` - Development, Staging, Production
 
-**Web Frontend (`src/web/`):**
-- `NEXT_PUBLIC_API_URL` - Backend API base URL (default: `http://localhost:5000/api`)
+**Required env vars (Web):**
+- `NEXT_PUBLIC_API_URL` - API base URL (default: `http://localhost:5000/api`)
 
-**Mobile App (`src/mobile/ImidusCustomerApp/`):**
-- Hardcoded in `src/config/environment.ts`:
-  - Development: `http://10.0.2.2:5004/api` (Android emulator)
-  - Production: `https://eda7-105-184-203-108.ngrok-free.app/api`
-
-**Backend API (`src/backend/IntegrationService.API/`):**
-- `ConnectionStrings:PosDatabase` - SQL Server connection string
-- `ConnectionStrings:TPPro` - Alternative database name (dev config shows "TPPro")
-- Logging configuration via appsettings.json
+**Required env vars (Mobile):**
+- Not environment-based; hardcoded in `src/mobile/ImidusCustomerApp/src/config/environment.ts`
+- Dev: `http://10.0.2.2:5004/api`
+- Prod: ngrok tunnel URL
 
 **Secrets location:**
-- `.env` files (pattern: `.env*` in .gitignore)
-- appsettings.Development.json (contains localhost credentials - development only)
-- Production credentials managed via hosting platform environment variables
+- Docker: Environment section of docker-compose.yml (SA_PASSWORD: YourStrong@Passw0rd)
+  - NOTE: Hardcoded in development; should use Docker secrets in production
+- Web/Mobile: .env files (gitignored)
 
 ## Webhooks & Callbacks
 
 **Incoming:**
-- Order webhook handling: Not yet implemented
-- Birthday reward notifications: `BirthdayRewardBackgroundService` runs scheduled checks (`src/backend/IntegrationService.API/BackgroundServices/`)
+- None configured (no external services calling back into TOAST)
 
 **Outgoing:**
-- None detected in current implementation
-- Notification service is mocked: `MockNotificationService` in `src/backend/IntegrationService.Infrastructure/Services/MockNotificationService.cs`
+- None configured (no calls to external webhooks)
 
-## API Structure
+## Background Services
 
-**REST Endpoints:**
+**Birthday Reward Service:**
+- Location: `src/backend/IntegrationService.API/BackgroundServices/BirthdayRewardBackgroundService.cs`
+- Type: Hosted service (IHostedService)
+- Purpose: Send loyalty rewards on customer birthdays
+- Trigger: Scheduled at application startup
+- Dependency: BirthdayRewardService (core service)
 
-**Menu API:**
-- `GET /Menu/full` - Retrieve full menu with items
-- `GET /Menu/tax-rate` - Get current tax rate
+## API Endpoints
 
-**Order API:**
-- `POST /orders` - Create new order (requires idempotency key)
-- `GET /orders/{id}/status` - Get order status
-- `GET /orders/history/{customerId}` - Get customer order history
+**Menu Management:**
+- `GET /Menu/full` - Fetch complete menu with categories and items
+- `GET /Menu/tax-rate` - Get current tax configuration
 
-**Analytics API:**
-- `GET /Analytics/summary` - Analytics summary (query params: start, end)
-- `GET /Analytics/top-products` - Top products report
-- `GET /Analytics/sales-trend` - Sales trend data
+**Orders:**
+- `POST /orders` - Create new order
+  - Idempotency key: `X-Idempotency-Key` header
+  - Payload: Items array with menuItemId, sizeId, quantity, pricing
+- `GET /orders/{id}/status` - Check order status
+- `GET /orders/history/{customerId}` - Customer order history
 
-**Loyalty API:**
-- `GET /loyalty/balance` - Get customer loyalty balance
+**Loyalty:**
+- `GET /loyalty/balance` - Get customer loyalty points balance
 
-**CORS:**
-- Enabled for `http://localhost:3000` (web frontend)
-- Configured in `src/backend/IntegrationService.API/Program.cs`
+**Analytics (Web Dashboard):**
+- `GET /Analytics/summary` - Sales summary by date range
+- `GET /Analytics/top-products` - Top selling items
+- `GET /Analytics/sales-trend` - Sales trend over time
+
+## CORS Policy
+
+**Current Configuration:**
+- Origin: `http://localhost:3000` (development only)
+- Methods: Any (AllowAnyMethod)
+- Headers: Any (AllowAnyHeader)
+- Credentials: Not explicitly configured
+
+**File:** `src/backend/IntegrationService.API/Program.cs` (lines 40-49)
+
+## Data Flow
+
+**Order Processing Workflow:**
+1. Customer selects items from menu (fetched from `/Menu/full`)
+2. Frontend sends `POST /orders` with items, customer info, and payment token
+3. Backend creates entry in `tblSales` with `TransType=2` (Open order)
+4. Items inserted into `tblPendingOrders` (active kitchen items)
+5. Payment processed via `IPaymentService` (currently mock)
+6. Loyalty points calculated and awarded via `ILoyaltyService`
+7. Order completion: Move items from `tblPendingOrders` to `tblSalesDetail`
+8. Update `tblSales` TransType to 1 (Completed)
+9. Notification sent via `INotificationService` (currently mock via Serilog)
+
+**Loyalty Points Workflow:**
+- Earned: On order completion (points_earned = order_subtotal * 0.1)
+- Used: Customer can redeem for discounts or rewards
+- Tracked in `tblPointsDetail` ledger with transaction date
 
 ---
 
