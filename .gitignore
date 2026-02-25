@@ -39,3 +39,10 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# GSD Planning (local-only)
+.planning/
+
+# Database backups (large binary files)
+src/backend/db/backups/*.bak
+src/backend/db/backups/*.BAK
