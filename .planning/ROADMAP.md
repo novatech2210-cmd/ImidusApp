@@ -1,0 +1,167 @@
+# Roadmap: IMIDUS Customer Mobile Apps (Milestone 2)
+
+## Overview
+
+This roadmap delivers iOS and Android customer mobile apps that integrate with the legacy INI POS system via direct SQL Server database access. The journey progresses from database connectivity, through menu browsing, order creation with full POS ticket lifecycle, payment processing via Authorize.net, loyalty points, push notifications, to final mobile app wiring and CI/CD delivery. Each phase builds on the previous, with Phase 1 establishing the foundation that all subsequent work depends on.
+
+## Phases
+
+**Phase Numbering:**
+- Integer phases (1, 2, 3): Planned milestone work
+- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [x] **Phase 1: Foundation** - Database connectivity, API health check, and entity alignment to POS schema
+- [ ] **Phase 2: Menu System** - Menu API from POS tables and mobile menu display
+- [ ] **Phase 3: Order Creation** - Full order flow with POS ticket lifecycle (tblSales, tblPendingOrders)
+- [ ] **Phase 4: Payments** - Authorize.net tokenization and POS payment posting
+- [ ] **Phase 5: Loyalty** - Customer lookup, points balance, earn/redeem via stored procedure
+- [ ] **Phase 6: Push Notifications** - FCM integration for transactional notifications
+- [ ] **Phase 7: Mobile App Wiring** - Auth, cart, checkout, order tracking, and branding
+- [ ] **Phase 8: CI/CD & Delivery** - GitHub Actions pipelines and AWS S3 artifact upload
+
+## Phase Details
+
+### Phase 1: Foundation
+**Goal**: API connects to restored POS database with correctly aligned entity models
+**Depends on**: Nothing (first phase)
+**Requirements**: INFRA-01, INFRA-02, INFRA-03, INFRA-04
+**Success Criteria** (what must be TRUE):
+  1. API health check endpoint returns 200 with database connectivity confirmed
+  2. Entity models match actual POS schema column names and types (verified via successful queries)
+  3. Backend-only database exists for CustomerProfile, idempotency keys, and audit logs
+  4. Connection string configured and API can execute SELECT queries against tblItem
+**Plans**: 2 plans
+
+Plans:
+- [x] 01-01-PLAN.md - Database restore, Docker config, IntegrationService DB setup
+- [x] 01-02-PLAN.md - Entity alignment, health check middleware, integration tests
+
+### Phase 2: Menu System
+**Goal**: Users can browse the restaurant menu with real POS data organized by category
+**Depends on**: Phase 1
+**Requirements**: MENU-01, MENU-02, MENU-03, MOB-02
+**Success Criteria** (what must be TRUE):
+  1. Menu API returns items from tblItem joined with tblAvailableSize and tblCategory
+  2. Each menu item includes tax flags (ApplyGST, ApplyPST) and kitchen routing (KitchenB, KitchenF, Bar)
+  3. Mobile app displays menu items organized by category with prices
+  4. Item availability reflects OnlineItem flag from POS
+**Plans**: TBD
+
+Plans:
+- [ ] 02-01: Menu API endpoint implementation
+- [ ] 02-02: Mobile menu screen integration
+
+### Phase 3: Order Creation
+**Goal**: Users can place orders that create valid POS tickets following the complete ticket lifecycle
+**Depends on**: Phase 2
+**Requirements**: ORD-01, ORD-02, ORD-03, ORD-04, ORD-05, ORD-06, ORD-07, ORD-08, ORD-09
+**Success Criteria** (what must be TRUE):
+  1. Order creates ticket in tblSales with TransType=2 (Open) and correct totals
+  2. Order items insert to tblPendingOrders with all 20+ columns populated correctly
+  3. Duplicate order creation prevented via idempotency key check
+  4. Tax calculated from tblMisc GST/PST rates based on item ApplyGST/ApplyPST flags
+  5. Online order registered in tblOnlineOrderCompany and linked via tblSalesOfOnlineOrders
+**Plans**: TBD
+
+Plans:
+- [ ] 03-01: Order creation with tblSales and tblPendingOrders
+- [ ] 03-02: Idempotency, concurrency, and online order registration
+- [ ] 03-03: Tax calculation and DailyOrderNumber
+
+### Phase 4: Payments
+**Goal**: Users can pay for orders with credit card, with payment posted to POS and order completed
+**Depends on**: Phase 3
+**Requirements**: PAY-01, PAY-02, PAY-03, PAY-04
+**Success Criteria** (what must be TRUE):
+  1. Authorize.net tokenization captures card without storing card data on server
+  2. Payment posts to tblPayment with card encrypted via dbo.EncryptString()
+  3. Order completion updates TransType from 2 to 1 and moves items to tblSalesDetail
+  4. Partial payment amounts supported (multiple payments per ticket)
+**Plans**: TBD
+
+Plans:
+- [ ] 04-01: Authorize.net integration
+- [ ] 04-02: POS payment posting and order completion
+
+### Phase 5: Loyalty
+**Goal**: Users can view and use loyalty points across in-store and online channels
+**Depends on**: Phase 4
+**Requirements**: LOY-01, LOY-02, LOY-03, LOY-04, MOB-05
+**Success Criteria** (what must be TRUE):
+  1. Customer lookup by phone or email returns profile from tblCustomer
+  2. Points balance displayed from tblCustomer.EarnedPoints
+  3. Points earned on purchase via sp_InsertUpdateRewardPointsDetail stored procedure
+  4. Points redemption deducts from balance and reflects in order total
+**Plans**: TBD
+
+Plans:
+- [ ] 05-01: Customer lookup and points balance API
+- [ ] 05-02: Points earn/redeem integration
+
+### Phase 6: Push Notifications
+**Goal**: Users receive transactional push notifications for order events
+**Depends on**: Phase 3 (needs order creation for triggers)
+**Requirements**: NOTIF-01, NOTIF-02, NOTIF-03
+**Success Criteria** (what must be TRUE):
+  1. FCM integration configured with Imidus notification channel
+  2. Order confirmation push sent immediately on successful order creation
+  3. Order ready push sent when kitchen marks order complete (status change detected)
+**Plans**: TBD
+
+Plans:
+- [ ] 06-01: FCM integration and order confirmation push
+- [ ] 06-02: Order ready notification trigger
+
+### Phase 7: Mobile App Wiring
+**Goal**: Mobile app delivers complete end-to-end user experience with branding
+**Depends on**: Phase 2, Phase 4, Phase 5, Phase 6
+**Requirements**: MOB-01, MOB-03, MOB-04, MOB-06
+**Success Criteria** (what must be TRUE):
+  1. User can register and log in via backend authentication
+  2. Cart and checkout flow creates real orders in POS
+  3. Order tracking screen shows current order status (TransType-based)
+  4. Imidus branding applied (theme colors, components from branding package)
+**Plans**: TBD
+
+Plans:
+- [ ] 07-01: Authentication integration
+- [ ] 07-02: Cart and checkout flow
+- [ ] 07-03: Order tracking and branding
+
+### Phase 8: CI/CD & Delivery
+**Goal**: Automated builds deployed and artifacts uploaded to AWS S3
+**Depends on**: Phase 7
+**Requirements**: DEL-01, DEL-02, DEL-03, DEL-04
+**Success Criteria** (what must be TRUE):
+  1. Android APK built successfully via GitHub Actions CI pipeline
+  2. iOS TestFlight build created via GitHub Actions on macos runner
+  3. Test API environment deployed and accessible
+  4. All artifacts uploaded to AWS S3 (s3://inirestaurant/novatech/)
+**Plans**: TBD
+
+Plans:
+- [ ] 08-01: GitHub Actions CI pipelines (Android and iOS)
+- [ ] 08-02: Test environment deployment and S3 upload
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Foundation | 2/2 | Complete | 2026-02-25 |
+| 2. Menu System | 0/2 | Not started | - |
+| 3. Order Creation | 0/3 | Not started | - |
+| 4. Payments | 0/2 | Not started | - |
+| 5. Loyalty | 0/2 | Not started | - |
+| 6. Push Notifications | 0/2 | Not started | - |
+| 7. Mobile App Wiring | 0/3 | Not started | - |
+| 8. CI/CD & Delivery | 0/2 | Not started | - |
+
+---
+*Roadmap created: 2026-02-25*
+*Depth: Standard (8 phases)*
+*Coverage: 29/29 requirements mapped*
