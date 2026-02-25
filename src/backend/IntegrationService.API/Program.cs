@@ -6,6 +6,9 @@ using IntegrationService.API.BackgroundServices;
 using Serilog;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +51,32 @@ builder.Services.AddCors(options =>
         });
 });
 
+// Health Checks - configure for both databases with graceful handling of missing connection strings
+var posConnectionString = builder.Configuration.GetConnectionString("PosDatabase");
+var backendConnectionString = builder.Configuration.GetConnectionString("BackendDatabase");
+
+var healthChecks = builder.Services.AddHealthChecks();
+
+if (!string.IsNullOrEmpty(posConnectionString))
+{
+    healthChecks.AddSqlServer(
+        connectionString: posConnectionString,
+        healthQuery: "SELECT 1",
+        name: "pos-database",
+        failureStatus: HealthStatus.Unhealthy,
+        tags: new[] { "db", "sql", "pos" });
+}
+
+if (!string.IsNullOrEmpty(backendConnectionString))
+{
+    healthChecks.AddSqlServer(
+        connectionString: backendConnectionString,
+        healthQuery: "SELECT 1",
+        name: "backend-database",
+        failureStatus: HealthStatus.Unhealthy,
+        tags: new[] { "db", "sql", "backend" });
+}
+
 // Repository Registrations
 builder.Services.AddScoped<IPosRepository, PosRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -74,5 +103,11 @@ app.UseCors("AllowWebApp");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+// Health check endpoint with detailed JSON response
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
 app.Run();
