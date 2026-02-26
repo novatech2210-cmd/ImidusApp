@@ -22,14 +22,14 @@ Requirements for Milestone 2 delivery. Each maps to roadmap phases.
 
 ### Orders
 
-- [ ] **ORD-01**: Order creates ticket in tblSales with TransType=2 (Open)
-- [ ] **ORD-02**: Order items insert to tblPendingOrders with all required columns
+- [x] **ORD-01**: Order creates ticket in tblSales with TransType=2 (Open)
+- [x] **ORD-02**: Order items insert to tblPendingOrders with all required columns
 - [x] **ORD-03**: Idempotency key prevents duplicate order creation
 - [x] **ORD-04**: Concurrency check validates ticket state before writes
-- [ ] **ORD-05**: Completed order moves items from tblPendingOrders to tblSalesDetail
+- [x] **ORD-05**: Completed order moves items from tblPendingOrders to tblSalesDetail
 - [x] **ORD-06**: Online order registered in tblOnlineOrderCompany and linked via tblSalesOfOnlineOrders
 - [ ] **ORD-07**: DailyOrderNumber incremented via tblOrderNumber (resets daily, no POS conflicts)
-- [ ] **ORD-08**: Tax calculated from tblMisc GST/PST rates based on item ApplyGST/ApplyPST flags
+- [x] **ORD-08**: Tax calculated from tblMisc GST/PST rates based on item ApplyGST/ApplyPST flags
 - [ ] **ORD-09**: Dedicated online CashierID, StationID, and TableID configured for online order identification
 
 ### Payments
@@ -121,14 +121,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MENU-02 | Phase 2 | Complete |
 | MENU-03 | Phase 2 | Complete |
 | MOB-02 | Phase 2 | Complete |
-| ORD-01 | Phase 3 | Pending |
-| ORD-02 | Phase 3 | Pending |
+| ORD-01 | Phase 3 | Complete |
+| ORD-02 | Phase 3 | Complete |
 | ORD-03 | Phase 3 | Complete |
 | ORD-04 | Phase 3 | Complete |
-| ORD-05 | Phase 3 | Pending |
+| ORD-05 | Phase 3 | Complete |
 | ORD-06 | Phase 3 | Complete |
 | ORD-07 | Phase 3 | Pending |
-| ORD-08 | Phase 3 | Pending |
+| ORD-08 | Phase 3 | Complete |
 | ORD-09 | Phase 3 | Pending |
 | PAY-01 | Phase 4 | Pending |
 | PAY-02 | Phase 4 | Pending |

@@ -154,7 +154,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-02-25 |
 | 2. Menu System | 0/2 | Not started | - |
-| 3. Order Creation | 0/3 | Not started | - |
+| 3. Order Creation | 2/3 | In Progress|  |
 | 4. Payments | 0/2 | Not started | - |
 | 5. Loyalty | 0/2 | Not started | - |
 | 6. Push Notifications | 0/2 | Not started | - |
