@@ -98,6 +98,7 @@ namespace IntegrationService.Core.Interfaces
         Task<int> InsertCustomerAsync(PosCustomer customer);
         Task<bool> UpdateLoyaltyPointsAsync(int customerId, int points, IDbTransaction? transaction = null);
         Task InsertPointsDetailAsync(PointsDetail detail, IDbTransaction? transaction = null);
+        Task<IEnumerable<PointsDetail>> GetLoyaltyHistoryAsync(int customerId, int limit);
 
         // =============================================================================
         // GIFT CARDS

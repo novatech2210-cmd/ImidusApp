@@ -1512,6 +1512,25 @@ namespace IntegrationService.Infrastructure.Data
             }
         }
 
+        /// <summary>
+        /// Get loyalty transaction history for a customer
+        /// Returns recent earn/redeem activity from tblRewardPointsDetail
+        /// </summary>
+        public async Task<IEnumerable<PointsDetail>> GetLoyaltyHistoryAsync(int customerId, int limit)
+        {
+            const string sql = @"
+                SELECT TOP (@Limit)
+                    ID, SalesID, CustomerID, PointUsed, PointSaved, TransactionDate
+                FROM dbo.tblRewardPointsDetail
+                WHERE CustomerID = @CustomerId
+                ORDER BY TransactionDate DESC";
+
+            using var connection = CreateConnection();
+            return await connection.QueryAsync<PointsDetail>(
+                sql,
+                new { CustomerId = customerId, Limit = limit });
+        }
+
         #endregion
 
         // =============================================================================

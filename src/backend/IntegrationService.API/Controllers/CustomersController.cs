@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using IntegrationService.Core.Domain.Entities;
@@ -98,6 +100,56 @@ namespace IntegrationService.API.Controllers
                 return StatusCode(500, new { error = "An error occurred while looking up customer" });
             }
         }
+
+        /// <summary>
+        /// Get loyalty transaction history for a customer.
+        /// Returns recent earn/redeem activity from tblRewardPointsDetail.
+        /// </summary>
+        /// <param name="customerId">Customer ID</param>
+        /// <param name="limit">Maximum number of transactions to return (default 50)</param>
+        /// <returns>List of loyalty transactions</returns>
+        [HttpGet("{customerId}/loyalty-history")]
+        public async Task<IActionResult> GetLoyaltyHistory([FromRoute] int customerId, [FromQuery] int limit = 50)
+        {
+            // Validate customerId
+            if (customerId <= 0)
+            {
+                return BadRequest(new { error = "Customer ID must be greater than 0" });
+            }
+
+            try
+            {
+                // Verify customer exists
+                var customer = await _repository.GetCustomerByIdAsync(customerId);
+                if (customer == null)
+                {
+                    return NotFound(new { error = $"Customer with ID {customerId} not found" });
+                }
+
+                // Get loyalty history
+                _logger.LogInformation("Fetching loyalty history for customer {CustomerId}, limit {Limit}", customerId, limit);
+                var pointsDetails = await _repository.GetLoyaltyHistoryAsync(customerId, limit);
+
+                // Transform to presentation model
+                var transactions = pointsDetails.Select(detail => new LoyaltyTransactionDto
+                {
+                    Id = detail.ID,
+                    Date = detail.TransactionDate.ToString("o"), // ISO 8601 format
+                    Type = detail.PointSaved > 0 ? "earn" : "redeem",
+                    Points = detail.PointSaved > 0 ? detail.PointSaved : detail.PointUsed,
+                    Description = detail.PointSaved > 0
+                        ? $"Earned on order #{detail.SalesID}"
+                        : $"Redeemed on order #{detail.SalesID}"
+                }).ToList();
+
+                return Ok(transactions);
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "Database error fetching loyalty history for customer {CustomerId}", customerId);
+                return StatusCode(500, new { error = "An error occurred while fetching loyalty history" });
+            }
+        }
     }
 
     /// <summary>
@@ -110,5 +162,17 @@ namespace IntegrationService.API.Controllers
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public int EarnedPoints { get; set; }
+    }
+
+    /// <summary>
+    /// Loyalty transaction DTO for API response
+    /// </summary>
+    public class LoyaltyTransactionDto
+    {
+        public int Id { get; set; }
+        public string Date { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;  // "earn" or "redeem"
+        public int Points { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 }
