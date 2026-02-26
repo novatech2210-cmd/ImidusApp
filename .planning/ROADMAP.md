@@ -13,8 +13,8 @@ This roadmap delivers iOS and Android customer mobile apps that integrate with t
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Database connectivity, API health check, and entity alignment to POS schema
-- [ ] **Phase 2: Menu System** - Menu API from POS tables and mobile menu display
-- [ ] **Phase 3: Order Creation** - Full order flow with POS ticket lifecycle (tblSales, tblPendingOrders)
+- [x] **Phase 2: Menu System** - Menu API from POS tables and mobile menu display
+- [x] **Phase 3: Order Creation** - Full order flow with POS ticket lifecycle (tblSales, tblPendingOrders)
 - [ ] **Phase 4: Payments** - Authorize.net tokenization and POS payment posting
 - [ ] **Phase 5: Loyalty** - Customer lookup, points balance, earn/redeem via stored procedure
 - [ ] **Phase 6: Push Notifications** - FCM integration for transactional notifications
@@ -50,8 +50,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md - Backend menu API endpoints (categories, items by category, filtering by OnlineItem)
-- [ ] 02-02-PLAN.md - Mobile menu UI (skeleton loading, caching, category tabs, bottom sheet, pull-to-refresh)
+- [x] 02-01-PLAN.md - Backend menu API endpoints (categories, items by category, filtering by OnlineItem)
+- [x] 02-02-PLAN.md - Mobile menu UI (skeleton loading, caching, category tabs, bottom sheet, pull-to-refresh)
 
 ### Phase 3: Order Creation
 **Goal**: Users can place orders that create valid POS tickets following the complete ticket lifecycle
@@ -66,9 +66,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md - Refactor order service to TransType=2 workflow with tblPendingOrders and tax precision
-- [ ] 03-02-PLAN.md - Idempotency middleware, concurrency control, and online order registration
-- [ ] 03-03-PLAN.md - Atomic DailyOrderNumber generation and online order configuration
+- [x] 03-01-PLAN.md - Refactor order service to TransType=2 workflow with tblPendingOrders and tax precision
+- [x] 03-02-PLAN.md - Idempotency middleware, concurrency control, and online order registration
+- [x] 03-03-PLAN.md - Atomic DailyOrderNumber generation and online order configuration
 
 ### Phase 4: Payments
 **Goal**: Users can pay for orders with credit card, with payment posted to POS and order completed

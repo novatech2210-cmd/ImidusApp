@@ -28,9 +28,9 @@ Requirements for Milestone 2 delivery. Each maps to roadmap phases.
 - [x] **ORD-04**: Concurrency check validates ticket state before writes
 - [x] **ORD-05**: Completed order moves items from tblPendingOrders to tblSalesDetail
 - [x] **ORD-06**: Online order registered in tblOnlineOrderCompany and linked via tblSalesOfOnlineOrders
-- [ ] **ORD-07**: DailyOrderNumber incremented via tblOrderNumber (resets daily, no POS conflicts)
+- [x] **ORD-07**: DailyOrderNumber incremented via tblOrderNumber (resets daily, no POS conflicts)
 - [x] **ORD-08**: Tax calculated from tblMisc GST/PST rates based on item ApplyGST/ApplyPST flags
-- [ ] **ORD-09**: Dedicated online CashierID, StationID, and TableID configured for online order identification
+- [x] **ORD-09**: Dedicated online CashierID, StationID, and TableID configured for online order identification
 
 ### Payments
 
@@ -127,9 +127,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ORD-04 | Phase 3 | Complete |
 | ORD-05 | Phase 3 | Complete |
 | ORD-06 | Phase 3 | Complete |
-| ORD-07 | Phase 3 | Pending |
+| ORD-07 | Phase 3 | Complete |
 | ORD-08 | Phase 3 | Complete |
-| ORD-09 | Phase 3 | Pending |
+| ORD-09 | Phase 3 | Complete |
 | PAY-01 | Phase 4 | Pending |
 | PAY-02 | Phase 4 | Pending |
 | PAY-03 | Phase 4 | Pending |
