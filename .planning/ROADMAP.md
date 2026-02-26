@@ -63,12 +63,12 @@ Plans:
   3. Duplicate order creation prevented via idempotency key check
   4. Tax calculated from tblMisc GST/PST rates based on item ApplyGST/ApplyPST flags
   5. Online order registered in tblOnlineOrderCompany and linked via tblSalesOfOnlineOrders
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: Order creation with tblSales and tblPendingOrders
-- [ ] 03-02: Idempotency, concurrency, and online order registration
-- [ ] 03-03: Tax calculation and DailyOrderNumber
+- [ ] 03-01-PLAN.md - Refactor order service to TransType=2 workflow with tblPendingOrders and tax precision
+- [ ] 03-02-PLAN.md - Idempotency middleware, concurrency control, and online order registration
+- [ ] 03-03-PLAN.md - Atomic DailyOrderNumber generation and online order configuration
 
 ### Phase 4: Payments
 **Goal**: Users can pay for orders with credit card, with payment posted to POS and order completed
