@@ -1,19 +1,27 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MenuItem } from '../types/menu.types';
+import { MenuItem, MenuItemSize } from '../types/menu.types';
+import { Colors } from '../theme/colors';
 
 interface Props {
   item: MenuItem;
   onPress: () => void;
 }
 
+const getPriceDisplay = (sizes: MenuItemSize[]): string => {
+  if (sizes.length === 0) return '';
+
+  const prices = sizes.map(s => s.price).sort((a, b) => a - b);
+  const lowest = prices[0];
+
+  if (prices.length === 1 || prices[0] === prices[prices.length - 1]) {
+    return `$${lowest.toFixed(2)}`;
+  }
+  return `from $${lowest.toFixed(2)}`; // Per CONTEXT.md requirement
+};
+
 export const MenuItemCard: React.FC<Props> = ({item, onPress}) => {
-  // Get price range for display
-  const prices = item.sizes.map(s => s.price).sort((a, b) => a - b);
-  const priceDisplay =
-    prices.length === 1
-      ? `$${prices[0].toFixed(2)}`
-      : `$${prices[0].toFixed(2)} - $${prices[prices.length - 1].toFixed(2)}`;
+  const priceDisplay = getPriceDisplay(item.sizes);
 
   // Check if any size is in stock
   const anyInStock = item.sizes.some(s => s.inStock);
@@ -88,7 +96,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: Colors.primary, // Brand Gold (#D4AF37)
   },
   sizesAvailable: {
     fontSize: 12,

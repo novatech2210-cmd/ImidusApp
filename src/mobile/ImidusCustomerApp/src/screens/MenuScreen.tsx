@@ -1,128 +1,292 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
-    ActivityIndicator,
-    FlatList,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  FlatList,
+  RefreshControl,
+  SafeAreaView,
+  SectionList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { useSelector } from 'react-redux';
-import apiClient from '../api/apiClient';
+import { useSelector, useDispatch } from 'react-redux';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { MenuItemCard } from '../components/MenuItemCard';
+import { SkeletonMenuList } from '../components/SkeletonMenuCard';
+import { ItemDetailSheet } from '../components/ItemDetailSheet';
+import { fetchMenuWithCache, getCachedMenu, fetchItemsByCategory } from '../services/menuService';
+import { addToCart } from '../store/cartSlice';
 import { RootState } from '../store';
 import { Colors } from '../theme/colors';
 import { Spacing } from '../theme/spacing';
-import { Category, MenuItem } from '../types/menu.types';
+import { Category, MenuItem, MenuItemSize } from '../types/menu.types';
+
+interface MenuSection {
+  title: string;
+  categoryId: number;
+  data: MenuItem[];
+}
 
 const MenuScreen = ({navigation}: any) => {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [items, setItems] = useState<MenuItem[]>([]);
+  const [sections, setSections] = useState<MenuSection[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+
+  const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const categoryListRef = useRef<FlatList>(null);
+  const sectionListRef = useRef<SectionList>(null);
+
   useEffect(() => {
-    fetchCategories();
+    loadMenu();
   }, []);
 
-  useEffect(() => {
-    if (selectedCategory) {
-      fetchItems(selectedCategory);
-    }
-  }, [selectedCategory]);
-
-  const fetchCategories = async () => {
-    try {
-      const response = await apiClient.get('/Menu/categories');
-      setCategories(response.data);
-      if (response.data.length > 0) {
-        setSelectedCategory(response.data[0].categoryId);
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    } finally {
-      if (!selectedCategory) setLoading(false);
-    }
-  };
-
-  const fetchItems = async (categoryId: number) => {
+  const loadMenu = async () => {
     setLoading(true);
+    setError(null);
+
+    // 1. Load cached data first (instant display)
+    const cached = await getCachedMenu();
+    if (cached && cached.categories.length > 0) {
+      setCategories(cached.categories);
+      if (!selectedCategoryId && cached.categories.length > 0) {
+        setSelectedCategoryId(cached.categories[0].categoryId);
+      }
+      // Load items from cache for all categories
+      await loadAllCategoryItems(cached.categories);
+      setLoading(false);
+    }
+
+    // 2. Fetch fresh data in background
     try {
-      const response = await apiClient.get(`/Menu/items/${categoryId}`);
-      setItems(response.data);
-    } catch (error) {
-      console.error('Error fetching items:', error);
+      const freshCategories = await fetchMenuWithCache();
+      setCategories(freshCategories);
+
+      // Load items for all categories
+      if (freshCategories.length > 0) {
+        if (!selectedCategoryId) {
+          setSelectedCategoryId(freshCategories[0].categoryId);
+        }
+        await loadAllCategoryItems(freshCategories);
+      }
+    } catch (err) {
+      if (!cached) {
+        setError("Couldn't load menu. Tap to try again.");
+      }
     } finally {
       setLoading(false);
     }
-    setLoading(false);
   };
 
-  const renderCategory = ({item}: {item: any}) => (
+  const loadAllCategoryItems = async (categoriesToLoad: Category[]) => {
+    try {
+      // Load items for all categories in parallel
+      const itemPromises = categoriesToLoad.map(async (cat) => {
+        try {
+          const items = await fetchItemsByCategory(cat.categoryId);
+          return {
+            title: cat.name,
+            categoryId: cat.categoryId,
+            data: items
+          };
+        } catch (error) {
+          console.error(`Error loading items for category ${cat.categoryId}:`, error);
+          return {
+            title: cat.name,
+            categoryId: cat.categoryId,
+            data: []
+          };
+        }
+      });
+
+      const loadedSections = await Promise.all(itemPromises);
+      // Filter out empty categories
+      const nonEmptySections = loadedSections.filter(s => s.data.length > 0);
+      setSections(nonEmptySections);
+    } catch (error) {
+      console.error('Error loading category items:', error);
+    }
+  };
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await loadMenu();
+    setRefreshing(false);
+  }, []);
+
+  const handleCategoryPress = (categoryId: number, index: number) => {
+    setSelectedCategoryId(categoryId);
+
+    // Find section index and scroll to it
+    const sectionIndex = sections.findIndex(s => s.categoryId === categoryId);
+    if (sectionIndex !== -1 && sectionListRef.current) {
+      sectionListRef.current.scrollToLocation({
+        sectionIndex,
+        itemIndex: 0,
+        animated: true,
+        viewPosition: 0
+      });
+    }
+
+    // Scroll category tab into view
+    if (categoryListRef.current) {
+      categoryListRef.current.scrollToIndex({
+        index,
+        animated: true,
+        viewPosition: 0.5
+      });
+    }
+  };
+
+  const handleItemPress = (item: MenuItem) => {
+    setSelectedItem(item);
+    bottomSheetRef.current?.expand();
+  };
+
+  const handleAddToCart = (item: MenuItem, size: MenuItemSize, quantity: number) => {
+    dispatch(addToCart({
+      menuItemId: item.itemId,
+      sizeId: size.sizeId,
+      name: item.name,
+      sizeName: size.sizeName,
+      price: size.price,
+      quantity,
+      imageUrl: item.imageUrl
+    }));
+  };
+
+  const renderCategory = ({item, index}: {item: Category; index: number}) => (
     <TouchableOpacity
       style={[
         styles.categoryButton,
-        selectedCategory === item.categoryId && styles.selectedCategoryButton,
+        selectedCategoryId === item.categoryId && styles.selectedCategoryButton,
       ]}
-      onPress={() => setSelectedCategory(item.categoryId)}>
+      onPress={() => handleCategoryPress(item.categoryId, index)}>
       <Text
         style={[
           styles.categoryText,
-          selectedCategory === item.categoryId && styles.selectedCategoryText,
+          selectedCategoryId === item.categoryId && styles.selectedCategoryText,
         ]}>
         {item.name}
       </Text>
     </TouchableOpacity>
   );
 
+  const renderSectionHeader = ({section}: {section: MenuSection}) => (
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionTitle}>{section.title}</Text>
+    </View>
+  );
+
   const renderItem = ({item}: {item: MenuItem}) => (
     <MenuItemCard
       item={item}
-      onPress={() => navigation.navigate('ItemDetail', {item})}
+      onPress={() => handleItemPress(item)}
     />
   );
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <Text style={styles.profileText}>Profile</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Menu</Text>
-        <TouchableOpacity
-          style={styles.cartButton}
-          onPress={() => navigation.navigate('Cart')}>
-          <Text style={styles.cartButtonText}>Cart ({cartCount})</Text>
-        </TouchableOpacity>
-      </View>
+  const onViewableItemsChanged = useRef(({viewableItems}: any) => {
+    if (viewableItems.length > 0) {
+      const firstVisibleSection = viewableItems[0].section;
+      if (firstVisibleSection) {
+        setSelectedCategoryId(firstVisibleSection.categoryId);
 
-      <View style={styles.categoryListContainer}>
-        <FlatList
-          data={categories}
-          renderItem={renderCategory}
-          keyExtractor={item => item.categoryId.toString()}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoryList}
-        />
-      </View>
+        // Scroll category tab into view
+        const categoryIndex = categories.findIndex(c => c.categoryId === firstVisibleSection.categoryId);
+        if (categoryIndex !== -1 && categoryListRef.current) {
+          categoryListRef.current.scrollToIndex({
+            index: categoryIndex,
+            animated: true,
+            viewPosition: 0.5
+          });
+        }
+      }
+    }
+  }).current;
 
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
+  const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
+
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={loadMenu}>
+            <Text style={styles.retryButtonText}>Try Again</Text>
+          </TouchableOpacity>
         </View>
-      ) : (
-        <FlatList
-          data={items}
-          renderItem={renderItem}
-          keyExtractor={item => item.itemId.toString()}
-          contentContainerStyle={styles.itemList}
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <GestureHandlerRootView style={{flex: 1}}>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            <Text style={styles.profileText}>Profile</Text>
+          </TouchableOpacity>
+          <Text style={styles.title}>Menu</Text>
+          <TouchableOpacity
+            style={styles.cartButton}
+            onPress={() => navigation.navigate('Cart')}>
+            <Text style={styles.cartButtonText}>Cart ({cartCount})</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.categoryListContainer}>
+          <FlatList
+            ref={categoryListRef}
+            data={categories}
+            renderItem={renderCategory}
+            keyExtractor={item => item.categoryId.toString()}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoryList}
+            onScrollToIndexFailed={() => {}}
+          />
+        </View>
+
+        {loading && sections.length === 0 ? (
+          <SkeletonMenuList />
+        ) : (
+          <SectionList
+            ref={sectionListRef}
+            sections={sections}
+            renderItem={renderItem}
+            renderSectionHeader={renderSectionHeader}
+            keyExtractor={(item) => item.itemId.toString()}
+            contentContainerStyle={styles.itemList}
+            stickySectionHeadersEnabled={false}
+            onViewableItemsChanged={onViewableItemsChanged}
+            viewabilityConfig={viewConfigRef}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={Colors.primary}
+                colors={[Colors.primary]}
+              />
+            }
+            onScrollToLocationFailed={() => {}}
+          />
+        )}
+
+        <ItemDetailSheet
+          item={selectedItem}
+          bottomSheetRef={bottomSheetRef}
+          onAddToCart={handleAddToCart}
         />
-      )}
-    </SafeAreaView>
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 };
 
@@ -183,59 +347,41 @@ const styles = StyleSheet.create({
   selectedCategoryText: {
     color: Colors.white,
   },
-  itemList: {
-    padding: Spacing.md,
+  sectionHeader: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    backgroundColor: Colors.background,
   },
-  itemCard: {
-    flexDirection: 'row',
-    backgroundColor: Colors.white,
-    borderRadius: 12,
-    padding: Spacing.md,
-    marginBottom: Spacing.md,
-    shadowColor: Colors.black,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  itemInfo: {
-    flex: 1,
-    marginRight: Spacing.md,
-  },
-  itemName: {
-    fontSize: 18,
+  sectionTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
-    color: Colors.secondary,
-    marginBottom: Spacing.xs,
+    color: Colors.text,
   },
-  itemDescription: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    marginBottom: Spacing.sm,
+  itemList: {
+    paddingVertical: Spacing.sm,
   },
-  itemPrice: {
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.xl,
+  },
+  errorText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: Colors.primary,
+    color: Colors.error,
+    textAlign: 'center',
+    marginBottom: Spacing.md,
   },
-  itemImage: {
-    width: 80,
-    height: 80,
+  retryButton: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
     borderRadius: 8,
   },
-  placeholderImage: {
-    backgroundColor: Colors.lightGray,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderText: {
-    color: Colors.textSecondary,
-    fontSize: 12,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  retryButtonText: {
+    color: Colors.white,
+    fontWeight: '600',
+    fontSize: 16,
   },
 });
 
