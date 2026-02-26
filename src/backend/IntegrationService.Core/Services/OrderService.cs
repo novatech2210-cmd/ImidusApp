@@ -1,5 +1,7 @@
 using IntegrationService.Core.Domain.Entities;
 using IntegrationService.Core.Interfaces;
+using IntegrationService.Core.Configuration;
+using Microsoft.Extensions.Options;
 using OrderModels = IntegrationService.Core.Models;
 
 namespace IntegrationService.Core.Services;
@@ -12,6 +14,7 @@ public class OrderService
     private readonly IMiscRepository _miscRepo;
     private readonly ILoyaltyService _loyaltyService;
     private readonly INotificationService _notificationService;
+    private readonly OnlineOrderSettings _settings;
 
     public OrderService(
         IOrderRepository orderRepo,
@@ -19,7 +22,8 @@ public class OrderService
         IPaymentService paymentService,
         IMiscRepository miscRepo,
         ILoyaltyService loyaltyService,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        IOptions<OnlineOrderSettings> settings)
     {
         _orderRepo = orderRepo;
         _menuRepo = menuRepo;
@@ -27,6 +31,7 @@ public class OrderService
         _miscRepo = miscRepo;
         _loyaltyService = loyaltyService;
         _notificationService = notificationService;
+        _settings = settings.Value;
     }
 
     public async Task<OrderModels.OrderResult> PlaceOrderAsync(OrderModels.OrderRequest request)
@@ -165,9 +170,10 @@ public class OrderService
             PST2Rate = taxRates.GetValueOrDefault("PST2", 0),
             CustomerID = request.CustomerId,
             TakeOutOrder = request.TakeOut,
-            TableID = request.TableId ?? 0,
-            CashierID = 999, // ONLINE cashier
-            StationID = 999, // Online station
+            TableID = _settings.OnlineTableId,
+            CashierID = _settings.OnlineCashierId,
+            StationID = _settings.OnlineStationId,
+            OnlineOrderCompanyID = _settings.OnlineCompanyId,
             Guests = 1,
             Locked = false,
             PaymentCount = 0

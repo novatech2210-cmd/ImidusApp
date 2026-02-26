@@ -420,7 +420,7 @@ namespace IntegrationService.Infrastructure.Data
                 await InsertOnlineSalesLinkAsync(new SalesOfOnlineOrder
                 {
                     SalesID = salesId,
-                    OnlineOrderCompanyID = 1,  // TODO: Get from config in Plan 03
+                    OnlineOrderCompanyID = ticket.OnlineOrderCompanyID ?? 1,
                     OnlineOrderNumber = ticket.DailyOrderNumber.ToString(),
                     OnlineOrderCustomerName = customerName ?? "Guest",
                     DineInOrder = false,

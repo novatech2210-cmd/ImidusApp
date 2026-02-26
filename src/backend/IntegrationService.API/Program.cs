@@ -1,5 +1,6 @@
 using IntegrationService.Core.Interfaces;
 using IntegrationService.Core.Services;
+using IntegrationService.Core.Configuration;
 using IntegrationService.Infrastructure.Data;
 using IntegrationService.Infrastructure.Services;
 using IntegrationService.API.BackgroundServices;
@@ -78,6 +79,12 @@ if (!string.IsNullOrEmpty(backendConnectionString))
         tags: new[] { "db", "sql", "backend" });
 }
 
+// Configuration with validation
+builder.Services.AddOptions<OnlineOrderSettings>()
+    .BindConfiguration(OnlineOrderSettings.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
 // Repository Registrations
 builder.Services.AddScoped<IPosRepository, PosRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -85,6 +92,7 @@ builder.Services.AddScoped<IIdempotencyRepository, IdempotencyRepository>();
 builder.Services.AddScoped<IOrderNumberRepository, OrderNumberRepository>();
 
 // Service Registrations
+builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<IOrderProcessingService, OrderProcessingService>();
 builder.Services.AddScoped<ILoyaltyService, LoyaltyService>();
 builder.Services.AddScoped<IUpsellService, UpsellService>();
