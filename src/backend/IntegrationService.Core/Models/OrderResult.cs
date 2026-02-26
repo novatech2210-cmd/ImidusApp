@@ -41,3 +41,34 @@ public class PaymentInfo
     public string? AuthorizationNo { get; set; }
     public PaymentType PaymentType { get; set; }
 }
+
+/// <summary>
+/// Result of payment processing and order completion orchestration
+/// </summary>
+public class OrderCompletionResult
+{
+    /// <summary>
+    /// True if payment was processed and order completed successfully
+    /// </summary>
+    public bool Success { get; set; }
+
+    /// <summary>
+    /// Authorize.net transaction ID (for refunds/voids)
+    /// </summary>
+    public string? TransactionId { get; set; }
+
+    /// <summary>
+    /// POS ticket ID (SalesID)
+    /// </summary>
+    public int? TicketId { get; set; }
+
+    /// <summary>
+    /// Daily order number for customer reference
+    /// </summary>
+    public int? DailyOrderNumber { get; set; }
+
+    /// <summary>
+    /// Error message if payment or completion failed
+    /// </summary>
+    public string? ErrorMessage { get; set; }
+}

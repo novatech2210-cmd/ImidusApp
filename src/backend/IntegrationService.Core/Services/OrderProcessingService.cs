@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using IntegrationService.Core.Domain.Entities;
 using IntegrationService.Core.Interfaces;
+using IntegrationService.Core.Models;
 using Microsoft.Extensions.Logging;
 
 namespace IntegrationService.Core.Services
@@ -21,13 +22,16 @@ namespace IntegrationService.Core.Services
     public class OrderProcessingService : IOrderProcessingService
     {
         private readonly IPosRepository _posRepo;
+        private readonly IPaymentService _paymentService;
         private readonly ILogger<OrderProcessingService> _logger;
 
         public OrderProcessingService(
             IPosRepository posRepository,
+            IPaymentService paymentService,
             ILogger<OrderProcessingService> logger)
         {
             _posRepo = posRepository ?? throw new ArgumentNullException(nameof(posRepository));
+            _paymentService = paymentService ?? throw new ArgumentNullException(nameof(paymentService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -36,13 +40,13 @@ namespace IntegrationService.Core.Services
         /// This creates an OPEN order (TransType=2) with items in tblPendingOrders.
         /// Call CompleteOrderAsync after payment to finalize.
         /// </summary>
-        public async Task<OrderResult> CreateOrderAsync(CreateOrderRequest request, string idempotencyKey)
+        public async Task<Domain.Entities.OrderResult> CreateOrderAsync(CreateOrderRequest request, string idempotencyKey)
         {
             _logger.LogInformation("Creating order with idempotency key: {IdempotencyKey}", idempotencyKey);
 
             if (request == null || !request.Items.Any())
             {
-                return new OrderResult
+                return new Domain.Entities.OrderResult
                 {
                     Success = false,
                     ErrorMessage = "Order must contain at least one item"
@@ -51,7 +55,7 @@ namespace IntegrationService.Core.Services
 
             if (request.Items.Any(i => i.SizeId <= 0))
             {
-                return new OrderResult
+                return new Domain.Entities.OrderResult
                 {
                     Success = false,
                     ErrorMessage = "All items must have a valid SizeID"
@@ -143,7 +147,7 @@ namespace IntegrationService.Core.Services
 
                 _logger.LogInformation("Order {SalesId} created successfully", salesId);
 
-                return new OrderResult
+                return new Domain.Entities.OrderResult
                 {
                     Success = true,
                     SalesID = salesId,
@@ -157,7 +161,7 @@ namespace IntegrationService.Core.Services
                 transaction.Rollback();
                 _logger.LogWarning(ex, "Order creation failed due to insufficient stock");
 
-                return new OrderResult
+                return new Domain.Entities.OrderResult
                 {
                     Success = false,
                     ErrorMessage = ex.Message
@@ -168,11 +172,174 @@ namespace IntegrationService.Core.Services
                 transaction.Rollback();
                 _logger.LogError(ex, "Order creation failed");
 
-                return new OrderResult
+                return new Domain.Entities.OrderResult
                 {
                     Success = false,
                     ErrorMessage = "Failed to create order. Please try again."
                 };
+            }
+        }
+
+        /// <summary>
+        /// Process payment with Authorize.net, post to POS database, and complete order.
+        /// Implements atomic transaction with automatic rollback and void on failure.
+        /// </summary>
+        public async Task<Models.OrderCompletionResult> ProcessPaymentAndCompleteOrderAsync(
+            int salesId,
+            Models.PaymentRequest paymentRequest,
+            IDbTransaction? outerTransaction = null)
+        {
+            _logger.LogInformation(
+                "Starting payment processing for order {SalesId}, amount: ${Amount}",
+                salesId, paymentRequest.Amount);
+
+            // Start transaction if not provided
+            IDbTransaction? transaction = outerTransaction;
+            bool shouldManageTransaction = outerTransaction == null;
+
+            if (shouldManageTransaction)
+            {
+                transaction = await _posRepo.BeginTransactionAsync();
+            }
+
+            try
+            {
+                // Step 1: Charge card via Authorize.net
+                var paymentResult = await _paymentService.ChargeCardAsync(paymentRequest);
+
+                if (!paymentResult.Success)
+                {
+                    _logger.LogWarning(
+                        "Payment declined for order {SalesId}: {ErrorMessage}",
+                        salesId, paymentResult.ErrorMessage);
+
+                    if (shouldManageTransaction)
+                    {
+                        transaction?.Rollback();
+                    }
+
+                    return new Models.OrderCompletionResult
+                    {
+                        Success = false,
+                        ErrorMessage = paymentResult.ErrorMessage ?? "Payment declined"
+                    };
+                }
+
+                _logger.LogInformation(
+                    "Payment approved for order {SalesId}: TransactionId={TransactionId}",
+                    salesId, paymentResult.TransactionId);
+
+                // Step 2-5: Post payment to POS and complete order
+                try
+                {
+                    // Create PosTender from payment result
+                    var tender = new PosTender
+                    {
+                        SalesID = salesId,
+                        PaymentTypeID = 0,  // Will be auto-mapped from CardType
+                        PaidAmount = paymentRequest.Amount,
+                        TipAmount = 0,  // Tip handled separately if needed
+                        AuthorizationNo = paymentResult.TransactionId,
+                        CardType = paymentResult.CardType,
+                        Last4Digits = paymentResult.Last4Digits,
+                        SequenceNo = 1,
+                        StationName = "ONLINE",
+                        Voided = false
+                    };
+
+                    // Step 2: Insert payment record with encrypted token
+                    await _posRepo.InsertPaymentAsync(tender, transaction);
+
+                    // Step 3: Update sale payment totals
+                    await _posRepo.UpdateSalePaymentTotalsAsync(salesId, tender, transaction);
+
+                    // Step 4: Complete order (TransType 2->1, items to tblSalesDetail)
+                    await _posRepo.CompleteOrderAsync(salesId, transaction);
+
+                    // Step 5: Commit transaction if we're managing it
+                    if (shouldManageTransaction)
+                    {
+                        transaction?.Commit();
+                    }
+
+                    _logger.LogInformation(
+                        "Order {SalesId} completed successfully with payment {TransactionId}",
+                        salesId, paymentResult.TransactionId);
+
+                    return new Models.OrderCompletionResult
+                    {
+                        Success = true,
+                        TransactionId = paymentResult.TransactionId,
+                        TicketId = salesId,
+                        DailyOrderNumber = paymentRequest.DailyOrderNumber
+                    };
+                }
+                catch (Exception dbEx)
+                {
+                    // Payment succeeded but DB posting failed - CRITICAL: void the charge
+                    _logger.LogError(dbEx,
+                        "Payment posted to Authorize.net but DB write failed for order {SalesId}, voiding transaction {TransactionId}",
+                        salesId, paymentResult.TransactionId);
+
+                    // Rollback database transaction
+                    if (shouldManageTransaction)
+                    {
+                        transaction?.Rollback();
+                    }
+
+                    // Attempt to void the Authorize.net charge
+                    try
+                    {
+                        var voidSuccess = await _paymentService.VoidTransactionAsync(paymentResult.TransactionId);
+
+                        if (voidSuccess)
+                        {
+                            _logger.LogInformation(
+                                "Successfully voided Authorize.net transaction {TransactionId} after DB failure",
+                                paymentResult.TransactionId);
+                        }
+                        else
+                        {
+                            _logger.LogCritical(
+                                "Failed to void Authorize.net transaction {TransactionId} - MANUAL REFUND REQUIRED for order {SalesId}",
+                                paymentResult.TransactionId, salesId);
+                        }
+                    }
+                    catch (Exception voidEx)
+                    {
+                        _logger.LogCritical(voidEx,
+                            "Exception while voiding Authorize.net transaction {TransactionId} - MANUAL REFUND REQUIRED for order {SalesId}",
+                            paymentResult.TransactionId, salesId);
+                    }
+
+                    return new Models.OrderCompletionResult
+                    {
+                        Success = false,
+                        ErrorMessage = "Payment processing failed, charge voided. Please try again."
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error during payment processing for order {SalesId}", salesId);
+
+                if (shouldManageTransaction)
+                {
+                    transaction?.Rollback();
+                }
+
+                return new OrderCompletionResult
+                {
+                    Success = false,
+                    ErrorMessage = "Payment processing failed. Please try again."
+                };
+            }
+            finally
+            {
+                if (shouldManageTransaction)
+                {
+                    transaction?.Dispose();
+                }
             }
         }
 
@@ -267,7 +434,7 @@ namespace IntegrationService.Core.Services
             _logger.LogInformation("Order {SalesId} completed - items moved to sales detail", salesId);
         }
 
-        private async Task ValidateInventoryAsync(List<OrderItemRequest> items)
+        private async Task ValidateInventoryAsync(List<Domain.Entities.OrderItemRequest> items)
         {
             foreach (var item in items)
             {
@@ -285,9 +452,9 @@ namespace IntegrationService.Core.Services
         }
 
         private async Task<OrderTotals> CalculateOrderTotalsAsync(
-            List<OrderItemRequest> items,
+            List<Domain.Entities.OrderItemRequest> items,
             TaxRates taxRates,
-            List<MenuItem> menuItems)
+            List<Domain.Entities.MenuItem> menuItems)
         {
             decimal subtotal = 0;
             decimal gstAmt = 0;
@@ -327,8 +494,8 @@ namespace IntegrationService.Core.Services
 
         private async Task InsertPendingOrderItemsAsync(
             int salesId,
-            List<OrderItemRequest> items,
-            List<MenuItem> menuItems,
+            List<Domain.Entities.OrderItemRequest> items,
+            List<Domain.Entities.MenuItem> menuItems,
             IDbTransaction transaction)
         {
             foreach (var item in items)
@@ -374,7 +541,7 @@ namespace IntegrationService.Core.Services
             }
         }
 
-        private async Task DecreaseInventoryAsync(List<OrderItemRequest> items, IDbTransaction transaction)
+        private async Task DecreaseInventoryAsync(List<Domain.Entities.OrderItemRequest> items, IDbTransaction transaction)
         {
             foreach (var item in items)
             {
