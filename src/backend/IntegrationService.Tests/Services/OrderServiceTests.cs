@@ -4,8 +4,10 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using IntegrationService.Core.Domain.Entities;
+using IntegrationService.Core.Configuration;
 using IntegrationService.Core.Interfaces;
 using IntegrationService.Core.Services;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 using Models = IntegrationService.Core.Models;
@@ -33,13 +35,25 @@ namespace IntegrationService.Tests.Services
             _notificationService = new Mock<INotificationService>();
             _mockTransaction = new Mock<IDbTransaction>();
 
+            // Mock OnlineOrderSettings
+            var mockSettings = new Mock<IOptions<OnlineOrderSettings>>();
+            mockSettings.Setup(x => x.Value).Returns(new OnlineOrderSettings
+            {
+                OnlineCashierId = 999,
+                OnlineStationId = 999,
+                OnlineTableId = 0,
+                OnlineCompanyId = 1,
+                TestCashierId = 998
+            });
+
             _orderService = new OrderService(
                 _orderRepo.Object,
                 _menuRepo.Object,
                 _paymentService.Object,
                 _miscRepo.Object,
                 _loyaltyService.Object,
-                _notificationService.Object
+                _notificationService.Object,
+                mockSettings.Object
             );
 
             // Default setup for transaction
