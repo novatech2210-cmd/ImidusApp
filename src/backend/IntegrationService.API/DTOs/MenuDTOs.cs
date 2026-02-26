@@ -20,6 +20,19 @@ namespace IntegrationService.API.DTOs
         public bool IsAlcohol { get; set; }
         public bool IsAvailable { get; set; } = true;
 
+        // Tax flags (for order creation in Phase 3)
+        public bool ApplyGST { get; set; }
+        public bool ApplyPST { get; set; }
+
+        // Kitchen routing (for order processing in Phase 3)
+        // Hidden from customers - used internally for kitchen ticket routing
+        public bool KitchenB { get; set; }  // Back kitchen
+        public bool KitchenF { get; set; }  // Front kitchen
+        public bool Bar { get; set; }       // Bar routing
+
+        // Display order from POS
+        public int DisplayOrder { get; set; }
+
         // CRITICAL: Now returns array of sizes with prices
         public List<MenuItemSizeDTO> Sizes { get; set; } = new();
 
