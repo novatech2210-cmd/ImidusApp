@@ -341,9 +341,9 @@ namespace IntegrationService.Infrastructure.Data
         }
 
         /// <summary>
-        /// Create new sale/order with TransType=2 (Open)
+        /// Create new sale/order with TransType=2 (Open) and register online order
         /// </summary>
-        public async Task<int> CreateOpenOrderAsync(PosTicket ticket, IDbTransaction? transaction = null)
+        public async Task<int> CreateOpenOrderAsync(PosTicket ticket, IDbTransaction? transaction = null, string? customerName = null)
         {
             // SQL Server 2005 compatible - no OUTPUT clause in some versions
             const string sql = @"
@@ -413,7 +413,20 @@ namespace IntegrationService.Infrastructure.Data
             try
             {
                 var salesId = await connection.QuerySingleAsync<int>(sql, ticket, transaction);
-                _logger.LogInformation("Created open order ID {SalesId} with order number {OrderNumber}",
+
+                // Register online order in tblSalesOfOnlineOrders (requirement ORD-06)
+                await InsertOnlineSalesLinkAsync(new SalesOfOnlineOrder
+                {
+                    SalesID = salesId,
+                    OnlineOrderCompanyID = 1,  // TODO: Get from config in Plan 03
+                    OnlineOrderNumber = ticket.DailyOrderNumber.ToString(),
+                    OnlineOrderCustomerName = customerName ?? "Guest",
+                    DineInOrder = false,
+                    ReservedTipAmt = 0,
+                    DeliveryChargeAmt = ticket.DeliveryChargeAmt
+                }, transaction);
+
+                _logger.LogInformation("Created open order ID {SalesId} with order number {OrderNumber}, registered online order",
                     salesId, ticket.DailyOrderNumber);
                 return salesId;
             }
@@ -465,6 +478,32 @@ namespace IntegrationService.Infrastructure.Data
 
             using var connection = CreateConnection();
             return await connection.QueryFirstOrDefaultAsync<PosTicket>(sql, new { SalesId = salesId });
+        }
+
+        /// <summary>
+        /// Complete an order with optimistic concurrency control
+        /// Validates TransType=2 (Open) before transitioning to TransType=1 (Completed)
+        /// Prevents updating already-completed orders (concurrency safety)
+        /// </summary>
+        public async Task CompleteOrderAsync(int salesId, IDbTransaction transaction)
+        {
+            // 1. Read current state
+            var ticket = await GetTicketByIdAsync(salesId);
+            if (ticket == null)
+                throw new InvalidOperationException($"Order {salesId} not found");
+
+            // 2. Verify expected state (CRITICAL: prevents updating already-completed orders)
+            if (ticket.TransType != 2)
+            {
+                throw new InvalidOperationException(
+                    $"Order {salesId} cannot be completed. Expected TransType=2 (Open), found TransType={ticket.TransType}");
+            }
+
+            // 3. Perform state transition in transaction
+            await UpdateSaleTransTypeAsync(salesId, 1, transaction);  // 2 -> 1
+            await MovePendingOrdersToSalesDetailAsync(salesId, transaction);
+
+            _logger.LogInformation("Completed order {SalesId}: TransType 2 -> 1, moved items to sales detail", salesId);
         }
 
         /// <summary>

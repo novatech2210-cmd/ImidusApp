@@ -42,8 +42,9 @@ namespace IntegrationService.Core.Interfaces
         // =============================================================================
 
         Task<int> GetNextDailyOrderNumberAsync();
-        Task<int> CreateOpenOrderAsync(PosTicket ticket, IDbTransaction? transaction = null);
+        Task<int> CreateOpenOrderAsync(PosTicket ticket, IDbTransaction? transaction = null, string? customerName = null);
         Task<PosTicket?> GetTicketByIdAsync(int salesId);
+        Task CompleteOrderAsync(int salesId, IDbTransaction transaction);
         Task<bool> UpdateSaleTransTypeAsync(int salesId, int transType, IDbTransaction? transaction = null);
         Task<bool> UpdateSaleTotalsAsync(int salesId, decimal subTotal, decimal gstAmt, decimal pstAmt, decimal pst2Amt, decimal dscAmt, IDbTransaction? transaction = null);
         Task<IEnumerable<PosTicket>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate);
