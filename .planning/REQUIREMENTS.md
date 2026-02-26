@@ -18,7 +18,7 @@ Requirements for Milestone 2 delivery. Each maps to roadmap phases.
 
 - [x] **MENU-01**: Menu API returns items from tblItem + tblAvailableSize + tblCategory
 - [x] **MENU-02**: Menu items include tax flags (ApplyGST, ApplyPST) and kitchen routing
-- [ ] **MENU-03**: Mobile app displays menu organized by category with real POS data
+- [x] **MENU-03**: Mobile app displays menu organized by category with real POS data
 
 ### Orders
 
@@ -55,7 +55,7 @@ Requirements for Milestone 2 delivery. Each maps to roadmap phases.
 ### Mobile
 
 - [ ] **MOB-01**: Login/registration connected to backend authentication
-- [ ] **MOB-02**: Menu screen fetches and displays real POS menu data
+- [x] **MOB-02**: Menu screen fetches and displays real POS menu data
 - [ ] **MOB-03**: Cart and checkout flow creates real orders
 - [ ] **MOB-04**: Order tracking screen shows order status
 - [ ] **MOB-05**: Loyalty points balance displayed on profile/home
@@ -119,8 +119,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INFRA-04 | Phase 1 | Complete |
 | MENU-01 | Phase 2 | Complete |
 | MENU-02 | Phase 2 | Complete |
-| MENU-03 | Phase 2 | Pending |
-| MOB-02 | Phase 2 | Pending |
+| MENU-03 | Phase 2 | Complete |
+| MOB-02 | Phase 2 | Complete |
 | ORD-01 | Phase 3 | Pending |
 | ORD-02 | Phase 3 | Pending |
 | ORD-03 | Phase 3 | Pending |
