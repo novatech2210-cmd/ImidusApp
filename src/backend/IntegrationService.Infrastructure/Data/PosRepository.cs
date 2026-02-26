@@ -997,40 +997,31 @@ namespace IntegrationService.Infrastructure.Data
         #region Payments
 
         /// <summary>
-        /// Insert payment tender into tblPayment
+        /// Encrypt a string using the POS database's dbo.EncryptString function
+        /// </summary>
+        private async Task<string> EncryptStringAsync(string plainText, IDbTransaction transaction)
+        {
+            if (string.IsNullOrEmpty(plainText))
+                return string.Empty;
+
+            const string sql = "SELECT dbo.EncryptString(@PlainText)";
+
+            var encryptedValue = await transaction.Connection.ExecuteScalarAsync<string>(
+                sql,
+                new { PlainText = plainText },
+                transaction);
+
+            return encryptedValue ?? string.Empty;
+        }
+
+        /// <summary>
+        /// Insert payment tender into tblPayment with encrypted card data
         /// </summary>
         public async Task InsertPaymentAsync(PosTender payment, IDbTransaction? transaction = null)
         {
-            const string sql = @"
-                INSERT INTO dbo.tblPayment (
-                    SalesID,
-                    PaymentTypeID,
-                    PaidAmount,
-                    TipAmount,
-                    AuthorizationNo,
-                    BatchNo,
-                    SequenceNo,
-                    StationName,
-                    Voided,
-                    TipAdjusted,
-                    PaidDateTime
-                )
-                VALUES (
-                    @SalesID,
-                    @PaymentTypeID,
-                    @PaidAmount,
-                    @TipAmount,
-                    @AuthorizationNo,
-                    @BatchNo,
-                    @SequenceNo,
-                    @StationName,
-                    0,  -- Not voided
-                    0,  -- Tip not adjusted
-                    GETDATE()
-                )";
-
             IDbConnection connection;
             bool shouldDispose = false;
+            IDbTransaction? localTransaction = transaction;
 
             if (transaction?.Connection != null)
             {
@@ -1039,38 +1030,126 @@ namespace IntegrationService.Infrastructure.Data
             else
             {
                 connection = CreateConnection();
+                connection.Open();
+                localTransaction = connection.BeginTransaction();
                 shouldDispose = true;
             }
 
             try
             {
-                await connection.ExecuteAsync(sql, payment, transaction);
-                _logger.LogInformation("Recorded payment of {Amount} (Type: {Type}) for SalesID {SalesId}",
-                    payment.PaidAmount, payment.PaymentTypeID, payment.SalesID);
+                // Encrypt authorization token if provided
+                string? encryptedToken = null;
+                if (!string.IsNullOrEmpty(payment.AuthorizationNo))
+                {
+                    encryptedToken = await EncryptStringAsync(payment.AuthorizationNo, localTransaction);
+                }
+
+                // Map card type to PaymentTypeID if not explicitly set
+                if (payment.PaymentTypeID == 0 && !string.IsNullOrEmpty(payment.CardType))
+                {
+                    payment.PaymentTypeID = payment.CardType.ToUpperInvariant() switch
+                    {
+                        "VISA" => (byte)PaymentType.Visa,
+                        "MASTERCARD" => (byte)PaymentType.MasterCard,
+                        "AMEX" or "AMERICANEXPRESS" => (byte)PaymentType.Amex,
+                        "DISCOVER" => (byte)PaymentType.Discover,
+                        _ => (byte)PaymentType.Visa  // Default to Visa for unknown credit cards
+                    };
+                }
+
+                const string sql = @"
+                    INSERT INTO dbo.tblPayment (
+                        SalesID,
+                        PaymentTypeID,
+                        PaidAmount,
+                        TipAmount,
+                        CardNumber,
+                        AuthorizationNo,
+                        BatchNo,
+                        SequenceNo,
+                        StationName,
+                        Voided,
+                        TipAdjusted,
+                        PaidDateTime
+                    )
+                    VALUES (
+                        @SalesID,
+                        @PaymentTypeID,
+                        @PaidAmount,
+                        @TipAmount,
+                        @EncryptedToken,
+                        @AuthorizationNo,
+                        @BatchNo,
+                        @SequenceNo,
+                        @StationName,
+                        0,  -- Not voided
+                        0,  -- Tip not adjusted
+                        GETDATE()
+                    )";
+
+                await connection.ExecuteAsync(sql,
+                    new
+                    {
+                        payment.SalesID,
+                        payment.PaymentTypeID,
+                        payment.PaidAmount,
+                        payment.TipAmount,
+                        EncryptedToken = encryptedToken,
+                        payment.AuthorizationNo,
+                        payment.BatchNo,
+                        payment.SequenceNo,
+                        payment.StationName
+                    },
+                    localTransaction);
+
+                if (shouldDispose && localTransaction != null)
+                {
+                    localTransaction.Commit();
+                }
+
+                _logger.LogInformation(
+                    "Recorded payment of {Amount} (Type: {Type}, CardType: {CardType}) for SalesID {SalesId} with encryption",
+                    payment.PaidAmount, payment.PaymentTypeID, payment.CardType ?? "N/A", payment.SalesID);
+            }
+            catch
+            {
+                if (shouldDispose && localTransaction != null)
+                {
+                    localTransaction.Rollback();
+                }
+                throw;
             }
             finally
             {
-                if (shouldDispose) connection.Dispose();
+                if (shouldDispose)
+                {
+                    localTransaction?.Dispose();
+                    connection.Dispose();
+                }
             }
         }
 
         /// <summary>
         /// Update sale payment totals after payment is recorded
+        /// Updates both type-specific columns and general PaidAmount/TipAmount
         /// </summary>
         public async Task UpdateSalePaymentTotalsAsync(int salesId, PosTender payment, IDbTransaction? transaction = null)
         {
-            string updateColumn = payment.PaymentTypeID switch
+            string typeSpecificUpdate = payment.PaymentTypeID switch
             {
                 1 => "CashPaidAmt = CashPaidAmt + @Amount, CashTipPaidAmt = CashTipPaidAmt + @Tip",
                 2 => "DebitPaidAmt = DebitPaidAmt + @Amount, DebitTipPaidAmt = DebitTipPaidAmt + @Tip",
                 5 => "AmexPaidAmt = AmexPaidAmt + @Amount, CreditTipPaidAmt = CreditTipPaidAmt + @Tip",
                 4 => "McPaidAmt = McPaidAmt + @Amount, CreditTipPaidAmt = CreditTipPaidAmt + @Tip",
+                3 => "CreditPaidAmt = COALESCE(CreditPaidAmt, 0) + @Amount, CreditTipPaidAmt = CreditTipPaidAmt + @Tip",  // Visa
                 _ => "CreditTipPaidAmt = CreditTipPaidAmt + @Tip"  // Other credit cards
             };
 
             var sql = $@"
                 UPDATE dbo.tblSales
-                SET {updateColumn},
+                SET {typeSpecificUpdate},
+                    PaidAmount = PaidAmount + @Amount,
+                    TipAmount = TipAmount + @Tip,
                     PaymentCount = PaymentCount + 1
                 WHERE ID = @SalesId";
 
@@ -1092,6 +1171,10 @@ namespace IntegrationService.Infrastructure.Data
                 await connection.ExecuteAsync(sql,
                     new { SalesId = salesId, Amount = payment.PaidAmount, Tip = payment.TipAmount },
                     transaction);
+
+                _logger.LogInformation(
+                    "Updated sale {SalesId} payment totals: +${Amount} (Type: {PaymentTypeID})",
+                    salesId, payment.PaidAmount, payment.PaymentTypeID);
             }
             finally
             {

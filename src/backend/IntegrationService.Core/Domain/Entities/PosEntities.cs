@@ -273,6 +273,10 @@ namespace IntegrationService.Core.Domain.Entities
         public string? CardReceipt { get; set; }
         public string? TrackData { get; set; }
 
+        // Card Display Info (unencrypted, for receipt display)
+        public string? CardType { get; set; }        // Visa, MasterCard, Amex, Discover
+        public string? Last4Digits { get; set; }     // Last 4 digits for display
+
         // Sequence & Revision
         public int SequenceNo { get; set; }
         public int? ItemNo { get; set; }
