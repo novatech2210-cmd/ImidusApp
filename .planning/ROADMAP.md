@@ -79,11 +79,11 @@ Plans:
   2. Payment posts to tblPayment with card encrypted via dbo.EncryptString()
   3. Order completion updates TransType from 2 to 1 and moves items to tblSalesDetail
   4. Partial payment amounts supported (multiple payments per ticket)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: Authorize.net integration
-- [ ] 04-02: POS payment posting and order completion
+- [ ] 04-01-PLAN.md - Authorize.net integration: Backend payment service with charge/void/profile operations, mobile tokenization SDK
+- [ ] 04-02-PLAN.md - POS payment posting and order completion: Payment encryption with dbo.EncryptString, order finalization, checkout/confirmation UI
 
 ### Phase 5: Loyalty
 **Goal**: Users can view and use loyalty points across in-store and online channels
