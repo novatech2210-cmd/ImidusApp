@@ -85,6 +85,11 @@ builder.Services.AddOptions<OnlineOrderSettings>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
+builder.Services.AddOptions<AuthorizeNetSettings>()
+    .BindConfiguration(AuthorizeNetSettings.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
 // Repository Registrations
 builder.Services.AddScoped<IPosRepository, PosRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -98,7 +103,7 @@ builder.Services.AddScoped<ILoyaltyService, LoyaltyService>();
 builder.Services.AddScoped<IUpsellService, UpsellService>();
 builder.Services.AddScoped<BirthdayRewardService>();
 builder.Services.AddHostedService<BirthdayRewardBackgroundService>();
-builder.Services.AddScoped<IPaymentService, MockPaymentService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<INotificationService, MockNotificationService>();
 
 var app = builder.Build();
