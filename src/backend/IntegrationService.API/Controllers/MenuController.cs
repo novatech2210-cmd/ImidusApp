@@ -111,5 +111,111 @@ namespace IntegrationService.API.Controllers
                 return StatusCode(500, "Failed to retrieve item sizes");
             }
         }
+
+        /// <summary>
+        /// Get all categories with available online items
+        /// Only returns categories that have at least one item with OnlineItem=1
+        /// </summary>
+        [HttpGet("categories")]
+        [ProducesResponseType(typeof(List<CategoryDTO>), 200)]
+        public async Task<IActionResult> GetCategories()
+        {
+            try
+            {
+                // Get categories that have available items
+                var categories = await _posRepo.GetCategoriesAsync();
+
+                // Get item counts per category to filter out empty ones
+                var itemCounts = await _posRepo.GetCategoryItemCountsAsync();
+
+                // Map to DTO and filter categories with zero items
+                var categoryDTOs = categories
+                    .Where(c => itemCounts.ContainsKey(c.CategoryID) && itemCounts[c.CategoryID] > 0)
+                    .Select(c => new CategoryDTO
+                    {
+                        CategoryId = c.CategoryID,
+                        Name = c.CName,
+                        DisplayOrder = c.PrintOrder
+                    })
+                    .OrderBy(c => c.DisplayOrder)
+                    .ToList();
+
+                _logger.LogInformation("Retrieved {Count} categories with available items", categoryDTOs.Count);
+                return Ok(categoryDTOs);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to retrieve categories");
+                return StatusCode(500, "Failed to retrieve categories");
+            }
+        }
+
+        /// <summary>
+        /// Get menu items for a specific category
+        /// Returns only items available for online ordering (OnlineItem=1)
+        /// Items without in-stock sizes are excluded
+        /// </summary>
+        [HttpGet("items/{categoryId}")]
+        [ProducesResponseType(typeof(List<MenuItemDTO>), 200)]
+        public async Task<IActionResult> GetItemsByCategory(int categoryId)
+        {
+            try
+            {
+                // Get items for this category
+                var menuItems = await _posRepo.GetMenuItemsByCategoryAsync(categoryId);
+
+                var menuItemDTOs = new List<MenuItemDTO>();
+
+                foreach (var item in menuItems)
+                {
+                    // Get all available sizes for this item
+                    var sizes = await _posRepo.GetItemSizesAsync(item.ItemID);
+
+                    var sizesDTOs = sizes.Select(s => new MenuItemSizeDTO
+                    {
+                        SizeId = s.SizeID,
+                        SizeName = s.Size?.SizeName ?? "Regular",
+                        ShortName = s.Size?.ShortName,
+                        Price = s.UnitPrice,
+                        InStock = s.InStock,
+                        StockQuantity = s.OnHandQty,
+                        DisplayOrder = s.Size?.DisplayOrder ?? 0
+                    }).OrderBy(s => s.DisplayOrder).ToList();
+
+                    // Skip items with no in-stock sizes
+                    if (!sizesDTOs.Any(s => s.InStock))
+                    {
+                        _logger.LogDebug("Skipping item {ItemId} - no in-stock sizes", item.ItemID);
+                        continue;
+                    }
+
+                    menuItemDTOs.Add(new MenuItemDTO
+                    {
+                        ItemId = item.ItemID,
+                        Name = item.IName,
+                        Description = item.ItemDescription,
+                        ImageUrl = item.ImageFilePath,
+                        CategoryId = item.CategoryID,
+                        IsAlcohol = item.Alcohol,
+                        IsAvailable = true,
+                        ApplyGST = item.ApplyGST,
+                        ApplyPST = item.ApplyPST,
+                        KitchenB = item.KitchenB,
+                        KitchenF = item.KitchenF,
+                        Bar = item.Bar,
+                        DisplayOrder = item.PrintOrder,
+                        Sizes = sizesDTOs
+                    });
+                }
+
+                _logger.LogInformation("Retrieved {Count} menu items for category {CategoryId}", menuItemDTOs.Count, categoryId);
+                return Ok(menuItemDTOs);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to retrieve items for category {CategoryId}", categoryId);
+                return StatusCode(500, "Failed to retrieve menu items");
+            }
+        }
     }
 }

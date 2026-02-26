@@ -31,6 +31,8 @@ namespace IntegrationService.Core.Interfaces
         Task<MenuItem?> GetMenuItemByIdAsync(int itemId);
         Task<IEnumerable<AvailableSize>> GetItemSizesAsync(int itemId);
         Task<IEnumerable<Category>> GetCategoriesAsync();
+        Task<Dictionary<int, int>> GetCategoryItemCountsAsync();
+        Task<IEnumerable<MenuItem>> GetMenuItemsByCategoryAsync(int categoryId);
         Task<int?> GetItemStockAsync(int itemId, int sizeId);
         Task<bool> IsItemInStockAsync(int itemId, int sizeId, decimal quantity);
         Task<bool> DecreaseStockAsync(int itemId, int sizeId, decimal quantity, IDbTransaction? transaction = null);
