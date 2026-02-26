@@ -47,11 +47,11 @@ Plans:
   2. Each menu item includes tax flags (ApplyGST, ApplyPST) and kitchen routing (KitchenB, KitchenF, Bar)
   3. Mobile app displays menu items organized by category with prices
   4. Item availability reflects OnlineItem flag from POS
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: Menu API endpoint implementation
-- [ ] 02-02: Mobile menu screen integration
+- [ ] 02-01-PLAN.md - Backend menu API endpoints (categories, items by category, filtering by OnlineItem)
+- [ ] 02-02-PLAN.md - Mobile menu UI (skeleton loading, caching, category tabs, bottom sheet, pull-to-refresh)
 
 ### Phase 3: Order Creation
 **Goal**: Users can place orders that create valid POS tickets following the complete ticket lifecycle
