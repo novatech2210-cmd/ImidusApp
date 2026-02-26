@@ -3,6 +3,16 @@ using IntegrationService.Core.Domain.Entities;
 namespace IntegrationService.Core.Models;
 
 /// <summary>
+/// Order state enum
+/// </summary>
+public enum OrderState
+{
+    Open,
+    AwaitingPayment,
+    Completed
+}
+
+/// <summary>
 /// Result DTO returned after placing an order
 /// </summary>
 public class OrderResult
@@ -15,6 +25,7 @@ public class OrderResult
     public decimal PSTAmt { get; set; }
     public decimal PST2Amt { get; set; }
     public decimal TotalAmount { get; set; }
+    public OrderState OrderState { get; set; }
     public List<PaymentInfo> Payments { get; set; } = new();
     public bool Success { get; set; }
     public string? ErrorMessage { get; set; }
