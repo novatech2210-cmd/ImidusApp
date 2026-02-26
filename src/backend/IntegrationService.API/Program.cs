@@ -3,6 +3,7 @@ using IntegrationService.Core.Services;
 using IntegrationService.Infrastructure.Data;
 using IntegrationService.Infrastructure.Services;
 using IntegrationService.API.BackgroundServices;
+using IntegrationService.API.Middleware;
 using Serilog;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -80,6 +81,7 @@ if (!string.IsNullOrEmpty(backendConnectionString))
 // Repository Registrations
 builder.Services.AddScoped<IPosRepository, PosRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IIdempotencyRepository, IdempotencyRepository>();
 
 // Service Registrations
 builder.Services.AddScoped<IOrderProcessingService, OrderProcessingService>();
@@ -101,6 +103,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowWebApp");
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseMiddleware<IdempotencyMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
 
