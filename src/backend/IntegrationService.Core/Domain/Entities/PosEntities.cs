@@ -352,6 +352,9 @@ namespace IntegrationService.Core.Domain.Entities
         // Inventory
         public bool ManageInv { get; set; }
 
+        // Display Order
+        public int PrintOrder { get; set; }
+
         // Navigation
         public Category? Category { get; set; }
         public List<AvailableSize> AvailableSizes { get; set; } = new();

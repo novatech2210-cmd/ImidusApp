@@ -170,22 +170,90 @@ namespace IntegrationService.Infrastructure.Data
         }
 
         /// <summary>
-        /// Get all categories with active items
+        /// Get all categories that have at least one available online item
+        /// Only returns categories with OnlineItem=1 and Status=1 items
         /// </summary>
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
             const string sql = @"
-                SELECT
-                    ID AS CategoryID,
-                    CatName AS CName,
-                    PrintOrder,
-                    CategoryImageFilePath
-                FROM dbo.tblCategory
-                WHERE Status = 1
-                ORDER BY PrintOrder";
+                SELECT DISTINCT
+                    c.ID AS CategoryID,
+                    c.CatName AS CName,
+                    c.PrintOrder,
+                    c.CategoryImageFilePath
+                FROM dbo.tblCategory c
+                INNER JOIN dbo.tblItem i ON c.ID = i.CategoryID
+                WHERE c.Status = 1
+                  AND i.OnlineItem = 1
+                  AND i.Status = 1
+                ORDER BY c.PrintOrder";
 
             using var connection = CreateConnection();
             return await connection.QueryAsync<Category>(sql);
+        }
+
+        /// <summary>
+        /// Get count of available items per category
+        /// Returns dictionary of CategoryID -> item count (only OnlineItem=1, Status=1)
+        /// </summary>
+        public async Task<Dictionary<int, int>> GetCategoryItemCountsAsync()
+        {
+            const string sql = @"
+                SELECT
+                    CategoryID,
+                    COUNT(*) AS ItemCount
+                FROM dbo.tblItem
+                WHERE OnlineItem = 1
+                  AND Status = 1
+                GROUP BY CategoryID";
+
+            using var connection = CreateConnection();
+            var results = await connection.QueryAsync<(int CategoryID, int ItemCount)>(sql);
+            return results.ToDictionary(r => r.CategoryID, r => r.ItemCount);
+        }
+
+        /// <summary>
+        /// Get menu items filtered by category
+        /// Returns only items available for online ordering (OnlineItem=1, Status=1)
+        /// Ordered by PrintOrder to match POS display order
+        /// </summary>
+        public async Task<IEnumerable<MenuItem>> GetMenuItemsByCategoryAsync(int categoryId)
+        {
+            const string sql = @"
+                SELECT
+                    i.ID AS ItemID,
+                    i.IName,
+                    i.IName2,
+                    i.ItemDescription,
+                    i.ImageFilePath,
+                    i.CategoryID,
+                    i.Status,
+                    i.OnlineItem,
+                    i.Alcohol,
+                    i.BarCode,
+                    i.ManageInv,
+                    i.ApplyGST,
+                    i.ApplyPST,
+                    i.ApplyPST2,
+                    i.KitchenB,
+                    i.KitchenF,
+                    i.KitchenE,
+                    i.Bar,
+                    i.Taste,
+                    i.OpenItem,
+                    i.ScaleItem,
+                    i.PrintOrder
+                FROM dbo.tblItem i
+                WHERE i.CategoryID = @CategoryId
+                  AND i.Status = 1
+                  AND i.OnlineItem = 1
+                ORDER BY i.PrintOrder";
+
+            using var connection = CreateConnection();
+            var items = await connection.QueryAsync<MenuItem>(sql, new { CategoryId = categoryId });
+
+            _logger.LogInformation("Retrieved {Count} menu items for category {CategoryId}", items.Count(), categoryId);
+            return items;
         }
 
         /// <summary>
