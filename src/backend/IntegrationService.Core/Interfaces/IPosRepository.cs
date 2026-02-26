@@ -93,6 +93,7 @@ namespace IntegrationService.Core.Interfaces
         // =============================================================================
 
         Task<PosCustomer?> GetCustomerByPhoneAsync(string phone);
+        Task<PosCustomer?> GetCustomerByEmailAsync(string email);
         Task<PosCustomer?> GetCustomerByIdAsync(int id);
         Task<int> InsertCustomerAsync(PosCustomer customer);
         Task<bool> UpdateLoyaltyPointsAsync(int customerId, int points, IDbTransaction? transaction = null);

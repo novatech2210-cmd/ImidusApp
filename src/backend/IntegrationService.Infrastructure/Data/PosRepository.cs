@@ -1391,6 +1391,22 @@ namespace IntegrationService.Infrastructure.Data
         }
 
         /// <summary>
+        /// Get customer by email address
+        /// </summary>
+        public async Task<PosCustomer?> GetCustomerByEmailAsync(string email)
+        {
+            const string sql = @"
+                SELECT TOP 1
+                    ID, FName, LName, Phone, Email, Address,
+                    CustomerNum, EarnedPoints, PointsManaged, Gender
+                FROM dbo.tblCustomer
+                WHERE Email = @Email";
+
+            using var connection = CreateConnection();
+            return await connection.QueryFirstOrDefaultAsync<PosCustomer>(sql, new { Email = email });
+        }
+
+        /// <summary>
         /// Get customer by ID
         /// </summary>
         public async Task<PosCustomer?> GetCustomerByIdAsync(int id)
