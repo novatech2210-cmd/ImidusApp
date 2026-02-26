@@ -35,9 +35,9 @@ Requirements for Milestone 2 delivery. Each maps to roadmap phases.
 ### Payments
 
 - [x] **PAY-01**: Authorize.net tokenization captures card without storing card data
-- [ ] **PAY-02**: Payment posts to tblPayment with card encrypted via dbo.EncryptString()
-- [ ] **PAY-03**: Order completion updates TransType from 2 to 1
-- [ ] **PAY-04**: Partial and full payment amounts supported
+- [x] **PAY-02**: Payment posts to tblPayment with card encrypted via dbo.EncryptString()
+- [x] **PAY-03**: Order completion updates TransType from 2 to 1
+- [x] **PAY-04**: Partial and full payment amounts supported
 
 ### Loyalty
 
@@ -131,9 +131,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ORD-08 | Phase 3 | Complete |
 | ORD-09 | Phase 3 | Complete |
 | PAY-01 | Phase 4 | Complete |
-| PAY-02 | Phase 4 | Pending |
-| PAY-03 | Phase 4 | Pending |
-| PAY-04 | Phase 4 | Pending |
+| PAY-02 | Phase 4 | Complete |
+| PAY-03 | Phase 4 | Complete |
+| PAY-04 | Phase 4 | Complete |
 | LOY-01 | Phase 5 | Pending |
 | LOY-02 | Phase 5 | Pending |
 | LOY-03 | Phase 5 | Pending |
