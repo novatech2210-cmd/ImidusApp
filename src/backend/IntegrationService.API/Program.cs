@@ -82,6 +82,7 @@ if (!string.IsNullOrEmpty(backendConnectionString))
 builder.Services.AddScoped<IPosRepository, PosRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IIdempotencyRepository, IdempotencyRepository>();
+builder.Services.AddScoped<IOrderNumberRepository, OrderNumberRepository>();
 
 // Service Registrations
 builder.Services.AddScoped<IOrderProcessingService, OrderProcessingService>();

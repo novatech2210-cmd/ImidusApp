@@ -26,12 +26,17 @@ namespace IntegrationService.Infrastructure.Data
     {
         private readonly string _connectionString;
         private readonly ILogger<PosRepository> _logger;
+        private readonly IOrderNumberRepository _orderNumberRepo;
 
-        public PosRepository(IConfiguration configuration, ILogger<PosRepository> logger)
+        public PosRepository(
+            IConfiguration configuration,
+            ILogger<PosRepository> logger,
+            IOrderNumberRepository orderNumberRepo)
         {
             _connectionString = configuration.GetConnectionString("PosDatabase")
                 ?? throw new ArgumentNullException("PosDatabase connection string not found");
             _logger = logger;
+            _orderNumberRepo = orderNumberRepo;
         }
 
         private IDbConnection CreateConnection()
@@ -328,16 +333,13 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Get next daily order number for today
+        /// Delegates to OrderNumberRepository for atomic increment with race condition handling
         /// </summary>
         public async Task<int> GetNextDailyOrderNumberAsync()
         {
-            const string sql = @"
-                SELECT ISNULL(MAX(DailyOrderNumber), 0) + 1
-                FROM dbo.tblSales
-                WHERE CONVERT(date, SaleDateTime) = CONVERT(date, GETDATE())";
-
-            using var connection = CreateConnection();
-            return await connection.QueryFirstAsync<int>(sql);
+            // Delegate to OrderNumberRepository for atomic increment
+            // Uses tblOrderNumber table with UPDATE...OUTPUT pattern
+            return await _orderNumberRepo.GetNextDailyOrderNumberAsync();
         }
 
         /// <summary>
