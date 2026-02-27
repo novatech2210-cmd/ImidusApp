@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
+    ActivityIndicator,
+    FlatList,
     SafeAreaView,
     ScrollView,
     StyleSheet,
@@ -8,14 +10,32 @@ import {
     View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store';
+import { RootState, AppDispatch } from '../store';
 import { logout } from '../store/authSlice';
+import { fetchCustomerLoyalty, fetchLoyaltyHistory } from '../store/loyaltySlice';
 import { Colors } from '../theme/colors';
 import { Spacing } from '../theme/spacing';
 
 const ProfileScreen = ({navigation}: any) => {
   const user = useSelector((state: RootState) => state.auth.user);
-  const dispatch = useDispatch();
+  const { customerId, balance, transactions, loading } = useSelector(
+    (state: RootState) => state.loyalty
+  );
+  const dispatch = useDispatch<AppDispatch>();
+
+  // Fetch loyalty data when screen loads (per user decision)
+  useEffect(() => {
+    if (user?.phone || user?.email) {
+      dispatch(fetchCustomerLoyalty({ phone: user.phone, email: user.email }));
+    }
+  }, [dispatch, user?.phone, user?.email]);
+
+  // Fetch transaction history after customer lookup succeeds
+  useEffect(() => {
+    if (customerId) {
+      dispatch(fetchLoyaltyHistory(customerId));
+    }
+  }, [dispatch, customerId]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -45,9 +65,49 @@ const ProfileScreen = ({navigation}: any) => {
 
         <View style={styles.loyaltyCard}>
           <Text style={styles.loyaltyLabel}>Loyalty Points Balance</Text>
-          <Text style={styles.loyaltyValue}>{user?.earnedPoints || 0}</Text>
-          <Text style={styles.loyaltySubtext}>100 points = $1.00 USD</Text>
+          {loading && !balance ? (
+            <ActivityIndicator size="large" color={Colors.primary} style={styles.loader} />
+          ) : (
+            <>
+              <Text style={styles.loyaltyValue}>{balance}</Text>
+              <Text style={styles.loyaltySubtext}>100 points = $1.00 USD</Text>
+              <Text style={styles.earnRateText}>Earn 1 point per $1 spent</Text>
+            </>
+          )}
         </View>
+
+        {transactions.length > 0 && (
+          <View style={styles.historySection}>
+            <Text style={styles.sectionTitle}>Recent Activity</Text>
+            <FlatList
+              data={transactions}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <View style={styles.transactionRow}>
+                  <View style={styles.transactionLeft}>
+                    <Text style={styles.transactionDesc}>{item.description}</Text>
+                    <Text style={styles.transactionDate}>
+                      {new Date(item.date).toLocaleDateString()}
+                    </Text>
+                  </View>
+                  <Text
+                    style={[
+                      styles.transactionPoints,
+                      item.type === 'earn' ? styles.earnPoints : styles.redeemPoints,
+                    ]}
+                  >
+                    {item.type === 'earn' ? '+' : '-'}
+                    {item.points} pts
+                  </Text>
+                </View>
+              )}
+              scrollEnabled={false}
+              ListEmptyComponent={
+                <Text style={styles.emptyText}>No transaction history yet</Text>
+              }
+            />
+          </View>
+        )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account Settings</Text>
@@ -150,6 +210,57 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: 12,
     opacity: 0.7,
+  },
+  earnRateText: {
+    color: Colors.white,
+    fontSize: 12,
+    opacity: 0.7,
+    marginTop: Spacing.xs,
+  },
+  loader: {
+    marginVertical: Spacing.lg,
+  },
+  historySection: {
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    padding: Spacing.md,
+    marginBottom: Spacing.xl,
+  },
+  transactionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  transactionLeft: {
+    flex: 1,
+  },
+  transactionDesc: {
+    fontSize: 14,
+    color: Colors.text,
+    fontWeight: '500',
+  },
+  transactionDate: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    marginTop: 2,
+  },
+  transactionPoints: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  earnPoints: {
+    color: Colors.success,
+  },
+  redeemPoints: {
+    color: Colors.error,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    paddingVertical: Spacing.md,
   },
   section: {
     backgroundColor: Colors.white,
