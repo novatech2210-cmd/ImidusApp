@@ -157,7 +157,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 2. Menu System | 0/2 | Not started | - |
 | 3. Order Creation | 2/3 | In Progress|  |
 | 4. Payments | 2/2 | Complete   | 2026-02-26 |
-| 5. Loyalty | 0/2 | Not started | - |
+| 5. Loyalty | 2/3 | In Progress|  |
 | 6. Push Notifications | 0/2 | Not started | - |
 | 7. Mobile App Wiring | 0/3 | Not started | - |
 | 8. CI/CD & Delivery | 0/2 | Not started | - |
