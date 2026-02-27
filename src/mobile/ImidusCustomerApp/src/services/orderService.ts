@@ -22,13 +22,17 @@ interface OrderCompletionResult {
  * @param paymentToken Opaque payment token from Authorize.net tokenization
  * @param amount Total order amount to charge
  * @param dailyOrderNumber Order number for invoice reference
+ * @param customerId Optional customer ID for loyalty points redemption
+ * @param pointsToRedeem Optional points to redeem for discount
  * @returns OrderCompletionResult with transaction details or error
  */
 export async function completePayment(
   salesId: number,
   paymentToken: PaymentToken,
   amount: number,
-  dailyOrderNumber: number
+  dailyOrderNumber: number,
+  customerId?: number | null,
+  pointsToRedeem?: number
 ): Promise<OrderCompletionResult> {
   try {
     const response = await fetch(`${API_BASE_URL}/orders/${salesId}/complete-payment`, {
@@ -41,6 +45,8 @@ export async function completePayment(
         amount,
         salesId,
         dailyOrderNumber,
+        customerId: customerId || undefined,
+        pointsToRedeem: pointsToRedeem || 0,
       }),
     });
 
