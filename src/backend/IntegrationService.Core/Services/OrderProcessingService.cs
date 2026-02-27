@@ -206,31 +206,33 @@ namespace IntegrationService.Core.Services
             {
                 // Calculate points discount before charging (100 points = $1)
                 decimal pointsDiscount = 0m;
+                PaymentRequest requestToCharge = paymentRequest;
+
                 if (paymentRequest.PointsToRedeem > 0)
                 {
                     pointsDiscount = paymentRequest.PointsToRedeem / 100.0m;
                     _logger.LogInformation(
                         "Applying points redemption for order {SalesId}: {Points} points = ${Discount} discount",
                         salesId, paymentRequest.PointsToRedeem, pointsDiscount);
+
+                    // Apply discount to charge amount
+                    decimal finalAmount = paymentRequest.Amount - pointsDiscount;
+                    if (finalAmount < 0) finalAmount = 0;
+
+                    // Create adjusted request with discounted amount
+                    requestToCharge = new PaymentRequest
+                    {
+                        Token = paymentRequest.Token,
+                        Amount = finalAmount,
+                        SalesId = paymentRequest.SalesId,
+                        CustomerId = paymentRequest.CustomerId,
+                        PointsToRedeem = paymentRequest.PointsToRedeem,
+                        DailyOrderNumber = paymentRequest.DailyOrderNumber
+                    };
                 }
 
-                // Apply discount to charge amount
-                decimal finalAmount = paymentRequest.Amount - pointsDiscount;
-                if (finalAmount < 0) finalAmount = 0;
-
-                // Update request amount for charge
-                var adjustedRequest = new PaymentRequest
-                {
-                    Token = paymentRequest.Token,
-                    Amount = finalAmount,
-                    SalesId = paymentRequest.SalesId,
-                    CustomerId = paymentRequest.CustomerId,
-                    PointsToRedeem = paymentRequest.PointsToRedeem,
-                    DailyOrderNumber = paymentRequest.DailyOrderNumber
-                };
-
-                // Step 1: Charge card via Authorize.net (with discount applied)
-                var paymentResult = await _paymentService.ChargeCardAsync(adjustedRequest);
+                // Step 1: Charge card via Authorize.net (with discount applied if points redeemed)
+                var paymentResult = await _paymentService.ChargeCardAsync(requestToCharge);
 
                 if (!paymentResult.Success)
                 {

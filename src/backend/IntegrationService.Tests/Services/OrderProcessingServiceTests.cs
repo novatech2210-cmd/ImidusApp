@@ -322,5 +322,272 @@ namespace IntegrationService.Tests.Services
             mockTransaction.Verify(t => t.Rollback(), Times.Once);
             _mockPaymentService.Verify(s => s.VoidTransactionAsync("AUTH_123456"), Times.Once);
         }
+
+        // ========================================================================
+        // LOYALTY POINTS INTEGRATION TESTS
+        // ========================================================================
+
+        /// <summary>
+        /// Test 6: Order with customer ID records points earned (1:1 ratio)
+        /// </summary>
+        [Fact]
+        public async Task OrderWithCustomerId_RecordsPointsEarned()
+        {
+            // Arrange
+            var salesId = 123;
+            var paymentRequest = new PaymentRequest
+            {
+                SalesId = salesId,
+                Amount = 45.75m,
+                CustomerId = 456,
+                PointsToRedeem = 0,
+                DailyOrderNumber = 42,
+                Token = new PaymentToken
+                {
+                    DataDescriptor = "COMMON.ACCEPT.INAPP.PAYMENT",
+                    DataValue = "test_token_value"
+                }
+            };
+
+            var paymentResult = new PaymentResult
+            {
+                Success = true,
+                TransactionId = "AUTH_123456",
+                AuthorizationCode = "ABC123",
+                Last4Digits = "1234",
+                CardType = "Visa"
+            };
+
+            var mockTransaction = new Mock<IDbTransaction>();
+            var mockConnection = new Mock<IDbConnection>();
+            mockTransaction.Setup(t => t.Connection).Returns(mockConnection.Object);
+
+            _mockPosRepo.Setup(r => r.BeginTransactionAsync()).ReturnsAsync(mockTransaction.Object);
+            _mockPaymentService.Setup(s => s.ChargeCardAsync(It.IsAny<PaymentRequest>())).ReturnsAsync(paymentResult);
+            _mockPosRepo.Setup(r => r.InsertPaymentAsync(It.IsAny<PosTender>(), It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+            _mockPosRepo.Setup(r => r.UpdateSalePaymentTotalsAsync(salesId, It.IsAny<PosTender>(), It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+            _mockPosRepo.Setup(r => r.CompleteOrderAsync(salesId, It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+
+            // Mock RecordPointsTransactionAsync to return true
+            _mockPosRepo.Setup(r => r.RecordPointsTransactionAsync(
+                salesId,
+                456,
+                0,  // pointsUsed = 0
+                45,  // pointsSaved = Math.Floor(45.75) = 45
+                It.IsAny<IDbTransaction>()
+            )).ReturnsAsync(true);
+
+            // Act
+            var result = await _service.ProcessPaymentAndCompleteOrderAsync(salesId, paymentRequest);
+
+            // Assert
+            Assert.True(result.Success);
+
+            // Verify RecordPointsTransactionAsync was called with correct parameters
+            _mockPosRepo.Verify(r => r.RecordPointsTransactionAsync(
+                salesId,
+                456,
+                0,
+                45,  // Math.Floor(45.75)
+                It.IsAny<IDbTransaction>()
+            ), Times.Once);
+        }
+
+        /// <summary>
+        /// Test 7: Order with points redemption applies discount to charge amount
+        /// </summary>
+        [Fact]
+        public async Task OrderWithPointsRedemption_AppliesDiscount()
+        {
+            // Arrange
+            var salesId = 123;
+            var paymentRequest = new PaymentRequest
+            {
+                SalesId = salesId,
+                Amount = 50.00m,
+                CustomerId = 456,
+                PointsToRedeem = 500,  // 500 points = $5 discount
+                DailyOrderNumber = 42,
+                Token = new PaymentToken
+                {
+                    DataDescriptor = "COMMON.ACCEPT.INAPP.PAYMENT",
+                    DataValue = "test_token_value"
+                }
+            };
+
+            var paymentResult = new PaymentResult
+            {
+                Success = true,
+                TransactionId = "AUTH_123456",
+                AuthorizationCode = "ABC123",
+                Last4Digits = "1234",
+                CardType = "Visa"
+            };
+
+            var mockTransaction = new Mock<IDbTransaction>();
+            var mockConnection = new Mock<IDbConnection>();
+            mockTransaction.Setup(t => t.Connection).Returns(mockConnection.Object);
+
+            _mockPosRepo.Setup(r => r.BeginTransactionAsync()).ReturnsAsync(mockTransaction.Object);
+            _mockPosRepo.Setup(r => r.InsertPaymentAsync(It.IsAny<PosTender>(), It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+            _mockPosRepo.Setup(r => r.UpdateSalePaymentTotalsAsync(salesId, It.IsAny<PosTender>(), It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+            _mockPosRepo.Setup(r => r.GetTicketByIdAsync(salesId)).ReturnsAsync(new PosTicket { SubTotal = 50m, GSTAmt = 0m, PSTAmt = 0m, PST2Amt = 0m });
+            _mockPosRepo.Setup(r => r.UpdateSaleTotalsAsync(It.IsAny<int>(), It.IsAny<decimal>(), It.IsAny<decimal>(), It.IsAny<decimal>(), It.IsAny<decimal>(), It.IsAny<decimal>(), It.IsAny<IDbTransaction>())).ReturnsAsync(true);
+            _mockPosRepo.Setup(r => r.CompleteOrderAsync(salesId, It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+            _mockPosRepo.Setup(r => r.RecordPointsTransactionAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<IDbTransaction>())).ReturnsAsync(true);
+
+            // Mock payment service to capture the adjusted amount
+            PaymentRequest? capturedRequest = null;
+            _mockPaymentService.Setup(s => s.ChargeCardAsync(It.IsAny<PaymentRequest>()))
+                .Callback<PaymentRequest>(req => capturedRequest = req)
+                .ReturnsAsync(paymentResult);
+
+            // Act
+            var result = await _service.ProcessPaymentAndCompleteOrderAsync(salesId, paymentRequest);
+
+            // Assert
+            Assert.True(result.Success);
+
+            // Verify charge amount was reduced by points discount
+            Assert.NotNull(capturedRequest);
+            Assert.Equal(45.00m, capturedRequest.Amount);  // 50 - (500/100) = 45
+
+            // Verify RecordPointsTransactionAsync was called with redeemed points
+            _mockPosRepo.Verify(r => r.RecordPointsTransactionAsync(
+                salesId,
+                456,
+                500,  // pointsUsed
+                50,   // pointsSaved = Math.Floor(50.00)
+                It.IsAny<IDbTransaction>()
+            ), Times.Once);
+        }
+
+        /// <summary>
+        /// Test 8: Points recording fails but order still completes (graceful failure)
+        /// </summary>
+        [Fact]
+        public async Task PointsRecordingFails_OrderStillCompletes()
+        {
+            // Arrange
+            var salesId = 123;
+            var paymentRequest = new PaymentRequest
+            {
+                SalesId = salesId,
+                Amount = 30.00m,
+                CustomerId = 456,
+                PointsToRedeem = 0,
+                DailyOrderNumber = 42,
+                Token = new PaymentToken
+                {
+                    DataDescriptor = "COMMON.ACCEPT.INAPP.PAYMENT",
+                    DataValue = "test_token_value"
+                }
+            };
+
+            var paymentResult = new PaymentResult
+            {
+                Success = true,
+                TransactionId = "AUTH_123456",
+                AuthorizationCode = "ABC123",
+                Last4Digits = "1234",
+                CardType = "Visa"
+            };
+
+            var mockTransaction = new Mock<IDbTransaction>();
+            var mockConnection = new Mock<IDbConnection>();
+            mockTransaction.Setup(t => t.Connection).Returns(mockConnection.Object);
+
+            _mockPosRepo.Setup(r => r.BeginTransactionAsync()).ReturnsAsync(mockTransaction.Object);
+            _mockPaymentService.Setup(s => s.ChargeCardAsync(It.IsAny<PaymentRequest>())).ReturnsAsync(paymentResult);
+            _mockPosRepo.Setup(r => r.InsertPaymentAsync(It.IsAny<PosTender>(), It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+            _mockPosRepo.Setup(r => r.UpdateSalePaymentTotalsAsync(salesId, It.IsAny<PosTender>(), It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+            _mockPosRepo.Setup(r => r.CompleteOrderAsync(salesId, It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+
+            // Mock RecordPointsTransactionAsync to return false (graceful failure)
+            _mockPosRepo.Setup(r => r.RecordPointsTransactionAsync(
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<IDbTransaction>()
+            )).ReturnsAsync(false);
+
+            // Act
+            var result = await _service.ProcessPaymentAndCompleteOrderAsync(salesId, paymentRequest);
+
+            // Assert
+            Assert.True(result.Success);  // Order completes despite points failure
+
+            // Verify warning was logged
+            _mockLogger.Verify(
+                x => x.Log(
+                    LogLevel.Warning,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("points recording failed")),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+                Times.Once);
+
+            // Verify transaction still committed (not rolled back)
+            mockTransaction.Verify(t => t.Commit(), Times.Once);
+            mockTransaction.Verify(t => t.Rollback(), Times.Never);
+        }
+
+        /// <summary>
+        /// Test 9: Order without customer ID skips points recording
+        /// </summary>
+        [Fact]
+        public async Task OrderWithoutCustomerId_SkipsPointsRecording()
+        {
+            // Arrange
+            var salesId = 123;
+            var paymentRequest = new PaymentRequest
+            {
+                SalesId = salesId,
+                Amount = 30.00m,
+                CustomerId = null,  // No customer
+                PointsToRedeem = 0,
+                DailyOrderNumber = 42,
+                Token = new PaymentToken
+                {
+                    DataDescriptor = "COMMON.ACCEPT.INAPP.PAYMENT",
+                    DataValue = "test_token_value"
+                }
+            };
+
+            var paymentResult = new PaymentResult
+            {
+                Success = true,
+                TransactionId = "AUTH_123456",
+                AuthorizationCode = "ABC123",
+                Last4Digits = "1234",
+                CardType = "Visa"
+            };
+
+            var mockTransaction = new Mock<IDbTransaction>();
+            var mockConnection = new Mock<IDbConnection>();
+            mockTransaction.Setup(t => t.Connection).Returns(mockConnection.Object);
+
+            _mockPosRepo.Setup(r => r.BeginTransactionAsync()).ReturnsAsync(mockTransaction.Object);
+            _mockPaymentService.Setup(s => s.ChargeCardAsync(It.IsAny<PaymentRequest>())).ReturnsAsync(paymentResult);
+            _mockPosRepo.Setup(r => r.InsertPaymentAsync(It.IsAny<PosTender>(), It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+            _mockPosRepo.Setup(r => r.UpdateSalePaymentTotalsAsync(salesId, It.IsAny<PosTender>(), It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+            _mockPosRepo.Setup(r => r.CompleteOrderAsync(salesId, It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _service.ProcessPaymentAndCompleteOrderAsync(salesId, paymentRequest);
+
+            // Assert
+            Assert.True(result.Success);
+
+            // Verify RecordPointsTransactionAsync was NOT called
+            _mockPosRepo.Verify(r => r.RecordPointsTransactionAsync(
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<IDbTransaction>()
+            ), Times.Never);
+        }
     }
 }
