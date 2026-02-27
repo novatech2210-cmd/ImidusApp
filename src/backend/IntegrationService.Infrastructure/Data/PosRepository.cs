@@ -1531,6 +1531,111 @@ namespace IntegrationService.Infrastructure.Data
                 new { CustomerId = customerId, Limit = limit });
         }
 
+        /// <summary>
+        /// Record loyalty points transaction using stored procedure sp_InsertUpdateRewardPointsDetail
+        /// Graceful failure: Returns false on error (allows order completion without points)
+        /// </summary>
+        public async Task<bool> RecordPointsTransactionAsync(
+            int salesId,
+            int customerId,
+            int pointsUsed,
+            int pointsSaved,
+            IDbTransaction? transaction = null)
+        {
+            IDbConnection connection;
+            bool shouldDispose = false;
+
+            if (transaction?.Connection != null)
+            {
+                connection = transaction.Connection;
+            }
+            else
+            {
+                connection = CreateConnection();
+                connection.Open();
+                shouldDispose = true;
+            }
+
+            try
+            {
+                // Step 1: Check if stored procedure exists (resilient pattern)
+                var spExists = await connection.QueryFirstOrDefaultAsync<int>(
+                    "SELECT COUNT(*) FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_NAME = 'sp_InsertUpdateRewardPointsDetail'",
+                    transaction: transaction
+                );
+
+                if (spExists > 0)
+                {
+                    // Step 2: Use stored procedure if available
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@SalesID", salesId);
+                    parameters.Add("@CustomerID", customerId);
+                    parameters.Add("@PointUsed", pointsUsed);
+                    parameters.Add("@PointSaved", pointsSaved);
+
+                    await connection.ExecuteAsync(
+                        "sp_InsertUpdateRewardPointsDetail",
+                        parameters,
+                        transaction,
+                        commandType: CommandType.StoredProcedure
+                    );
+
+                    _logger.LogInformation(
+                        "Recorded points transaction via stored procedure: SalesID={SalesId}, CustomerID={CustomerId}, Used={PointsUsed}, Saved={PointsSaved}",
+                        salesId, customerId, pointsUsed, pointsSaved);
+                }
+                else
+                {
+                    // Step 3: Fallback to direct table operations
+                    _logger.LogWarning(
+                        "sp_InsertUpdateRewardPointsDetail not found, using fallback for SalesID={SalesId}",
+                        salesId);
+
+                    // Insert into tblRewardPointsDetail
+                    const string insertSql = @"
+                        INSERT INTO dbo.tblRewardPointsDetail (
+                            SalesID, CustomerID, PointUsed, PointSaved, TransactionDate
+                        )
+                        VALUES (
+                            @SalesID, @CustomerID, @PointUsed, @PointSaved, GETDATE()
+                        )";
+
+                    await connection.ExecuteAsync(insertSql,
+                        new { SalesID = salesId, CustomerID = customerId, PointUsed = pointsUsed, PointSaved = pointsSaved },
+                        transaction);
+
+                    // Update customer balance
+                    const string updateSql = @"
+                        UPDATE dbo.tblCustomer
+                        SET EarnedPoints = EarnedPoints + @PointSaved - @PointUsed
+                        WHERE ID = @CustomerID";
+
+                    await connection.ExecuteAsync(updateSql,
+                        new { CustomerID = customerId, PointSaved = pointsSaved, PointUsed = pointsUsed },
+                        transaction);
+
+                    _logger.LogInformation(
+                        "Recorded points transaction via fallback: SalesID={SalesId}, CustomerID={CustomerId}, Used={PointsUsed}, Saved={PointsSaved}",
+                        salesId, customerId, pointsUsed, pointsSaved);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Step 4: Graceful failure - log error but return false (don't throw)
+                _logger.LogError(ex,
+                    "Failed to record points transaction for SalesID={SalesId}, CustomerID={CustomerId}. Order will complete without points.",
+                    salesId, customerId);
+
+                return false;
+            }
+            finally
+            {
+                if (shouldDispose) connection.Dispose();
+            }
+        }
+
         #endregion
 
         // =============================================================================
