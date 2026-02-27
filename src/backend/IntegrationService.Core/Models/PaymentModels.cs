@@ -21,9 +21,14 @@ namespace IntegrationService.Core.Models
         public int SalesId { get; set; }
 
         /// <summary>
-        /// Customer ID (optional, for saved cards)
+        /// Customer ID (optional, for saved cards and loyalty points)
         /// </summary>
         public int? CustomerId { get; set; }
+
+        /// <summary>
+        /// Loyalty points to redeem for discount (100 points = $1)
+        /// </summary>
+        public int PointsToRedeem { get; set; }
 
         /// <summary>
         /// Daily order number for invoice reference

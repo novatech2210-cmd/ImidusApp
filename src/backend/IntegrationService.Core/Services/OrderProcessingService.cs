@@ -204,8 +204,33 @@ namespace IntegrationService.Core.Services
 
             try
             {
-                // Step 1: Charge card via Authorize.net
-                var paymentResult = await _paymentService.ChargeCardAsync(paymentRequest);
+                // Calculate points discount before charging (100 points = $1)
+                decimal pointsDiscount = 0m;
+                if (paymentRequest.PointsToRedeem > 0)
+                {
+                    pointsDiscount = paymentRequest.PointsToRedeem / 100.0m;
+                    _logger.LogInformation(
+                        "Applying points redemption for order {SalesId}: {Points} points = ${Discount} discount",
+                        salesId, paymentRequest.PointsToRedeem, pointsDiscount);
+                }
+
+                // Apply discount to charge amount
+                decimal finalAmount = paymentRequest.Amount - pointsDiscount;
+                if (finalAmount < 0) finalAmount = 0;
+
+                // Update request amount for charge
+                var adjustedRequest = new PaymentRequest
+                {
+                    Token = paymentRequest.Token,
+                    Amount = finalAmount,
+                    SalesId = paymentRequest.SalesId,
+                    CustomerId = paymentRequest.CustomerId,
+                    PointsToRedeem = paymentRequest.PointsToRedeem,
+                    DailyOrderNumber = paymentRequest.DailyOrderNumber
+                };
+
+                // Step 1: Charge card via Authorize.net (with discount applied)
+                var paymentResult = await _paymentService.ChargeCardAsync(adjustedRequest);
 
                 if (!paymentResult.Success)
                 {
@@ -253,10 +278,61 @@ namespace IntegrationService.Core.Services
                     // Step 3: Update sale payment totals
                     await _posRepo.UpdateSalePaymentTotalsAsync(salesId, tender, transaction);
 
+                    // Update sale totals with points discount if applicable
+                    if (pointsDiscount > 0)
+                    {
+                        var ticket = await _posRepo.GetTicketByIdAsync(salesId);
+                        if (ticket != null)
+                        {
+                            await _posRepo.UpdateSaleTotalsAsync(
+                                salesId,
+                                ticket.SubTotal,
+                                ticket.GSTAmt,
+                                ticket.PSTAmt,
+                                ticket.PST2Amt,
+                                pointsDiscount,  // DSCAmt reflects points redemption
+                                transaction
+                            );
+                        }
+                    }
+
                     // Step 4: Complete order (TransType 2->1, items to tblSalesDetail)
                     await _posRepo.CompleteOrderAsync(salesId, transaction);
 
-                    // Step 5: Commit transaction if we're managing it
+                    // Step 5: Record loyalty points (NEW)
+                    if (paymentRequest.CustomerId.HasValue)
+                    {
+                        // Calculate points earned (1 point per $1 spent, floor to integer)
+                        int pointsEarned = (int)Math.Floor(paymentRequest.Amount);
+                        int pointsRedeemed = paymentRequest.PointsToRedeem;
+
+                        bool pointsRecorded = await _posRepo.RecordPointsTransactionAsync(
+                            salesId,
+                            paymentRequest.CustomerId.Value,
+                            pointsRedeemed,
+                            pointsEarned,
+                            transaction
+                        );
+
+                        // Graceful failure: Log warning if points fail, but don't fail order
+                        if (!pointsRecorded)
+                        {
+                            _logger.LogWarning(
+                                "Loyalty points recording failed for order {SalesId}, customer {CustomerId}. Order completed without points.",
+                                salesId,
+                                paymentRequest.CustomerId.Value
+                            );
+                        }
+                        else
+                        {
+                            _logger.LogInformation(
+                                "Loyalty points recorded for order {SalesId}: earned {PointsEarned}, redeemed {PointsRedeemed}",
+                                salesId, pointsEarned, pointsRedeemed
+                            );
+                        }
+                    }
+
+                    // Step 6: Commit transaction if we're managing it
                     if (shouldManageTransaction)
                     {
                         transaction?.Commit();
