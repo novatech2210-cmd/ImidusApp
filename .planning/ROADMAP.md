@@ -94,11 +94,12 @@ Plans:
   2. Points balance displayed from tblCustomer.EarnedPoints
   3. Points earned on purchase via sp_InsertUpdateRewardPointsDetail stored procedure
   4. Points redemption deducts from balance and reflects in order total
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: Customer lookup and points balance API
-- [ ] 05-02: Points earn/redeem integration
+- [x] 05-01-PLAN.md - Customer lookup API with phone/email and loyalty history (3/3 tasks, 4 min)
+- [ ] 05-02-PLAN.md - Stored procedure integration for points earn/redeem
+- [ ] 05-03-PLAN.md - Mobile loyalty UI with transaction history and checkout redemption
 
 ### Phase 6: Push Notifications
 **Goal**: Users receive transactional push notifications for order events

@@ -41,8 +41,8 @@ Requirements for Milestone 2 delivery. Each maps to roadmap phases.
 
 ### Loyalty
 
-- [ ] **LOY-01**: Customer lookup by phone/email from tblCustomer
-- [ ] **LOY-02**: Points balance displayed from tblCustomer.EarnedPoints
+- [x] **LOY-01**: Customer lookup by phone/email from tblCustomer
+- [x] **LOY-02**: Points balance displayed from tblCustomer.EarnedPoints
 - [ ] **LOY-03**: Points earned/redeemed via sp_InsertUpdateRewardPointsDetail stored procedure
 - [ ] **LOY-04**: Points redemption reflected in order total
 
@@ -134,8 +134,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PAY-02 | Phase 4 | Complete |
 | PAY-03 | Phase 4 | Complete |
 | PAY-04 | Phase 4 | Complete |
-| LOY-01 | Phase 5 | Pending |
-| LOY-02 | Phase 5 | Pending |
+| LOY-01 | Phase 5 | Complete |
+| LOY-02 | Phase 5 | Complete |
 | LOY-03 | Phase 5 | Pending |
 | LOY-04 | Phase 5 | Pending |
 | MOB-05 | Phase 5 | Pending |

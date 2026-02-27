@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-02-26T18:10:48.949Z"
+last_updated: "2026-02-27T01:59:51Z"
 progress:
-  total_phases: 4
+  total_phases: 5
   completed_phases: 4
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 10
+  completed_plans: 10
 ---
 
 # Project State
@@ -18,23 +18,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** Customers can order from their phones and have orders appear in the POS terminal exactly as if placed at the counter - with payment already posted.
-**Current focus:** Phase 2: Menu System
+**Current focus:** Phase 5: Loyalty Points Integration
 
 ## Current Position
 
-Phase: 4 of 8 (Payments)
-Plan: 2 of 2 in current phase - COMPLETE
+Phase: 5 of 8 (Loyalty)
+Plan: 1 of 3 in current phase - COMPLETE
 Status: In Progress
-Last activity: 2026-02-26 - Completed 04-02-PLAN.md (Payment Posting & Order Completion)
+Last activity: 2026-02-27 - Completed 05-01-PLAN.md (Customer Lookup & Loyalty History API)
 
-Progress: [█████░░░░░] 50%
+Progress: [█████░░░░░] 55%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: 51.6 min
-- Total execution time: 6.88 hours
+- Total plans completed: 10
+- Average duration: 43.1 min
+- Total execution time: 7.2 hours
 
 **By Phase:**
 
@@ -44,10 +44,11 @@ Progress: [█████░░░░░] 50%
 | 02-menu-system | 2 | 7 min | 3.5 min |
 | 03-order-creation | 3 | 16 min | 5.3 min |
 | 04-payments | 2 | 240 min | 120 min |
+| 05-loyalty | 1 | 4 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 8 min, 8 min, 204 min, 36 min
-- Trend: Complex payment implementation phase complete
+- Last 5 plans: 8 min, 204 min, 36 min, 4 min
+- Trend: Loyalty API implementation efficient, payment phase was complex
 
 *Updated after each plan completion*
 
@@ -94,6 +95,11 @@ Recent decisions affecting current work:
 - [Phase 04-02]: Luhn validation + auto-formatting for card numbers (1234 5678 9012 3456)
 - [Phase 04-02]: Full-screen loading with progress steps for reassuring payment UX
 - [Phase 04-02]: Receipt-style confirmation with items, taxes, payment method, transaction ID
+- [Phase 05-01]: Phone as primary identifier with email as fallback for customer lookup
+- [Phase 05-01]: Phone format normalization strips all non-digits before database lookup
+- [Phase 05-01]: Auto-create customer profiles with EarnedPoints=0 and PointsManaged=true
+- [Phase 05-01]: First-match-wins strategy for duplicate handling (TOP 1 in email queries)
+- [Phase 05-01]: Default 50-transaction limit for loyalty history to prevent performance issues
 
 ### Pending Todos
 
@@ -113,8 +119,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-26
-Stopped at: Completed 04-02-PLAN.md (Payment Posting & Order Completion)
+Last session: 2026-02-27
+Stopped at: Completed 05-01-PLAN.md (Customer Lookup & Loyalty History API)
 Resume file: None
 
 ---
