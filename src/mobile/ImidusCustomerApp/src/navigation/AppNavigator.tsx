@@ -1,7 +1,8 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import messaging from '@react-native-firebase/messaging';
 import SplashScreen from '../screens/SplashScreen';
 import CartScreen from '../screens/CartScreen';
 import ItemDetailScreen from '../screens/ItemDetailScreen';
@@ -20,11 +21,53 @@ const Stack = createStackNavigator();
 const AppNavigator = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth);
+  const navigationRef = useRef<any>(null);
+  const [initialRoute, setInitialRoute] = useState<string | null>(null);
+  const [initialRouteParams, setInitialRouteParams] = useState<any>(null);
 
   // Load stored auth on app launch
   useEffect(() => {
     dispatch(loadStoredAuth());
   }, [dispatch]);
+
+  // Set up FCM notification handlers for deep linking
+  useEffect(() => {
+    // Handle notification when app is in background/foreground and user taps it
+    const unsubscribeOnNotificationOpenedApp = messaging().onNotificationOpenedApp(
+      remoteMessage => {
+        console.log('Notification caused app to open from background:', remoteMessage);
+        const { screen, orderId } = remoteMessage.data || {};
+        if (screen === 'OrderTracking' && orderId && navigationRef.current) {
+          navigationRef.current.navigate('OrderTracking', { orderId: parseInt(orderId, 10) });
+        }
+      }
+    );
+
+    // Check if app was opened from a notification while it was quit
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          console.log('Notification caused app to open from quit state:', remoteMessage);
+          const { screen, orderId } = remoteMessage.data || {};
+          if (screen === 'OrderTracking' && orderId) {
+            setInitialRoute('OrderTracking');
+            setInitialRouteParams({ orderId: parseInt(orderId, 10) });
+          }
+        }
+      });
+
+    return unsubscribeOnNotificationOpenedApp;
+  }, []);
+
+  // Navigate to initial route after navigation is ready
+  useEffect(() => {
+    if (initialRoute && initialRouteParams && navigationRef.current) {
+      navigationRef.current.navigate(initialRoute, initialRouteParams);
+      setInitialRoute(null);
+      setInitialRouteParams(null);
+    }
+  }, [initialRoute, initialRouteParams, isAuthenticated]);
 
   // Show splash screen during auth check
   if (isLoading) {
@@ -32,7 +75,7 @@ const AppNavigator = () => {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!isAuthenticated ? (
           // Public routes (unauthenticated users)
