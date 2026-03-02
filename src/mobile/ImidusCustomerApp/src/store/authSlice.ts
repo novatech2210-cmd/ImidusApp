@@ -1,7 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import authService, { RegisterData, LoginData, UserProfile } from '../services/authService';
 
+// State interface
 interface AuthState {
-  user: any | null;
+  user: UserProfile | null;
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -16,34 +18,196 @@ const initialState: AuthState = {
   error: null,
 };
 
+// ===== ASYNC THUNKS =====
+
+/**
+ * Register a new user
+ */
+export const registerUser = createAsyncThunk(
+  'auth/register',
+  async (data: RegisterData, { rejectWithValue }) => {
+    try {
+      const response = await authService.register(data);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Registration failed');
+    }
+  }
+);
+
+/**
+ * Login user with phone/email and password
+ */
+export const loginUser = createAsyncThunk(
+  'auth/login',
+  async (data: LoginData, { rejectWithValue }) => {
+    try {
+      const response = await authService.login(data);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Login failed');
+    }
+  }
+);
+
+/**
+ * Logout user and clear stored auth data
+ */
+export const logoutUser = createAsyncThunk(
+  'auth/logout',
+  async (_, { rejectWithValue }) => {
+    try {
+      await authService.logout();
+      return null;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Logout failed');
+    }
+  }
+);
+
+/**
+ * Load stored authentication data on app launch
+ * Checks AsyncStorage for existing token and user data
+ */
+export const loadStoredAuth = createAsyncThunk(
+  'auth/loadStored',
+  async (_, { rejectWithValue }) => {
+    try {
+      const [token, user] = await Promise.all([
+        authService.getStoredToken(),
+        authService.getStoredUser(),
+      ]);
+
+      if (token && user) {
+        return { token, user };
+      } else {
+        return null;
+      }
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to load stored auth');
+    }
+  }
+);
+
+/**
+ * Refresh current user data from backend
+ */
+export const refreshUserData = createAsyncThunk(
+  'auth/refreshUserData',
+  async (_, { rejectWithValue }) => {
+    try {
+      const user = await authService.getCurrentUser();
+      return user;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to refresh user data');
+    }
+  }
+);
+
+// ===== SLICE =====
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    startLoading: state => {
-      state.isLoading = true;
+    // Manual logout action (for immediate state clear)
+    clearAuth: (state) => {
+      state.user = null;
+      state.token = null;
+      state.isAuthenticated = false;
+      state.isLoading = false;
       state.error = null;
     },
-    authSuccess: (state, action: PayloadAction<{user: any; token: string}>) => {
+    // Clear error
+    clearError: (state) => {
+      state.error = null;
+    },
+  },
+  extraReducers: (builder) => {
+    // ===== REGISTER =====
+    builder.addCase(registerUser.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+    builder.addCase(registerUser.fulfilled, (state, action) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isAuthenticated = true;
       state.isLoading = false;
       state.error = null;
-    },
-    authFailure: (state, action: PayloadAction<string>) => {
+    });
+    builder.addCase(registerUser.rejected, (state, action) => {
       state.isLoading = false;
-      state.error = action.payload;
-    },
-    logout: state => {
+      state.error = action.payload as string;
+    });
+
+    // ===== LOGIN =====
+    builder.addCase(loginUser.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+    builder.addCase(loginUser.fulfilled, (state, action) => {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+      state.isAuthenticated = true;
+      state.isLoading = false;
+      state.error = null;
+    });
+    builder.addCase(loginUser.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload as string;
+    });
+
+    // ===== LOGOUT =====
+    builder.addCase(logoutUser.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(logoutUser.fulfilled, (state) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
       state.isLoading = false;
-    },
+      state.error = null;
+    });
+    builder.addCase(logoutUser.rejected, (state, action) => {
+      // Even if logout fails, clear local state
+      state.user = null;
+      state.token = null;
+      state.isAuthenticated = false;
+      state.isLoading = false;
+      state.error = action.payload as string;
+    });
+
+    // ===== LOAD STORED AUTH =====
+    builder.addCase(loadStoredAuth.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(loadStoredAuth.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.isAuthenticated = true;
+      }
+      state.isLoading = false;
+    });
+    builder.addCase(loadStoredAuth.rejected, (state) => {
+      state.isLoading = false;
+      state.isAuthenticated = false;
+    });
+
+    // ===== REFRESH USER DATA =====
+    builder.addCase(refreshUserData.pending, (state) => {
+      // Don't set isLoading for refresh (background operation)
+    });
+    builder.addCase(refreshUserData.fulfilled, (state, action) => {
+      state.user = action.payload;
+    });
+    builder.addCase(refreshUserData.rejected, (state, action) => {
+      // If refresh fails, user might need to re-login
+      state.error = action.payload as string;
+    });
   },
 });
 
-export const {startLoading, authSuccess, authFailure, logout} =
-  authSlice.actions;
+export const { clearAuth, clearError } = authSlice.actions;
 export default authSlice.reducer;

@@ -1,30 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store';
+import { loginUser, clearError } from '../store/authSlice';
 import { Colors } from '../theme/colors';
 import { Spacing } from '../theme/spacing';
 
-const LoginScreen = ({navigation}: any) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+interface LoginScreenProps {
+  navigation: any;
+}
 
-  const handleLogin = () => {
-    setLoading(true);
-    // TODO: Implement actual login logic
-    setTimeout(() => {
-      setLoading(false);
-      navigation.navigate('Menu');
-    }, 1500);
+const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { isLoading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+
+  const [phoneOrEmail, setPhoneOrEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // Navigate to Menu if authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigation.replace('Menu');
+    }
+  }, [isAuthenticated, navigation]);
+
+  // Show error alert
+  useEffect(() => {
+    if (error) {
+      Alert.alert('Login Failed', error, [
+        { text: 'OK', onPress: () => dispatch(clearError()) },
+      ]);
+    }
+  }, [error, dispatch]);
+
+  const handleLogin = async () => {
+    if (!phoneOrEmail.trim()) {
+      Alert.alert('Error', 'Please enter your phone number or email');
+      return;
+    }
+
+    if (!password) {
+      Alert.alert('Error', 'Please enter your password');
+      return;
+    }
+
+    // Determine if input is phone or email
+    const isEmail = phoneOrEmail.includes('@');
+
+    try {
+      await dispatch(
+        loginUser({
+          ...(isEmail ? { email: phoneOrEmail.trim() } : { phone: phoneOrEmail.trim() }),
+          password,
+        })
+      ).unwrap();
+      // Navigation handled by useEffect when isAuthenticated becomes true
+    } catch (err) {
+      // Error handled by useEffect
+    }
   };
 
   return (
@@ -40,11 +84,12 @@ const LoginScreen = ({navigation}: any) => {
         <View style={styles.form}>
           <TextInput
             style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
+            placeholder="Phone or Email"
+            value={phoneOrEmail}
+            onChangeText={setPhoneOrEmail}
+            keyboardType="default"
             autoCapitalize="none"
+            editable={!isLoading}
           />
           <TextInput
             style={styles.input}
@@ -52,24 +97,31 @@ const LoginScreen = ({navigation}: any) => {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            editable={!isLoading}
           />
 
           <TouchableOpacity
             style={styles.button}
             onPress={handleLogin}
-            disabled={loading}>
-            {loading ? (
+            disabled={isLoading}>
+            {isLoading ? (
               <ActivityIndicator color={Colors.white} />
             ) : (
               <Text style={styles.buttonText}>Login</Text>
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.secondaryButton}>
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => navigation.navigate('Register')}
+            disabled={isLoading}>
             <Text style={styles.secondaryButtonText}>Create an Account</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.guestButton}>
+          <TouchableOpacity
+            style={styles.guestButton}
+            onPress={() => navigation.navigate('Menu')}
+            disabled={isLoading}>
             <Text style={styles.guestButtonText}>Continue as Guest</Text>
           </TouchableOpacity>
         </View>
