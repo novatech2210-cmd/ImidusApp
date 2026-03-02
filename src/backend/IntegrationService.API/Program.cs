@@ -15,6 +15,8 @@ using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -128,11 +130,30 @@ if (jwtSettings != null && !string.IsNullOrEmpty(jwtSettings.Secret))
     });
 }
 
+// Initialize Firebase Admin SDK
+// NOTE: firebase-admin-key.json is a deployment-time config file
+// Place in API root directory before production deployment
+var firebaseKeyPath = Path.Combine(AppContext.BaseDirectory, "firebase-admin-key.json");
+if (File.Exists(firebaseKeyPath))
+{
+    FirebaseApp.Create(new AppOptions
+    {
+        Credential = GoogleCredential.FromFile(firebaseKeyPath)
+    });
+    Log.Information("Firebase Admin SDK initialized successfully");
+}
+else
+{
+    Log.Warning("firebase-admin-key.json not found. Push notifications will fail until configured.");
+}
+
 // Repository Registrations
 builder.Services.AddScoped<IPosRepository, PosRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IIdempotencyRepository, IdempotencyRepository>();
 builder.Services.AddScoped<IOrderNumberRepository, OrderNumberRepository>();
+builder.Services.AddScoped<DeviceTokenRepository>();
+builder.Services.AddScoped<NotificationLogRepository>();
 
 // Service Registrations
 builder.Services.AddScoped<OrderService>();
@@ -142,7 +163,7 @@ builder.Services.AddScoped<IUpsellService, UpsellService>();
 builder.Services.AddScoped<BirthdayRewardService>();
 builder.Services.AddHostedService<BirthdayRewardBackgroundService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
-builder.Services.AddScoped<INotificationService, MockNotificationService>();
+builder.Services.AddScoped<INotificationService, FcmNotificationService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 var app = builder.Build();

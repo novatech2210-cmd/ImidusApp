@@ -25,6 +25,9 @@ mobile/android/.gradle/
 *.keystore
 *.p12
 *.mobileprovision
+firebase-admin-key.json
+google-services.json
+GoogleService-Info.plist
 
 # Logs
 *.log
