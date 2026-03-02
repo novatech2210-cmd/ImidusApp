@@ -9,9 +9,9 @@ import {
     View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import apiClient from '../api/apiClient';
+import { createOrder } from '../services/orderService';
 import { RootState } from '../store';
-import { clearCart, removeFromCart, updateQuantity } from '../store/cartSlice';
+import { removeFromCart, updateQuantity } from '../store/cartSlice';
 import { Colors } from '../theme/colors';
 import { Spacing } from '../theme/spacing';
 
@@ -19,72 +19,44 @@ const CartScreen = ({navigation}: any) => {
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
-  const [usePoints, setUsePoints] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
 
-  // Tax logic (placeholder for simplicity, usually you'd verify with backend)
-  const gst = subtotal * 0.05;
-  const pst = subtotal * 0.07;
-
-  let loyaltyDiscount = 0;
-  let pointsUsed = 0;
-
-  if (usePoints && user?.earnedPoints) {
-    // 100 points = $1
-    const potentialDiscount = user.earnedPoints / 100;
-    loyaltyDiscount = Math.min(potentialDiscount, subtotal);
-    pointsUsed = loyaltyDiscount * 100;
-  }
-
-  const total = subtotal + gst + pst - loyaltyDiscount;
-
-  const handlePlaceOrder = async () => {
-    if (cartItems.length === 0) return;
+  const handleCheckout = async () => {
+    if (cartItems.length === 0) {
+      Alert.alert('Empty Cart', 'Please add items to your cart before checkout.');
+      return;
+    }
 
     try {
-      // Generate idempotency key
-      const idempotencyKey = `${Date.now()}-${Math.random()
-        .toString(36)
-        .substr(2, 9)}`;
+      setLoading(true);
 
-      const orderRequest = {
-        customerId: user?.id || null,
-        items: cartItems.map(item => ({
-          menuItemId: item.menuItemId,
-          sizeId: item.sizeId,
-          quantity: item.quantity,
-          unitPrice: item.price,
-        })),
-        paymentAuthorizationNo: 'AUTH_' + Date.now(), // Simulated auth for now
-        paymentTypeId: 3, // Visa
-        tipAmount: 0,
-        discountAmount: loyaltyDiscount,
-      };
+      // Create order in POS (TransType=2, tblSales + tblPendingOrders)
+      const orderResponse = await createOrder(
+        user?.customerId || null,
+        cartItems,
+        0 // tipAmount (can be enhanced later)
+      );
 
-      const response = await apiClient.post('/Orders', orderRequest, {
-        headers: {
-          'X-Idempotency-Key': idempotencyKey,
-        },
+      const { salesId, dailyOrderNumber, orderTotal, gstTotal, pstTotal } = orderResponse;
+
+      // Navigate to checkout with SERVER totals (not client-calculated)
+      navigation.navigate('Checkout', {
+        salesId,
+        dailyOrderNumber,
+        orderTotal,
+        gstTotal,
+        pstTotal,
+        orderItems: cartItems, // For display in checkout
       });
-
-      if (response.status === 200) {
-        Alert.alert('Success', 'Your order has been placed!', [
-          {
-            text: 'OK',
-            onPress: () => {
-              dispatch(clearCart());
-              navigation.navigate('Menu');
-            },
-          },
-        ]);
-      }
-    } catch (error) {
-      console.error('Error placing order:', error);
-      Alert.alert('Error', 'Failed to place order. Please try again.');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to create order. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -164,43 +136,17 @@ const CartScreen = ({navigation}: any) => {
               <Text style={styles.summaryLabel}>Subtotal</Text>
               <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
             </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Tax (GST + PST)</Text>
-              <Text style={styles.summaryValue}>${(gst + pst).toFixed(2)}</Text>
-            </View>
-
-            {user && user.loyaltyPoints > 0 && (
-              <TouchableOpacity
-                style={styles.pointsToggle}
-                onPress={() => setUsePoints(!usePoints)}>
-                <View
-                  style={[styles.checkbox, usePoints && styles.checkboxActive]}>
-                  {usePoints && <Text style={styles.checkboxCheck}>✓</Text>}
-                </View>
-                <Text style={styles.pointsToggleText}>
-                  Use Loyalty Points ({user.earnedPoints} available)
-                </Text>
-              </TouchableOpacity>
-            )}
-
-            {loyaltyDiscount > 0 && (
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Loyalty Discount</Text>
-                <Text style={styles.discountValue}>
-                  -${loyaltyDiscount.toFixed(2)}
-                </Text>
-              </View>
-            )}
-
-            <View style={[styles.summaryRow, styles.totalRow]}>
-              <Text style={styles.totalLabel}>Total</Text>
-              <Text style={styles.totalValue}>${total.toFixed(2)}</Text>
-            </View>
+            <Text style={styles.footerNote}>
+              Taxes and final total will be calculated at checkout
+            </Text>
 
             <TouchableOpacity
-              style={styles.placeOrderButton}
-              onPress={handlePlaceOrder}>
-              <Text style={styles.placeOrderText}>Place Order</Text>
+              style={[styles.checkoutButton, (cartItems.length === 0 || loading) && styles.checkoutButtonDisabled]}
+              onPress={handleCheckout}
+              disabled={cartItems.length === 0 || loading}>
+              <Text style={styles.checkoutButtonText}>
+                {loading ? 'Creating Order...' : 'Proceed to Checkout'}
+              </Text>
             </TouchableOpacity>
           </View>
         </>
@@ -306,30 +252,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text,
   },
-  totalRow: {
+  footerNote: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    fontStyle: 'italic',
     marginTop: Spacing.sm,
-    paddingTop: Spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    marginBottom: Spacing.md,
   },
-  totalLabel: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.secondary,
-  },
-  totalValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.primary,
-  },
-  placeOrderButton: {
+  checkoutButton: {
     backgroundColor: Colors.primary,
     paddingVertical: Spacing.md,
     borderRadius: 8,
     alignItems: 'center',
     marginTop: Spacing.lg,
   },
-  placeOrderText: {
+  checkoutButtonDisabled: {
+    backgroundColor: Colors.border,
+  },
+  checkoutButtonText: {
     color: Colors.white,
     fontSize: 18,
     fontWeight: 'bold',
@@ -354,43 +294,6 @@ const styles = StyleSheet.create({
   browseButtonText: {
     color: Colors.white,
     fontSize: 16,
-    fontWeight: '600',
-  },
-  pointsToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: Spacing.md,
-    backgroundColor: Colors.white,
-    padding: Spacing.sm,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  pointsToggleText: {
-    fontSize: 14,
-    color: Colors.text,
-    marginLeft: Spacing.sm,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    borderWidth: 2,
-    borderColor: Colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkboxActive: {
-    backgroundColor: Colors.primary,
-  },
-  checkboxCheck: {
-    color: Colors.white,
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  discountValue: {
-    fontSize: 14,
-    color: Colors.success,
     fontWeight: '600',
   },
 });
