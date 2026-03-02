@@ -109,11 +109,11 @@ Plans:
   1. FCM integration configured with Imidus notification channel
   2. Order confirmation push sent immediately on successful order creation
   3. Order ready push sent when kitchen marks order complete (status change detected)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 06-01: FCM integration and order confirmation push
-- [ ] 06-02: Order ready notification trigger
+- [x] 06-01-PLAN.md - FCM Integration and Order Confirmation (Backend FCM service, token registration API, mobile FCM SDK, deep linking, order completion trigger) - 6/6 tasks, 25 min, 24 files
+- [ ] 06-02-PLAN.md - Order Status Polling and Ready Notifications (Background polling worker, TransType=9 detection, token cleanup job)
 
 ### Phase 7: Mobile App Wiring
 **Goal**: Mobile app delivers complete end-to-end user experience with branding
@@ -159,7 +159,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 4. Payments | 2/2 | Complete   | 2026-02-26 |
 | 5. Loyalty | 2/3 | In Progress|  |
 | 6. Push Notifications | 0/2 | Not started | - |
-| 7. Mobile App Wiring | 3/3 | Complete   | 2026-03-02 |
+| 7. Mobile App Wiring | 3/3 | Complete    | 2026-03-02 |
 | 8. CI/CD & Delivery | 0/2 | Not started | - |
 
 ---
