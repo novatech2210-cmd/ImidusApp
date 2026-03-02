@@ -44,10 +44,10 @@
 - Used by: Controllers, background services
 
 **Data Access Layer (Repositories):**
-- Purpose: Encapsulate database queries and transactions
+- Purpose: Encapsulate database queries and transactions against INI_Restaurant (source of truth)
 - Location: `src/backend/IntegrationService.Infrastructure/Data/`
 - Contains: `PosRepository`, `CustomerRepository`
-- Depends on: Direct SQL via Dapper, database schema
+- Depends on: Direct SQL via Dapper, INI_Restaurant schema
 - Used by: Services
 
 **Domain/Entity Layer:**

@@ -12,7 +12,7 @@
 ### Milestone 1: Foundation & Architecture
 
 - [x] Architecture definition & folder structure
-- [x] POS Database Schema Analysis (Real TPPro Schema)
+- [x] POS Database Schema Analysis (Real INI_Restaurant Schema)
 - [x] Database Mapping Documentation
 - [x] CI/CD Pipeline scaffold
 - **Status:** COMPLETE ✅
@@ -69,7 +69,7 @@
 ## 🏆 Recent Achievements (Feb 24, 2026)
 
 - **POS Integration Refactoring**: Successfully refactored the entire POS integration layer to align with the `IntegrationService` naming convention and consolidated architecture.
-- **Size-Based Pricing Support**: Integrated end-to-end support for multi-size menu items, from the `TPPro` database schema and consolidated repository layer to the React Native mobile UI.
+- **Size-Based Pricing Support**: Integrated end-to-end support for multi-size menu items, from the `INI_Restaurant` database schema and consolidated repository layer to the React Native mobile UI.
 - **API Contract Synchronization**: Aligned backend DTOs and API controllers with mobile app requirements, including idempotency key support and detailed tax breakdowns (GST/PST/PST2).
 - **Service Layer Consolidation**: Migrated fragmented service logic into a centralized `OrderProcessingService`, improving maintainability and reducing technical debt.
 

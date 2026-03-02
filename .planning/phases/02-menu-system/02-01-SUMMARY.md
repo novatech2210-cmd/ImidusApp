@@ -9,7 +9,7 @@ dependencies:
   requires:
     - phase: 01-foundation
       plan: 02
-      reason: Entity alignment and POS repository pattern
+      reason: Entity alignment and INI_Restaurant repository pattern
   provides:
     - Category-based menu browsing API
     - Tax and kitchen routing metadata for order creation
@@ -94,7 +94,7 @@ Added six new fields to MenuItemDTO:
 - `KitchenB` - Back kitchen routing
 - `KitchenF` - Front kitchen routing
 - `Bar` - Bar routing
-- `DisplayOrder` - PrintOrder from POS database
+- `DisplayOrder` - PrintOrder from INI_Restaurant database
 
 These fields are required for Phase 3 order creation. Kitchen routing is internal - hidden from customers in mobile UI per CONTEXT.md decision.
 
@@ -119,7 +119,7 @@ Added two new endpoints to MenuController:
 - For each item, fetches sizes via GetItemSizesAsync
 - Skips items with no in-stock sizes to prevent empty menu items
 - Maps tax flags and kitchen routing to DTOs
-- Ordered by DisplayOrder (PrintOrder from POS)
+- Ordered by DisplayOrder (PrintOrder from INI_Restaurant)
 
 Also added method signatures to IPosRepository interface.
 
@@ -165,7 +165,7 @@ Expected results documented in PLAN.md verification section.
 - [x] GET /api/Menu/categories returns CategoryDTO array with only non-empty categories
 - [x] GET /api/Menu/items/{categoryId} returns MenuItemDTO array filtered by category
 - [x] MenuItemDTO includes tax flags (ApplyGST, ApplyPST) and kitchen routing (KitchenB, KitchenF, Bar)
-- [x] Items sorted by DisplayOrder (PrintOrder from POS)
+- [x] Items sorted by DisplayOrder (PrintOrder from INI_Restaurant)
 - [x] Items without in-stock sizes excluded from response
 - [x] All SQL queries compatible with SQL Server 2005 (no window functions)
 - [x] Backend build succeeds with no compilation errors

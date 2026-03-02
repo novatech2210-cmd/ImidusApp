@@ -202,7 +202,7 @@ public enum OrderState
 ✅ **Manual verification (not run):**
 - Backend startup: `cd src/backend && docker-compose up -d && dotnet run --project IntegrationService.API`
 - Test order creation: POST http://localhost:5004/api/orders
-- Query POS database: `SELECT * FROM tblSales WHERE ID = {salesId}` should show TransType=2
+- Query INI_Restaurant database (source of truth): `SELECT * FROM tblSales WHERE ID = {salesId}` should show TransType=2
 - Query pending items: `SELECT * FROM tblPendingOrders WHERE SalesID = {salesId}` should have items
 - Verify tblSalesDetail empty: `SELECT * FROM tblSalesDetail WHERE SalesID = {salesId}` should return no rows
 

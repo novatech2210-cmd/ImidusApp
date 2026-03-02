@@ -9,16 +9,16 @@ Requirements for Milestone 2 delivery. Each maps to roadmap phases.
 
 ### Infrastructure
 
-- [x] **INFRA-01**: Database restored from INI_Restaruant.Bak and accessible via connection string
+- [x] **INFRA-01**: Database restored from INI_Restaurant.Bak and accessible via connection string
 - [x] **INFRA-02**: API health check returns 200 with database connectivity confirmed
-- [x] **INFRA-03**: Entity models aligned to actual POS schema (correct column names/types)
-- [x] **INFRA-04**: Backend-only database created for CustomerProfile, idempotency keys, and audit logs (separate from POS DB)
+- [x] **INFRA-03**: Entity models aligned to actual INI_Restaurant schema (correct column names/types)
+- [x] **INFRA-04**: Backend-only database created for CustomerProfile, idempotency keys, and audit logs (separate from INI_Restaurant database)
 
 ### Menu
 
 - [x] **MENU-01**: Menu API returns items from tblItem + tblAvailableSize + tblCategory
 - [x] **MENU-02**: Menu items include tax flags (ApplyGST, ApplyPST) and kitchen routing
-- [x] **MENU-03**: Mobile app displays menu organized by category with real POS data
+- [x] **MENU-03**: Mobile app displays menu organized by category with real INI_Restaurant data
 
 ### Orders
 
@@ -55,7 +55,7 @@ Requirements for Milestone 2 delivery. Each maps to roadmap phases.
 ### Mobile
 
 - [ ] **MOB-01**: Login/registration connected to backend authentication
-- [x] **MOB-02**: Menu screen fetches and displays real POS menu data
+- [x] **MOB-02**: Menu screen fetches and displays real INI_Restaurant menu data
 - [ ] **MOB-03**: Cart and checkout flow creates real orders
 - [ ] **MOB-04**: Order tracking screen shows order status
 - [x] **MOB-05**: Loyalty points balance displayed on profile/home

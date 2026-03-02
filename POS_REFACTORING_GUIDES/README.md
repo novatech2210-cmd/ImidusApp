@@ -2,9 +2,9 @@
 
 ## 🎯 Purpose
 
-Your TOAST backend was built with **assumed table/column names** for the INI Restaurant POS database. Now that we have the **actual schema** from the `INI_Restaurant.Bak` backup, we need to update all POS integration code to match reality.
+Your TOAST backend was built with **assumed table/column names** for the INI_Restaurant database. Now that we have the **actual schema** from the `INI_Restaurant.Bak` backup, we need to update all POS integration code to match reality.
 
-**Database:** TPPro (C:\TopPos\Data\TPPro.mdf)
+**Database:** INI_Restaurant (source of truth, logical name: TPPro, original path: C:\TopPos\Data\TPPro.mdf)
 
 ---
 
@@ -172,8 +172,8 @@ git checkout -b feature/pos-schema-update
 
 ### 2. Set Up Test Database Connection
 ```csharp
-// Test connection string to real POS database
-"Server=localhost;Database=TPPro;User Id=sa;Password=YOUR_PASSWORD;TrustServerCertificate=True;"
+// Test connection string to INI_Restaurant database (source of truth)
+"Server=localhost;Database=INI_Restaurant;User Id=sa;Password=YOUR_PASSWORD;TrustServerCertificate=True;"
 ```
 
 ### 3. Verify Database Access
@@ -202,16 +202,16 @@ WHERE i.Status = 1 AND i.OnlineItem = 1
 
 ## 🆘 Troubleshooting
 
-### "Can't connect to TPPro database"
+### "Can't connect to INI_Restaurant database"
 **Solution:** Check SQL Server is running and credentials are correct:
 ```bash
 sqlcmd -S localhost -U sa -P YOUR_PASSWORD -Q "SELECT DB_NAME()"
 ```
 
 ### "Table 'tblSales' not found"
-**Solution:** Verify database name is TPPro (not TOAST or ToastDB):
+**Solution:** Verify database name is INI_Restaurant (not TOAST or ToastDB):
 ```sql
-USE TPPro;
+USE INI_Restaurant;
 GO
 SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tblSales';
 ```

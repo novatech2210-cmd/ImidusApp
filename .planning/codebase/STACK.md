@@ -107,7 +107,11 @@
 
 **Version:** 2022-latest (in docker-compose)
 
-**Schema:** TPPro (legacy INI POS database)
+**Database Name:** INI_Restaurant (restored from INI_Restaurant.Bak)
+
+**Logical Name:** TPPro (original POS database logical name)
+
+**Source of Truth:** INI_Restaurant database — no schema modifications allowed
 
 **Key Tables:**
 - tblItem - Menu items

@@ -3,9 +3,9 @@
 ## Current Status
 
 ### Completed Today:
-1. **Database**: SQL Server connected to INI_Restaurant (115 menu items, 2 customers)
+1. **Database**: SQL Server connected to INI_Restaurant database (source of truth: 115 menu items, 2 customers)
 2. **Backend API**: Running at localhost:5004, health checks passing
-3. **Repository**: Fixed to match real INI POS schema (tblMisc tax queries, etc.)
+3. **Repository**: Fixed to match real INI_Restaurant schema (tblMisc tax queries, etc.)
 4. **CI/CD**: GitHub Actions workflows created for Android/iOS builds
 
 ### Remaining Tasks for M2:
@@ -35,7 +35,7 @@
   - Transaction Key: `7eqvzKDRR5Q38898`
   - Public Client Key: `7t8S6K3E3VV3qry33ZEWqQWqLq9xs4UmeNn268gFmZ6mdWWvz22zjHbaQH9Qmsrg`
 - Implement Accept.js tokenization in mobile app
-- Post payments to POS via tblPayment
+- Post payments to INI_Restaurant via tblPayment
 
 ## AWS S3 Credentials
 - Bucket: `inirestaurant`

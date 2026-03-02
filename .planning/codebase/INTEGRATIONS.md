@@ -4,12 +4,13 @@
 
 ## APIs & External Services
 
-**Restaurant POS System (Legacy):**
-- INI POS / TPPro database - Direct integration with legacy restaurant management system
-  - Connection: SQL Server 2005+ compatible
+**INI_Restaurant Database (Source of Truth):**
+- Direct integration with INI POS legacy system via INI_Restaurant database
+  - Connection: SQL Server 2005 Express (logical name: TPPro, restored as INI_Restaurant)
   - Integration method: Dapper ORM with parameterized SQL queries
   - Location: `src/backend/IntegrationService.Infrastructure/Data/PosRepository.cs`
   - Purpose: Menu management, orders, inventory, customer data, loyalty points, prepaid cards
+  - **CRITICAL:** INI_Restaurant is the single source of truth — no schema modifications allowed
 
 **Payment Processing (Placeholder):**
 - Authorize.net (mentioned in UI as "PCI-Compliant sandbox")

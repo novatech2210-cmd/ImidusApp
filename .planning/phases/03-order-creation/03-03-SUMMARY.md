@@ -122,7 +122,7 @@ DataAnnotations + ValidateOnStart ensures:
 ### Integration Tests
 OrderNumberRepositoryTests require:
 - SQL Server running locally
-- POS database restored (INI_Restaurant)
+- INI_Restaurant database (source of truth) restored (INI_Restaurant)
 - Migration script executed: `002-create-order-number-table.sql`
 
 Tests use SkippableFact to gracefully skip if database unavailable (CI-friendly).

@@ -1,7 +1,7 @@
 # Step 1: Entity Models Update
 
 ## 🎯 Goal
-Update all C# entity classes to match the real INI Restaurant POS database schema.
+Update all C# entity classes to match the **INI_Restaurant database schema** (restored from INI_Restaurant.Bak — the single source of truth for all POS data).
 
 **File:** `backend/IntegrationService.Core/Domain/Entities/PosEntities.cs`
 

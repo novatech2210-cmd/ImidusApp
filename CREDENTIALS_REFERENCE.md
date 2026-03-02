@@ -80,7 +80,7 @@ Discover: 6011000000000012
 
 ## SQL Server Database (PENDING - NOT YET RECEIVED)
 
-**Purpose:** POS database read/write integration
+**Purpose:** INI_Restaurant database (source of truth) read/write integration
 
 ```bash
 # Connection Details (TO BE PROVIDED BY CLIENT)
@@ -179,7 +179,7 @@ curl -X POST https://apitest.authorize.net/xml/v1/request.api \
 **Critical (This Week):**
 
 1. ⏳ SQL Server hostname, username, password
-2. ⏳ Upload `INI_Restaurant.bak` to S3
+2. ⏳ Upload `INI_Restaurant.Bak` to S3
 3. ⏳ Upload `INIRestaurantManual.pdf` to S3
 4. ⏳ Terminal Bridge endpoint and credentials
 

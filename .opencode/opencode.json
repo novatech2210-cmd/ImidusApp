@@ -1,0 +1,10 @@
+{
+  "permission": {
+    "read": {
+      "/home/kali/Desktop/TOAST/.opencode/get-shit-done/*": "allow"
+    },
+    "external_directory": {
+      "/home/kali/Desktop/TOAST/.opencode/get-shit-done/*": "allow"
+    }
+  }
+}

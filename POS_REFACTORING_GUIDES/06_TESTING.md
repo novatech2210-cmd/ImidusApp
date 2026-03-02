@@ -1,7 +1,7 @@
 # Step 6: Testing & Verification
 
 ## 🎯 Goal
-Verify that all POS integration updates work correctly with the real INI Restaurant database.
+Verify that all POS integration updates work correctly with the INI_Restaurant database (source of truth).
 
 **Estimated time:** 2-3 hours
 
@@ -23,8 +23,8 @@ Verify that all POS integration updates work correctly with the real INI Restaur
 ```sql
 -- Run in SQL Server Management Studio or Azure Data Studio
 
--- 1. Connect to TPPro database
-USE TPPro;
+-- 1. Connect to INI_Restaurant database (logical name: TPPro)
+USE INI_Restaurant;
 GO
 
 -- 2. Verify tables exist
@@ -276,7 +276,7 @@ WHERE ItemID = 101 AND SizeID = 1;
    FROM tblSales
    ORDER BY ID DESC;
    ```
-   - ✅ Order appears in POS database
+   - ✅ Order appears in INI_Restaurant database (source of truth)
    - ✅ DailyOrderNumber matches app display
    - ✅ All items have correct ItemID and SizeID
    - ✅ Payment recorded
@@ -362,7 +362,7 @@ var taxRates = await _posRepo.GetTaxRatesAsync();
 - [ ] API endpoints respond correctly (Postman/curl)
 - [ ] Mobile app displays menu with sizes
 - [ ] Can complete full order flow (menu → cart → checkout)
-- [ ] Order appears in POS database with correct schema
+- [ ] Order appears in INI_Restaurant database (source of truth) with correct schema
 - [ ] Daily order numbers increment correctly
 - [ ] Stock quantities decrease (if tracked)
 - [ ] No compilation errors or warnings
@@ -391,14 +391,14 @@ Follow the deployment guides in `/workspace/group/DEPLOYMENT_GUIDES/`
 Email/Slack message:
 > **TOAST POS Integration Updated**
 >
-> The POS integration has been updated to match the real INI Restaurant database schema.
+> The POS integration has been updated to match the INI_Restaurant database (source of truth) schema.
 >
 > **Key Changes:**
 > - Menu items now support multiple sizes with different prices
 > - Size selection required when ordering
 > - All database queries updated to use correct table/column names
 >
-> **Testing:** End-to-end tested with real TPPro database ✅
+> **Testing:** End-to-end tested with INI_Restaurant database (logical name: TPPro) ✅
 >
 > **Next Steps:** Continue with Milestone 4 feature development
 
@@ -406,13 +406,13 @@ Email/Slack message:
 
 ## 🎉 Success!
 
-You've successfully refactored the TOAST POS integration to match the real database schema!
+You've successfully refactored the TOAST POS integration to match the INI_Restaurant database (source of truth) schema!
 
 **What's working now:**
 ✅ Menu retrieval with size-based pricing
 ✅ Order creation with proper schema
 ✅ Stock tracking per item+size
-✅ Tax calculation from POS config
+✅ Tax calculation from INI_Restaurant database config
 ✅ Daily order number generation
 ✅ Full integration tested
 

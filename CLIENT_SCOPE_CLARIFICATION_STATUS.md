@@ -72,11 +72,11 @@
 
 ### Backend Service Includes:
 
-✅ POS database integration  
-✅ Menu synchronization  
-✅ Order creation in POS  
-✅ Secure payment processing  
-✅ Idempotency (no duplicate orders)  
+✅ INI_Restaurant database (source of truth) integration
+✅ Menu synchronization
+✅ Order creation in POS system
+✅ Secure payment processing
+✅ Idempotency (no duplicate orders)
 ✅ Error handling and logging
 
 ---

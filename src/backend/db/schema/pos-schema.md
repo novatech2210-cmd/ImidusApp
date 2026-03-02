@@ -1,12 +1,13 @@
 # POS Database Schema (INI_Restaurant)
 
-**Status:** PENDING - Awaiting INI_Restaruant.Bak file
+**Source of Truth:** INI_Restaurant database (restored from INI_Restaurant.Bak)
+**Status:** PENDING - Awaiting INI_Restaurant.Bak file
 
 ## Instructions
 
 To complete schema discovery:
 
-1. Place the `INI_Restaruant.Bak` file in `src/backend/db/backups/`
+1. Place the `INI_Restaurant.Bak` file in `src/backend/db/backups/`
 2. Start Docker containers: `cd src/backend && docker-compose up -d`
 3. Run the restore script: `./db/scripts/restore-pos-db.sh`
 4. Re-run schema discovery to generate actual table documentation

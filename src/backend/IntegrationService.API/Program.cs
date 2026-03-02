@@ -1,6 +1,7 @@
 using IntegrationService.Core.Interfaces;
 using IntegrationService.Core.Services;
 using IntegrationService.Core.Configuration;
+using IntegrationService.Core.Models;
 using IntegrationService.Infrastructure.Data;
 using IntegrationService.Infrastructure.Services;
 using IntegrationService.API.BackgroundServices;
@@ -8,9 +9,12 @@ using IntegrationService.API.Middleware;
 using Serilog;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using System.Text;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -90,6 +94,40 @@ builder.Services.AddOptions<AuthorizeNetSettings>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
+builder.Services.AddOptions<JwtSettings>()
+    .BindConfiguration("JwtSettings")
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+// JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+if (jwtSettings != null && !string.IsNullOrEmpty(jwtSettings.Secret))
+{
+    var key = Encoding.UTF8.GetBytes(jwtSettings.Secret);
+
+    builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false; // Allow HTTP in development
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = true,
+            ValidIssuer = jwtSettings.Issuer,
+            ValidateAudience = true,
+            ValidAudience = jwtSettings.Audience,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+}
+
 // Repository Registrations
 builder.Services.AddScoped<IPosRepository, PosRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -105,6 +143,7 @@ builder.Services.AddScoped<BirthdayRewardService>();
 builder.Services.AddHostedService<BirthdayRewardBackgroundService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<INotificationService, MockNotificationService>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 var app = builder.Build();
 
@@ -119,6 +158,7 @@ app.UseCors("AllowWebApp");
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseMiddleware<IdempotencyMiddleware>();
+app.UseAuthentication(); // Add JWT authentication middleware
 app.UseAuthorization();
 app.MapControllers();
 

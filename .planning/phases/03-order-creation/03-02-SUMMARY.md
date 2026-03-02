@@ -195,7 +195,7 @@ Implemented duplicate request protection via idempotency middleware, optimistic 
 - Client-provided idempotency keys (UUID recommended)
 - Server computes request body hash for collision detection
 - 24-hour cache window balances retry scenarios with storage
-- IntegrationService database stores idempotency records (not POS database)
+- IntegrationService database stores idempotency records (not INI_Restaurant database (source of truth))
 
 **Concurrency Strategy:**
 - Optimistic locking via TransType state validation

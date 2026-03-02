@@ -1,7 +1,7 @@
 # Step 2: Repository SQL Queries Update
 
 ## 🎯 Goal
-Rewrite all SQL queries in the repository layer to use correct table/column names from the real INI Restaurant POS database.
+Rewrite all SQL queries in the repository layer to use correct table/column names from the INI_Restaurant database (source of truth).
 
 **File:** `backend/IntegrationService.Infrastructure/Data/PosRepository.cs`
 
@@ -62,8 +62,8 @@ namespace IntegrationService.Infrastructure.Data
 
         public PosRepository(IConfiguration configuration, ILogger<PosRepository> logger)
         {
-            _connectionString = configuration.GetConnectionString("PosDatabase")
-                ?? throw new ArgumentNullException("PosDatabase connection string not found");
+            _connectionString = configuration.GetConnectionString("INI_Restaurant")
+                ?? throw new ArgumentNullException("INI_Restaurant connection string not found");
             _logger = logger;
         }
 
@@ -764,7 +764,7 @@ new PosTicketItem { ItemID = 101, SizeID = 1, Quantity = 1 }
 
 - [ ] Backup original `PosRepository.cs`
 - [ ] Replace with updated code above
-- [ ] Update connection string in `appsettings.json` to point to TPPro database
+- [ ] Update connection string in `appsettings.json` to point to INI_Restaurant database
 - [ ] Run `dotnet build` and fix any compilation errors
 - [ ] Run database integration tests
 - [ ] Verify queries work in SQL Server Management Studio

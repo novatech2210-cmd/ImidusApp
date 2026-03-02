@@ -1382,7 +1382,7 @@ namespace IntegrationService.Infrastructure.Data
             const string sql = @"
                 SELECT
                     ID, FName, LName, Phone, Email, Address,
-                    CustomerNum, EarnedPoints, PointsManaged, Gender
+                    CustomerNum, EarnedPoints, PointsManaged, Gender, Password
                 FROM dbo.tblCustomer
                 WHERE Phone = @Phone";
 
@@ -1398,7 +1398,7 @@ namespace IntegrationService.Infrastructure.Data
             const string sql = @"
                 SELECT TOP 1
                     ID, FName, LName, Phone, Email, Address,
-                    CustomerNum, EarnedPoints, PointsManaged, Gender
+                    CustomerNum, EarnedPoints, PointsManaged, Gender, Password
                 FROM dbo.tblCustomer
                 WHERE Email = @Email";
 
@@ -1414,7 +1414,7 @@ namespace IntegrationService.Infrastructure.Data
             const string sql = @"
                 SELECT
                     ID, FName, LName, Phone, Email, Address,
-                    CustomerNum, EarnedPoints, PointsManaged, Gender
+                    CustomerNum, EarnedPoints, PointsManaged, Gender, Password
                 FROM dbo.tblCustomer
                 WHERE ID = @Id";
 
@@ -1430,11 +1430,11 @@ namespace IntegrationService.Infrastructure.Data
             const string sql = @"
                 INSERT INTO dbo.tblCustomer (
                     FName, LName, Phone, Email, Address,
-                    CustomerNum, EarnedPoints, PointsManaged
+                    CustomerNum, EarnedPoints, PointsManaged, Password
                 )
                 VALUES (
                     @FName, @LName, @Phone, @Email, @Address,
-                    @CustomerNum, 0, 1
+                    @CustomerNum, 0, 1, @Password
                 );
                 SELECT SCOPE_IDENTITY();";
 

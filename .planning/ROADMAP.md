@@ -2,7 +2,7 @@
 
 ## Overview
 
-This roadmap delivers iOS and Android customer mobile apps that integrate with the legacy INI POS system via direct SQL Server database access. The journey progresses from database connectivity, through menu browsing, order creation with full POS ticket lifecycle, payment processing via Authorize.net, loyalty points, push notifications, to final mobile app wiring and CI/CD delivery. Each phase builds on the previous, with Phase 1 establishing the foundation that all subsequent work depends on.
+This roadmap delivers iOS and Android customer mobile apps that integrate with the legacy INI_Restaurant system via direct SQL Server database access. The journey progresses from database connectivity, through menu browsing, order creation with full INI_Restaurant ticket lifecycle, payment processing via Authorize.net, loyalty points, push notifications, to final mobile app wiring and CI/CD delivery. Each phase builds on the previous, with Phase 1 establishing the foundation that all subsequent work depends on.
 
 ## Phases
 
@@ -12,9 +12,9 @@ This roadmap delivers iOS and Android customer mobile apps that integrate with t
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [x] **Phase 1: Foundation** - Database connectivity, API health check, and entity alignment to POS schema
-- [x] **Phase 2: Menu System** - Menu API from POS tables and mobile menu display
-- [x] **Phase 3: Order Creation** - Full order flow with POS ticket lifecycle (tblSales, tblPendingOrders)
+- [x] **Phase 1: Foundation** - Database connectivity, API health check, and entity alignment to INI_Restaurant schema
+- [x] **Phase 2: Menu System** - Menu API from INI_Restaurant tables and mobile menu display
+- [x] **Phase 3: Order Creation** - Full order flow with INI_Restaurant ticket lifecycle (tblSales, tblPendingOrders)
 - [x] **Phase 4: Payments** - Authorize.net tokenization and POS payment posting (completed 2026-02-26)
 - [ ] **Phase 5: Loyalty** - Customer lookup, points balance, earn/redeem via stored procedure
 - [ ] **Phase 6: Push Notifications** - FCM integration for transactional notifications
@@ -24,12 +24,12 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Phase Details
 
 ### Phase 1: Foundation
-**Goal**: API connects to restored POS database with correctly aligned entity models
+**Goal**: API connects to restored INI_Restaurant database (source of truth) with correctly aligned entity models
 **Depends on**: Nothing (first phase)
 **Requirements**: INFRA-01, INFRA-02, INFRA-03, INFRA-04
 **Success Criteria** (what must be TRUE):
   1. API health check endpoint returns 200 with database connectivity confirmed
-  2. Entity models match actual POS schema column names and types (verified via successful queries)
+  2. Entity models match actual INI_Restaurant schema column names and types (verified via successful queries)
   3. Backend-only database exists for CustomerProfile, idempotency keys, and audit logs
   4. Connection string configured and API can execute SELECT queries against tblItem
 **Plans**: 2 plans
@@ -39,7 +39,7 @@ Plans:
 - [x] 01-02-PLAN.md - Entity alignment, health check middleware, integration tests
 
 ### Phase 2: Menu System
-**Goal**: Users can browse the restaurant menu with real POS data organized by category
+**Goal**: Users can browse the restaurant menu with real INI_Restaurant data organized by category
 **Depends on**: Phase 1
 **Requirements**: MENU-01, MENU-02, MENU-03, MOB-02
 **Success Criteria** (what must be TRUE):
@@ -54,7 +54,7 @@ Plans:
 - [x] 02-02-PLAN.md - Mobile menu UI (skeleton loading, caching, category tabs, bottom sheet, pull-to-refresh)
 
 ### Phase 3: Order Creation
-**Goal**: Users can place orders that create valid POS tickets following the complete ticket lifecycle
+**Goal**: Users can place orders that create valid INI_Restaurant tickets following the complete ticket lifecycle
 **Depends on**: Phase 2
 **Requirements**: ORD-01, ORD-02, ORD-03, ORD-04, ORD-05, ORD-06, ORD-07, ORD-08, ORD-09
 **Success Criteria** (what must be TRUE):

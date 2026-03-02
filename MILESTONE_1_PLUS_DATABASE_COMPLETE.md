@@ -2,13 +2,13 @@
 
 **Completion Date:** January 28, 2026 (4:54 PM)  
 **Status:** ✅ FOUNDATION COMPLETE + DATABASE SCHEMA ANALYZED  
-**Major Achievement:** Actual POS database schema documented from real backup file!
+**Major Achievement:** Actual INI_Restaurant database (source of truth) schema documented from real backup file!
 
 ---
 
 ## 🚀 What Just Happened
 
-You provided the **actual POS database files** (`INI_Restaruant.Bak` and `INI_Restaruant.txt`), which allowed me to:
+You provided the **actual INI_Restaurant database (source of truth) files** (`INI_Restaurant.Bak` and `INI_Restaurant.txt`), which allowed me to:
 
 1. ✅ **Analyze the real database schema** (not assumptions!)
 2. ✅ **Document all table and column names**
@@ -20,7 +20,7 @@ You provided the **actual POS database files** (`INI_Restaruant.Bak` and `INI_Re
 
 ## 📊 Key Discoveries
 
-### **Real Database Name:** `TPPro` (not "INI_Restaurant")
+### **Database Name:** `INI_Restaurant` (source of truth, logical name: TPPro)
 
 ### **Critical Table Name Differences:**
 
@@ -303,8 +303,8 @@ If we had:
 
 ## 📞 Questions We Can Now Answer Confidently
 
-✅ **What database do we connect to?**  
-→ `TPPro` (not INI_Restaurant)
+✅ **What database do we connect to?**
+→ `INI_Restaurant database (logical name: TPPro)`
 
 ✅ **What's the primary order table?**  
 → `tblSales` (not Tickets)
@@ -372,7 +372,7 @@ If we had:
 1. **Exact database connection string:**
 
    ```
-   Server=localhost;Database=TPPro;Integrated Security=true;
+   Server=localhost;Database=INI_Restaurant;Integrated Security=true;
    ```
 
 2. **Working test query:**

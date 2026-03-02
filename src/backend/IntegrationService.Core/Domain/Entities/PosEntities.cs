@@ -461,6 +461,9 @@ namespace IntegrationService.Core.Domain.Entities
         public string? Email { get; set; }
         public string? Address { get; set; }
 
+        // Authentication (legacy plaintext, migrating to hashed)
+        public string? Password { get; set; }
+
         // Identifiers
         public string? CustomerNum { get; set; }
 

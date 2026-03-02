@@ -1,0 +1,599 @@
+=== tblSales TOP 5 ===
+ID|CashierID|SaleDateTime|SubTotal|DSCAmt|GSTAmt|PSTAmt|TransType|OriginalTransType|Guests|CustomerID|DailyOrderNumber|GSTRate|PSTRate|TakeOutOrder|TableID|StationID|AlcoholDSCAmt|CustomerTypeID|CustomerGroupID|PST2Amt|PST2Rate|CreatedDateTime
+--|---------|------------|--------|------|------|------|---------|-----------------|------|----------|----------------|-------|-------|------------|-------|---------|-------------|--------------|---------------|-------|--------|---------------
+6|1|2025-08-13 09:43:26.097|13.8700|.0000|.8300|.0000|1|1|1|1|4|.0600|.0000|0|1|2|.0000|1|1|.0000|.0000|2025-08-13 09:43:26.067
+5|1|2025-08-11 17:23:11.607|21.2600|.0000|1.2800|.0000|1|1|1|2|3|.0600|.0000|1|201|2|.0000|1|1|.0000|.0000|2025-08-11 17:22:58.577
+4|1|2025-08-11 17:17:54.867|17.2700|.0000|1.0400|.0000|1|1|1|1|2|.0600|.0000|0|1|2|.0000|1|1|.0000|.0000|2025-08-11 17:17:54.850
+3|1|2025-08-11 16:30:17.003|13.5700|.0000|.8100|.0000|1|1|1|1|1|.0600|.0000|0|1|2|.0000|1|1|.0000|.0000|2025-08-11 16:30:17.003
+2|1|2025-08-11 16:28:54.070|15.5300|.0000|.9300|.0000|1|1|1|1|553|.0600|.0000|0|1|2|.0000|1|1|.0000|.0000|2025-08-11 16:28:54.053
+
+(5 rows affected)
+=== tblSalesDetail TOP 10 ===
+SalesID|ItemID|SizeID|Qty|UnitPrice|Voided|PricePerWeightUnit|MeasuredWeight|DecimalPlaces|DiscountAmt|DiscountPercent|Tastes|ItemName|ItemName2|SizeName|SequenceNo
+-------|------|------|---|---------|------|------------------|--------------|-------------|-----------|---------------|------|--------|---------|--------|----------
+6|3|1|1|5.3900|0|.0000|0.0|0|.0000|0.0||EGG HAM BACON SANDWICH||NoSize|3
+6|2|1|1|4.4900|0|.0000|0.0|0|.0000|0.0||EGG CHEESE SANDWICH||NoSize|2
+6|1|1|1|3.9900|0|.0000|0.0|0|.0000|0.0||EGG SANDWICH||NoSize|1
+5|13|1|1|2.6900|0|.0000|0.0|0|.0000|0.0||PRESERVES BAGEL||NoSize|4
+5|9|1|1|8.6900|0|.0000|0.0|0|.0000|0.0||VEGETABLE OMELETS||NoSize|3
+5|5|1|1|5.8900|0|.0000|0.0|0|.0000|0.0||TWO EGG HAM BACON PLATTER||NoSize|2
+5|1|1|1|3.9900|0|.0000|0.0|0|.0000|0.0||EGG SANDWICH||NoSize|1
+4|13|1|1|2.6900|0|.0000|0.0|0|.0000|0.0||PRESERVES BAGEL||NoSize|3
+4|9|1|1|8.6900|0|.0000|0.0|0|.0000|0.0||VEGETABLE OMELETS||NoSize|2
+4|5|1|1|5.8900|0|.0000|0.0|0|.0000|0.0||TWO EGG HAM BACON PLATTER||NoSize|1
+
+(10 rows affected)
+=== tblPayment TOP 5 ===
+ID|SalesID|PaymentTypeID|PaidAmount|TipAmount|CardNumber|CardExpiryDate|AuthorizationNo|SequenceNo|CardReceipt|Voided|BatchNo|ItemNo|RevisionNo|StationName|BatchClosed|TrackData|TipAdjusted|PaidDateTime
+--|-------|-------------|----------|---------|----------|--------------|---------------|----------|-----------|------|-------|------|----------|-----------|-----------|---------|-----------|------------
+6|6|3|14.7000|.0000|NULL|NULL|NULL|NULL|NULL|0|NULL|NULL|NULL|DESKTOP-DEMO|0|NULL|0|2025-08-13 09:43:26.113
+5|5|3|22.5400|.0000|NULL|NULL|NULL|NULL|NULL|0|NULL|NULL|NULL|DESKTOP-DEMO|0|NULL|0|2025-08-11 17:23:11.620
+4|4|3|18.3100|.0000|NULL|NULL|NULL|NULL|NULL|0|NULL|NULL|NULL|DESKTOP-DEMO|0|NULL|0|2025-08-11 17:17:54.867
+3|3|1|14.3800|.0000|NULL|NULL|NULL|NULL|NULL|0|NULL|NULL|NULL|DESKTOP-DEMO|0|NULL|0|2025-08-11 16:30:17.020
+2|2|1|16.4600|.0000|NULL|NULL|NULL|NULL|NULL|0|NULL|NULL|NULL|DESKTOP-DEMO|0|NULL|0|2025-08-11 16:28:54.070
+
+(5 rows affected)
+=== tblPaymentType ALL ===
+ID|PaymentType
+--|-----------
+1|Cash
+2|Debit
+3|Visa
+4|MC
+5|AMEX
+6|Coupon
+7|Discover
+8|JCB
+9|Gift Card
+10|Reward Point
+11|Charge On Account
+
+(11 rows affected)
+=== tblPendingOrders TOP 5 ===
+SalesID|ItemID|SizeID|Qty|UnitPrice|Tastes|SideDishes|ItemName|SizeName|ApplyGST|ApplyPST|DSCAmt|KitchenB|KitchenF|PersonIndex|SeparateBillPrint|Bar|ApplyNoDSC|OpenItem|ItemName2|ExtraChargeItem|ApplyPST2|KitchenE|DSCAmtEmployee|DSCAmtType1|DSCAmtType2|Status|DayHourDiscountRate|PricePerWeightUnit|MeasuredWeight|DecimalPlaces|DiscountPercent|Kitchen5|Kitchen6
+-------|------|------|---|---------|------|----------|--------|--------|--------|--------|------|--------|--------|-----------|-----------------|---|----------|--------|---------|---------------|---------|--------|--------------|-----------|-----------|------|-------------------|------------------|--------------|-------------|---------------|--------|--------
+
+(0 rows affected)
+=== tblOnlineOrders TOP 5 ===
+OrderID|OrderType|FirstName|LastName|PhoneNum|EmailAddress|UserComments|DeliveryCompanyName|DeliveryLocationName|DeliveryLine1|DeliveryLine2|DeliveryCity|DeliveryState|DeliveryZipCode|DeliveryComments|SubTotal|Tax|CouponName|Discount|DeliveryCharge|Total|PaymentType|PaymentStatus|CreateDateTime|RequestedDateTime|Status|DiscountPercent|Tip|SalesID|AltOrderID|TableID|OnlineOrderCompanyID
+-------|---------|---------|--------|--------|------------|------------|-------------------|--------------------|-------------|-------------|------------|-------------|---------------|----------------|--------|---|----------|--------|--------------|-----|-----------|-------------|--------------|-----------------|------|---------------|---|-------|----------|-------|--------------------
+
+(0 rows affected)
+=== tblOnlineOrderCompany ALL ===
+ID|CompanyName|CompanyColor|ShowNameOnButton|Status|CommissionPercentage|PrintWaitressCopyForPickupOrder|PrintWaitressCopyForDeliveryOrder|PromptToEnterOnlineOrderNumber|Integrated|IntegrationCode|APITransactionKey|DineInSelfOrderURL|CommissionCalculationType|ItemInfoSyncAPIEndpointURL|SkipPrintingKitchenCopy
+--|-----------|------------|----------------|------|--------------------|-------------------------------|---------------------------------|------------------------------|----------|---------------|-----------------|------------------|-------------------------|--------------------------|-----------------------
+
+(0 rows affected)
+=== tblOrderNumber ALL ===
+ID|OrderNumber|CalledDateTime
+--|-----------|--------------
+
+(0 rows affected)
+=== tblStation ALL ===
+ID|StationName|Status|LastClosingTime|KitchenDisplay|Locked
+--|-----------|------|---------------|--------------|------
+1|POS1|1|NULL|0|0
+2|DESKTOP-DEMO|1|2025-08-11 16:26:02.697|0|0
+
+(2 rows affected)
+=== tblMisc ALL ===
+ID|MiscName|Value|Code
+--|--------|-----|----
+1|ScreenLockCode|123|SLC
+2|FileExportDirectory|C:\TopPos\Reports\|FED
+3|GSTPercentage|0.06000|GST
+4|PSTPercentage|0.00000|PST
+5|CompanyName|JEAN'S DELI|CMN
+6|CompanyAddress1|7315 Wisconsin Ave,|CMA1
+7|CompanyAddress2|Bethesda, MD 20814|CMA2
+8|GSTNumber||GST#
+9|QuickDiscountPercentage|10.0|QDP
+10|QuickDiscountDollar|0.00|QDD
+11|TODProgramFilePath|C:\Program Files\TOD 012005\TOD 012005.exe|TOD
+12|DBBackupDirectory|C:\TopPos\DB_Backup\|DBB
+13|MaximumTableNumber|90|MTN
+14|OccupiedTableColor|$0000EAEA|OTC
+15|OccupiedTableCaptionFontSize|11|OTFS
+16|AutoRefresh|True|AR
+17|AutoRefreshTime|5|ART
+18|USExchangeRate|1.2|USER
+19|BackgroundImage1|C:\TopPos\Images\back.bmp|IMG1
+20|BackgroundImage2|C:\TopPos\Images\back.bmp|IMG2
+21|PrintOrdersToCashierPrinter|False|POCP
+22|LastBackupDate|08/14/2025|LBD
+23|AutoBackup|True|AB
+24|AutoBackupFrequency|1|ABF
+25|LogoPrintFontName|Control|LPFN
+26|LogoPrintCode|G|LPC
+27|LogoPrint|False|LP
+28|DailyOrderNumber|5|DON
+29|BillPrintedTableColor|clRed|BPTC
+30|LastClosingTime|12/24/2023 17:06:50|LCT
+31|OrderPrintFormatType||OPFT
+32|SecurityCheck|False|SC
+33|HalfDayClosingTime|01/01/2008 12:00:00|HDCT
+34|ShowMenuButtonClickCount|False|SMBCC
+35|PrintAlternativeItemNameOnOrderPrint|False|PAO
+36|PrintAlternativeItemNameOnReceipt|False|PAR
+37|PrintOnlyAltItemNameOnOrderPrint|False|POAIN
+38|OrderedItemDeletionCheck|True|OIDC
+39|DeletionCheckPoint|True|DCP
+40|FontSizeOnOrderPrint|15|FSOP
+41|OrderListColor1|$0070A0D1|OLC1
+42|OrderListColor2|$00ADBD84|OLC2
+43|OrderListTextColor|$003A2E3D|OLTC
+44|ShowWaitressSelectionWindow|False|SWSW
+45|CheckAccessCodeOnPrepaidCardCharge|True|ACPCC
+46|MessageOnBill||MOB
+47|MessageOnReceipt||MOR
+48|LimitGroupAccessOnPrepaidCardCharge|1|LGAP
+49|OrderNumberPrintForCustomer|False|ONPC
+50|ShowWaitressSelectionWindowOnTakeOut|False|SWSWT
+51|CheckAccessCodeOnTodaySale|True|ACTS
+52|ViewTodaySalesWithOwnerLevel|1|VTSOL
+53|DiscountOnTakeOutOrder|False|DSCT
+54|TakeOutDSCPercent|10.0|TDSC
+55|FontSizeOfTableName|18|FSOT
+56|FirstQuickButtonValue|5|FQBV
+57|SecondQuickButtonValue|10|SQBV
+58|ThirdQuickButtonValue|20|TQBV
+59|EnablePCC|FALSE|EPC
+60|ProcUserName|User1|PUN
+61|ProcName|GSAR|PN
+62|MerchantNumber|700000200753010|MN
+63|PCChargePath|C:\Program Files\Active-Charge\|PCP
+64|LastValidDate|12|LVD
+65|TransTimeOut|60|TTO
+66|ApplySurcharge|FALSE|ASC
+67|SurchargeAmount|0.25|SCA
+68|SurchargeLessThan|5|SLT
+69|CashBack|FALSE|CB
+70|ComPort|COM1|CP
+71|Databits|8|DTB
+72|BaudRate|9600|BRT
+73|Parity|N|PRT
+74|PinpadTimeOut|4|PTO
+75|SwipeTimeOut|30|STO
+76|PreAuthorizationSaleType|FALSE|PAST
+77|AcceptDebitTip|FALSE|ADT
+78|CustomerDisplayMonitor|False|CDM
+79|IntervalBetweenBitmaps|2|IBB
+80|StretchBitmaps|True|SB
+81|AdvertisementBitmapFilePath|C:\TopPos\Images\Ad\|ABFP
+82|CustomerDisplayMonitor2|False|CDM2
+83|WaveFileName||WFN
+84|NoAltNameDisplay|False|NAND
+85|PrintOnlyTakeOutWaitress|False|POTW
+86|SecurityCheckForVoid|True|SCFV
+87|SecurityCheckForEditPrice|True|SCFE
+88|DisplayFrontOrderHeading|True|DFOH
+89|EnableBeeper|False|ENB
+90|MultiLineMenuPage|True|MLMP
+91|FrontBeeper|False|ENFB
+92|RecordPrintLog|False|RPL
+93|PrintWholeWaitressCopy|False|PWWC
+94|ReceiptPrinterSetting|True|RPS
+95|ReceiptSeparatePrinterSetting|False|RSPS
+96|PrintOrderNumberOnReceipt|True|PON
+97|PST2Percentage|0.00000|PST2
+98|OccupiedTableCaptionFontName|Tahoma|OTFN
+99|OccupiedTableCaptionFontBold|False|OTFB
+100|OccupiedTableCaptionFontItalic|False|OTFI
+101|OccupiedTableCaptionFontColor|$00020202|OTFC
+102|UseOriginalFontColor|False|UOFC
+103|AttentionTableColor|clBlue|ATC
+104|ShowTakeOutInfoWindow|True|STOIW
+105|FourthQuickButtonValue|50|FOQBV
+106|CustomerDisplayMonitor3|False|CDM3
+107|SecurityCheckForDiscount|False|SCFD
+108|PrintGuestNumOnOrderPrint|False|PGN
+109|UseBarCodeButton|False|UBCB
+110|SepAddOrder|False|SPAO
+111|UsePartialPaymentMethod|False|UPPM
+112|SelectCashAsDefaultPayment|True|SCADP
+113|ShowOrdersOnTableButton|False|SOOTB
+114|RecordVoidTransaction|True|RVT
+115|ShowWarningForOpenTables|False|SWFOT
+116|CalculateTipOnBill|False|CTOB
+117|TipDescription|Gratitude|TD
+118|TipPercentage|15.00|TP
+119|UseKitchenDisplayMonitor|False|UKDM
+120|QuickDiscountPercentageEmployee|0.0|QDPE
+121|QuickDiscountDollar|0.00|QDDE
+122|QuickDiscountPercentageType1|0.0|QDPT1
+123|QuickDiscountDollar|0.00|QDDT1
+124|QuickDiscountPercentageType2|0.0|QDPT2
+125|QuickDiscountDollar|0.00|QDDT2
+126|QuickDiscountType1Description|0|QDT1D
+127|QuickDiscountType2Description|0|QDT2D
+128|ReportByItem|False|RPTBI
+129|ReportByHour|False|RPTBH
+130|ReportByDay|False|RPTBD
+131|ReportByMonth|False|RPTBM
+132|Tax1Name|Tax1|TAX1
+133|Tax2Name|Tax2|TAX2
+134|Tax3Name|Tax3|TAX3
+135|BusinessNumberOrTaxNumberName|T.301-654-5436|BNTNN
+136|ApplyFixedDSCRate|False|AFDSC
+137|FixedDSCPercent|10.0|FDSCP
+138|DBBackupDirectory2|C:\TopPos\DB_Backup\|DBB2
+139|CheckNonAlcoholDeletion|True|CNAD
+140|CheckAlcoholDeletion|True|CAD
+141|NonAlcoholDeletionCheckPoint|True|NADCP
+142|AlcoholDeletionCheckPoint|True|ADCP
+143|SecurityCheckForOpenTill|True|SCFO
+144|OpenTillForOwnerLevelOnly|False|OTFO
+145|ClockOutRestriction|False|COR
+146|PrintFoodAlcoholDetail|False|PFAD
+147|PrintDineInOutDetail|False|PDIOD
+148|PrintTipDetail|False|PTD
+149|SaveRewardPointRule|10@1|SRPR
+150|DeductRewardPointRule|40@1|DRPR
+151|RecordDeletedItems|True|RDI
+152|MenuTabHeight|35|MTH
+153|TableTabHeight|50|TTH
+156|LoginScreenImageFilePath||IMG0
+157|StretchLoginScreenImage|False|SLSI
+158|SecurityCheckForX1Report|True|SCFX1
+159|PrintOrderNumberOnWaitressCopy|True|PONWC
+160|ShowSubTotalOnTableButton|False|SSOTB
+161|ShowTimeChargedItemsListButton|False|TCILB
+162|PrintWaitressAlcoholSalesDetail|False|PWASD
+163|CountryCode|US|CCODE
+164|PrintClockInOutRecord|False|PCIOR
+165|PrintRewardPointSummaryOnReceipt|False|PRPS
+166|ShowOverTimeWorkHoursOnExport|False|SOTWH
+167|RegularWorkHours|8|RWHRS
+168|LunchTimeMinutes|30|LTMIN
+169|PrintOrderNumberAtBottom|False|PONAB
+170|Print2CopiesLastReceipt|False|P2CLR
+171|PrintTableMoveNotification|False|PTMN
+172|PrintUnitPriceOnOrderPrint|False|PUPOP
+173|CloseAfterMidnight|False|CLAMN
+174|PrepayTypeBusiness|False|PPTB
+175|SpecialTableColor|$00808040|SPTC
+176|UseSimpleLayoutTableButton|False|USLTB
+177|UseSimpleLayoutMenuButton|False|USLMB
+178|ShadowOnTableButton|False|SDWTB
+179|ShadowOnMenuButton|False|SDWMB
+180|ScheduledPrintingCheckTime|5|SPCT
+181|CustomerLogoImage||IMG3
+182|UseBarPrinterLikeBackKitchenPrinter|False|BPBKP
+183|UseFront2PrinterLikeFrontKitchenPrinter|False|F2PFP
+184|CutItemsOnKitchenPRN3|False|CIKP3
+185|RestrictGoBackIfOrderUnsaved|False|RGBOU
+186|MustSaveOrderAfterDeletingItems|True|SOADI
+187|SecurityCheckForMoveTable|False|SCFMT
+188|MoveTableSecurityCheckPoint|True|MTSCP
+189|SavedOrderListTextColor|clGrayText|SOLTC
+190|OrderListBackgroundColor|$00B3FFFF|OLBC
+191|OrderedListFontName|Tahoma|OLFN
+192|OrderedListFontSize|11|OLFSZ
+193|OrderedListFontBold|True|OLFSB
+194|OrderedListFontItalic|False|OLFSI
+195|ShowClockedInUsersOnly|False|SCIUO
+196|RestrictSalesIfUserNotClockedIn|False|RSNCI
+197|BypassSecurityCheckOnTakeOut|False|BSCOT
+198|ShowWaitressesOnTheSameAccessLevel|False|SWSAL
+199|AllowAccessOnOrderedTablesByOthers|False|AAOTO
+200|AllowChangingWaitressOnPaidSaleTransaction|False|ACWOT
+201|WaitressOnPaidTransChangeLevel|1|WPTCL
+202|TextHighlightColor|clBlack|DOTHC
+203|PaymentTipAdjustLevel|1|PTAOL
+204|UseQuickCashTipRecording|False|UQCTR
+205|ShowPrintingReportOption|True|SPRO
+206|SecurityCheckForCardSettlement|False|SCFCS
+207|SecurityCheckForTipCompletion|False|SCFTC
+208|RecordHalfDayClosingTime|False|RHDCT
+209|ApplyDiscountOnPrepaidCardCharge|False|ADPCC
+210|DiscountOnPrepaidCardChargeLevel|1|DPCCL
+211|ApplyFixedDiscountPercentageOnPrepaidCardCharge|True|AFDPC
+212|FixedDiscountPercentageOnPrepaidCardCharge|10|FDPPC
+213|MaximumAllowedDiscountPercentageOnPrepaidCardCharg|10|MADPC
+214|TimeStampManagementLevel|0|TSML
+215|AllowManagersToAccessSalesReport|True|AMASR
+216|NumberOfAllowedDaysForSalesReportView|7|NDSRV
+217|ShowDSCOverrideConfirmWindow|False|SDOCW
+218|DoNotApplyWeekdayHappyHourDiscountOnTakeOutOrders|False|NWHDT
+219|DoNotApplyWeekdayHappyHourDiscountRuleType|A|NWHRT
+220|UseSubtotalForTipOutCalculation|False|USTTO
+221|TipOutFromDineInTotalOnly|False|TODIO
+222|TipOutFromFoodTotalOnly|False|TOFTO
+223|TipOutFromTipTotal|False|TOTTL
+224|ApplyBaseRateForTimeChargedItems|False|ABRTI
+225|BaseRateAppliedMinutes|30|BRAM
+226|ShowCustomerTypeAndGroupSelection|False|SCTGS
+227|DrawerCloseCheck|False|CDC
+228|ShowRoundedDueAmountForCashPayment|False|SRDAP
+229|UseCardProcessorIssuedGiftCard|False|UPIGC
+230|RecordDeliverySaleTransUnderDeliveryPerson|False|RDTDP
+231|HoldTransactionsPaidByChargeOnAccount|False|HTCOA
+232|ShowPrintDateTimeOnSalesReport|True|PDTSR
+233|UseCashInOutForPrintingOnly|False|UCIOP
+234|ShowSelfCheckoutShortcut|False|SSCSC
+235|ShowSelfOrderShortcut|False|SSOSC
+236|SelfOrderInStationMode|False|SOISM
+237|ShowNumberOfChildWithConsent|False|SNOCC
+238|MinimumAmountForTakeOutDSC|0.00|MAFTD
+239|ReceiptLeftMargin|0|RCLM
+240|ReceiptFont1Size|10|RF1S
+241|ReceiptFont2Size|10|RF2S
+242|OrderPrintLeftMargin0|0|OPLM0
+243|OrderPrintTopMargin0|0|OPTM0
+244|OrderPrintBottomMargin0|0|OPBM0
+245|OrderPrintLeftMargin1|0|OPLM1
+246|OrderPrintTopMargin1|0|OPTM1
+247|OrderPrintBottomMargin1|0|OPBM1
+248|OrderPrintLeftMargin2|0|OPLM2
+249|OrderPrintTopMargin2|0|OPTM2
+250|OrderPrintBottomMargin2|0|OPBM2
+251|OrderPrintLeftMargin3|0|OPLM3
+252|OrderPrintTopMargin3|0|OPTM3
+253|OrderPrintBottomMargin3|0|OPBM3
+254|OrderPrintLeftMargin4|0|OPLM4
+255|OrderPrintTopMargin4|0|OPTM4
+256|OrderPrintBottomMargin4|0|OPBM4
+257|OrderPrintLeftMargin5|0|OPLM5
+258|OrderPrintTopMargin5|0|OPTM5
+259|OrderPrintBottomMargin5|0|OPBM5
+260|OrderPrintLeftMargin6|0|OPLM6
+261|OrderPrintTopMargin6|0|OPTM6
+262|OrderPrintBottomMargin6|0|OPBM6
+263|ShowAmericanExpressPayment|True|SAEP
+264|ShowDiscoverPayment|False|SDP
+265|ShowJCBPayment|False|SJCBP
+266|ShowGiftCardPayment|False|SGCP
+267|ShowCouponPayment|False|SCPNP
+268|ShowRewardPointPayment|False|SRPP
+269|ShowChargeOnAccountPayment|False|SCOAP
+270|PrintOnlyDineInWaitress|False|PODW
+271|SalesVoidAccessLevel|2|VFOLO
+272|EditPriceAccessLevel|0|EPFOL
+273|SecurityCheckForDiscountOnlyAfterBillPrint|False|SCOAB
+274|SecurityCheckForTipOnBill|False|SCFTB
+275|SecurityCheckForStoreCredit|False|SCFSC
+276|RestrictAccessToMenuAndTableSettings|False|RAMTS
+277|RefundForManagerOwnerLevelOnly|False|RFMOL
+278|OpenTillSecurityCheckLevel|1|OTSCL
+279|DoNotOpenTillAfterPayment|False|NOTAP
+280|OpenTillForCashPaymentOnly|True|OTCPO
+281|RecordNoSaleTrans|True|RNST
+282|HideOrderMemoButton|False|HOMB
+283|SeparateEachMenuEntry|True|SEME
+284|PrintCustomerNoteOnWaitressCopy|True|PCNWC
+285|PrintCustomerNoteOnKitchenCopy|False|PCNKC
+286|AlwaysPrintWaitressCopyForOnlineTableOrders|False|APWCO
+287|PrintCustomerNoteOnBillReceipt|False|PCNBR
+288|PrintTasteOnBill|True|PTOB
+289|PrintTipRequestFieldOnBill|False|PTRFB
+290|ShowServerNameOnTableButton|True|SSNTB
+291|ShowElapsedTimeOnTableButton|True|SETTB
+292|ShowNumberOfGuestsOnTableButton|True|SNGTB
+293|ShowServerNameOnTakeOutButton|False|SSNTO
+294|ShowOrderedTimeOnTakeOutButton|False|SOTTO
+295|ShowElapsedTimeOnTakeOutButton|False|SETTO
+296|PaymentTypeSelectionRequiredEverytime|True|PTSRE
+297|UseScaleValueInThousandths|False|USVIT
+298|UseExactDueAmountAutomaticallyForCardPayment|True|UEACP
+299|ConfirmUnsavedOrderChange|True|CUSOC
+300|CloseMenuGroupWindowAfterMenuButtonClick|True|CMWAC
+301|HidePrintTipOnBillButton|False|HPTBB
+302|DoNotIncludeTipInTotal|False|DNIIT
+303|DoNotIncludeTipForTakeOutOrders|False|DNITO
+304|SuggestedTipDescription|Suggested Gratitude|TD2
+305|TipPercentage2|18.00|TP2
+306|TipPercentage3|20.00|TP3
+307|TipToBeIncludedInTotal|TIP1|TTBIT
+308|MergeItemsOnKitchenDisplay|True|MIOKD
+309|UseKitchenDisplayMonitorTypeB|False|UKDMB
+310|IncludeTaxAmountOnReportByReports|False|TAORB
+311|PrintWaitressCategorySalesDetail|False|PWCSD
+312|PrintGiftCardDetail|False|PGCD
+313|UseSpecialOrderNumberSequence|False|USONS
+314|LastDigitOfOrderNumberSequence|8|LDONS
+315|ReservationTimeControlType|A|RTCT
+316|UseLoyaltyStampCard|False|ULSC
+317|NumberOfStampsOnCard|10|NOSOC
+318|OnlyForRewardPointApplicableItems|False|ORPAI
+319|SaveRewardPointOnDeliveryOrder|False|SRPOD
+320|RedeemByMultipleOfSetPoints|False|RBMSP
+321|PrintVoidNotification|False|PVN
+322|PrintRefundNotification|False|PRTN
+323|RecordReasonForDeletingItem|False|RRFDI
+324|RecordPriceChange|False|RPC
+325|MenuTabWidth|210|MTW
+326|SkipClockInOutButton|False|SCIOB
+327|Print2CopiesReceipt|False|P2CR
+328|DoNotPrintSalesTaxRateOnBillReceipt|False|DNPTR
+329|DoNotPrintPricePerUnitOnBillReceipt|False|DNPPU
+330|PrintReservationDetailAfterSave|True|PRDAS
+331|PrintPickupTimeOnOrderPrint|False|PPTOP
+332|PrintDeliveryTimeOnOrderPrint|False|PDTOP
+333|PrintExtendedPriceOnOrderPrint|False|PEPOP
+334|PrintExtraChargeAmount|False|PECA
+335|PrintTimeOnCutItems|True|PTOCI
+336|PrintCustomerAddressOnOrderPrint|False|PCAOP
+337|PrintInRedOnBackKitchenPrinterForMenusBackAndFront|False|PRMBF
+338|PrintTastesInOtherFont|False|POIOF
+339|PrintWithoutSummarizingOrder|False|PWSO
+340|PrintInCategoryAndPersonOrder|False|PICPO
+341|UseKitchenPrinter6AsLabelPrinter|False|KP6LP
+342|ShowTastesOnAllPendingOrders|False|STAPO
+343|DoNotConfirmReverseCheckOnAllPendingOrders|False|DNCRC
+344|MerchantCode||MERCD
+345|ServerIndex|0|WCPRN
+346|KeepBarcodeScanWindowOnScreen|False|KBSWO
+347|UseAdvancedPrepaidCardCustomerSearch|False|UAPCS
+348|LookupCustomerPhoneNumberInSearch|False|LCPNS
+349|CloseChangeMoneyWindowAutomatically|False|CCMWA
+350|UseWindowsOnScreenKeyboard|False|UWOSK
+351|ShowAlternativeNameOnItemDetail|True|SANID
+352|OnlineReportDataSyncEnabled|False|ORDSE
+353|OnlineReportStoreID|0|ORSID
+354|OnlineReportLinkedServerName||ORLSN
+355|OnlineReportDataSyncFrequency|60|ORDSF
+356|OnlineReportSyncTimeFrom|11 AM|ORSTF
+357|OnlineReportSyncTimeTo|11 PM|ORSTT
+358|OnlineReportDataSyncStationName|POS1|ORSTS
+359|IncludeOnlineOrderSalesSummaryInSalesReport|False|IOOSS
+360|IncludeSurcharge|False|INSUR
+361|SurchargeMinimumAmount|5.00|SMAMT
+362|DefaultCreditCardPaymentTransactionType|0|DCPTT
+363|FirstDataMerchantMID||FDMID
+364|NoCloverReceipt|False|NCLVR
+365|AutoAcceptCustomerSignature|True|AACS
+366|UseBarTabs|False|USEBT
+367|SuggestedPreAuthorizeAmt|100.00|SPAA
+368|OfflinePaymentsOptionIndex|0|OFFLP
+369|TopPosProgramVersionNumber|24.10.22|TPPVN
+370|StoreWebsiteURL||SWURL
+371|PrintStoreWebsiteURLInQRCode|False|URLQR
+372|ProductKeyExpirationDate||PKEXD
+373|RestrictMoveTableOnTakeOutTypeTables|False|RMTTO
+374|RestrictChangingWaitressByEmployeeLevelAccess|False|RCWEA
+375|HideTipTotal|False|HTIPT
+376|CashSalesReportOnly|False|CSROY
+377|EmailSalesReport|False|EMLSR
+378|DisablePrintingWaitressReport|False|DPWR
+379|AllowManagersToAccessSalesTransactions|False|AMAST
+380|GrantManagersFullAccessOnSalesTransactions|False|GMFAT
+381|DefaultPaymentType|1|DFTPT
+382|PrintingOnOrderType|00000100002000030000|POOT
+383|ShowOrderNumberOnTakeOutButton|True|SONTO
+384|ShowPhoneNumberOnTakeOutButton|True|SPNTO
+385|ShowCustomerNameOnTableButton|True|SCNTO
+386|NumOfGuestsToApplyAutomaticTipCharge|1|GAATC
+387|DeliveryChargeDescription|Delivery Charge|DCD
+388|DeliveryChargeAmount|0.00|DCAMT
+389|ApplyDeliveryChargeOnDeliveryOrders|False|ADCDO
+390|TakeOutTimeControlType|A|TOTCT
+391|DoNotPrintReceiptForOnlineOrder|False|DNPOO
+392|UseExactDueAmountAutomaticallyForCashPayment|False|UEASP
+393|SizeSelectionButtonFontName|Arial|SBFNM
+394|SizeSelectionButtonFontSize|12|SBFSZ
+395|SizeSelectionButtonFontBold|True|SBFBD
+396|SizeSelectionButtonFontItalic|False|SBFIT
+397|SizeSelectionButtonFontColor|clNavy|SBFCL
+398|SizeSelectionButtonColor|$00CFE1EB|SBCLR
+399|SizeSelectionButtonWidth|125|SBWTH
+400|SizeSelectionButtonHeight|90|SBHGH
+401|SizeSelectionButtonCountFontSize|14|SBCFS
+402|IncludeDineInOnlineOrdersInCommissionCalculation|False|IDOCC
+403|PrintSalesTotalExcludingOnlineOrderCommission|False|PTEOC
+404|UseDineInSelfOrder|False|UDISO
+405|DineInSelfOrderURL||SOURL
+406|DineInSelfPaymentURL||SPURL
+407|DineInSelfOrderCodeExpirationType|1|SOCET
+408|PickupOnlineOrderFile|False|POOF
+409|OnlineOrderFilePickupPath|C:\TopPos\OnlineOrders\|OOFPP
+410|OnlineOrderFilePickupStation||OOFPS
+411|UseNonIntegratedSelfPaymentURL|False|UNISP
+412|FixedPartOfNonIntegratedSelfPaymentURL||FNISP
+413|EmailUserName||EMLUN
+414|EmailAppPassword||EMLAP
+415|EmailDefaultRecepient||EMLDR
+416|EnableSMS|False|ENSMS
+417|ActiveSMS||ACSMS
+418|SMSFromPhoneNumber||SMSPN
+419|SMSLocationOfcURL||LCURL
+420|SMSAccountSIdOrAccessKeyId||SMSID
+421|SMSAuthTokenOrSecretKey||SMSAT
+422|SMSNotificationMessage||SMSNM
+423|SMSOtherNotificationMessage1||SMSM1
+424|SMSOtherNotificationMessage2||SMSM2
+425|SMSOtherNotificationMessage3||SMSM3
+426|ManageSQLServerMemoryUsageDynamically|True|MSSMU
+427|SQLServerMemoryMinimumWaitTimeToRelease|10|SMMWT
+428|EnableByPassOptionForManagerAndOwnerOnly|True|EBMOO
+429|AutoBatchCloseout|False|ABCO
+430|AskForTip|False|ASKFT
+431|StayingTimeLimitAfterBillPrint|10|STLBP
+432|MessageOnBillForTakeOutOrder||MOBTO
+433|HideSyncProgressOfDayHourDiscountPriceToOnline|False|HSSDP
+434|OnlyForRewardPointsManagedCustomer|False|ORPMC
+435|SelfMenuTabWidth|0|SMTW
+436|SelfMenuTabHeight|40|SMTH
+437|SelfTableTabHeight|40|STTH
+438|ReportDateFormat|yyyy-mm-dd|RDF
+439|ApplyMultipleItemTaxExemption|False|AMITE
+440|MinimumItemCountForMultipleItemTaxExemption|6|MICTE
+
+(438 rows affected)
+=== tblConstants TOP 20 ===
+ID|TransType|Code|Value|Description|IsError
+--|---------|----|-----|-----------|-------
+1|SALE|RES  |0[48]     |Declined|1
+2|SALE|RES  |1[49]     |Approved|0
+3|SALE|RES  |2[50]     |Approved (Offline)|0
+4|SALE|RES  |<[60]     |Partial Authorization cancelled|1
+5|SALE|RES  |A[65]     |Signature not Accepted|1
+6|SALE|RES  |C[67]     |Invalid Amount|1
+7|SALE|RES  |E[69]     |Invalid Card Expire Date|1
+8|SALE|RES  |F[70]     |Invalid Card|1
+9|SALE|RES  |G[71]     |PINPad operation cancelled|1
+10|SALE|RES  |H[72]     |Invalid Card Number for void|1
+11|SALE|RES  |I[73]     |Invalid Debit Type for void|1
+12|SALE|RES  |J[74]     |Time-out|1
+13|SALE|RES  |K[75]     |PinPad swipe error|1
+14|SALE|RES  |L[76]     |FID is missing|1
+15|SALE|RES  |M[77]     |Stolen/Restricted Card|1
+16|SALE|RES  |N[78]     |Referral|1
+17|SALE|RES  |O[79]     |Invalid Response Message|1
+18|SALE|RES  |P[80]     |Invalid Transaction Type used with defined Business Type|1
+19|SALE|RES  |Q[81]     |PinPad is not ready|1
+20|SALE|RES  |R[82]     |Error injecting keys|1
+
+(20 rows affected)
+=== tblItem SAMPLE ===
+ID|IName|CategoryID|ApplyGST|ApplyPST|Status|OnlineItem|Taste
+--|-----|----------|--------|--------|------|----------|-----
+1|EGG SANDWICH|1|1|0|1|0|0
+2|EGG CHEESE SANDWICH|1|1|0|1|0|0
+3|EGG HAM SANDWICH|1|1|0|1|0|0
+4|TWO EGG PLATTER|1|1|0|1|0|0
+5|TWO EGG BACON PLATTER|1|1|0|1|0|0
+6|TWO EGG SAUAGE PLATTER|1|1|0|1|0|0
+7|CHEESE OMELETS|1|1|0|1|0|0
+8|HAM & CHEESE OMELETS|1|1|0|1|0|0
+9|VEGETABLE OMELETS|1|1|0|1|0|0
+10|WESTERN OMELETS|1|1|0|1|0|0
+
+(10 rows affected)
+=== tblSize ALL ===
+ID|SizeName|ShortName|DisplayOrder|SizeGroupID
+--|--------|---------|------------|-----------
+1|NoSize||0|0
+2|CHEESE|NULL|0|2
+3|HASH BROWN|NULL|0|2
+4|MEAT|NULL|0|2
+5|ON BAGEL|NULL|0|2
+6|ON CROISSANT|NULL|0|2
+7|EGG|NULL|0|2
+8|LETTUCE TOMATO|NULL|0|2
+9|CHEESE|NULL|0|4
+10|MEAT|NULL|0|4
+11|AVOCADO|NULL|0|4
+12|BACON|NULL|0|4
+13|VEGETABLE|NULL|0|4
+
+(13 rows affected)
+=== tblAvailableSize SAMPLE ===
+ItemID|SizeID|UnitPrice|OnHandQty|ApplyNoDSC|UnitPrice2|UnitPrice3|DiscountPeriod|DiscountStartDate|DiscountEndDate
+------|------|---------|---------|----------|----------|----------|--------------|-----------------|---------------
+1|1|3.9900|0|0|.0000|.0000|0|2024-01-01 00:00:00|2024-01-01 00:00:00
+2|1|4.4900|0|0|.0000|.0000|0|2024-01-01 00:00:00|2024-01-01 00:00:00
+3|1|5.3900|0|0|.0000|.0000|0|2024-01-01 00:00:00|2024-01-01 00:00:00
+4|1|4.4900|0|0|.0000|.0000|0|2024-01-01 00:00:00|2024-01-01 00:00:00
+5|1|5.8900|0|0|.0000|.0000|0|2024-01-01 00:00:00|2024-01-01 00:00:00
+6|1|5.8900|0|0|.0000|.0000|0|2024-01-01 00:00:00|2024-01-01 00:00:00
+7|1|5.9900|0|0|.0000|.0000|0|2024-01-01 00:00:00|2024-01-01 00:00:00
+8|1|8.6900|0|0|.0000|.0000|0|2024-01-01 00:00:00|2024-01-01 00:00:00
+9|1|8.6900|0|0|.0000|.0000|0|2024-01-01 00:00:00|2024-01-01 00:00:00
+10|1|8.9900|0|0|.0000|.0000|0|2024-01-01 00:00:00|2024-01-01 00:00:00
+
+(10 rows affected)
+=== tblSalesOfOnlineOrders TOP 5 ===
+SalesID|OnlineOrderCompanyID|OnlineOrderNumber|OnlineOrderCustomerName|DineInOrder|ReservedTipAmt|DeliveryChargeAmt
+-------|--------------------|-----------------|-----------------------|-----------|--------------|-----------------
+
+(0 rows affected)

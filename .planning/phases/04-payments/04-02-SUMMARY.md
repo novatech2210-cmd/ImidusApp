@@ -48,7 +48,7 @@ metrics:
 
 ## Objective
 
-Implement payment posting to POS database with encryption, order completion workflow with payment-triggered finalization, and mobile checkout/confirmation UI.
+Implement payment posting to INI_Restaurant database (source of truth) with encryption, order completion workflow with payment-triggered finalization, and mobile checkout/confirmation UI.
 
 ## Completed Work
 
@@ -65,7 +65,7 @@ Implement payment posting to POS database with encryption, order completion work
 - All payment operations use IDbTransaction parameter for atomicity
 
 **Key Features:**
-- Encryption uses POS database stored procedure (dbo.EncryptString) matching existing POS pattern
+- Encryption uses INI_Restaurant database (source of truth) stored procedure (dbo.EncryptString) matching existing POS pattern
 - PaymentType enum already existed with all card types (Cash=1, Debit=2, Visa=3, MC=4, Amex=5, etc.)
 - COALESCE used for CreditPaidAmt to handle NULL columns in tblSales
 
@@ -285,7 +285,7 @@ All measurable completion criteria met:
 
 **Security:**
 - Card data tokenized client-side (never touches backend)
-- Authorize.net token encrypted before storage using POS database function
+- Authorize.net token encrypted before storage using INI_Restaurant database (source of truth) function
 - Only last 4 digits + card type stored unencrypted for receipts
 
 **Reliability:**
