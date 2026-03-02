@@ -19,6 +19,7 @@ namespace IntegrationService.Tests.Services
     {
         private readonly Mock<IPosRepository> _mockPosRepo;
         private readonly Mock<IPaymentService> _mockPaymentService;
+        private readonly Mock<INotificationService> _mockNotificationService;
         private readonly Mock<ILogger<OrderProcessingService>> _mockLogger;
         private readonly OrderProcessingService _service;
 
@@ -26,11 +27,13 @@ namespace IntegrationService.Tests.Services
         {
             _mockPosRepo = new Mock<IPosRepository>();
             _mockPaymentService = new Mock<IPaymentService>();
+            _mockNotificationService = new Mock<INotificationService>();
             _mockLogger = new Mock<ILogger<OrderProcessingService>>();
 
             _service = new OrderProcessingService(
                 _mockPosRepo.Object,
                 _mockPaymentService.Object,
+                _mockNotificationService.Object,
                 _mockLogger.Object
             );
         }
@@ -43,9 +46,11 @@ namespace IntegrationService.Tests.Services
         {
             // Arrange
             var salesId = 123;
+            var customerId = 42;
             var paymentRequest = new PaymentRequest
             {
                 SalesId = salesId,
+                CustomerId = customerId,
                 Amount = 50.00m,
                 DailyOrderNumber = 42,
                 Token = new PaymentToken
@@ -98,6 +103,18 @@ namespace IntegrationService.Tests.Services
             _mockPosRepo.Verify(r => r.UpdateSalePaymentTotalsAsync(salesId, It.IsAny<PosTender>(), It.IsAny<IDbTransaction>()), Times.Once);
             _mockPosRepo.Verify(r => r.CompleteOrderAsync(salesId, It.IsAny<IDbTransaction>()), Times.Once);
             mockTransaction.Verify(t => t.Commit(), Times.Once);
+
+            // Verify notification was sent
+            _mockNotificationService.Verify(n => n.SendNotificationAsync(
+                customerId,
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.Is<Dictionary<string, string>>(d =>
+                    d["type"] == "order_confirmed" &&
+                    d["orderId"] == salesId.ToString() &&
+                    d["screen"] == "OrderTracking"
+                )
+            ), Times.Once);
         }
 
         /// <summary>
@@ -588,6 +605,77 @@ namespace IntegrationService.Tests.Services
                 It.IsAny<int>(),
                 It.IsAny<IDbTransaction>()
             ), Times.Never);
+        }
+
+        /// <summary>
+        /// Test: Notification failure does not block order completion
+        /// </summary>
+        [Fact]
+        public async Task ProcessPaymentAndCompleteOrderAsync_NotificationFails_OrderStillCompletes()
+        {
+            // Arrange
+            var salesId = 123;
+            var customerId = 42;
+            var paymentRequest = new PaymentRequest
+            {
+                SalesId = salesId,
+                CustomerId = customerId,
+                Amount = 50.00m,
+                DailyOrderNumber = 42,
+                Token = new PaymentToken
+                {
+                    DataDescriptor = "COMMON.ACCEPT.INAPP.PAYMENT",
+                    DataValue = "test_token_value"
+                }
+            };
+
+            var paymentResult = new PaymentResult
+            {
+                Success = true,
+                TransactionId = "AUTH_123456",
+                AuthorizationCode = "ABC123",
+                Last4Digits = "1234",
+                CardType = "Visa"
+            };
+
+            var mockTransaction = new Mock<IDbTransaction>();
+            var mockConnection = new Mock<IDbConnection>();
+            mockTransaction.Setup(t => t.Connection).Returns(mockConnection.Object);
+
+            _mockPosRepo.Setup(r => r.BeginTransactionAsync()).ReturnsAsync(mockTransaction.Object);
+            _mockPaymentService.Setup(s => s.ChargeCardAsync(paymentRequest)).ReturnsAsync(paymentResult);
+            _mockPosRepo.Setup(r => r.InsertPaymentAsync(It.IsAny<PosTender>(), It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+            _mockPosRepo.Setup(r => r.UpdateSalePaymentTotalsAsync(salesId, It.IsAny<PosTender>(), It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+            _mockPosRepo.Setup(r => r.CompleteOrderAsync(salesId, It.IsAny<IDbTransaction>())).Returns(Task.CompletedTask);
+
+            // Mock notification service to throw exception
+            _mockNotificationService.Setup(n => n.SendNotificationAsync(
+                It.IsAny<int>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, string>>()
+            )).ThrowsAsync(new Exception("FCM service unavailable"));
+
+            // Act
+            var result = await _service.ProcessPaymentAndCompleteOrderAsync(salesId, paymentRequest);
+
+            // Assert
+            Assert.True(result.Success);  // Order completes despite notification failure
+            Assert.Equal("AUTH_123456", result.TransactionId);
+
+            // Verify warning was logged
+            _mockLogger.Verify(
+                x => x.Log(
+                    LogLevel.Warning,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Failed to send order confirmation notification")),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+                Times.Once);
+
+            // Verify transaction committed (not rolled back)
+            mockTransaction.Verify(t => t.Commit(), Times.Once);
+            mockTransaction.Verify(t => t.Rollback(), Times.Never);
         }
     }
 }

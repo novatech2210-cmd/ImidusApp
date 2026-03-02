@@ -23,15 +23,18 @@ namespace IntegrationService.Core.Services
     {
         private readonly IPosRepository _posRepo;
         private readonly IPaymentService _paymentService;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<OrderProcessingService> _logger;
 
         public OrderProcessingService(
             IPosRepository posRepository,
             IPaymentService paymentService,
+            INotificationService notificationService,
             ILogger<OrderProcessingService> logger)
         {
             _posRepo = posRepository ?? throw new ArgumentNullException(nameof(posRepository));
             _paymentService = paymentService ?? throw new ArgumentNullException(nameof(paymentService));
+            _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -343,6 +346,36 @@ namespace IntegrationService.Core.Services
                     _logger.LogInformation(
                         "Order {SalesId} completed successfully with payment {TransactionId}",
                         salesId, paymentResult.TransactionId);
+
+                    // Step 7: Send order confirmation push notification
+                    if (paymentRequest.CustomerId.HasValue)
+                    {
+                        try
+                        {
+                            await _notificationService.SendNotificationAsync(
+                                paymentRequest.CustomerId.Value,
+                                "Thank you! Order received",
+                                $"Order #{paymentRequest.DailyOrderNumber} received",
+                                new Dictionary<string, string>
+                                {
+                                    { "type", "order_confirmed" },
+                                    { "orderId", salesId.ToString() },
+                                    { "screen", "OrderTracking" }
+                                }
+                            );
+
+                            _logger.LogInformation(
+                                "Order confirmation notification sent for order {SalesId}, customer {CustomerId}",
+                                salesId, paymentRequest.CustomerId.Value);
+                        }
+                        catch (Exception notifEx)
+                        {
+                            _logger.LogWarning(notifEx,
+                                "Failed to send order confirmation notification for order {SalesId}. Order completed successfully.",
+                                salesId);
+                            // Don't fail order completion if notification fails
+                        }
+                    }
 
                     return new Models.OrderCompletionResult
                     {
