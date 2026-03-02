@@ -16,6 +16,8 @@ import { tokenizeCard } from '../services/paymentService';
 import { completePayment } from '../services/orderService';
 import { CardData } from '../types/payment.types';
 import { RootState } from '../store';
+import { Colors } from '../theme/colors';
+import { Spacing } from '../theme/spacing';
 
 type RootStackParamList = {
   Checkout: {
@@ -202,9 +204,9 @@ export default function CheckoutScreen() {
               minimumValue={0}
               maximumValue={maxRedeemablePoints}
               step={100}
-              minimumTrackTintColor="#D4AF37"
-              maximumTrackTintColor="#e0e0e0"
-              thumbTintColor="#D4AF37"
+              minimumTrackTintColor={Colors.primary}
+              maximumTrackTintColor={Colors.border}
+              thumbTintColor={Colors.primary}
               style={styles.slider}
             />
 
@@ -263,7 +265,7 @@ export default function CheckoutScreen() {
       <Modal visible={loading} transparent animationType="fade">
         <View style={styles.loadingOverlay}>
           <View style={styles.loadingCard}>
-            <ActivityIndicator size="large" color="#10b981" />
+            <ActivityIndicator size="large" color={Colors.success} />
             <Text style={styles.loadingText}>{loadingStep}</Text>
             <Text style={styles.loadingSubtext}>Please do not close this screen</Text>
           </View>
@@ -276,78 +278,78 @@ export default function CheckoutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background,
   },
   scrollContent: {
-    padding: 16,
-    paddingBottom: 32,
+    padding: Spacing.md,
+    paddingBottom: Spacing.xl,
   },
   summaryCard: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    padding: Spacing.md,
+    marginBottom: Spacing.md,
   },
   summaryTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
-    marginBottom: 8,
+    color: Colors.text,
+    marginBottom: Spacing.xs,
   },
   orderNumber: {
     fontSize: 14,
-    color: '#6b7280',
-    marginBottom: 16,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.md,
   },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: Spacing.xs,
   },
   summaryLabel: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.textSecondary,
   },
   summaryValue: {
     fontSize: 14,
-    color: '#111827',
+    color: Colors.text,
   },
   divider: {
     height: 1,
-    backgroundColor: '#e5e7eb',
-    marginVertical: 8,
+    backgroundColor: Colors.border,
+    marginVertical: Spacing.xs,
   },
   totalLabel: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.text,
   },
   totalValue: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#10b981',
+    color: Colors.success,
   },
   discountValue: {
-    color: '#10b981',
+    color: Colors.success,
     fontWeight: '600',
   },
   loyaltySection: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    padding: Spacing.md,
+    marginBottom: Spacing.md,
   },
   loyaltySectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
-    marginBottom: 8,
+    color: Colors.text,
+    marginBottom: Spacing.xs,
   },
   balanceText: {
     fontSize: 14,
-    color: '#6b7280',
-    marginBottom: 16,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.md,
   },
   slider: {
     width: '100%',
@@ -356,20 +358,20 @@ const styles = StyleSheet.create({
   redemptionInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 8,
+    marginTop: Spacing.xs,
   },
   redemptionText: {
     fontSize: 16,
-    color: '#111827',
+    color: Colors.text,
   },
   discountText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#10b981',
+    color: Colors.success,
   },
   conversionNote: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.textSecondary,
     marginTop: 4,
     fontStyle: 'italic',
   },
@@ -380,23 +382,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingCard: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     borderRadius: 16,
-    padding: 32,
+    padding: Spacing.xl,
     alignItems: 'center',
     minWidth: 250,
   },
   loadingText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
-    marginTop: 16,
+    color: Colors.text,
+    marginTop: Spacing.md,
     textAlign: 'center',
   },
   loadingSubtext: {
     fontSize: 14,
-    color: '#6b7280',
-    marginTop: 8,
+    color: Colors.textSecondary,
+    marginTop: Spacing.xs,
     textAlign: 'center',
   },
 });
