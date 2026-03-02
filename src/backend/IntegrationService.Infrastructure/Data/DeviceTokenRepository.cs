@@ -113,4 +113,19 @@ public class DeviceTokenRepository : IDeviceTokenRepository
         using var connection = CreateConnection();
         await connection.ExecuteAsync(sql, new { TokenId = tokenId });
     }
+
+    /// <summary>
+    /// Delete stale tokens (inactive for specified number of days).
+    /// Returns count of deleted tokens.
+    /// </summary>
+    public async Task<int> DeleteStaleTokensAsync(int daysInactive)
+    {
+        const string sql = @"
+            DELETE FROM DeviceTokens
+            WHERE IsActive = 0
+              AND LastActive < DATEADD(day, @DaysInactive, GETDATE())";
+
+        using var connection = CreateConnection();
+        return await connection.ExecuteAsync(sql, new { DaysInactive = -daysInactive });
+    }
 }

@@ -13,4 +13,5 @@ public interface IDeviceTokenRepository
     Task UpdateAsync(DeviceToken token);
     Task MarkInactiveAsync(int tokenId);
     Task ReactivateAsync(int tokenId);
+    Task<int> DeleteStaleTokensAsync(int daysInactive);
 }

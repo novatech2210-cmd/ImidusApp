@@ -72,4 +72,18 @@ public class NotificationLogRepository
         using var connection = CreateConnection();
         return await connection.QueryAsync<NotificationLog>(sql, new { CustomerId = customerId, Count = count });
     }
+
+    /// <summary>
+    /// Delete old notification logs (older than specified number of days).
+    /// Returns count of deleted logs.
+    /// </summary>
+    public async Task<int> DeleteOldLogsAsync(int daysOld)
+    {
+        const string sql = @"
+            DELETE FROM NotificationLogs
+            WHERE CreatedAt < DATEADD(day, @DaysOld, GETDATE())";
+
+        using var connection = CreateConnection();
+        return await connection.ExecuteAsync(sql, new { DaysOld = -daysOld });
+    }
 }
