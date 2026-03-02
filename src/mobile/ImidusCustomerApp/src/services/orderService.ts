@@ -1,6 +1,32 @@
+import apiClient from '../api/apiClient';
 import { PaymentToken } from '../types/payment.types';
 
 const API_BASE_URL = 'http://localhost:5000/api'; // TODO: Move to env config
+
+/**
+ * Request body for creating an order
+ */
+export interface CreateOrderRequest {
+  customerId: number | null;
+  items: {
+    menuItemId: number;
+    sizeId: number;
+    quantity: number;
+    unitPrice: number;
+  }[];
+  tipAmount: number;
+}
+
+/**
+ * Response from creating an order
+ */
+export interface CreateOrderResponse {
+  salesId: number;
+  dailyOrderNumber: number;
+  orderTotal: number;
+  gstTotal: number;
+  pstTotal: number;
+}
 
 /**
  * Order completion result from backend
@@ -12,6 +38,55 @@ interface OrderCompletionResult {
   dailyOrderNumber: number;
   errorMessage?: string;
 }
+
+/**
+ * Create a new order in the POS system
+ * Calls backend POST /api/Orders to create tblSales + tblPendingOrders entries
+ *
+ * @param customerId Customer ID for logged-in users, null for guest orders
+ * @param cartItems Array of cart items with menuItemId, sizeId, quantity, price
+ * @param tipAmount Optional tip amount (defaults to 0)
+ * @returns CreateOrderResponse with salesId and server-validated totals
+ */
+export const createOrder = async (
+  customerId: number | null,
+  cartItems: Array<{
+    menuItemId: number;
+    sizeId: number;
+    quantity: number;
+    price: number;
+  }>,
+  tipAmount: number = 0
+): Promise<CreateOrderResponse> => {
+  try {
+    // Generate idempotency key to prevent duplicate orders on retry
+    const idempotencyKey = `cart-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    const orderRequest: CreateOrderRequest = {
+      customerId,
+      items: cartItems.map(item => ({
+        menuItemId: item.menuItemId,
+        sizeId: item.sizeId,
+        quantity: item.quantity,
+        unitPrice: item.price, // Server will re-validate from tblAvailableSize
+      })),
+      tipAmount,
+    };
+
+    const response = await apiClient.post<CreateOrderResponse>('/Orders', orderRequest, {
+      headers: {
+        'Idempotency-Key': idempotencyKey,
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error('Create order error:', error);
+    throw new Error(
+      error.response?.data?.error || 'Failed to create order. Please try again.'
+    );
+  }
+};
 
 /**
  * Complete payment for an open order

@@ -124,12 +124,12 @@ Plans:
   2. Cart and checkout flow creates real orders in POS
   3. Order tracking screen shows current order status (TransType-based)
   4. Imidus branding applied (theme colors, components from branding package)
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 07-01: Authentication integration
-- [ ] 07-02: Cart and checkout flow
-- [ ] 07-03: Order tracking and branding
+- [x] 07-01-PLAN.md — Authentication navigation guards with SplashScreen and conditional routing (Complete 2026-03-02)
+- [ ] 07-02-PLAN.md — Cart to order flow integration via createOrder API
+- [ ] 07-03-PLAN.md — Order tracking polling and Imidus branding consistency
 
 ### Phase 8: CI/CD & Delivery
 **Goal**: Automated builds deployed and artifacts uploaded to AWS S3
@@ -159,7 +159,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 4. Payments | 2/2 | Complete   | 2026-02-26 |
 | 5. Loyalty | 2/3 | In Progress|  |
 | 6. Push Notifications | 0/2 | Not started | - |
-| 7. Mobile App Wiring | 0/3 | Not started | - |
+| 7. Mobile App Wiring | 1/3 | In Progress | 2026-03-02 |
 | 8. CI/CD & Delivery | 0/2 | Not started | - |
 
 ---
