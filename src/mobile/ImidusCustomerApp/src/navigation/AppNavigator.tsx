@@ -4,6 +4,7 @@ import React from 'react';
 import CartScreen from '../screens/CartScreen';
 import ItemDetailScreen from '../screens/ItemDetailScreen';
 import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
 import MenuScreen from '../screens/MenuScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
@@ -14,6 +15,7 @@ const AppNavigator = () => {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Menu" component={MenuScreen} />
         <Stack.Screen name="ItemDetail" component={ItemDetailScreen} />
         <Stack.Screen name="Cart" component={CartScreen} />
