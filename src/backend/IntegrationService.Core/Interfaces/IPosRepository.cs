@@ -80,6 +80,7 @@ namespace IntegrationService.Core.Interfaces
 
         Task InsertOnlineSalesLinkAsync(SalesOfOnlineOrder link, IDbTransaction? transaction = null);
         Task<IEnumerable<OnlineOrderCompany>> GetOnlineOrderCompaniesAsync();
+        Task<IEnumerable<PosTicket>> GetCompletedOnlineOrdersAsync();
 
         // =============================================================================
         // TAX CONFIGURATION

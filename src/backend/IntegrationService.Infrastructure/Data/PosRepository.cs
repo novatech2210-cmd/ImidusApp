@@ -1313,6 +1313,26 @@ namespace IntegrationService.Infrastructure.Data
             return await connection.QueryAsync<OnlineOrderCompany>(sql);
         }
 
+        /// <summary>
+        /// Get completed online orders for push notification polling.
+        /// Filters for TransType=9 (Complete), with OnlineOrderCompanyID and CustomerID populated.
+        /// Used by OrderStatusPollingService to detect orders ready for pickup notification.
+        /// </summary>
+        public async Task<IEnumerable<PosTicket>> GetCompletedOnlineOrdersAsync()
+        {
+            const string sql = @"
+                SELECT ID, TransType, OnlineOrderCompanyID, CustomerID, DailyOrderNumber,
+                       SubTotal, GstAmt, PstAmt, Pst2Amt, Total, DscAmt,
+                       TableID, CashierID, StationID, SalesDate
+                FROM dbo.tblSales
+                WHERE TransType = 9
+                  AND OnlineOrderCompanyID IS NOT NULL
+                  AND CustomerID IS NOT NULL";
+
+            using var connection = CreateConnection();
+            return await connection.QueryAsync<PosTicket>(sql);
+        }
+
         #endregion
 
         // =============================================================================
