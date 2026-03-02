@@ -56,7 +56,7 @@ Requirements for Milestone 2 delivery. Each maps to roadmap phases.
 
 - [x] **MOB-01**: Login/registration connected to backend authentication
 - [x] **MOB-02**: Menu screen fetches and displays real INI_Restaurant menu data
-- [ ] **MOB-03**: Cart and checkout flow creates real orders
+- [x] **MOB-03**: Cart and checkout flow creates real orders
 - [ ] **MOB-04**: Order tracking screen shows order status
 - [x] **MOB-05**: Loyalty points balance displayed on profile/home
 - [ ] **MOB-06**: Imidus branding applied (theme, components from branding package)
@@ -143,7 +143,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | NOTIF-02 | Phase 6 | Pending |
 | NOTIF-03 | Phase 6 | Pending |
 | MOB-01 | Phase 7 | Complete |
-| MOB-03 | Phase 7 | Pending |
+| MOB-03 | Phase 7 | Complete |
 | MOB-04 | Phase 7 | Pending |
 | MOB-06 | Phase 7 | Pending |
 | DEL-01 | Phase 8 | Pending |
