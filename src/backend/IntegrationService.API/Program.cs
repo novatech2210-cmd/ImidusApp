@@ -152,7 +152,7 @@ builder.Services.AddScoped<IPosRepository, PosRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IIdempotencyRepository, IdempotencyRepository>();
 builder.Services.AddScoped<IOrderNumberRepository, OrderNumberRepository>();
-builder.Services.AddScoped<DeviceTokenRepository>();
+builder.Services.AddScoped<IDeviceTokenRepository, DeviceTokenRepository>();
 builder.Services.AddScoped<NotificationLogRepository>();
 
 // Service Registrations

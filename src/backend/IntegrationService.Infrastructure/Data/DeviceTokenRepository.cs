@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
 using IntegrationService.Core.Domain.Entities;
+using IntegrationService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 
 namespace IntegrationService.Infrastructure.Data;
@@ -11,7 +12,7 @@ namespace IntegrationService.Infrastructure.Data;
 /// Repository for device token management
 /// Handles FCM token storage and lifecycle
 /// </summary>
-public class DeviceTokenRepository
+public class DeviceTokenRepository : IDeviceTokenRepository
 {
     private readonly string _connectionString;
 

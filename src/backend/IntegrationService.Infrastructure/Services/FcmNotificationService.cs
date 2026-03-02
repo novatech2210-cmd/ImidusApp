@@ -14,13 +14,13 @@ namespace IntegrationService.Infrastructure.Services;
 public class FcmNotificationService : INotificationService
 {
     private readonly ILogger<FcmNotificationService> _logger;
-    private readonly DeviceTokenRepository _tokenRepository;
+    private readonly IDeviceTokenRepository _tokenRepository;
     private readonly NotificationLogRepository _logRepository;
     private readonly IConfiguration _configuration;
 
     public FcmNotificationService(
         ILogger<FcmNotificationService> logger,
-        DeviceTokenRepository tokenRepository,
+        IDeviceTokenRepository tokenRepository,
         NotificationLogRepository logRepository,
         IConfiguration configuration)
     {
