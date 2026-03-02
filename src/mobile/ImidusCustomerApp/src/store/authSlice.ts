@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import authService, { RegisterData, LoginData, UserProfile } from '../services/authService';
+import NotificationService from '../services/NotificationService';
 
 // State interface
 interface AuthState {
@@ -43,6 +44,17 @@ export const loginUser = createAsyncThunk(
   async (data: LoginData, { rejectWithValue }) => {
     try {
       const response = await authService.login(data);
+
+      // Register FCM token with backend after successful login
+      try {
+        await NotificationService.registerTokenWithBackend(response.user.id);
+        // Set up token refresh listener
+        NotificationService.setupTokenRefreshListener(response.user.id);
+      } catch (notifError) {
+        console.warn('Failed to register FCM token after login:', notifError);
+        // Don't block login on token registration failure
+      }
+
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Login failed');
@@ -79,6 +91,15 @@ export const loadStoredAuth = createAsyncThunk(
       ]);
 
       if (token && user) {
+        // Register FCM token on authenticated app launch
+        try {
+          await NotificationService.registerTokenWithBackend(user.id);
+          NotificationService.setupTokenRefreshListener(user.id);
+        } catch (notifError) {
+          console.warn('Failed to register FCM token on app launch:', notifError);
+          // Don't block app launch on token registration failure
+        }
+
         return { token, user };
       } else {
         return null;
