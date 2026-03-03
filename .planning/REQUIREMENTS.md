@@ -50,7 +50,7 @@ Requirements for Milestone 2 delivery. Each maps to roadmap phases.
 
 - [ ] **NOTIF-01**: FCM integration sends transactional push notifications
 - [ ] **NOTIF-02**: Order confirmation push sent on successful order creation
-- [ ] **NOTIF-03**: Order ready push sent when kitchen marks complete
+- [x] **NOTIF-03**: Order ready push sent when kitchen marks complete
 
 ### Mobile
 
@@ -141,7 +141,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOB-05 | Phase 5 | Complete |
 | NOTIF-01 | Phase 6 | Pending |
 | NOTIF-02 | Phase 6 | Pending |
-| NOTIF-03 | Phase 6 | Pending |
+| NOTIF-03 | Phase 6 | Complete |
 | MOB-01 | Phase 7 | Complete |
 | MOB-03 | Phase 7 | Complete |
 | MOB-04 | Phase 7 | Complete |
