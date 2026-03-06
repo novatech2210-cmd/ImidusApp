@@ -1,9 +1,14 @@
 ---
-name: gsd-project-researcher
-description: Researches domain ecosystem before roadmap creation. Produces files in .planning/research/ consumed during roadmap creation. Spawned by $gsd-new-project or $gsd-new-milestone orchestrators.
-tools: Read, Write, Bash, Grep, Glob, WebSearch, WebFetch, mcp__context7__*
-color: cyan
+name: "gsd-project-researcher"
+description: "Researches domain ecosystem before roadmap creation. Produces files in .planning/research/ consumed during roadmap creation. Spawned by $gsd-new-project or $gsd-new-milestone orchestrators."
 ---
+
+<codex_agent_role>
+role: gsd-project-researcher
+tools: Read, Write, Bash, Grep, Glob, WebSearch, WebFetch, mcp__context7__*
+purpose: Researches domain ecosystem before roadmap creation. Produces files in .planning/research/ consumed during roadmap creation. Spawned by $gsd-new-project or $gsd-new-milestone orchestrators.
+</codex_agent_role>
+
 
 <role>
 You are a GSD project researcher spawned by `$gsd-new-project` or `$gsd-new-milestone` (Phase 6: Research).
@@ -99,7 +104,7 @@ Always include current year. Use multiple query variations. Mark WebSearch-only 
 Check `brave_search` from orchestrator context. If `true`, use Brave Search for higher quality results:
 
 ```bash
-node ./.codex/get-shit-done/bin/gsd-tools.cjs websearch "your query" --limit 10
+node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" websearch "your query" --limit 10
 ```
 
 **Options:**
@@ -517,6 +522,8 @@ For each domain: Context7 → Official Docs → WebSearch → Verify. Document w
 Run pre-submission checklist (see verification_protocol).
 
 ## Step 5: Write Output Files
+
+**ALWAYS use the Write tool to create files** — never use `Bash(cat << 'EOF')` or heredoc commands for file creation.
 
 In `.planning/research/`:
 1. **SUMMARY.md** — Always

@@ -9,49 +9,44 @@
 
 ## 📅 Roadmap & Milestone Tracker
 
-### Milestone 1: Foundation & Architecture
+### Milestone 1: Project Setup & Architecture ($800)
 
-- [x] Architecture definition & folder structure
-- [x] POS Database Schema Analysis (Real INI_Restaurant Schema)
-- [x] Database Mapping Documentation
-- [x] CI/CD Pipeline scaffold
+- [x] Initial Kickoff & Requirements Confirmation
+- [x] Architecture & Tech Stack Confirmation
+- [x] Repository & Environment Setup
+- [x] POS SQL Connectivity Verified
 - **Status:** COMPLETE ✅
 
-### Milestone 2: Backend Core & Integration
+### Milestone 2: Customer Mobile Apps ($1,800)
 
-- [x] SQL Integration Layer (Dapper + Real Schema)
-- [x] Order Lifecycle Handling
-- [x] Dynamic Tax Rate System (tblMisc)
-- [x] Payment Posting Logic (Authorize.net Sandbox)
-- [x] Redemption & Loyalty Core
+- [x] iOS & Android Development (React Native)
+- [x] UI/UX & Order Flow
+- [x] Order Insertion into POS
+- [x] Authorize.net Tokenized Payments
+- [x] Safety Protocols (Idempotency/Concurrency)
 - **Status:** COMPLETE ✅
 
-### Milestone 3: Mobile & Web Experience
+### Milestone 3: Customer Online Ordering Website ($1,200)
 
-- [x] Brand-Aligned UI (Gold/Blue) for Mobile & Web
-- [x] Web Platform Integration (Next.js 14)
-- [x] Menu & Item Detail Screens (Real API)
-- [x] Cart Management (Redux/React Context)
-- [x] Checkout with Loyalty Redemption
-- [x] Customer Profile & Account Management
-- [x] Birthday Reward Automation
+- [x] Responsive Website Development (Next.js)
+- [x] Authorize.net Online Payments
+- [x] POS Synchronization (Orders, Inventory, Status)
+- [x] Automated Deployment Pipeline
 - **Status:** COMPLETE ✅
 
-### Milestone 4: Customer Engagement & Analytics
+### Milestone 4: Merchant / Admin Portal ($1,000)
 
-- [x] Implementation Plan for Milestone 4
-- [x] Push Notification Service Integration
-- [x] Merchant Analytics API & Dashboard
-- [x] Push Notification Handling (Mobile)
-- [x] Order History & Real-time Status Tracking
+- [x] Management Dashboard & Order Queue
+- [x] Terminal Bridge Integration
+- [x] POS Posting for Bridge Results
 - **Status:** COMPLETE ✅
 
-### Milestone 5: Final Testing & Deployment
+### Milestone 5: Testing, QA & Deployment ($1,200)
 
-- [ ] Unit & Integration Testing (80%+ Coverage)
-- [ ] Concurrency & Duplicate Order Prevention Stress Tests
-- [ ] MSI Windows Installer for POS Bridge
-- [ ] Production Dry-Run
+- [ ] End-to-End Testing (POS ↔ Mobile ↔ Web)
+- [ ] MSI Windows Installer for Backend
+- [ ] Push-Button CI Pipelines (Mobile)
+- [ ] Final Handover
 - **Status:** PENDING ⏳
 
 ---

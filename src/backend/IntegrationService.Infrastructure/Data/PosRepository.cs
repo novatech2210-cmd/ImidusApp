@@ -9,6 +9,7 @@ using IntegrationService.Core.Domain.Entities;
 using IntegrationService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using CustomerSegment = IntegrationService.Core.Interfaces.CustomerSegment;
 
 namespace IntegrationService.Infrastructure.Data
 {
@@ -72,7 +73,7 @@ namespace IntegrationService.Infrastructure.Data
                     i.ImageFilePath,
                     i.CategoryID,
                     i.Status,
-                    i.OnlineItem,
+                    i.OpenItem,
                     i.Alcohol,
                     i.BarCode,
                     i.ManageInv,
@@ -88,7 +89,7 @@ namespace IntegrationService.Infrastructure.Data
                     i.ScaleItem
                 FROM dbo.tblItem i
                 WHERE i.Status = 1
-                  AND i.OnlineItem = 1
+                  AND i.OpenItem = 1
                 ORDER BY i.CategoryID, i.IName";
 
             using var connection = CreateConnection();
@@ -112,7 +113,7 @@ namespace IntegrationService.Infrastructure.Data
                     i.ImageFilePath,
                     i.CategoryID,
                     i.Status,
-                    i.OnlineItem,
+                    i.OpenItem,
                     i.Alcohol,
                     i.ApplyGST,
                     i.ApplyPST,
@@ -176,7 +177,7 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Get all categories that have at least one available online item
-        /// Only returns categories with OnlineItem=1 and Status=1 items
+        /// Only returns categories with OpenItem=1 and Status=1 items
         /// </summary>
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
@@ -189,7 +190,7 @@ namespace IntegrationService.Infrastructure.Data
                 FROM dbo.tblCategory c
                 INNER JOIN dbo.tblItem i ON c.ID = i.CategoryID
                 WHERE c.Status = 1
-                  AND i.OnlineItem = 1
+                  AND i.OpenItem = 1
                   AND i.Status = 1
                 ORDER BY c.PrintOrder";
 
@@ -199,7 +200,7 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Get count of available items per category
-        /// Returns dictionary of CategoryID -> item count (only OnlineItem=1, Status=1)
+        /// Returns dictionary of CategoryID -> item count (only OpenItem=1, Status=1)
         /// </summary>
         public async Task<Dictionary<int, int>> GetCategoryItemCountsAsync()
         {
@@ -208,7 +209,7 @@ namespace IntegrationService.Infrastructure.Data
                     CategoryID,
                     COUNT(*) AS ItemCount
                 FROM dbo.tblItem
-                WHERE OnlineItem = 1
+                WHERE OpenItem = 1
                   AND Status = 1
                 GROUP BY CategoryID";
 
@@ -219,7 +220,7 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Get menu items filtered by category
-        /// Returns only items available for online ordering (OnlineItem=1, Status=1)
+        /// Returns only items available for online ordering (OpenItem=1, Status=1)
         /// Ordered by PrintOrder to match POS display order
         /// </summary>
         public async Task<IEnumerable<MenuItem>> GetMenuItemsByCategoryAsync(int categoryId)
@@ -233,7 +234,7 @@ namespace IntegrationService.Infrastructure.Data
                     i.ImageFilePath,
                     i.CategoryID,
                     i.Status,
-                    i.OnlineItem,
+                    i.OpenItem,
                     i.Alcohol,
                     i.BarCode,
                     i.ManageInv,
@@ -251,7 +252,7 @@ namespace IntegrationService.Infrastructure.Data
                 FROM dbo.tblItem i
                 WHERE i.CategoryID = @CategoryId
                   AND i.Status = 1
-                  AND i.OnlineItem = 1
+                  AND i.OpenItem = 1
                 ORDER BY i.PrintOrder";
 
             using var connection = CreateConnection();
@@ -348,6 +349,7 @@ namespace IntegrationService.Infrastructure.Data
         public async Task<int> CreateOpenOrderAsync(PosTicket ticket, IDbTransaction? transaction = null, string? customerName = null)
         {
             // SQL Server 2005 compatible - no OUTPUT clause in some versions
+            // NOTE: Removed columns not in POS 2005 schema: DeliveryChargeAmt, OnlineOrderCompanyID, Locked, PaymentCount
             const string sql = @"
                 INSERT INTO dbo.tblSales (
                     SaleDateTime,
@@ -367,11 +369,7 @@ namespace IntegrationService.Infrastructure.Data
                     StationID,
                     Guests,
                     TakeOutOrder,
-                    DailyOrderNumber,
-                    DeliveryChargeAmt,
-                    OnlineOrderCompanyID,
-                    Locked,
-                    PaymentCount
+                    DailyOrderNumber
                 )
                 VALUES (
                     @SaleDateTime,
@@ -391,11 +389,7 @@ namespace IntegrationService.Infrastructure.Data
                     @StationID,
                     @Guests,
                     @TakeOutOrder,
-                    @DailyOrderNumber,
-                    @DeliveryChargeAmt,
-                    @OnlineOrderCompanyID,
-                    0,  -- Not locked
-                    0   -- No payments yet
+                    @DailyOrderNumber
                 );
                 SELECT SCOPE_IDENTITY();";
 
@@ -440,6 +434,7 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Get ticket/sale by ID
+        /// NOTE: Modified for POS 2005 schema - removed non-existent columns
         /// </summary>
         public async Task<PosTicket?> GetTicketByIdAsync(int salesId)
         {
@@ -463,18 +458,7 @@ namespace IntegrationService.Infrastructure.Data
                     TableID,
                     StationID,
                     Guests,
-                    TakeOutOrder,
-                    DeliveryChargeAmt,
-                    OnlineOrderCompanyID,
-                    Locked,
-                    PaymentCount,
-                    CashPaidAmt,
-                    DebitPaidAmt,
-                    AmexPaidAmt,
-                    McPaidAmt,
-                    CashTipPaidAmt,
-                    CreditTipPaidAmt,
-                    DebitTipPaidAmt
+                    TakeOutOrder
                 FROM dbo.tblSales
                 WHERE ID = @SalesId";
 
@@ -588,6 +572,7 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Get orders for a specific date range
+        /// NOTE: Modified for POS 2005 schema - removed DeliveryChargeAmt
         /// </summary>
         public async Task<IEnumerable<PosTicket>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
@@ -605,8 +590,7 @@ namespace IntegrationService.Infrastructure.Data
                     CustomerID,
                     CashierID,
                     Guests,
-                    TakeOutOrder,
-                    DeliveryChargeAmt
+                    TakeOutOrder
                 FROM dbo.tblSales
                 WHERE SaleDateTime >= @StartDate
                   AND SaleDateTime < @EndDate
@@ -614,6 +598,57 @@ namespace IntegrationService.Infrastructure.Data
 
             using var connection = CreateConnection();
             return await connection.QueryAsync<PosTicket>(sql, new { StartDate = startDate, EndDate = endDate });
+        }
+
+        /// <summary>
+        /// Get orders for a specific customer
+        /// SSOT Compliant: Reads from POS database (ground truth)
+        /// Joins tblSales with tblSalesDetail to include order items
+        /// </summary>
+        public async Task<IEnumerable<PosTicket>> GetOrdersByCustomerIdAsync(int customerId, int limit = 50)
+        {
+            const string sql = @"
+                SELECT TOP (@Limit)
+                    s.ID,
+                    s.SaleDateTime,
+                    s.TransType,
+                    s.DailyOrderNumber,
+                    s.SubTotal,
+                    s.DSCAmt,
+                    s.AlcoholDSCAmt,
+                    s.GSTAmt,
+                    s.PSTAmt,
+                    s.PST2Amt,
+                    s.GSTRate,
+                    s.PSTRate,
+                    s.PST2Rate,
+                    s.CustomerID,
+                    s.CashierID,
+                    s.TableID,
+                    s.StationID,
+                    s.Guests,
+                    s.TakeOutOrder
+                FROM dbo.tblSales s
+                WHERE s.CustomerID = @CustomerId
+                  AND s.TransType = 1  -- Completed orders only
+                ORDER BY s.SaleDateTime DESC";
+
+            using var connection = CreateConnection();
+            var tickets = await connection.QueryAsync<PosTicket>(sql, 
+                new { CustomerId = customerId, Limit = limit });
+
+            // Enrich each ticket with its items from tblSalesDetail
+            var ticketList = new List<PosTicket>();
+            foreach (var ticket in tickets)
+            {
+                var items = await GetSalesDetailItemsAsync(ticket.ID);
+                ticket.Items = items.ToList();
+                ticketList.Add(ticket);
+            }
+
+            _logger.LogInformation("Retrieved {Count} completed orders for customer {CustomerId}", 
+                ticketList.Count, customerId);
+            return ticketList;
         }
 
         #endregion
@@ -630,6 +665,7 @@ namespace IntegrationService.Infrastructure.Data
         /// </summary>
         public async Task InsertPendingOrderItemAsync(PendingOrderItem item, IDbTransaction? transaction = null)
         {
+            // NOTE: Modified for POS 2005 - many columns don't allow NULL, use defaults
             const string sql = @"
                 INSERT INTO dbo.tblPendingOrders (
                     SalesID,
@@ -654,7 +690,18 @@ namespace IntegrationService.Infrastructure.Data
                     PersonIndex,
                     SeparateBillPrint,
                     OpenItem,
-                    ExtraChargeItem
+                    ExtraChargeItem,
+                    DSCAmtEmployee,
+                    DSCAmtType1,
+                    DSCAmtType2,
+                    DayHourDiscountRate,
+                    Status,
+                    PricePerWeightUnit,
+                    MeasuredWeight,
+                    DecimalPlaces,
+                    DiscountPercent,
+                    Kitchen5,
+                    Kitchen6
                 )
                 VALUES (
                     @SalesID,
@@ -663,10 +710,10 @@ namespace IntegrationService.Infrastructure.Data
                     @Qty,
                     @UnitPrice,
                     @ItemName,
-                    @ItemName2,
+                    COALESCE(@ItemName2, ''),
                     @SizeName,
-                    @Tastes,
-                    @SideDishes,
+                    COALESCE(@Tastes, ''),
+                    COALESCE(@SideDishes, ''),
                     @ApplyGST,
                     @ApplyPST,
                     @ApplyPST2,
@@ -679,7 +726,18 @@ namespace IntegrationService.Infrastructure.Data
                     @PersonIndex,
                     @SeparateBillPrint,
                     @OpenItem,
-                    @ExtraChargeItem
+                    @ExtraChargeItem,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
                 )";
 
             IDbConnection connection;
@@ -766,8 +824,7 @@ namespace IntegrationService.Infrastructure.Data
                     ItemName2,
                     SizeName,
                     Tastes,
-                    DSCAmt,
-                    PersonIndex
+                    DSCAmt
                 FROM dbo.tblPendingOrders
                 WHERE SalesID = @SalesId";
 
@@ -784,7 +841,6 @@ namespace IntegrationService.Infrastructure.Data
                     Tastes,
                     DiscountAmt,
                     SequenceNo,
-                    PersonIndex,
                     Voided
                 )
                 VALUES (
@@ -799,7 +855,6 @@ namespace IntegrationService.Infrastructure.Data
                     @Tastes,
                     @DSCAmt,
                     @SequenceNo,
-                    @PersonIndex,
                     0
                 )";
 
@@ -841,8 +896,7 @@ namespace IntegrationService.Infrastructure.Data
                         SizeName = (string?)item.SizeName,
                         Tastes = (string?)item.Tastes,
                         DSCAmt = (decimal)item.DSCAmt,
-                        SequenceNo = sequenceNo++,
-                        PersonIndex = (byte)item.PersonIndex
+                        SequenceNo = sequenceNo++
                     }, transaction);
                 }
 
@@ -998,20 +1052,21 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Encrypt a string using the POS database's dbo.EncryptString function
+        /// NOTE: Function returns varbinary(128), not string
         /// </summary>
-        private async Task<string> EncryptStringAsync(string plainText, IDbTransaction transaction)
+        private async Task<byte[]> EncryptStringAsync(string plainText, IDbTransaction transaction)
         {
             if (string.IsNullOrEmpty(plainText))
-                return string.Empty;
+                return Array.Empty<byte>();
 
             const string sql = "SELECT dbo.EncryptString(@PlainText)";
 
-            var encryptedValue = await transaction.Connection.ExecuteScalarAsync<string>(
+            var encryptedValue = await transaction.Connection.ExecuteScalarAsync<byte[]>(
                 sql,
                 new { PlainText = plainText },
                 transaction);
 
-            return encryptedValue ?? string.Empty;
+            return encryptedValue ?? Array.Empty<byte>();
         }
 
         /// <summary>
@@ -1038,7 +1093,7 @@ namespace IntegrationService.Infrastructure.Data
             try
             {
                 // Encrypt authorization token if provided
-                string? encryptedToken = null;
+                byte[]? encryptedToken = null;
                 if (!string.IsNullOrEmpty(payment.AuthorizationNo))
                 {
                     encryptedToken = await EncryptStringAsync(payment.AuthorizationNo, localTransaction);
@@ -1131,55 +1186,19 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Update sale payment totals after payment is recorded
-        /// Updates both type-specific columns and general PaidAmount/TipAmount
+        /// NOTE: POS 2005 schema doesn't have payment tracking columns in tblSales
+        /// Payment data is only stored in tblPayment
         /// </summary>
         public async Task UpdateSalePaymentTotalsAsync(int salesId, PosTender payment, IDbTransaction? transaction = null)
         {
-            string typeSpecificUpdate = payment.PaymentTypeID switch
-            {
-                1 => "CashPaidAmt = CashPaidAmt + @Amount, CashTipPaidAmt = CashTipPaidAmt + @Tip",
-                2 => "DebitPaidAmt = DebitPaidAmt + @Amount, DebitTipPaidAmt = DebitTipPaidAmt + @Tip",
-                5 => "AmexPaidAmt = AmexPaidAmt + @Amount, CreditTipPaidAmt = CreditTipPaidAmt + @Tip",
-                4 => "McPaidAmt = McPaidAmt + @Amount, CreditTipPaidAmt = CreditTipPaidAmt + @Tip",
-                3 => "CreditPaidAmt = COALESCE(CreditPaidAmt, 0) + @Amount, CreditTipPaidAmt = CreditTipPaidAmt + @Tip",  // Visa
-                _ => "CreditTipPaidAmt = CreditTipPaidAmt + @Tip"  // Other credit cards
-            };
-
-            var sql = $@"
-                UPDATE dbo.tblSales
-                SET {typeSpecificUpdate},
-                    PaidAmount = PaidAmount + @Amount,
-                    TipAmount = TipAmount + @Tip,
-                    PaymentCount = PaymentCount + 1
-                WHERE ID = @SalesId";
-
-            IDbConnection connection;
-            bool shouldDispose = false;
-
-            if (transaction?.Connection != null)
-            {
-                connection = transaction.Connection;
-            }
-            else
-            {
-                connection = CreateConnection();
-                shouldDispose = true;
-            }
-
-            try
-            {
-                await connection.ExecuteAsync(sql,
-                    new { SalesId = salesId, Amount = payment.PaidAmount, Tip = payment.TipAmount },
-                    transaction);
-
-                _logger.LogInformation(
-                    "Updated sale {SalesId} payment totals: +${Amount} (Type: {PaymentTypeID})",
-                    salesId, payment.PaidAmount, payment.PaymentTypeID);
-            }
-            finally
-            {
-                if (shouldDispose) connection.Dispose();
-            }
+            // POS 2005 schema doesn't have CashPaidAmt, DebitPaidAmt, etc. in tblSales
+            // Payment data is tracked only in tblPayment table
+            // This method is a no-op for compatibility
+            await Task.CompletedTask;
+            
+            _logger.LogInformation(
+                "Payment recorded for sale {SalesId}: ${Amount} (Type: {PaymentTypeID}) - tblSales not updated (POS 2005 schema)",
+                salesId, payment.PaidAmount, payment.PaymentTypeID);
         }
 
         /// <summary>
@@ -1315,19 +1334,23 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Get completed online orders for push notification polling.
-        /// Filters for TransType=9 (Complete), with OnlineOrderCompanyID and CustomerID populated.
+        /// Filters for TransType=1 (Completed Sale), with CustomerID populated.
         /// Used by OrderStatusPollingService to detect orders ready for pickup notification.
+        /// NOTE: Modified for POS 2005 schema - no OnlineOrderCompanyID column
         /// </summary>
         public async Task<IEnumerable<PosTicket>> GetCompletedOnlineOrdersAsync()
         {
+            // POS 2005 schema: No OnlineOrderCompanyID, Total, or SalesDate columns
+            // Use SaleDateTime instead, calculate Total from SubTotal + taxes - discount
             const string sql = @"
-                SELECT ID, TransType, OnlineOrderCompanyID, CustomerID, DailyOrderNumber,
-                       SubTotal, GstAmt, PstAmt, Pst2Amt, Total, DscAmt,
-                       TableID, CashierID, StationID, SalesDate
+                SELECT ID, TransType, CustomerID, DailyOrderNumber,
+                       SubTotal, GSTAmt as GstAmt, PSTAmt as PstAmt, PST2Amt as Pst2Amt, 
+                       DSCAmt as DscAmt,
+                       TableID, CashierID, StationID, SaleDateTime as SalesDate
                 FROM dbo.tblSales
-                WHERE TransType = 9
-                  AND OnlineOrderCompanyID IS NOT NULL
-                  AND CustomerID IS NOT NULL";
+                WHERE TransType = 1
+                  AND CustomerID IS NOT NULL
+                  AND TakeOutOrder = 1";
 
             using var connection = CreateConnection();
             return await connection.QueryAsync<PosTicket>(sql);
@@ -1654,6 +1677,63 @@ namespace IntegrationService.Infrastructure.Data
             {
                 if (shouldDispose) connection.Dispose();
             }
+        }
+
+        /// <summary>
+        /// Get customer segments based on RFM (Recency, Frequency, Monetary) analysis
+        /// Reads from POS database tblCustomer and tblSales
+        /// </summary>
+        public async Task<IEnumerable<CustomerSegment>> GetCustomerSegmentsAsync()
+        {
+            const string sql = @"
+                SELECT TOP 50
+                    c.ID as CustomerID,
+                    COALESCE(c.FName + ' ' + c.LName, c.Phone, 'Customer ' + CAST(c.ID AS NVARCHAR(10))) AS Name,
+                    CASE 
+                        WHEN s.TotalSpent >= 500 THEN 'VIP'
+                        WHEN s.TotalSpent >= 200 THEN 'Regular'
+                        ELSE 'New'
+                    END AS Segment,
+                    CASE 
+                        WHEN DATEDIFF(day, ISNULL(s.LastOrderDate, '2000-01-01'), GETDATE()) <= 30 THEN 5
+                        WHEN DATEDIFF(day, ISNULL(s.LastOrderDate, '2000-01-01'), GETDATE()) <= 60 THEN 4
+                        WHEN DATEDIFF(day, ISNULL(s.LastOrderDate, '2000-01-01'), GETDATE()) <= 90 THEN 3
+                        WHEN DATEDIFF(day, ISNULL(s.LastOrderDate, '2000-01-01'), GETDATE()) <= 180 THEN 2
+                        ELSE 1
+                    END AS RScore,
+                    CASE 
+                        WHEN s.OrderCount >= 20 THEN 5
+                        WHEN s.OrderCount >= 10 THEN 4
+                        WHEN s.OrderCount >= 5 THEN 3
+                        WHEN s.OrderCount >= 2 THEN 2
+                        ELSE 1
+                    END AS FScore,
+                    CASE 
+                        WHEN s.TotalSpent >= 500 THEN 5
+                        WHEN s.TotalSpent >= 300 THEN 4
+                        WHEN s.TotalSpent >= 150 THEN 3
+                        WHEN s.TotalSpent >= 50 THEN 2
+                        ELSE 1
+                    END AS MScore,
+                    ISNULL(s.TotalSpent, 0) AS TotalSpent,
+                    ISNULL(s.OrderCount, 0) AS OrderCount,
+                    s.LastOrderDate
+                FROM dbo.tblCustomer c
+                LEFT JOIN (
+                    SELECT 
+                        CustomerID,
+                        SUM(SubTotal + GSTAmt - ISNULL(DSCAmt, 0) - ISNULL(AlcoholDSCAmt, 0)) AS TotalSpent,
+                        COUNT(*) AS OrderCount,
+                        MAX(SaleDateTime) AS LastOrderDate
+                    FROM dbo.tblSales
+                    WHERE CustomerID IS NOT NULL AND TransType = 1
+                    GROUP BY CustomerID
+                ) s ON c.ID = s.CustomerID
+                WHERE c.FName IS NOT NULL OR c.Phone IS NOT NULL
+                ORDER BY s.TotalSpent DESC";
+
+            using var connection = CreateConnection();
+            return await connection.QueryAsync<CustomerSegment>(sql);
         }
 
         #endregion

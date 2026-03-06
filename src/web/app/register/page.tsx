@@ -46,7 +46,7 @@ export default function RegisterPage() {
         style={{
           fontSize: 13,
           fontWeight: 600,
-          color: "#374151",
+          color: "var(--color-text)",
           display: "block",
           marginBottom: 6,
         }}
@@ -82,14 +82,14 @@ export default function RegisterPage() {
             style={{
               width: 56,
               height: 56,
-              background: "linear-gradient(135deg, #1E5AA8, #164278)",
+              background: "linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue))",
               borderRadius: 14,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: 24,
               fontWeight: 900,
-              color: "#D4AF37",
+              color: "var(--color-brand-gold)",
               margin: "0 auto 16px",
             }}
           >
@@ -98,15 +98,15 @@ export default function RegisterPage() {
           <h1 style={{ fontSize: 24, fontWeight: 800, margin: "0 0 6px" }}>
             Create Account
           </h1>
-          <p style={{ color: "#9CA3AF", fontSize: 14, margin: 0 }}>
+          <p style={{ color: "var(--color-text-muted)", fontSize: 14, margin: 0 }}>
             Join INI Rewards and earn points on every order
           </p>
         </div>
 
         <div
           style={{
-            background: "linear-gradient(135deg, #FEF9E7, #FDF5D5)",
-            border: "1px solid #F4C430",
+            background: "var(--color-light-gold)",
+            border: "1px solid var(--color-brand-gold)",
             borderRadius: 10,
             padding: "12px 16px",
             marginBottom: 24,
@@ -120,13 +120,13 @@ export default function RegisterPage() {
         {error && (
           <div
             style={{
-              background: "#FEF2F2",
-              border: "1px solid #FCA5A5",
+              background: "var(--color-error-light)",
+              border: "1px solid var(--color-error)",
               borderRadius: 8,
               padding: "12px 16px",
               marginBottom: 20,
               fontSize: 14,
-              color: "#B91C1C",
+              color: "var(--color-error)",
             }}
           >
             {error}
@@ -179,11 +179,11 @@ export default function RegisterPage() {
             textAlign: "center",
             marginTop: 24,
             fontSize: 14,
-            color: "#6B7280",
+            color: "var(--color-text-muted)",
           }}
         >
           Already have an account?{" "}
-          <Link href="/login" style={{ color: "#1E5AA8", fontWeight: 600 }}>
+          <Link href="/login" style={{ color: "var(--color-brand-blue)", fontWeight: 600 }}>
             Sign In
           </Link>
         </div>

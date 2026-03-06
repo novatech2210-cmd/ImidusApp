@@ -1,7 +1,9 @@
 import apiClient from '../api/apiClient';
 import { PaymentToken } from '../types/payment.types';
 
-const API_BASE_URL = 'http://localhost:5000/api'; // TODO: Move to env config
+import { ENV } from '../config/environment';
+
+const API_BASE_URL = ENV.API_BASE_URL;
 
 /**
  * Request body for creating an order

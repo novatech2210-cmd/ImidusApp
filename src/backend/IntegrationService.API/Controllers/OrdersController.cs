@@ -16,11 +16,16 @@ namespace IntegrationService.API.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderProcessingService _orderService;
+        private readonly IPosRepository _posRepo;
         private readonly ILogger<OrdersController> _logger;
 
-        public OrdersController(IOrderProcessingService orderService, ILogger<OrdersController> logger)
+        public OrdersController(
+            IOrderProcessingService orderService, 
+            IPosRepository posRepository,
+            ILogger<OrdersController> logger)
         {
             _orderService = orderService;
+            _posRepo = posRepository;
             _logger = logger;
         }
 
@@ -170,5 +175,81 @@ namespace IntegrationService.API.Controllers
                 });
             }
         }
+
+        /// <summary>
+        /// Get order history for a customer
+        /// SSOT Compliant: Reads from POS database (ground truth)
+        /// </summary>
+        [HttpGet("history/{customerId}")]
+        [ProducesResponseType(typeof(List<OrderHistoryDto>), 200)]
+        public async Task<IActionResult> GetOrderHistory(int customerId)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching order history for customer {CustomerId}", customerId);
+
+                // Get orders from POS database (SSOT - ground truth)
+                var orders = await _posRepo.GetOrdersByCustomerIdAsync(customerId);
+
+                // Map to DTOs
+                var orderDtos = orders.Select(o => new OrderHistoryDto
+                {
+                    Id = o.ID,
+                    SalesId = o.ID,
+                    DailyOrderNumber = o.DailyOrderNumber,
+                    SaleDateTime = o.SaleDateTime,
+                    SubTotal = o.SubTotal,
+                    GstAmt = o.GSTAmt,
+                    PstAmt = o.PSTAmt,
+                    PsT2Amt = o.PST2Amt,
+                    DscAmt = o.DSCAmt,
+                    TotalAmount = o.SubTotal + o.GSTAmt + o.PSTAmt + o.PST2Amt - o.DSCAmt,
+                    Status = o.TransType == 1 ? "Completed" : "Pending",
+                    Details = o.Items?.Select(i => new OrderDetailDto
+                    {
+                        ItemId = i.ItemID,
+                        IName = i.ItemName,
+                        SizeName = i.SizeName,
+                        ItemQty = i.Qty,
+                        UnitPrice = i.UnitPrice
+                    }).ToList() ?? new List<OrderDetailDto>()
+                }).ToList();
+
+                return Ok(orderDtos);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get order history for customer {CustomerId}", customerId);
+                return StatusCode(500, new { error = "Failed to retrieve order history" });
+            }
+        }
+    }
+
+    /// <summary>
+    /// Order history DTO for API responses
+    /// </summary>
+    public class OrderHistoryDto
+    {
+        public int Id { get; set; }
+        public int SalesId { get; set; }
+        public int DailyOrderNumber { get; set; }
+        public DateTime SaleDateTime { get; set; }
+        public decimal SubTotal { get; set; }
+        public decimal GstAmt { get; set; }
+        public decimal PstAmt { get; set; }
+        public decimal PsT2Amt { get; set; }
+        public decimal DscAmt { get; set; }
+        public decimal TotalAmount { get; set; }
+        public string Status { get; set; } = "";
+        public List<OrderDetailDto> Details { get; set; } = new();
+    }
+
+    public class OrderDetailDto
+    {
+        public int ItemId { get; set; }
+        public string IName { get; set; } = "";
+        public string SizeName { get; set; } = "";
+        public decimal ItemQty { get; set; }
+        public decimal UnitPrice { get; set; }
     }
 }

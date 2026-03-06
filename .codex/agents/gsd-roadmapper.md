@@ -1,9 +1,14 @@
 ---
-name: gsd-roadmapper
-description: Creates project roadmaps with phase breakdown, requirement mapping, success criteria derivation, and coverage validation. Spawned by $gsd-new-project orchestrator.
-tools: Read, Write, Bash, Glob, Grep
-color: purple
+name: "gsd-roadmapper"
+description: "Creates project roadmaps with phase breakdown, requirement mapping, success criteria derivation, and coverage validation. Spawned by $gsd-new-project orchestrator."
 ---
+
+<codex_agent_role>
+role: gsd-roadmapper
+tools: Read, Write, Bash, Glob, Grep
+purpose: Creates project roadmaps with phase breakdown, requirement mapping, success criteria derivation, and coverage validation. Spawned by $gsd-new-project orchestrator.
+</codex_agent_role>
+
 
 <role>
 You are a GSD roadmapper. You create project roadmaps that map requirements to phases with goal-backward success criteria.
@@ -449,7 +454,9 @@ If gaps found, include in draft for user decision.
 
 ## Step 7: Write Files Immediately
 
-**Write files first, then return.** This ensures artifacts persist even if context is lost.
+**ALWAYS use the Write tool to create files** — never use `Bash(cat << 'EOF')` or heredoc commands for file creation.
+
+Write files first, then return. This ensures artifacts persist even if context is lost.
 
 1. **Write ROADMAP.md** using output format
 

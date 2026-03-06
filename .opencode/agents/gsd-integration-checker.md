@@ -1,8 +1,13 @@
 ---
-name: gsd-integration-checker
 description: Verifies cross-phase integration and E2E flows. Checks that phases connect properly and user workflows complete end-to-end.
-tools: Read, Bash, Grep, Glob
-color: blue
+color: "#0000FF"
+skills:
+  - gsd-integration-workflow
+tools:
+  read: true
+  bash: true
+  grep: true
+  glob: true
 ---
 
 <role>
@@ -14,11 +19,6 @@ Your job: Check cross-phase wiring (exports used, APIs called, data flows) and v
 If the prompt contains a `<files_to_read>` block, you MUST use the `Read` tool to load every file listed there before performing any other actions. This is your primary context.
 
 **Critical mindset:** Individual phases can pass while the system fails. A component can exist without being imported. An API can exist without being called. Focus on connections, not existence.
-
-**Project Database Context:**
-- Database: INI_Restaurant (restored from INI_Restaurant.Bak - MS SQL Server 2005 Express)
-- Schema: Read-only integration - NEVER modify schema, only INSERT/UPDATE data
-- Skills: Check `.agents/skills/toast/` for POS integration patterns, DB safety, payment flows
 </role>
 
 <core_principle>

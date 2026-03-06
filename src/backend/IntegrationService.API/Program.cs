@@ -53,7 +53,16 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowWebApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000")
+            policy.WithOrigins("http://localhost:3000", "http://localhost:3001")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        });
+    
+    options.AddPolicy("AllowMobileApp",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -153,9 +162,43 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IIdempotencyRepository, IdempotencyRepository>();
 builder.Services.AddScoped<IOrderNumberRepository, OrderNumberRepository>();
 builder.Services.AddScoped<IDeviceTokenRepository, DeviceTokenRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IMenuRepository, MenuRepository>();
+builder.Services.AddScoped<IMiscRepository, MiscRepository>();
 builder.Services.AddScoped<NotificationLogRepository>();
+builder.Services.AddScoped<OnlineOrderStatusRepository>();
 
-// Service Registrations
+// Milestone 4 Admin Portal Repositories
+builder.Services.AddScoped<IActivityLogRepository>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    var logger = provider.GetRequiredService<ILogger<ActivityLogRepository>>();
+    var connectionString = configuration.GetConnectionString("IntegrationDatabase")
+        ?? throw new ArgumentNullException("IntegrationDatabase connection string not found");
+    return new ActivityLogRepository(connectionString, logger);
+});
+
+// ScheduledOrderRepository with factory to provide connection string
+builder.Services.AddScoped<IScheduledOrderRepository>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    var logger = provider.GetRequiredService<ILogger<ScheduledOrderRepository>>();
+    var connectionString = configuration.GetConnectionString("IntegrationDatabase")
+        ?? throw new ArgumentNullException("IntegrationDatabase connection string not found");
+    return new ScheduledOrderRepository(connectionString, logger);
+});
+
+// MarketingRuleRepository with factory to provide connection string
+builder.Services.AddScoped<IMarketingRuleRepository>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    var logger = provider.GetRequiredService<ILogger<MarketingRuleRepository>>();
+    var connectionString = configuration.GetConnectionString("IntegrationDatabase")
+        ?? throw new ArgumentNullException("IntegrationDatabase connection string not found");
+    return new MarketingRuleRepository(connectionString, logger);
+});
+
+// Core Services
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<IOrderProcessingService, OrderProcessingService>();
 builder.Services.AddScoped<ILoyaltyService, LoyaltyService>();
@@ -165,6 +208,13 @@ builder.Services.AddHostedService<BirthdayRewardBackgroundService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<INotificationService, FcmNotificationService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+
+// Milestone 4 Admin Portal Service
+builder.Services.AddScoped<AdminPortalService>();
+
+// Background Services
+builder.Services.AddHostedService<OrderStatusPollingService>();
+builder.Services.AddHostedService<ScheduledOrderReleaseService>();
 
 var app = builder.Build();
 
@@ -176,6 +226,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowWebApp");
+app.UseCors("AllowMobileApp");
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseMiddleware<IdempotencyMiddleware>();

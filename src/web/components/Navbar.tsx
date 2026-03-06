@@ -15,14 +15,14 @@ export function Navbar() {
           style={{
             width: 38,
             height: 38,
-            background: "linear-gradient(135deg, #1E5AA8, #164278)",
+            background: "linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue))",
             borderRadius: 8,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             fontSize: 18,
             fontWeight: 900,
-            color: "#D4AF37",
+            color: "var(--color-brand-gold)",
             fontFamily: "Inter, sans-serif",
           }}
         >
@@ -33,13 +33,13 @@ export function Navbar() {
             style={{
               fontSize: 15,
               fontWeight: 700,
-              color: "#1E5AA8",
+              color: "var(--color-brand-blue)",
               lineHeight: 1,
             }}
           >
             INI Restaurant
           </div>
-          <div style={{ fontSize: 10, color: "#9CA3AF", letterSpacing: 1 }}>
+          <div style={{ fontSize: 10, color: "var(--color-text-muted)", letterSpacing: 1 }}>
             IMIDUS TECHNOLOGIES
           </div>
         </div>
@@ -53,7 +53,7 @@ export function Navbar() {
             padding: "8px 14px",
             fontSize: 14,
             fontWeight: 500,
-            color: "#374151",
+            color: "var(--color-text)",
             borderRadius: 8,
           }}
         >
@@ -66,7 +66,7 @@ export function Navbar() {
               padding: "8px 14px",
               fontSize: 14,
               fontWeight: 500,
-              color: "#374151",
+              color: "var(--color-text)",
               borderRadius: 8,
             }}
           >
@@ -89,7 +89,7 @@ export function Navbar() {
             <span className="badge-gold">⭐ {user.earnedPoints} pts</span>
             <Link
               href="/profile"
-              style={{ fontSize: 14, fontWeight: 600, color: "#1E5AA8" }}
+              style={{ fontSize: 14, fontWeight: 600, color: "var(--color-brand-blue)" }}
             >
               {user.firstName}
             </Link>
@@ -97,11 +97,11 @@ export function Navbar() {
               onClick={logout}
               style={{
                 background: "none",
-                border: "1px solid #E5E7EB",
+                border: "1px solid var(--color-mid-gray)",
                 borderRadius: 6,
                 padding: "6px 12px",
                 fontSize: 13,
-                color: "#6B7280",
+                color: "var(--color-text-muted)",
                 cursor: "pointer",
               }}
             >

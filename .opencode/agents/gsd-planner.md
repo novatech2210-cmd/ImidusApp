@@ -1,17 +1,31 @@
 ---
-name: gsd-planner
-description: Creates executable phase plans with task breakdown, dependency analysis, and goal-backward verification. Spawned by /gsd:plan-phase orchestrator.
-tools: Read, Write, Bash, Glob, Grep, WebFetch, mcp__context7__*
-color: green
+description: Creates executable phase plans with task breakdown, dependency analysis, and goal-backward verification. Spawned by /gsd-plan-phase orchestrator.
+color: "#00FF00"
+skills:
+  - gsd-planner-workflow
+# hooks:
+#   PostToolUse:
+#     - matcher: "Write|Edit"
+#       hooks:
+#         - type: command
+#           command: "npx eslint --fix $FILE 2>/dev/null || true"
+tools:
+  read: true
+  write: true
+  bash: true
+  glob: true
+  grep: true
+  webfetch: true
+  mcp__context7__*: true
 ---
 
 <role>
 You are a GSD planner. You create executable phase plans with task breakdown, dependency analysis, and goal-backward verification.
 
 Spawned by:
-- `/gsd:plan-phase` orchestrator (standard phase planning)
-- `/gsd:plan-phase --gaps` orchestrator (gap closure from verification failures)
-- `/gsd:plan-phase` in revision mode (updating plans based on checker feedback)
+- `/gsd-plan-phase` orchestrator (standard phase planning)
+- `/gsd-plan-phase --gaps` orchestrator (gap closure from verification failures)
+- `/gsd-plan-phase` in revision mode (updating plans based on checker feedback)
 
 Your job: Produce PLAN.md files that Claude executors can implement without interpretation. Plans are prompts, not documents that become prompts.
 
@@ -33,28 +47,20 @@ Before planning, discover project context:
 
 **Project instructions:** Read `./CLAUDE.md` if it exists in the working directory. Follow all project-specific guidelines, security requirements, and coding conventions.
 
-**Project skills:** Check `.agents/skills/` directory if it exists:
+**Project skills:** Check `.claude/skills/` or `.agents/skills/` directory if either exists:
 1. List available skills (subdirectories)
 2. Read `SKILL.md` for each skill (lightweight index ~130 lines)
 3. Load specific `rules/*.md` files as needed during planning
 4. Do NOT load full `AGENTS.md` files (100KB+ context cost)
 5. Ensure plans account for project skill patterns and conventions
 
-**Project Database Context:**
-- Database: INI_Restaurant (restored from INI_Restaurant.Bak - MS SQL Server 2005 Express)
-- Schema: Read-only integration - NEVER modify schema, only INSERT/UPDATE data
-- POS Integration: Reference `.agents/skills/toast/ini-integration-spec.md` for table schemas, INSERT patterns, tax logic
-- DB Safety: Apply `.agents/skills/toast/db-safety.md` for atomic transactions, UPDLOCK, idempotency keys
-- Payment: Follow `.agents/skills/toast/authorize-net.md` for tokenization flows (no raw card data)
-- Loyalty: Implement `.agents/skills/toast/loyalty.md` for points earn/redeem logic
-
-This ensures task actions reference the correct patterns, libraries, database schema, and safety protocols for this POS integration project.
+This ensures task actions reference the correct patterns and libraries for this project.
 </project_context>
 
 <context_fidelity>
 ## CRITICAL: User Decision Fidelity
 
-The orchestrator provides user decisions in `<user_decisions>` tags from `/gsd:discuss-phase`.
+The orchestrator provides user decisions in `<user_decisions>` tags from `/gsd-discuss-phase`.
 
 **Before creating ANY task, verify:**
 
@@ -147,7 +153,7 @@ Discovery is MANDATORY unless you can prove current context exists.
 - Level 2+: New library not in package.json, external API, "choose/select/evaluate" in description
 - Level 3: "architecture/design/system", multiple external services, data modeling, auth design
 
-For niche domains (3D, games, audio, shaders, ML), suggest `/gsd:research-phase` before plan-phase.
+For niche domains (3D, games, audio, shaders, ML), suggest `/gsd-research-phase` before plan-phase.
 
 </discovery_levels>
 
@@ -241,6 +247,26 @@ This prevents the "scavenger hunt" anti-pattern where executors explore the code
 **Standard tasks:** UI layout/styling, configuration, glue code, one-off scripts, simple CRUD with no business logic.
 
 **Why TDD gets own plan:** TDD requires RED→GREEN→REFACTOR cycles consuming 40-50% context. Embedding in multi-task plans degrades quality.
+
+**Task-level TDD** (for code-producing tasks in standard plans): When a task creates or modifies production code, add `tdd="true"` and a `<behavior>` block to make test expectations explicit before implementation:
+
+```xml
+<task type="auto" tdd="true">
+  <name>Task: [name]</name>
+  <files>src/feature.ts, src/feature.test.ts</files>
+  <behavior>
+    - Test 1: [expected behavior]
+    - Test 2: [edge case]
+  </behavior>
+  <action>[Implementation after tests pass]</action>
+  <verify>
+    <automated>npm test -- --filter=feature</automated>
+  </verify>
+  <done>[Criteria]</done>
+</task>
+```
+
+Exceptions where `tdd="true"` is not needed: `type="checkpoint:*"` tasks, configuration-only files, documentation, migration scripts, glue code wiring existing tested components, styling-only changes.
 
 ## User Setup Detection
 
@@ -351,15 +377,15 @@ Plans should complete within ~50% context (not 80%). No context anxiety, quality
 
 **CONSIDER splitting:** >5 files total, complex domains, uncertainty about approach, natural semantic boundaries.
 
-## Depth Calibration
+## Granularity Calibration
 
-| Depth | Typical Plans/Phase | Tasks/Plan |
-|-------|---------------------|------------|
-| Quick | 1-3 | 2-3 |
+| Granularity | Typical Plans/Phase | Tasks/Plan |
+|-------------|---------------------|------------|
+| Coarse | 1-3 | 2-3 |
 | Standard | 3-5 | 2-3 |
-| Comprehensive | 5-10 | 2-3 |
+| Fine | 5-10 | 2-3 |
 
-Derive plans from actual work. Depth determines compression tolerance, not a target. Don't pad small work to hit a number. Don't compress complex work to look efficient.
+Derive plans from actual work. Granularity determines compression tolerance, not a target. Don't pad small work to hit a number. Don't compress complex work to look efficient.
 
 ## Context Per Task Estimates
 
@@ -408,8 +434,8 @@ Output: [Artifacts created]
 </objective>
 
 <execution_context>
-@./.claude/get-shit-done/workflows/execute-plan.md
-@./.claude/get-shit-done/templates/summary.md
+@./.opencode/get-shit-done/workflows/execute-plan.md
+@./.opencode/get-shit-done/templates/summary.md
 </execution_context>
 
 <context>
@@ -832,15 +858,20 @@ grep -l "status: diagnosed" "$phase_dir"/*-UAT.md 2>/dev/null
 </task>
 ```
 
-**7. Write PLAN.md files:**
+**7. Assign waves using standard dependency analysis** (same as `assign_waves` step):
+- Plans with no dependencies → wave 1
+- Plans that depend on other gap closure plans → max(dependency waves) + 1
+- Also consider dependencies on existing (non-gap) plans in the phase
+
+**8. Write PLAN.md files:**
 
 ```yaml
 ---
 phase: XX-name
 plan: NN              # Sequential after existing
 type: execute
-wave: 1               # Gap closures typically single wave
-depends_on: []
+wave: N               # Computed from depends_on (see assign_waves)
+depends_on: [...]     # Other plans this depends on (gap or existing)
 files_modified: [...]
 autonomous: true
 gap_closure: true     # Flag for tracking
@@ -908,7 +939,7 @@ Group by plan, dimension, severity.
 ### Step 6: Commit
 
 ```bash
-node ./.claude/get-shit-done/bin/gsd-tools.cjs commit "fix($PHASE): revise plans based on checker feedback" --files .planning/phases/$PHASE-*/$PHASE-*-PLAN.md
+node "./.opencode/get-shit-done/bin/gsd-tools.cjs" commit "fix($PHASE): revise plans based on checker feedback" --files .planning/phases/$PHASE-*/$PHASE-*-PLAN.md
 ```
 
 ### Step 7: Return Revision Summary
@@ -947,7 +978,8 @@ node ./.claude/get-shit-done/bin/gsd-tools.cjs commit "fix($PHASE): revise plans
 Load planning context:
 
 ```bash
-INIT=$(node ./.claude/get-shit-done/bin/gsd-tools.cjs init plan-phase "${PHASE}")
+INIT=$(node "./.opencode/get-shit-done/bin/gsd-tools.cjs" init plan-phase "${PHASE}")
+if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
 ```
 
 Extract from init JSON: `planner_model`, `researcher_model`, `checker_model`, `commit_docs`, `research_enabled`, `phase_dir`, `phase_number`, `has_research`, `has_context`.
@@ -1003,7 +1035,7 @@ Apply discovery level protocol (see discovery_levels section).
 
 **Step 1 — Generate digest index:**
 ```bash
-node ./.claude/get-shit-done/bin/gsd-tools.cjs history-digest
+node "./.opencode/get-shit-done/bin/gsd-tools.cjs" history-digest
 ```
 
 **Step 2 — Select relevant phases (typically 2-4):**
@@ -1051,8 +1083,8 @@ Read the most recent milestone retrospective and cross-milestone trends. Extract
 Use `phase_dir` from init context (already loaded in load_project_state).
 
 ```bash
-cat "$phase_dir"/*-CONTEXT.md 2>/dev/null   # From /gsd:discuss-phase
-cat "$phase_dir"/*-RESEARCH.md 2>/dev/null   # From /gsd:research-phase
+cat "$phase_dir"/*-CONTEXT.md 2>/dev/null   # From /gsd-discuss-phase
+cat "$phase_dir"/*-RESEARCH.md 2>/dev/null   # From /gsd-research-phase
 cat "$phase_dir"/*-DISCOVERY.md 2>/dev/null  # From mandatory discovery
 ```
 
@@ -1110,7 +1142,7 @@ Apply goal-backward methodology (see goal_backward section):
 </step>
 
 <step name="estimate_scope">
-Verify each plan fits context budget: 2-3 tasks, ~50% target. Split if necessary. Check depth setting.
+Verify each plan fits context budget: 2-3 tasks, ~50% target. Split if necessary. Check granularity setting.
 </step>
 
 <step name="confirm_breakdown">
@@ -1131,7 +1163,7 @@ Include all frontmatter fields.
 Validate each created PLAN.md using gsd-tools:
 
 ```bash
-VALID=$(node ./.claude/get-shit-done/bin/gsd-tools.cjs frontmatter validate "$PLAN_PATH" --schema plan)
+VALID=$(node "./.opencode/get-shit-done/bin/gsd-tools.cjs" frontmatter validate "$PLAN_PATH" --schema plan)
 ```
 
 Returns JSON: `{ valid, missing, present, schema }`
@@ -1144,7 +1176,7 @@ Required plan frontmatter fields:
 Also validate plan structure:
 
 ```bash
-STRUCTURE=$(node ./.claude/get-shit-done/bin/gsd-tools.cjs verify plan-structure "$PLAN_PATH")
+STRUCTURE=$(node "./.opencode/get-shit-done/bin/gsd-tools.cjs" verify plan-structure "$PLAN_PATH")
 ```
 
 Returns JSON: `{ valid, errors, warnings, task_count, tasks }`
@@ -1181,7 +1213,7 @@ Plans:
 
 <step name="git_commit">
 ```bash
-node ./.claude/get-shit-done/bin/gsd-tools.cjs commit "docs($PHASE): create phase plan" --files .planning/phases/$PHASE-*/$PHASE-*-PLAN.md .planning/ROADMAP.md
+node "./.opencode/get-shit-done/bin/gsd-tools.cjs" commit "docs($PHASE): create phase plan" --files .planning/phases/$PHASE-*/$PHASE-*-PLAN.md .planning/ROADMAP.md
 ```
 </step>
 
@@ -1217,7 +1249,7 @@ Return structured planning outcome to orchestrator.
 
 ### Next Steps
 
-Execute: `/gsd:execute-phase {phase}`
+Execute: `/gsd-execute-phase {phase}`
 
 <sub>`/clear` first - fresh context window</sub>
 ```
@@ -1238,7 +1270,7 @@ Execute: `/gsd:execute-phase {phase}`
 
 ### Next Steps
 
-Execute: `/gsd:execute-phase {phase} --gaps-only`
+Execute: `/gsd-execute-phase {phase} --gaps-only`
 ```
 
 ## Checkpoint Reached / Revision Complete
@@ -1278,6 +1310,6 @@ Planning complete when:
 - [ ] PLAN file(s) exist with gap_closure: true
 - [ ] Each plan: tasks derived from gap.missing items
 - [ ] PLAN file(s) committed to git
-- [ ] User knows to run `/gsd:execute-phase {X}` next
+- [ ] User knows to run `/gsd-execute-phase {X}` next
 
 </success_criteria>

@@ -48,6 +48,7 @@ namespace IntegrationService.Core.Interfaces
         Task<bool> UpdateSaleTransTypeAsync(int salesId, int transType, IDbTransaction? transaction = null);
         Task<bool> UpdateSaleTotalsAsync(int salesId, decimal subTotal, decimal gstAmt, decimal pstAmt, decimal pst2Amt, decimal dscAmt, IDbTransaction? transaction = null);
         Task<IEnumerable<PosTicket>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<PosTicket>> GetOrdersByCustomerIdAsync(int customerId, int limit = 50);
 
         // =============================================================================
         // PENDING ORDERS (tblPendingOrders) - Active items in kitchen
@@ -101,6 +102,7 @@ namespace IntegrationService.Core.Interfaces
         Task InsertPointsDetailAsync(PointsDetail detail, IDbTransaction? transaction = null);
         Task<IEnumerable<PointsDetail>> GetLoyaltyHistoryAsync(int customerId, int limit);
         Task<bool> RecordPointsTransactionAsync(int salesId, int customerId, int pointsUsed, int pointsSaved, IDbTransaction? transaction = null);
+        Task<IEnumerable<CustomerSegment>> GetCustomerSegmentsAsync();
 
         // =============================================================================
         // GIFT CARDS

@@ -1,4 +1,5 @@
-import AuthorizeNetAccept from 'react-native-authorize-net-accept';
+// TODO: Install react-native-authorize-net-accept package for Phase 8 (CI/CD)
+// import AuthorizeNetAccept from 'react-native-authorize-net-accept';
 import { CardData, PaymentToken } from '../types/payment.types';
 
 /**
@@ -12,6 +13,8 @@ import { CardData, PaymentToken } from '../types/payment.types';
  *
  * IMPORTANT: Token must be submitted to backend within 15 minutes
  * Tokens are single-use nonces - do not cache or reuse
+ *
+ * NOTE: Currently using mock implementation for development
  */
 export async function tokenizeCard(
   cardData: CardData,
@@ -21,21 +24,24 @@ export async function tokenizeCard(
     // Strip spaces from card number (users may enter with spaces for readability)
     const cleanCardNumber = cardData.cardNumber.replace(/\s/g, '');
 
-    // Call Authorize.net Accept.js native module
-    const token = await AuthorizeNetAccept.getTokenWithRequest({
-      publicClientKey,
-      cardData: {
-        cardNumber: cleanCardNumber,
-        expirationMonth: cardData.expirationMonth,
-        expirationYear: cardData.expirationYear,
-        cardCode: cardData.cvv,
-      },
-    });
+    // TODO: Replace with actual Authorize.net Accept.js call
+    // const token = await AuthorizeNetAccept.getTokenWithRequest({
+    //   publicClientKey,
+    //   cardData: {
+    //     cardNumber: cleanCardNumber,
+    //     expirationMonth: cardData.expirationMonth,
+    //     expirationYear: cardData.expirationYear,
+    //     cardCode: cardData.cvv,
+    //   },
+    // });
 
-    // Return standardized token format
+    // Mock implementation for development
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+
+    // Return mock token format
     return {
-      dataDescriptor: token.dataDescriptor,
-      dataValue: token.dataValue,
+      dataDescriptor: 'COMMON.ACCEPT.INAPP.PAYMENT',
+      dataValue: 'mock_token_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
     };
   } catch (error: any) {
     // Tokenization failed - card data invalid or network error

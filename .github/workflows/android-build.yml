@@ -45,12 +45,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
+          cache: 'pnpm'
           cache-dependency-path: ${{ env.WORKING_DIR }}/yarn.lock
 
       - name: Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3

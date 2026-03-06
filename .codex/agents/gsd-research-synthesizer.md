@@ -1,9 +1,14 @@
 ---
-name: gsd-research-synthesizer
-description: Synthesizes research outputs from parallel researcher agents into SUMMARY.md. Spawned by $gsd-new-project after 4 researcher agents complete.
-tools: Read, Write, Bash
-color: purple
+name: "gsd-research-synthesizer"
+description: "Synthesizes research outputs from parallel researcher agents into SUMMARY.md. Spawned by $gsd-new-project after 4 researcher agents complete."
 ---
+
+<codex_agent_role>
+role: gsd-research-synthesizer
+tools: Read, Write, Bash
+purpose: Synthesizes research outputs from parallel researcher agents into SUMMARY.md. Spawned by $gsd-new-project after 4 researcher agents complete.
+</codex_agent_role>
+
 
 <role>
 You are a GSD research synthesizer. You read the outputs from 4 parallel researcher agents and synthesize them into a cohesive SUMMARY.md.
@@ -122,6 +127,8 @@ Identify gaps that couldn't be resolved and need attention during planning.
 
 ## Step 6: Write SUMMARY.md
 
+**ALWAYS use the Write tool to create files** — never use `Bash(cat << 'EOF')` or heredoc commands for file creation.
+
 Use template: ./.codex/get-shit-done/templates/research-project/SUMMARY.md
 
 Write to `.planning/research/SUMMARY.md`
@@ -131,7 +138,7 @@ Write to `.planning/research/SUMMARY.md`
 The 4 parallel researcher agents write files but do NOT commit. You commit everything together.
 
 ```bash
-node ./.codex/get-shit-done/bin/gsd-tools.cjs commit "docs: complete project research" --files .planning/research/
+node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs: complete project research" --files .planning/research/
 ```
 
 ## Step 8: Return Summary

@@ -1,14 +1,17 @@
 import { OrderPanel } from "@/components/OrderPanel";
 import { Sidebar } from "@/components/Sidebar";
+import { SyncIndicator } from "@/components/SyncIndicator";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
+import { SyncProvider } from "@/context/SyncContext";
 import type { Metadata } from "next";
 import "./globals.css";
+import "./customer-theme.css";
 
 export const metadata: Metadata = {
-  title: "INI Restaurant POS",
+  title: "IMIDUSAPP | The Digital Growth Engine for Restaurants",
   description:
-    "IMIDUS Technologies — High-Throughput Hospitality POS Interface.",
+    "Seamless Ordering. Real-Time Sync. Unified Loyalty. Order, track, and earn rewards with IMIDUS.",
 };
 
 export default function RootLayout({
@@ -30,34 +33,30 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>
+      <body className="customer-layout">
         <AuthProvider>
           <CartProvider>
-            <div className="pos-container">
-              <Sidebar />
-              <main className="pos-grid">
-                <header className="flex justify-between items-center mb-8">
-                  <div>
-                    <h1 className="text-2xl font-black text-white uppercase tracking-tighter">
-                      INI Restaurant
-                    </h1>
-                    <p className="text-text-dim text-[10px] font-bold uppercase tracking-[0.2em]">
-                      Service Terminal #01
-                    </p>
-                  </div>
-                  <div className="flex gap-4">
-                    <div className="bg-bg-panel px-4 py-2 rounded-lg border border-divider flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                      <span className="text-[10px] font-bold text-text-secondary uppercase">
-                        Server: Online
-                      </span>
+            <SyncProvider pollingInterval={30000}>
+              <div className="imidus-container">
+                <Sidebar />
+                <main className="imidus-main">
+                  <header className="imidus-header">
+                    <div className="header-brand">
+                      <span className="logo-text">IMIDUSAPP</span>
+                      <span className="tagline">Order · Track · Earn</span>
                     </div>
+                    <div className="header-status">
+                      {/* Real-Time Sync Indicator with API Polling */}
+                      <SyncIndicator />
+                    </div>
+                  </header>
+                  <div className="content-area">
+                    {children}
                   </div>
-                </header>
-                {children}
-              </main>
-              <OrderPanel />
-            </div>
+                </main>
+                <OrderPanel />
+              </div>
+            </SyncProvider>
           </CartProvider>
         </AuthProvider>
       </body>

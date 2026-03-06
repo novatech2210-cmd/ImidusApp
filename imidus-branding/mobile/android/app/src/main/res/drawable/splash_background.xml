@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  IMIDUS Technologies – Splash Background Drawable
+  Path: android/app/src/main/res/drawable/splash_background.xml
+
+  Renders splash.png centred on brand-blue background.
+  Make sure splash.png is placed in:
+    android/app/src/main/res/drawable/splash.png
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Brand blue background fill -->
+    <item>
+        <color android:color="#1E5AA8" />
+    </item>
+
+    <!-- Centred splash logo -->
+    <item
+        android:gravity="center"
+        android:width="200dp"
+        android:height="433dp">
+        <bitmap
+            android:src="@drawable/splash"
+            android:gravity="center"
+            android:scaleType="centerInside" />
+    </item>
+
+</layer-list>

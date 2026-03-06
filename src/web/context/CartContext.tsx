@@ -2,8 +2,11 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 export interface CartItem {
+  id: string; // Unique ID combining menuItemId and sizeId
   menuItemId: number;
+  sizeId: number;
   name: string;
+  sizeName: string;
   price: number;
   quantity: number;
   image?: string;
@@ -12,15 +15,21 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (item: Omit<CartItem, "quantity">) => void;
-  removeItem: (menuItemId: number) => void;
-  updateQty: (menuItemId: number, qty: number) => void;
+  addItem: (item: Omit<CartItem, "quantity" | "id">) => void;
+  removeItem: (id: string) => void;
+  updateQty: (id: string, qty: number) => void;
   clearCart: () => void;
   total: number;
+  subtotal: number;
+  tax: number;
   count: number;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
+
+// Tax rates matching POS system
+const GST_RATE = 0.06;
+const PST_RATE = 0.00;
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -34,40 +43,41 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("cart", JSON.stringify(items));
   }, [items]);
 
-  const addItem = (item: Omit<CartItem, "quantity">) => {
+  const addItem = (item: Omit<CartItem, "quantity" | "id">) => {
+    const id = `${item.menuItemId}-${item.sizeId}`;
     setItems((prev) => {
-      const existing = prev.find((i) => i.menuItemId === item.menuItemId);
+      const existing = prev.find((i) => i.id === id);
       if (existing) {
         return prev.map((i) =>
-          i.menuItemId === item.menuItemId
-            ? { ...i, quantity: i.quantity + 1 }
-            : i,
+          i.id === id ? { ...i, quantity: i.quantity + 1 } : i,
         );
       }
-      return [...prev, { ...item, quantity: 1 }];
+      return [...prev, { ...item, id, quantity: 1 }];
     });
   };
 
-  const removeItem = (menuItemId: number) =>
-    setItems((prev) => prev.filter((i) => i.menuItemId !== menuItemId));
+  const removeItem = (id: string) =>
+    setItems((prev) => prev.filter((i) => i.id !== id));
 
-  const updateQty = (menuItemId: number, qty: number) => {
-    if (qty <= 0) return removeItem(menuItemId);
+  const updateQty = (id: string, qty: number) => {
+    if (qty <= 0) return removeItem(id);
     setItems((prev) =>
       prev.map((i) =>
-        i.menuItemId === menuItemId ? { ...i, quantity: qty } : i,
+        i.id === id ? { ...i, quantity: qty } : i,
       ),
     );
   };
 
   const clearCart = () => setItems([]);
 
-  const total = items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const tax = subtotal * (GST_RATE + PST_RATE);
+  const total = subtotal + tax;
   const count = items.reduce((s, i) => s + i.quantity, 0);
 
   return (
     <CartContext.Provider
-      value={{ items, addItem, removeItem, updateQty, clearCart, total, count }}
+      value={{ items, addItem, removeItem, updateQty, clearCart, total, subtotal, tax, count }}
     >
       {children}
     </CartContext.Provider>

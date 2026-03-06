@@ -2,6 +2,7 @@ using Xunit;
 using Moq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using IntegrationService.Infrastructure.Services;
 using IntegrationService.Infrastructure.Data;
 using IntegrationService.Core.Interfaces;
@@ -36,10 +37,16 @@ public class OrderStatusPollingServiceTests
         _mockServiceScope = new Mock<IServiceScope>();
         _mockScopeFactory = new Mock<IServiceScopeFactory>();
         _mockPosRepo = new Mock<IPosRepository>();
-        _mockStatusRepo = new Mock<OnlineOrderStatusRepository>(MockBehavior.Strict, null);
+        
+        // Create mock configuration for repositories that need it
+        var mockConfig = new Mock<IConfiguration>();
+        mockConfig.Setup(x => x.GetSection("ConnectionStrings").GetSection("BackendDatabase").Value)
+            .Returns("Server=localhost;Database=IntegrationService;User Id=sa;Password=Test@123;TrustServerCertificate=True;");
+        
+        _mockStatusRepo = new Mock<OnlineOrderStatusRepository>(MockBehavior.Strict, mockConfig.Object);
         _mockNotificationService = new Mock<INotificationService>();
         _mockDeviceTokenRepo = new Mock<IDeviceTokenRepository>();
-        _mockNotificationLogRepo = new Mock<NotificationLogRepository>(MockBehavior.Strict, null);
+        _mockNotificationLogRepo = new Mock<NotificationLogRepository>(MockBehavior.Strict, mockConfig.Object);
         _mockLogger = new Mock<ILogger<OrderStatusPollingService>>();
 
         // Setup service provider to return mocked services

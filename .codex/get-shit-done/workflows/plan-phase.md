@@ -15,7 +15,7 @@ Read all files referenced by the invoking prompt's execution_context before star
 Load all context in one call (paths only to minimize orchestrator context):
 
 ```bash
-INIT=$(node ./.codex/get-shit-done/bin/gsd-tools.cjs init plan-phase "$PHASE")
+INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" init plan-phase "$PHASE")
 ```
 
 Parse JSON for: `researcher_model`, `planner_model`, `checker_model`, `research_enabled`, `plan_checker_enabled`, `nyquist_validation_enabled`, `commit_docs`, `phase_found`, `phase_dir`, `phase_number`, `phase_name`, `phase_slug`, `padded_phase`, `has_research`, `has_context`, `has_plans`, `plan_count`, `planning_exists`, `roadmap_exists`, `phase_req_ids`.
@@ -42,7 +42,7 @@ mkdir -p ".planning/phases/${padded_phase}-${phase_slug}"
 ## 3. Validate Phase
 
 ```bash
-PHASE_INFO=$(node ./.codex/get-shit-done/bin/gsd-tools.cjs roadmap get-phase "${PHASE}")
+PHASE_INFO=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" roadmap get-phase "${PHASE}")
 ```
 
 **If `found` is false:** Error with available phases. **If `found` is true:** Extract `phase_number`, `phase_name`, `goal` from JSON.
@@ -128,7 +128,7 @@ Generating CONTEXT.md from requirements...
 
 5. Commit:
 ```bash
-node ./.codex/get-shit-done/bin/gsd-tools.cjs commit "docs(${padded_phase}): generate context from PRD" --files "${phase_dir}/${padded_phase}-CONTEXT.md"
+node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs(${padded_phase}): generate context from PRD" --files "${phase_dir}/${padded_phase}-CONTEXT.md"
 ```
 
 6. Set `context_content` to the generated CONTEXT.md content and continue to step 5 (Handle Research).
@@ -175,7 +175,7 @@ Display banner:
 ### Spawn gsd-phase-researcher
 
 ```bash
-PHASE_DESC=$(node ./.codex/get-shit-done/bin/gsd-tools.cjs roadmap get-phase "${PHASE}" | jq -r '.section')
+PHASE_DESC=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" roadmap get-phase "${PHASE}" | jq -r '.section')
 ```
 
 Research prompt:
@@ -197,7 +197,7 @@ Answer: "What do I need to know to PLAN this phase well?"
 **Phase requirement IDs (MUST address):** {phase_req_ids}
 
 **Project instructions:** Read ./CLAUDE.md if exists — follow project-specific guidelines
-**Project skills:** Check .agents/skills/ directory (if exists) — read SKILL.md files, research should account for project skill patterns
+**Project skills:** Check .claude/skills/ or .agents/skills/ directory (if either exists) — read SKILL.md files, research should account for project skill patterns
 </additional_context>
 
 <output>
@@ -207,8 +207,8 @@ Write to: {phase_dir}/{phase_num}-RESEARCH.md
 
 ```
 Task(
-  prompt="First, read ./.codex/agents/gsd-phase-researcher.md for your role and instructions.\n\n" + research_prompt,
-  subagent_type="general-purpose",
+  prompt=research_prompt,
+  subagent_type="gsd-phase-researcher",
   model="{researcher_model}",
   description="Research Phase {phase}"
 )
@@ -235,7 +235,7 @@ grep -l "## Validation Architecture" "${PHASE_DIR}"/*-RESEARCH.md 2>/dev/null
 3. Fill frontmatter: replace `{N}` with phase number, `{phase-slug}` with phase slug, `{date}` with current date
 4. If `commit_docs` is true:
 ```bash
-node ./.codex/get-shit-done/bin/gsd-tools.cjs commit-docs "docs(phase-${PHASE}): add validation strategy"
+node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit-docs "docs(phase-${PHASE}): add validation strategy"
 ```
 
 **If not found (and nyquist enabled):** Display warning:
@@ -257,13 +257,13 @@ ls "${PHASE_DIR}"/*-PLAN.md 2>/dev/null
 Extract from INIT JSON:
 
 ```bash
-STATE_PATH=$(echo "$INIT" | jq -r '.state_path // empty')
-ROADMAP_PATH=$(echo "$INIT" | jq -r '.roadmap_path // empty')
-REQUIREMENTS_PATH=$(echo "$INIT" | jq -r '.requirements_path // empty')
-RESEARCH_PATH=$(echo "$INIT" | jq -r '.research_path // empty')
-VERIFICATION_PATH=$(echo "$INIT" | jq -r '.verification_path // empty')
-UAT_PATH=$(echo "$INIT" | jq -r '.uat_path // empty')
-CONTEXT_PATH=$(echo "$INIT" | jq -r '.context_path // empty')
+STATE_PATH=$(printf '%s\n' "$INIT" | jq -r '.state_path // empty')
+ROADMAP_PATH=$(printf '%s\n' "$INIT" | jq -r '.roadmap_path // empty')
+REQUIREMENTS_PATH=$(printf '%s\n' "$INIT" | jq -r '.requirements_path // empty')
+RESEARCH_PATH=$(printf '%s\n' "$INIT" | jq -r '.research_path // empty')
+VERIFICATION_PATH=$(printf '%s\n' "$INIT" | jq -r '.verification_path // empty')
+UAT_PATH=$(printf '%s\n' "$INIT" | jq -r '.uat_path // empty')
+CONTEXT_PATH=$(printf '%s\n' "$INIT" | jq -r '.context_path // empty')
 ```
 
 ## 8. Spawn gsd-planner Agent
@@ -297,7 +297,7 @@ Planner prompt:
 **Phase requirement IDs (every ID MUST appear in a plan's `requirements` field):** {phase_req_ids}
 
 **Project instructions:** Read ./CLAUDE.md if exists — follow project-specific guidelines
-**Project skills:** Check .agents/skills/ directory (if exists) — read SKILL.md files, plans should account for project skill rules
+**Project skills:** Check .claude/skills/ or .agents/skills/ directory (if either exists) — read SKILL.md files, plans should account for project skill rules
 </planning_context>
 
 <downstream_consumer>
@@ -320,8 +320,8 @@ Output consumed by $gsd-execute-phase. Plans need:
 
 ```
 Task(
-  prompt="First, read ./.codex/agents/gsd-planner.md for your role and instructions.\n\n" + filled_prompt,
-  subagent_type="general-purpose",
+  prompt=filled_prompt,
+  subagent_type="gsd-planner",
   model="{planner_model}",
   description="Plan Phase {phase}"
 )
@@ -362,7 +362,7 @@ Checker prompt:
 **Phase requirement IDs (MUST ALL be covered):** {phase_req_ids}
 
 **Project instructions:** Read ./CLAUDE.md if exists — verify plans honor project guidelines
-**Project skills:** Check .agents/skills/ directory (if exists) — verify plans account for project skill rules
+**Project skills:** Check .claude/skills/ or .agents/skills/ directory (if either exists) — verify plans account for project skill rules
 </verification_context>
 
 <expected_output>
@@ -417,8 +417,8 @@ Return what changed.
 
 ```
 Task(
-  prompt="First, read ./.codex/agents/gsd-planner.md for your role and instructions.\n\n" + revision_prompt,
-  subagent_type="general-purpose",
+  prompt=revision_prompt,
+  subagent_type="gsd-planner",
   model="{planner_model}",
   description="Revise Phase {phase} plans"
 )
@@ -441,12 +441,19 @@ Route to `<offer_next>` OR `auto_advance` depending on flags/config.
 Check for auto-advance trigger:
 
 1. Parse `--auto` flag from {{GSD_ARGS}}
-2. Read `workflow.auto_advance` from config:
+2. **Sync chain flag with intent** — if user invoked manually (no `--auto`), clear the ephemeral chain flag from any previous interrupted `--auto` chain. This does NOT touch `workflow.auto_advance` (the user's persistent settings preference):
    ```bash
-   AUTO_CFG=$(node ./.codex/get-shit-done/bin/gsd-tools.cjs config-get workflow.auto_advance 2>/dev/null || echo "false")
+   if [[ ! "{{GSD_ARGS}}" =~ --auto ]]; then
+     node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" config-set workflow._auto_chain_active false 2>/dev/null
+   fi
+   ```
+3. Read both the chain flag and user preference:
+   ```bash
+   AUTO_CHAIN=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" config-get workflow._auto_chain_active 2>/dev/null || echo "false")
+   AUTO_CFG=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" config-get workflow.auto_advance 2>/dev/null || echo "false")
    ```
 
-**If `--auto` flag present OR `AUTO_CFG` is true:**
+**If `--auto` flag present OR `AUTO_CHAIN` is true OR `AUTO_CFG` is true:**
 
 Display banner:
 ```
@@ -454,43 +461,15 @@ Display banner:
  GSD ► AUTO-ADVANCING TO EXECUTE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Plans ready. Spawning execute-phase...
+Plans ready. Launching execute-phase...
 ```
 
-Spawn execute-phase as Task with direct workflow file reference (do NOT use Skill tool — Skills don't resolve inside Task subagents):
+Launch execute-phase using the Skill tool to avoid nested Task sessions (which cause runtime freezes due to deep agent nesting):
 ```
-Task(
-  prompt="
-    <objective>
-    You are the execute-phase orchestrator. Execute all plans for Phase ${PHASE}: ${PHASE_NAME}.
-    </objective>
-
-    <execution_context>
-    @./.codex/get-shit-done/workflows/execute-phase.md
-    @./.codex/get-shit-done/references/checkpoints.md
-    @./.codex/get-shit-done/references/tdd.md
-    @./.codex/get-shit-done/references/model-profile-resolution.md
-    </execution_context>
-
-    <arguments>
-    PHASE=${PHASE}
-    ARGUMENTS='${PHASE} --auto --no-transition'
-    </arguments>
-
-    <instructions>
-    1. Read execute-phase.md from execution_context for your complete workflow
-    2. Follow ALL steps: initialize, handle_branching, validate_phase, discover_and_group_plans, execute_waves, aggregate_results, close_parent_artifacts, verify_phase_goal, update_roadmap
-    3. The --no-transition flag means: after verification + roadmap update, STOP and return status. Do NOT run transition.md.
-    4. When spawning executor agents, use subagent_type='gsd-executor' with the existing @file pattern from the workflow
-    5. When spawning verifier agents, use subagent_type='gsd-verifier'
-    6. Preserve the classifyHandoffIfNeeded workaround (spot-check on that specific error)
-    7. Do NOT use the Skill tool or /gsd: commands
-    </instructions>
-  ",
-  subagent_type="general-purpose",
-  description="Execute Phase ${PHASE}"
-)
+Skill(skill="gsd:execute-phase", args="${PHASE} --auto --no-transition")
 ```
+
+The `--no-transition` flag tells execute-phase to return status after verification instead of chaining further. This keeps the auto-advance chain flat — each phase runs at the same nesting level rather than spawning deeper Task agents.
 
 **Handle execute-phase return:**
 - **PHASE COMPLETE** → Display final summary:

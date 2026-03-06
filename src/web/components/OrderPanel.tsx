@@ -1,29 +1,34 @@
 "use client";
 
+import Link from 'next/link';
 import { useCart } from "@/context/CartContext";
+import { ShoppingBagIcon } from '@heroicons/react/24/solid';
 
 export function OrderPanel() {
-  const { items, total, clearCart } = useCart();
+  const { items, subtotal, tax, total, count, clearCart } = useCart();
 
   return (
-    <div className="pos-order-panel blurred p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-black uppercase tracking-widest text-gold-vibrant">
-          Order View
-        </h2>
-        <button
-          onClick={clearCart}
-          className="text-text-dim text-xs font-bold hover:text-white uppercase"
-        >
-          Clear
-        </button>
+    <div className="pos-order-panel">
+      <div className="p-6 border-b border-[rgba(30,90,168,0.08)]">
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg font-black uppercase tracking-widest text-[#1E5AA8] flex items-center gap-2">
+            <ShoppingBagIcon className="w-6 h-6" />
+            Cart ({count})
+          </h2>
+          <button
+            onClick={clearCart}
+            className="text-[10px] font-bold uppercase tracking-wider text-[#71717A] hover:text-[#1E5AA8] transition-colors"
+          >
+            Clear
+          </button>
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+      <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {items.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center opacity-20 py-20 text-center">
+          <div className="h-full flex flex-col items-center justify-center text-[#71717A] py-20 text-center">
             <svg
-              className="w-16 h-16 mb-4"
+              className="w-16 h-16 mb-4 opacity-30"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -35,28 +40,29 @@ export function OrderPanel() {
                 d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
               />
             </svg>
-            <p className="font-bold uppercase tracking-tighter">Empty Table</p>
+            <p className="font-bold uppercase tracking-tighter text-sm">Your cart is empty</p>
+            <p className="text-xs mt-2 opacity-70">Add items from the menu</p>
           </div>
         ) : (
           items.map((item) => (
             <div
-              key={item.menuItemId}
+              key={item.id}
               className="flex justify-between items-start animate-in slide-in-from-right-4 duration-300"
             >
               <div className="flex gap-3">
-                <span className="bg-bg-surface text-gold font-black px-2 py-0.5 rounded border border-divider text-sm">
+                <span className="bg-[rgba(212,175,55,0.15)] text-[#D4AF37] font-black px-2 py-0.5 rounded text-sm min-w-[28px] text-center">
                   {item.quantity}
                 </span>
                 <div>
-                  <p className="font-bold text-sm text-white leading-tight uppercase">
+                  <p className="font-bold text-sm text-[#1A1A2E] leading-tight">
                     {item.name}
                   </p>
-                  <p className="text-[10px] text-text-dim uppercase tracking-widest mt-0.5">
-                    Regular
+                  <p className="text-[10px] text-[#71717A] uppercase tracking-wider mt-0.5">
+                    {item.sizeName}
                   </p>
                 </div>
               </div>
-              <p className="font-mono font-bold text-sm">
+              <p className="font-mono font-bold text-sm text-[#D4AF37]">
                 ${(item.price * item.quantity).toFixed(2)}
               </p>
             </div>
@@ -64,33 +70,36 @@ export function OrderPanel() {
         )}
       </div>
 
-      <div className="mt-6 pt-6 border-t border-divider space-y-4">
-        <div className="flex justify-between items-center text-text-secondary uppercase text-sm font-bold tracking-widest">
+      <div className="p-6 border-t border-[rgba(30,90,168,0.08)] space-y-4 bg-[rgba(253,246,227,0.3)]">
+        <div className="flex justify-between items-center text-[#4A4A5A] uppercase text-sm font-bold tracking-widest">
           <span>Subtotal</span>
-          <span className="font-mono">${total.toFixed(2)}</span>
+          <span className="font-mono">${subtotal.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between items-center text-[#4A4A5A] uppercase text-sm font-bold tracking-widest">
+          <span>Tax (6%)</span>
+          <span className="font-mono">${(subtotal * 0.06).toFixed(2)}</span>
         </div>
 
-        <div className="bg-bg-surface p-4 rounded-xl border border-divider">
+        <div className="bg-white p-4 rounded-xl border border-[rgba(212,175,55,0.3)]">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-text-dim text-[10px] uppercase font-black">
-              Total Due
+            <span className="text-[#71717A] text-[10px] uppercase font-black tracking-wider">
+              Total
             </span>
-            <span className="text-gold-vibrant font-black text-2xl font-mono">
-              ${(total * 1.12).toFixed(2)}
+            <span className="price text-2xl">
+              ${total.toFixed(2)}
             </span>
           </div>
-          <p className="text-[10px] text-text-dim text-right italic">
-            Incl. 12% GST/PST
+          <p className="text-[10px] text-[#71717A] text-right italic">
+            Incl. 6% GST
           </p>
         </div>
 
-        <button
-          className="w-full btn-sellable h-16 text-lg group overflow-hidden relative"
-          disabled={items.length === 0}
+        <Link
+          href="/cart"
+          className={`block w-full btn btn-gold text-center py-4 ${items.length === 0 ? 'opacity-50 pointer-events-none' : ''}`}
         >
-          <span className="relative z-10">Pay & Finalize</span>
-          <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 skew-x-[-20deg]" />
-        </button>
+          View Cart & Checkout
+        </Link>
       </div>
     </div>
   );

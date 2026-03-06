@@ -32,32 +32,38 @@ const AppNavigator = () => {
 
   // Set up FCM notification handlers for deep linking
   useEffect(() => {
-    // Handle notification when app is in background/foreground and user taps it
-    const unsubscribeOnNotificationOpenedApp = messaging().onNotificationOpenedApp(
-      remoteMessage => {
-        console.log('Notification caused app to open from background:', remoteMessage);
-        const { screen, orderId } = remoteMessage.data || {};
-        if (screen === 'OrderTracking' && orderId && navigationRef.current) {
-          navigationRef.current.navigate('OrderTracking', { orderId: parseInt(orderId, 10) });
-        }
-      }
-    );
-
-    // Check if app was opened from a notification while it was quit
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        if (remoteMessage) {
-          console.log('Notification caused app to open from quit state:', remoteMessage);
+    // NOTE: Firebase wrapped in try-catch to make optional during development
+    try {
+      // Handle notification when app is in background/foreground and user taps it
+      const unsubscribeOnNotificationOpenedApp = messaging().onNotificationOpenedApp(
+        remoteMessage => {
+          console.log('Notification caused app to open from background:', remoteMessage);
           const { screen, orderId } = remoteMessage.data || {};
-          if (screen === 'OrderTracking' && orderId) {
-            setInitialRoute('OrderTracking');
-            setInitialRouteParams({ orderId: parseInt(orderId, 10) });
+          if (screen === 'OrderTracking' && orderId && navigationRef.current) {
+            navigationRef.current.navigate('OrderTracking', { orderId: parseInt(orderId, 10) });
           }
         }
-      });
+      );
 
-    return unsubscribeOnNotificationOpenedApp;
+      // Check if app was opened from a notification while it was quit
+      messaging()
+        .getInitialNotification()
+        .then(remoteMessage => {
+          if (remoteMessage) {
+            console.log('Notification caused app to open from quit state:', remoteMessage);
+            const { screen, orderId } = remoteMessage.data || {};
+            if (screen === 'OrderTracking' && orderId) {
+              setInitialRoute('OrderTracking');
+              setInitialRouteParams({ orderId: parseInt(orderId, 10) });
+            }
+          }
+        });
+
+      return unsubscribeOnNotificationOpenedApp;
+    } catch (error) {
+      console.log('Firebase not configured (dev mode):', error);
+      return () => {}; // Return empty cleanup function
+    }
   }, []);
 
   // Navigate to initial route after navigation is ready

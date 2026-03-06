@@ -6,15 +6,43 @@ metadata:
 ---
 
 <codex_skill_adapter>
-Codex skills-first mode:
+## A. Skill Invocation
 - This skill is invoked by mentioning `$gsd-debug`.
 - Treat all user text after `$gsd-debug` as `{{GSD_ARGS}}`.
 - If no arguments are present, treat `{{GSD_ARGS}}` as empty.
 
-Legacy orchestration compatibility:
-- Any `Task(...)` pattern in referenced workflow docs is legacy syntax.
-- Implement equivalent behavior with Codex collaboration tools: `spawn_agent`, `wait`, `send_input`, and `close_agent`.
-- Treat legacy `subagent_type` names as role hints in the spawned message.
+## B. AskUserQuestion → request_user_input Mapping
+GSD workflows use `AskUserQuestion` (Claude Code syntax). Translate to Codex `request_user_input`:
+
+Parameter mapping:
+- `header` → `header`
+- `question` → `question`
+- Options formatted as `"Label" — description` → `{label: "Label", description: "description"}`
+- Generate `id` from header: lowercase, replace spaces with underscores
+
+Batched calls:
+- `AskUserQuestion([q1, q2])` → single `request_user_input` with multiple entries in `questions[]`
+
+Multi-select workaround:
+- Codex has no `multiSelect`. Use sequential single-selects, or present a numbered freeform list asking the user to enter comma-separated numbers.
+
+Execute mode fallback:
+- When `request_user_input` is rejected (Execute mode), present a plain-text numbered list and pick a reasonable default.
+
+## C. Task() → spawn_agent Mapping
+GSD workflows use `Task(...)` (Claude Code syntax). Translate to Codex collaboration tools:
+
+Direct mapping:
+- `Task(subagent_type="X", prompt="Y")` → `spawn_agent(agent_type="X", message="Y")`
+- `Task(model="...")` → omit (Codex uses per-role config, not inline model selection)
+- `fork_context: false` by default — GSD agents load their own context via `<files_to_read>` blocks
+
+Parallel fan-out:
+- Spawn multiple agents → collect agent IDs → `wait(ids)` for all to complete
+
+Result parsing:
+- Look for structured markers in agent output: `CHECKPOINT`, `PLAN COMPLETE`, `SUMMARY`, etc.
+- `close_agent(id)` after collecting results from each agent
 </codex_skill_adapter>
 
 <objective>
@@ -39,12 +67,12 @@ ls .planning/debug/*.md 2>/dev/null | grep -v resolved | head -5
 ## 0. Initialize Context
 
 ```bash
-INIT=$(node ./.codex/get-shit-done/bin/gsd-tools.cjs state load)
+INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state load)
 ```
 
 Extract `commit_docs` from init JSON. Resolve debugger model:
 ```bash
-DEBUGGER_MODEL=$(node ./.codex/get-shit-done/bin/gsd-tools.cjs resolve-model gsd-debugger --raw)
+debugger_model=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" resolve-model gsd-debugger --raw)
 ```
 
 ## 1. Check Active Sessions

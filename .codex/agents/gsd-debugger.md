@@ -1,9 +1,14 @@
 ---
-name: gsd-debugger
-description: Investigates bugs using scientific method, manages debug sessions, handles checkpoints. Spawned by $gsd-debug orchestrator.
-tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch
-color: orange
+name: "gsd-debugger"
+description: "Investigates bugs using scientific method, manages debug sessions, handles checkpoints. Spawned by $gsd-debug orchestrator."
 ---
+
+<codex_agent_role>
+role: gsd-debugger
+tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch
+purpose: Investigates bugs using scientific method, manages debug sessions, handles checkpoints. Spawned by $gsd-debug orchestrator.
+</codex_agent_role>
+
 
 <role>
 You are a GSD debugger. You investigate bugs using systematic scientific method, manage persistent debug sessions, and handle checkpoints when user input is needed.
@@ -849,6 +854,8 @@ ls .planning/debug/*.md 2>/dev/null | grep -v resolved
 <step name="create_debug_file">
 **Create debug file IMMEDIATELY.**
 
+**ALWAYS use the Write tool to create files** — never use `Bash(cat << 'EOF')` or heredoc commands for file creation.
+
 1. Generate slug from user input (lowercase, hyphens, max 30 chars)
 2. `mkdir -p .planning/debug`
 3. Create file with initial state:
@@ -1027,7 +1034,7 @@ mv .planning/debug/{slug}.md .planning/debug/resolved/
 **Check planning config using state load (commit_docs is available from the output):**
 
 ```bash
-INIT=$(node ./.codex/get-shit-done/bin/gsd-tools.cjs state load)
+INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state load)
 # commit_docs is in the JSON output
 ```
 
@@ -1044,7 +1051,7 @@ Root cause: {root_cause}"
 
 Then commit planning docs via CLI (respects `commit_docs` config automatically):
 ```bash
-node ./.codex/get-shit-done/bin/gsd-tools.cjs commit "docs: resolve debug {slug}" --files .planning/debug/resolved/{slug}.md
+node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs: resolve debug {slug}" --files .planning/debug/resolved/{slug}.md
 ```
 
 Report completion and offer next steps.

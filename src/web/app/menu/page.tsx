@@ -1,12 +1,14 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
-import { MenuAPI, MenuCategory } from "@/lib/api";
+import { MenuAPI, Category, MenuItem } from "@/lib/api";
 import { CheckIcon, PlusIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function MenuPage() {
-  const [menu, setMenu] = useState<MenuCategory[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedCat, setSelectedCat] = useState<number | null>(null);
@@ -14,183 +16,186 @@ export default function MenuPage() {
   const { addItem } = useCart();
 
   useEffect(() => {
-    MenuAPI.getFullMenu()
-      .then((data) => {
-        const cats: MenuCategory[] = Array.isArray(data)
-          ? data
-          : data.categories || [];
-        setMenu(cats);
-        if (cats.length) setSelectedCat(cats[0].categoryId);
-      })
-      .catch(() =>
-        setError(
-          "Could not load menu — ensure the backend is running at http://localhost:5000",
-        ),
-      )
-      .finally(() => setLoading(false));
+    loadCategories();
   }, []);
 
-  const handleAdd = (item: any) => {
-    addItem({
-      menuItemId: item.menuItemId,
-      name: item.itemName,
-      price: item.price,
-      categoryName: item.categoryName,
-    });
-    setAdded(item.menuItemId);
-    setTimeout(() => setAdded(null), 1200);
+  const loadCategories = async () => {
+    try {
+      const data = await MenuAPI.getCategories();
+      setCategories(data);
+      if (data.length > 0) {
+        setSelectedCat(data[0].categoryId);
+        loadItems(data[0].categoryId);
+      }
+    } catch (err: any) {
+      const errorMsg = err.message || String(err);
+      setError(`Could not load menu categories: ${errorMsg}`);
+      console.error("Menu categories error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const activeCategory = menu.find((c) => c.categoryId === selectedCat);
-  const displayMenu = menu.length > 0 ? menu : DEMO_MENU;
-  const currentItems =
-    activeCategory?.items ||
-    displayMenu.find((c) => c.categoryId === selectedCat)?.items ||
-    displayMenu[0].items;
+  const loadItems = async (categoryId: number) => {
+    try {
+      setLoading(true);
+      const data = await MenuAPI.getItemsByCategory(categoryId);
+      setItems(data);
+    } catch (err: any) {
+      const errorMsg = err.message || String(err);
+      setError(`Could not load menu items: ${errorMsg}`);
+      console.error("Menu items error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCategoryClick = (categoryId: number) => {
+    setSelectedCat(categoryId);
+    loadItems(categoryId);
+  };
+
+  const handleQuickAdd = (item: MenuItem) => {
+    // Add first available size by default
+    const availableSize = item.sizes.find(s => s.inStock) || item.sizes[0];
+    if (availableSize) {
+      addItem({
+        menuItemId: item.itemId,
+        sizeId: availableSize.sizeId,
+        name: item.name,
+        sizeName: availableSize.sizeName,
+        price: availableSize.price,
+        categoryName: categories.find(c => c.categoryId === selectedCat)?.name || '',
+      });
+      setAdded(item.itemId);
+      setTimeout(() => setAdded(null), 1200);
+    }
+  };
+
+  const activeCategory = categories.find((c) => c.categoryId === selectedCat);
 
   return (
     <div className="animate-in fade-in duration-500">
-      <div className="flex gap-8">
-        {/* Category Selector (Inner) */}
-        <div className="w-48 flex-shrink-0 space-y-2">
-          <p className="text-[10px] font-black uppercase text-text-dim tracking-widest mb-4">
-            Categories
-          </p>
-          {displayMenu
-            .filter((c) => c.isActive !== false)
-            .map((cat) => (
+      <div className="flex gap-6 h-[calc(100vh-200px)]">
+        {/* Category Sidebar */}
+        <div className="w-64 flex-shrink-0 category-sidebar rounded-xl overflow-hidden">
+          <div className="p-4 border-b border-[rgba(30,90,168,0.08)]">
+            <p className="text-[10px] font-black uppercase text-[#71717A] tracking-[0.15em]">
+              Categories
+            </p>
+          </div>
+          <div className="overflow-y-auto">
+            {categories.map((cat) => (
               <button
                 key={cat.categoryId}
-                onClick={() => setSelectedCat(cat.categoryId)}
-                className={`w-full text-left px-4 py-3 rounded-lg font-bold text-sm transition-all border-l-4 ${
-                  selectedCat === cat.categoryId
-                    ? "bg-bg-surface border-gold text-white shadow-lg"
-                    : "border-transparent text-text-secondary hover:bg-bg-active"
+                onClick={() => handleCategoryClick(cat.categoryId)}
+                className={`w-full text-left category-item ${
+                  selectedCat === cat.categoryId ? "active" : ""
                 }`}
               >
-                {cat.categoryName}
+                {cat.name}
               </button>
             ))}
+          </div>
         </div>
 
-        {/* Product Grid */}
-        <div className="flex-1">
+        {/* Items Grid */}
+        <div className="flex-1 overflow-y-auto">
           {error && (
             <div className="bg-red-950/20 border border-red-500/30 rounded-xl p-4 mb-6 flex items-center gap-4 text-red-200">
               <span className="text-2xl">⚠️</span>
               <div>
-                <p className="text-xs font-bold uppercase">
-                  Backend Connection Warning
-                </p>
-                <p className="text-[10px] opacity-70">
-                  Showing demo items. Reconnect to sync real POS data.
-                </p>
+                <p className="text-xs font-bold uppercase">Connection Error</p>
+                <p className="text-[10px] opacity-70">{error}</p>
               </div>
             </div>
           )}
 
           {loading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="skeleton h-40" />
+                <div key={i} className="card h-52 animate-pulse" />
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-              {currentItems.map((item) => (
-                <div
-                  key={item.menuItemId}
-                  className="product-tile group animate-in zoom-in-95 duration-200"
-                  onClick={() => handleAdd(item)}
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h3 className="font-black text-white uppercase text-sm leading-tight group-hover:text-gold transition-colors">
-                        {item.itemName}
-                      </h3>
+            <>
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-[#1E5AA8] tracking-tight">
+                  {activeCategory?.name || "Menu"}
+                </h2>
+                <p className="text-sm text-[#71717A] mt-1">{items.length} items available</p>
+              </div>
+
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+                {items.map((item) => (
+                  <div key={item.itemId} className="product-card">
+                    {/* Item Image/Icon */}
+                    <Link href={`/menu/item/${item.itemId}?category=${selectedCat}`}>
+                      <div className="product-image h-40">
+                        {item.imageUrl ? (
+                          <img
+                            src={item.imageUrl}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-5xl opacity-40">🍽️</span>
+                        )}
+                      </div>
+                    </Link>
+
+                    <div className="product-info">
+                      <Link href={`/menu/item/${item.itemId}?category=${selectedCat}`}>
+                        <h3 className="product-name hover:text-[#1E5AA8] transition-colors">
+                          {item.name}
+                        </h3>
+                      </Link>
+                      
                       {item.description && (
-                        <p className="text-[10px] text-text-dim mt-1 line-clamp-2 uppercase">
+                        <p className="product-description line-clamp-2">
                           {item.description}
                         </p>
                       )}
-                    </div>
-                    <span className="text-gold-vibrant font-black font-mono text-sm ml-2">
-                      ${item.price.toFixed(2)}
-                    </span>
-                  </div>
 
-                  <div className="mt-auto flex justify-between items-end">
-                    <div className="flex gap-1">
-                      <div
-                        className="w-1.5 h-1.5 rounded-full bg-green-500"
-                        title="In Stock"
-                      />
-                    </div>
-                    <div
-                      className={`p-2 rounded-full transition-all ${added === item.menuItemId ? "bg-green-500 text-white" : "bg-bg-active text-text-dim group-hover:bg-gold group-hover:text-black"}`}
-                    >
-                      {added === item.menuItemId ? (
-                        <CheckIcon className="w-4 h-4" />
-                      ) : (
-                        <PlusIcon className="w-4 h-4" />
+                      <div className="flex items-center justify-between mt-4">
+                        <span className="product-price">
+                          ${item.sizes[0]?.price.toFixed(2) || '0.00'}
+                        </span>
+                        
+                        <button
+                          onClick={() => handleQuickAdd(item)}
+                          disabled={!item.isAvailable || !item.sizes.some(s => s.inStock)}
+                          className={`btn btn-gold w-10 h-10 p-0 rounded-full ${
+                            added === item.itemId ? "!bg-green-600 !text-white" : ""
+                          } ${(!item.isAvailable || !item.sizes.some(s => s.inStock)) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          {added === item.itemId ? (
+                            <CheckIcon className="w-5 h-5" />
+                          ) : (
+                            <PlusIcon className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+
+                      {!item.isAvailable && (
+                        <span className="badge badge-error mt-3">
+                          Unavailable
+                        </span>
                       )}
                     </div>
                   </div>
+                ))}
+              </div>
 
-                  {/* Subtle hover backlight */}
-                  <div className="absolute inset-0 bg-blue-vibrant/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+              {items.length === 0 && !loading && (
+                <div className="text-center py-16 card">
+                  <p className="text-[#71717A] font-medium">No items available in this category</p>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </div>
       </div>
     </div>
   );
 }
-
-const DEMO_MENU: MenuCategory[] = [
-  {
-    categoryId: 1,
-    categoryName: "Burgers",
-    isActive: true,
-    itemCount: 3,
-    items: [
-      {
-        menuItemId: 1,
-        itemName: "Classic Smash Burger",
-        price: 14.99,
-        categoryId: 1,
-        categoryName: "Burgers",
-        isAvailable: true,
-        description:
-          "Double smash patty, American cheese, pickles, special sauce",
-      },
-      {
-        menuItemId: 2,
-        itemName: "BBQ Bacon Burger",
-        price: 16.99,
-        categoryId: 1,
-        categoryName: "Burgers",
-        isAvailable: true,
-        description: "Crispy bacon, BBQ sauce, caramelized onions",
-      },
-    ],
-  },
-  {
-    categoryId: 2,
-    categoryName: "Drinks",
-    isActive: true,
-    itemCount: 2,
-    items: [
-      {
-        menuItemId: 9,
-        itemName: "Craft Lemonade",
-        price: 4.99,
-        categoryId: 4,
-        categoryName: "Drinks",
-        isAvailable: true,
-      },
-    ],
-  },
-];

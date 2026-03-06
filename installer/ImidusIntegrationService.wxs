@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  
+  <Package Name="IMIDUS Integration Service"
+           Version="2.0.0"
+           Manufacturer="Novatech"
+           UpgradeCode="6a7b8c9d-0e1f-4a5b-9c8d-7e6f5a4b3c2d"
+           Scope="perMachine">
+    
+    <MajorUpgrade DowngradeErrorMessage="A newer version is already installed." />
+    
+    <MediaTemplate EmbedCab="yes" />
+    
+    <!-- Features -->
+    <Feature Id="MainFeature" Title="IMIDUS Integration Service" Level="1">
+      <ComponentGroupRef Id="APIGroup" />
+      <ComponentGroupRef Id="ServiceGroup" />
+      <ComponentGroupRef Id="ConfigGroup" />
+    </Feature>
+    
+    <!-- UI -->
+    <ui:WixUI Id="WixUI_InstallDir" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    
+    <!-- Properties -->
+    <Property Id="ARPCOMMENTS">IMIDUS POS Integration Service - Backend API for mobile and web applications</Property>
+    <Property Id="ARPCONTACT">Novatech Support</Property>
+    <Property Id="ARPURLINFOABOUT">https://imidus.com/support</Property>
+    <Property Id="ARPPRODUCTICON">appicon.ico</Property>
+    
+    <!-- Installation Directory -->
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="IMIDUS Integration Service">
+        <Directory Id="APPFOLDER" Name="API" />
+        <Directory Id="LOGFOLDER" Name="Logs" />
+        <Directory Id="CONFIGFOLDER" Name="Config" />
+      </Directory>
+    </StandardDirectory>
+    
+    <!-- Components -->
+    <ComponentGroup Id="APIGroup" Directory="APPFOLDER">
+      <Component>
+        <File Id="IntegrationServiceAPI.exe" 
+              Source="$(var.PublishDir)\IntegrationService.API.exe" 
+              KeyPath="yes" />
+      </Component>
+      <Component>
+        <File Id="appsettings.json" 
+              Source="$(var.PublishDir)\appsettings.json" />
+      </Component>
+      <Component>
+        <File Id="appsettings.Development.json" 
+              Source="$(var.PublishDir)\appsettings.Development.json" />
+      </Component>
+      <!-- Include all DLLs -->
+      <Component>
+        <File Id="IntegrationServiceCore.dll" 
+              Source="$(var.PublishDir)\IntegrationService.Core.dll" />
+      </Component>
+      <Component>
+        <File Id="IntegrationServiceInfrastructure.dll" 
+              Source="$(var.PublishDir)\IntegrationService.Infrastructure.dll" />
+      </Component>
+    </ComponentGroup>
+    
+    <ComponentGroup Id="ServiceGroup" Directory="INSTALLFOLDER">
+      <Component>
+        <ServiceInstall Id="ImidusIntegrationService"
+                        Type="ownProcess"
+                        Name="ImidusIntegrationService"
+                        DisplayName="IMIDUS Integration Service"
+                        Description="Backend API service for IMIDUS POS Integration"
+                        Start="auto"
+                        ErrorControl="normal"
+                        Arguments="--service" />
+        <ServiceControl Id="StartService"
+                        Start="install"
+                        Stop="both"
+                        Remove="uninstall"
+                        Name="ImidusIntegrationService"
+                        Wait="yes" />
+      </Component>
+    </ComponentGroup>
+    
+    <ComponentGroup Id="ConfigGroup" Directory="CONFIGFOLDER">
+      <Component>
+        <File Id="ConnectionStrings.config" 
+              Source="Config\ConnectionStrings.template.config" />
+      </Component>
+    </ComponentGroup>
+    
+    <!-- Custom Actions -->
+    <CustomAction Id="ConfigureConnectionStrings"
+                  BinaryRef="CustomActionsBinary"
+                  DllEntry="ConfigureConnectionStrings"
+                  Execute="deferred"
+                  Return="check"
+                  Impersonate="no" />
+    
+    <InstallExecuteSequence>
+      <Custom Action="ConfigureConnectionStrings" After="InstallFiles" />
+    </InstallExecuteSequence>
+    
+    <!-- Launch conditions -->
+    <Launch Condition="Installed OR VersionNT >= 603" Message="This application requires Windows 8.1 or later." />
+    
+  </Package>
+</Wix>
