@@ -133,8 +133,13 @@ jobs:
          working-directory: ${{ env.WORKING_DIR }}
          run: |
            VERSION=$(jq -r '.version' package.json)
+           # Use tag name if available, otherwise construct from package.json
+           if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+             VERSION="${{ github.ref_name }}"
+           else
+             VERSION="v${VERSION}"
+           fi
            echo "app_version=${VERSION}" >> $GITHUB_OUTPUT
-           echo "tag_name=v${VERSION}" >> $GITHUB_OUTPUT
            echo "commit_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
        - name: Create version.json manifest
