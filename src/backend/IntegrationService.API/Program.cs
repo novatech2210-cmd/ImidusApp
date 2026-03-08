@@ -165,6 +165,7 @@ builder.Services.AddScoped<IDeviceTokenRepository, DeviceTokenRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IMenuRepository, MenuRepository>();
 builder.Services.AddScoped<IMiscRepository, MiscRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<NotificationLogRepository>();
 builder.Services.AddScoped<OnlineOrderStatusRepository>();
 
