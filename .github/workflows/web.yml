@@ -1,0 +1,159 @@
+name: Web Platform CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'src/web/**'
+      - '.github/workflows/web.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/web/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  NODE_VERSION: '18'
+  AWS_REGION: 'us-east-1'
+  S3_BUCKET: imidus-restaurant
+  CLOUDFRONT_DISTRIBUTION: E1234567890ABC
+
+jobs:
+  # ============================================================================
+  # BUILD
+  # ============================================================================
+  build:
+    name: Build Next.js App
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/web
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: src/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ github.event.inputs.environment == 'production' && 'https://api.imidus.com/api' || 'http://localhost:5004/api' }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+
+      - name: Export static files
+        run: npm run export
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: src/web/dist
+          retention-days: 7
+
+  # ============================================================================
+  # DEPLOY TO S3
+  # ============================================================================
+  deploy:
+    name: Deploy to S3
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: ./dist
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: |
+          ENV_PREFIX="${{ github.event.inputs.environment || 'staging' }}"
+          if [ "$ENV_PREFIX" = "production" ]; then
+            S3_PATH="s3://${{ secrets.AWS_S3_BUCKET }}/"
+          else
+            S3_PATH="s3://${{ secrets.AWS_S3_BUCKET }}/staging/"
+          fi
+          
+          echo "Deploying to: $S3_PATH"
+          
+          # Sync files with proper cache headers
+          aws s3 sync ./dist $S3_PATH \
+            --delete \
+            --cache-control "max-age=31536000,immutable" \
+            --exclude "*.html" \
+            --exclude "*.json"
+          
+          # Sync HTML and JSON with shorter cache
+          aws s3 sync ./dist $S3_PATH \
+            --delete \
+            --cache-control "max-age=0,no-cache,no-store,must-revalidate" \
+            --include "*.html" \
+            --include "*.json"
+          
+          echo "Deployment complete!"
+          echo "Website URL: https://${{ secrets.AWS_S3_BUCKET }}.s3-website-${{ secrets.AWS_REGION }}.amazonaws.com/"
+
+      - name: Invalidate CloudFront cache
+        if: github.event.inputs.environment == 'production'
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+          echo "CloudFront cache invalidated"
+
+  # ============================================================================
+  # NOTIFY
+  # ============================================================================
+  notify:
+    name: Notify Deployment
+    needs: deploy
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Notify success
+        if: needs.deploy.result == 'success'
+        run: |
+          ENV="${{ github.event.inputs.environment || 'staging' }}"
+          echo "✅ Web platform deployment successful!"
+          echo "Environment: $ENV"
+          if [ "$ENV" = "production" ]; then
+            echo "URL: https://order.imidus.com"
+          else
+            echo "URL: https://inirestaurant.s3-website-us-east-1.amazonaws.com/staging/"
+          fi
+
+      - name: Notify failure
+        if: needs.deploy.result == 'failure'
+        run: |
+          echo "❌ Web platform deployment failed"
+          exit 1
