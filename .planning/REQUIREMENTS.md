@@ -74,18 +74,21 @@ Deferred to future milestones. Tracked but not in current roadmap.
 
 ### Web Ordering (Milestone 3)
 
-- **WEB-01**: Responsive web ordering UI with mobile feature parity
-- **WEB-02**: Homepage banner carousel with customer segment targeting
-- **WEB-03**: Scheduled/future orders (order now, pickup later)
-- **WEB-04**: Rule-based upselling engine
+- [ ] **WEB-01**: Responsive web ordering UI with mobile feature parity (Phase 11)
+- [ ] **WEB-02**: Authorize.net payment integration on web (Phase 12)
+- [ ] **WEB-03**: Web orders sync to INI_Restaurant database (Phase 13)
+- [ ] **WEB-04**: Scheduled/future orders for later pickup (Phase 14)
+- [ ] **WEB-05**: Homepage banner carousel with customer segment targeting (Phase 15)
+- [ ] **WEB-06**: Rule-based upselling engine (Phase 16)
+- [ ] **WEB-07**: Imidus branding applied across web (Phase 17)
 
 ### Admin Portal (Milestone 4)
 
-- **ADMIN-01**: Order management dashboard
-- **ADMIN-02**: Customer CRM with RFM segmentation
-- **ADMIN-03**: Push notification campaign builder
-- **ADMIN-04**: Menu enable/disable overlay
-- **ADMIN-05**: Birthday reward automation
+- [ ] **ADMIN-01**: Order management dashboard (Phase 18)
+- [ ] **ADMIN-02**: Customer CRM with RFM segmentation (Phase 18)
+- [ ] **ADMIN-03**: Push notification campaign builder (Phase 19)
+- [ ] **ADMIN-04**: Menu enable/disable overlay (Phase 20)
+- [ ] **ADMIN-05**: Birthday reward automation (Phase 21)
 
 ### Deployment (Milestone 5)
 
@@ -150,12 +153,27 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DEL-02 | Phase 8 | Pending |
 | DEL-03 | Phase 8 | Pending |
 | DEL-04 | Phase 8 | Pending |
+| WEB-01 | Phase 11 | Pending |
+| WEB-02 | Phase 12 | Pending |
+| WEB-03 | Phase 13 | Pending |
+| WEB-04 | Phase 14 | Pending |
+| WEB-05 | Phase 15 | Pending |
+| WEB-06 | Phase 16 | Pending |
+| WEB-07 | Phase 17 | Pending |
+| ADMIN-01 | Phase 18 | Pending |
+| ADMIN-02 | Phase 18 | Pending |
+| ADMIN-03 | Phase 19 | Pending |
+| ADMIN-04 | Phase 20 | Pending |
+| ADMIN-05 | Phase 21 | Pending |
 
 **Coverage:**
-- v1 requirements: 29 total
-- Mapped to phases: 29
+- v1 requirements: 29 total (M2 Mobile)
+- M3 requirements: 7 total (Web Ordering)
+- M4 requirements: 5 total (Admin Portal) — *Phase 18 covers 2, Phases 19-21 TBD*
+- Total mapped: 41 (29 + 7 + 5)
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-25*
 *Last updated: 2026-02-25 after roadmap creation*
+*Updated: 2026-03-08 (added M3-M4 gap closure requirements)*

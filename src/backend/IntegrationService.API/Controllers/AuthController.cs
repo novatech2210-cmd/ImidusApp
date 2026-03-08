@@ -15,22 +15,30 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace IntegrationService.API.Controllers
 {
+    /// <summary>
+    /// Authentication controller
+    /// Manages user authentication using IntegrationService User table (overlay)
+    /// Links to POS tblCustomer for customer profile data (ground truth)
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IPosRepository _repository;
+        private readonly IPosRepository _posRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
         private readonly JwtSettings _jwtSettings;
         private readonly ILogger<AuthController> _logger;
 
         public AuthController(
-            IPosRepository repository,
+            IPosRepository posRepository,
+            IUserRepository userRepository,
             IPasswordHasher passwordHasher,
             IOptions<JwtSettings> jwtSettings,
             ILogger<AuthController> logger)
         {
-            _repository = repository;
+            _posRepository = posRepository;
+            _userRepository = userRepository;
             _passwordHasher = passwordHasher;
             _jwtSettings = jwtSettings.Value;
             _logger = logger;
@@ -38,7 +46,7 @@ namespace IntegrationService.API.Controllers
 
         /// <summary>
         /// Register a new user account.
-        /// Creates a new customer record in tblCustomer with hashed password.
+        /// Creates both POS customer record AND IntegrationService User for authentication.
         /// </summary>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
@@ -51,42 +59,67 @@ namespace IntegrationService.API.Controllers
                 // Clean phone number (remove formatting)
                 var cleanPhone = Regex.Replace(request.Phone, @"\D", "");
 
-                // Check if user already exists (by phone or email)
-                var existingCustomer = await _repository.GetCustomerByPhoneAsync(cleanPhone);
-                if (existingCustomer != null)
-                {
-                    return BadRequest(new { error = "A user with this phone number already exists" });
-                }
-
-                var existingEmail = await _repository.GetCustomerByEmailAsync(request.Email);
-                if (existingEmail != null)
+                // Check if email already registered in IntegrationService
+                var existingUser = await _userRepository.GetByEmailAsync(request.Email);
+                if (existingUser != null)
                 {
                     return BadRequest(new { error = "A user with this email already exists" });
+                }
+
+                // Check if phone already exists in POS
+                var existingCustomer = await _posRepository.GetCustomerByPhoneAsync(cleanPhone);
+                if (existingCustomer != null)
+                {
+                    // Phone exists - check if already has a User account
+                    var existingUserByCustomer = await _userRepository.GetByCustomerIdAsync(existingCustomer.ID);
+                    if (existingUserByCustomer != null)
+                    {
+                        return BadRequest(new { error = "A user with this phone number already exists" });
+                    }
+                    
+                    // Customer exists in POS but no User account - link to existing
+                    _logger.LogInformation("Linking new User account to existing POS customer ID {CustomerId}", existingCustomer.ID);
+                }
+                else
+                {
+                    // Create new POS customer (ground truth for customer data)
+                    existingCustomer = new PosCustomer
+                    {
+                        Phone = cleanPhone,
+                        FName = request.FirstName,
+                        LName = request.LastName,
+                        EarnedPoints = 0,
+                        PointsManaged = true
+                    };
+                    
+                    var customerId = await _posRepository.InsertCustomerAsync(existingCustomer);
+                    existingCustomer.ID = customerId;
+                    
+                    _logger.LogInformation("Created new POS customer: ID={CustomerId}, Phone={Phone}", customerId, cleanPhone);
                 }
 
                 // Hash password
                 var hashedPassword = _passwordHasher.HashPassword(request.Password);
 
-                // Create new customer
-                var newCustomer = new PosCustomer
+                // Create IntegrationService User for authentication (overlay)
+                var user = new User
                 {
-                    Phone = cleanPhone,
+                    CustomerID = existingCustomer.ID,
                     Email = request.Email,
-                    FName = request.FirstName,
-                    LName = request.LastName,
-                    Password = hashedPassword,
-                    EarnedPoints = 0,
-                    PointsManaged = true
+                    EmailConfirmed = false, // TODO: Send confirmation email
+                    PasswordHash = hashedPassword,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    PhoneNumber = cleanPhone,
+                    LockoutEnabled = true
                 };
 
-                var customerId = await _repository.InsertCustomerAsync(newCustomer);
-                newCustomer.ID = customerId;
-
-                _logger.LogInformation("New customer registered: ID={CustomerId}, Phone={Phone}, Email={Email}",
-                    customerId, cleanPhone, request.Email);
+                var userId = await _userRepository.CreateAsync(user);
+                
+                _logger.LogInformation("Created new User account: ID={UserId}, CustomerID={CustomerId}, Email={Email}",
+                    userId, existingCustomer.ID, request.Email);
 
                 // Generate JWT token
-                var authResponse = GenerateAuthResponse(newCustomer);
+                var authResponse = GenerateAuthResponse(existingCustomer, user);
 
                 return Ok(authResponse);
             }
@@ -99,7 +132,7 @@ namespace IntegrationService.API.Controllers
 
         /// <summary>
         /// Login with phone/email and password.
-        /// Returns JWT token on successful authentication.
+        /// Authenticates against IntegrationService User table, retrieves profile from POS.
         /// </summary>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
@@ -115,55 +148,78 @@ namespace IntegrationService.API.Controllers
 
             try
             {
+                User? user = null;
                 PosCustomer? customer = null;
 
-                // Try phone lookup first
-                if (!string.IsNullOrWhiteSpace(request.Phone))
+                // Try email lookup first (primary login identifier)
+                if (!string.IsNullOrWhiteSpace(request.Email))
+                {
+                    user = await _userRepository.GetByEmailAsync(request.Email);
+                }
+
+                // Fallback to phone lookup
+                if (user == null && !string.IsNullOrWhiteSpace(request.Phone))
                 {
                     var cleanPhone = Regex.Replace(request.Phone, @"\D", "");
-                    customer = await _repository.GetCustomerByPhoneAsync(cleanPhone);
+                    
+                    // Find POS customer by phone
+                    customer = await _posRepository.GetCustomerByPhoneAsync(cleanPhone);
+                    if (customer != null)
+                    {
+                        // Find User by CustomerID
+                        user = await _userRepository.GetByCustomerIdAsync(customer.ID);
+                    }
                 }
-
-                // Fallback to email if phone not found
-                if (customer == null && !string.IsNullOrWhiteSpace(request.Email))
+                else if (user != null)
                 {
-                    customer = await _repository.GetCustomerByEmailAsync(request.Email);
+                    // User found by email - get POS customer
+                    customer = await _posRepository.GetCustomerByIdAsync(user.CustomerID);
                 }
 
-                // Customer not found
-                if (customer == null)
+                // User not found
+                if (user == null)
                 {
                     _logger.LogWarning("Login attempt for non-existent user: Phone={Phone}, Email={Email}",
                         request.Phone, request.Email);
                     return Unauthorized(new { error = "Invalid credentials" });
                 }
 
-                // Verify password
-                if (string.IsNullOrEmpty(customer.Password))
+                // Check if account is locked out
+                if (user.IsLockedOut)
                 {
-                    _logger.LogWarning("Customer {CustomerId} has no password set", customer.ID);
-                    return Unauthorized(new { error = "Account not configured for online access. Please contact support." });
+                    _logger.LogWarning("Login attempt for locked out user ID {UserId}", user.ID);
+                    return Unauthorized(new { error = "Account is locked. Please try again later." });
                 }
 
-                var passwordValid = _passwordHasher.VerifyPassword(request.Password, customer.Password);
+                // Verify password
+                var passwordValid = _passwordHasher.VerifyPassword(request.Password, user.PasswordHash);
                 if (!passwordValid)
                 {
-                    _logger.LogWarning("Invalid password attempt for customer {CustomerId}", customer.ID);
+                    _logger.LogWarning("Invalid password attempt for user ID {UserId}", user.ID);
+                    
+                    // Increment failed attempts
+                    await _userRepository.IncrementAccessFailedCountAsync(user.ID);
+                    
+                    // Lock out after 5 failed attempts
+                    if (user.AccessFailedCount + 1 >= 5)
+                    {
+                        var lockoutEnd = DateTime.UtcNow.AddMinutes(15);
+                        await _userRepository.LockoutAsync(user.ID, lockoutEnd);
+                        _logger.LogWarning("Locked out user ID {UserId} after 5 failed attempts", user.ID);
+                        return Unauthorized(new { error = "Too many failed attempts. Account locked for 15 minutes." });
+                    }
+                    
                     return Unauthorized(new { error = "Invalid credentials" });
                 }
 
-                _logger.LogInformation("Successful login for customer {CustomerId}", customer.ID);
-
-                // Check if password needs migration (plaintext → hashed)
-                if (_passwordHasher.IsPlaintextPassword(customer.Password))
-                {
-                    _logger.LogInformation("Migrating plaintext password to hash for customer {CustomerId}", customer.ID);
-                    // TODO: Add UpdateCustomerPasswordAsync method to repository
-                    // await _repository.UpdateCustomerPasswordAsync(customer.ID, _passwordHasher.HashPassword(request.Password));
-                }
+                // Password valid - update last login
+                await _userRepository.UpdateLastLoginAsync(user.ID);
+                
+                _logger.LogInformation("Successful login for user ID {UserId}, customer ID {CustomerId}", 
+                    user.ID, user.CustomerID);
 
                 // Generate JWT token
-                var authResponse = GenerateAuthResponse(customer);
+                var authResponse = GenerateAuthResponse(customer ?? new PosCustomer { ID = user.CustomerID }, user);
 
                 return Ok(authResponse);
             }
@@ -190,13 +246,16 @@ namespace IntegrationService.API.Controllers
                     return Unauthorized(new { error = "Invalid token" });
                 }
 
-                // Fetch latest customer data
-                var customer = await _repository.GetCustomerByIdAsync(customerId);
+                // Fetch latest customer data from POS (ground truth)
+                var customer = await _posRepository.GetCustomerByIdAsync(customerId);
                 if (customer == null)
                 {
-                    _logger.LogWarning("Customer {CustomerId} not found (from token)", customerId);
+                    _logger.LogWarning("Customer {CustomerId} not found in POS (from token)", customerId);
                     return NotFound(new { error = "User not found" });
                 }
+
+                // Get User data from IntegrationService for email
+                var user = await _userRepository.GetByCustomerIdAsync(customerId);
 
                 var userProfile = new UserProfile
                 {
@@ -204,7 +263,7 @@ namespace IntegrationService.API.Controllers
                     FirstName = customer.FName ?? string.Empty,
                     LastName = customer.LName ?? string.Empty,
                     Phone = customer.Phone ?? string.Empty,
-                    Email = customer.Email ?? string.Empty,
+                    Email = user?.Email ?? string.Empty,
                     EarnedPoints = customer.EarnedPoints
                 };
 
@@ -234,7 +293,7 @@ namespace IntegrationService.API.Controllers
         /// <summary>
         /// Generates JWT token and auth response for a customer.
         /// </summary>
-        private AuthResponse GenerateAuthResponse(PosCustomer customer)
+        private AuthResponse GenerateAuthResponse(PosCustomer customer, User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_jwtSettings.Secret);
@@ -242,8 +301,9 @@ namespace IntegrationService.API.Controllers
             var claims = new[]
             {
                 new Claim("sub", customer.ID.ToString()),
+                new Claim("userId", user.ID.ToString()),
                 new Claim("phone", customer.Phone ?? string.Empty),
-                new Claim("email", customer.Email ?? string.Empty),
+                new Claim("email", user.Email ?? string.Empty),
                 new Claim("fname", customer.FName ?? string.Empty),
                 new Claim("lname", customer.LName ?? string.Empty),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
@@ -274,7 +334,7 @@ namespace IntegrationService.API.Controllers
                     FirstName = customer.FName ?? string.Empty,
                     LastName = customer.LName ?? string.Empty,
                     Phone = customer.Phone ?? string.Empty,
-                    Email = customer.Email ?? string.Empty,
+                    Email = user.Email ?? string.Empty,
                     EarnedPoints = customer.EarnedPoints
                 }
             };
