@@ -2,16 +2,16 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useCart } from '@/context/CartContext';
-import { OrderAPI, AuthAPI, ScheduledOrderAPI } from '@/lib/api';
+import { OrderAPI, AuthAPI, ScheduledOrderAPI, CustomerAPI } from '@/lib/api';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CreditCardIcon, LockClosedIcon, ClockIcon } from '@heroicons/react/24/solid';
 import { TimeSlotPicker } from '@/components/TimeSlotPicker';
 
-// Authorize.net Accept.js configuration
-const AUTHORIZE_NET_API_LOGIN_ID = '9JQVwben66U7';
-const AUTHORIZE_NET_PUBLIC_CLIENT_KEY = '7t8S6K3E3VV3qry33ZEWqQWqLq9xs4UmeNn268gFmZ6mdWWvz22zjHbaQH9Qmsrg';
-const AUTHORIZE_NET_ENV = 'sandbox'; // Change to 'production' for live
+// Authorize.net Accept.js configuration from environment variables
+const AUTHORIZE_NET_API_LOGIN_ID = process.env.NEXT_PUBLIC_AUTH_NET_API_LOGIN_ID || '';
+const AUTHORIZE_NET_PUBLIC_CLIENT_KEY = process.env.NEXT_PUBLIC_AUTH_NET_PUBLIC_KEY || '';
+const AUTHORIZE_NET_ENV = process.env.NEXT_PUBLIC_AUTH_NET_ENVIRONMENT || 'sandbox';
 
 // Load Authorize.net Accept.js script
 const loadAcceptJS = () => {
@@ -59,6 +59,15 @@ export default function CheckoutPage() {
     cvv: '',
   });
 
+  // Tip state
+  const [tipAmount, setTipAmount] = useState(0);
+  const [customTip, setCustomTip] = useState('');
+  const [showCustomTip, setShowCustomTip] = useState(false);
+
+  // Order IDs from Step 1
+  const [salesId, setSalesId] = useState<number | null>(null);
+  const [customerId, setCustomerId] = useState<number | null>(null);
+
   // Scheduled order state
   const [isScheduledOrder, setIsScheduledOrder] = useState(false);
   const [scheduledDateTime, setScheduledDateTime] = useState<Date | null>(null);
@@ -75,39 +84,114 @@ export default function CheckoutPage() {
     );
   }
 
-  const handleCustomerSubmit = (e: React.FormEvent) => {
+  const handleCustomerSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!customerInfo.firstName || !customerInfo.lastName || !customerInfo.phone) {
       setError('Please fill in all required fields');
       return;
     }
+
     setError(null);
-    setStep('payment');
-    
-    // Load Accept.js when entering payment step
-    loadAcceptJS().catch(err => {
-      console.error('Failed to load payment system:', err);
-      setError('Payment system unavailable. Please try again.');
-    });
+    setLoading(true);
+
+    try {
+      // Step 1a: Customer lookup
+      const customerResponse = await CustomerAPI.lookup(
+        customerInfo.phone,
+        customerInfo.email
+      );
+      setCustomerId(customerResponse.customerId);
+
+      // Step 1b: Calculate total with tip
+      const orderTotal = total + tipAmount;
+
+      // Step 1c: Create pending order (no payment yet)
+      const orderItems = items.map(item => ({
+        menuItemId: item.menuItemId,
+        sizeId: item.sizeId,
+        quantity: item.quantity,
+        unitPrice: item.price,
+      }));
+
+      if (isScheduledOrder) {
+        if (!scheduledDateTime) {
+          throw new Error('Please select a pickup date and time');
+        }
+
+        const minTime = new Date(Date.now() + 30 * 60000);
+        if (scheduledDateTime < minTime) {
+          throw new Error('Pickup time must be at least 30 minutes from now');
+        }
+
+        // Scheduled orders skip payment step
+        const scheduledRequest = {
+          customerId: customerResponse.customerId,
+          scheduledDateTime: scheduledDateTime.toISOString(),
+          items: orderItems,
+          tipAmount: tipAmount,
+          specialInstructions: '',
+          idempotencyKey: crypto.randomUUID(),
+        };
+
+        const orderResponse = await ScheduledOrderAPI.create(scheduledRequest);
+
+        if (!orderResponse.success) {
+          throw new Error(orderResponse.message || 'Scheduled order creation failed');
+        }
+
+        clearCart();
+        router.push(`/order/confirmation?scheduledOrderId=${orderResponse.scheduledOrderId}&total=${orderTotal}&scheduled=true`);
+      } else {
+        // Immediate order: Create pending order
+        const orderRequest = {
+          customerId: customerResponse.customerId,
+          items: orderItems,
+          tipAmount: tipAmount,
+        };
+
+        const orderResponse = await OrderAPI.create(orderRequest);
+
+        if (!orderResponse.success) {
+          throw new Error(orderResponse.message || 'Order creation failed');
+        }
+
+        setSalesId(orderResponse.salesId);
+        setStep('payment');
+
+        loadAcceptJS().catch(err => {
+          console.error('Failed to load payment system:', err);
+          setError('Payment system unavailable. Please try again.');
+        });
+      }
+
+    } catch (err: any) {
+      console.error('Customer/Order creation error:', err);
+      setError(err.message || 'Failed to create order. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!salesId) {
+      setError('Order not found. Please start over.');
+      return;
+    }
+
     setError(null);
     setLoading(true);
     setStep('processing');
 
     try {
-      // Load Accept.js if not already loaded
       await loadAcceptJS();
 
-      // Parse expiry MM/YY
       const [expMonth, expYear] = cardInfo.expiry.split('/');
       if (!expMonth || !expYear) {
         throw new Error('Invalid expiry date format. Use MM/YY');
       }
 
-      // Create secure payment data object for Accept.js
       const secureData = {
         authData: {
           clientKey: AUTHORIZE_NET_PUBLIC_CLIENT_KEY,
@@ -121,7 +205,6 @@ export default function CheckoutPage() {
         },
       };
 
-      // Get opaque data from Accept.js
       // @ts-ignore
       const response = await new Promise((resolve, reject) => {
         // @ts-ignore
@@ -136,73 +219,32 @@ export default function CheckoutPage() {
 
       // @ts-ignore
       const opaqueData = response.opaqueData;
-      
-      // Prepare order items
-      const orderItems = items.map(item => ({
-        menuItemId: item.menuItemId,
-        sizeId: item.sizeId,
-        quantity: item.quantity,
-        unitPrice: item.price,
-      }));
 
-      let orderResponse;
+      // Step 2c: Complete payment
+      const paymentRequest = {
+        token: {
+          dataDescriptor: opaqueData.dataDescriptor,
+          dataValue: opaqueData.dataValue,
+        },
+        amount: total + tipAmount,
+        customerId: customerId || undefined,
+        pointsToRedeem: 0,
+      };
 
-      if (isScheduledOrder) {
-        // Validate scheduled datetime
-        if (!scheduledDateTime) {
-          throw new Error('Please select a pickup date and time');
-        }
+      const paymentResponse = await OrderAPI.completePayment(salesId, paymentRequest);
 
-        const minTime = new Date(Date.now() + 30 * 60000); // 30 min from now
-        if (scheduledDateTime < minTime) {
-          throw new Error('Pickup time must be at least 30 minutes from now');
-        }
-
-        // Create scheduled order
-        const scheduledRequest = {
-          customerId: 1, // Would lookup/create customer
-          scheduledDateTime: scheduledDateTime.toISOString(),
-          items: orderItems,
-          paymentAuthorizationNo: opaqueData.dataValue,
-          paymentBatchNo: '1',
-          paymentTypeId: 3,
-          tipAmount: 0,
-          specialInstructions: '',
-          idempotencyKey: crypto.randomUUID(),
-        };
-
-        orderResponse = await ScheduledOrderAPI.create(scheduledRequest);
-
-        if (orderResponse.success) {
-          clearCart();
-          router.push(`/order/confirmation?scheduledOrderId=${orderResponse.scheduledOrderId}&confirmationCode=${orderResponse.confirmationCode}&total=${total}&scheduled=true`);
-        }
-      } else {
-        // Create immediate order (existing behavior)
-        const orderRequest = {
-          customerId: 1,
-          items: orderItems,
-          paymentAuthorizationNo: opaqueData.dataValue,
-          paymentBatchNo: '1',
-          paymentTypeId: 3,
-          tipAmount: 0,
-        };
-
-        orderResponse = await OrderAPI.create(orderRequest);
-
-        if (orderResponse.success) {
-          clearCart();
-          setStep('success');
-          router.push(`/order/confirmation?orderId=${orderResponse.orderNumber}&total=${total}`);
-        }
+      if (!paymentResponse.success) {
+        throw new Error(paymentResponse.errorMessage || 'Payment processing failed');
       }
 
-      if (!orderResponse.success) {
-        throw new Error(orderResponse.message || 'Order creation failed');
-      }
+      clearCart();
+      setStep('success');
+      router.push(
+        `/order/confirmation?orderId=${paymentResponse.dailyOrderNumber}&total=${total + tipAmount}&transactionId=${paymentResponse.transactionId}`
+      );
 
     } catch (err: any) {
-      console.error('Checkout error:', err);
+      console.error('Payment error:', err);
       setError(err.message || 'Payment processing failed. Please try again.');
       setStep('payment');
     } finally {
@@ -296,6 +338,59 @@ export default function CheckoutPage() {
                   className="input"
                   placeholder="you@example.com"
                 />
+              </div>
+
+              {/* Tip Selection */}
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-[#4A4A5A] mb-3">
+                  Add a Tip (Optional)
+                </label>
+
+                <div className="grid grid-cols-4 gap-2 mb-2">
+                  {[0, 2, 5, 10].map(amount => (
+                    <button
+                      key={amount}
+                      type="button"
+                      onClick={() => {
+                        setTipAmount(amount);
+                        setShowCustomTip(false);
+                        setCustomTip('');
+                      }}
+                      className={`py-2 px-3 rounded-lg border-2 font-semibold transition-all ${
+                        tipAmount === amount && !showCustomTip
+                          ? 'border-[#D4AF37] bg-[#D4AF37] text-white'
+                          : 'border-gray-300 bg-white text-[#4A4A5A] hover:border-[#1E5AA8]'
+                      }`}
+                    >
+                      {amount === 0 ? 'No Tip' : `$${amount}`}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowCustomTip(!showCustomTip)}
+                  className="text-sm text-[#1E5AA8] hover:text-[#D4AF37] font-medium"
+                >
+                  {showCustomTip ? '← Back to preset tips' : 'Enter custom amount'}
+                </button>
+
+                {showCustomTip && (
+                  <div className="mt-3">
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={customTip}
+                      onChange={(e) => {
+                        setCustomTip(e.target.value);
+                        setTipAmount(parseFloat(e.target.value) || 0);
+                      }}
+                      className="input"
+                      placeholder="Enter custom tip amount"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Scheduled Order Toggle */}
@@ -469,10 +564,16 @@ export default function CheckoutPage() {
               <span>PST (0%)</span>
               <span className="font-mono">$0.00</span>
             </div>
+            {tipAmount > 0 && (
+              <div className="flex justify-between text-[#4A4A5A]">
+                <span>Tip</span>
+                <span className="font-mono">${tipAmount.toFixed(2)}</span>
+              </div>
+            )}
             <div className="border-t border-[rgba(30,90,168,0.08)] pt-3">
               <div className="flex justify-between text-xl font-bold text-[#1A1A2E]">
                 <span>Total</span>
-                <span className="price">${total.toFixed(2)}</span>
+                <span className="price">${(total + tipAmount).toFixed(2)}</span>
               </div>
             </div>
           </div>

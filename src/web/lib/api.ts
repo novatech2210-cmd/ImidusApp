@@ -92,6 +92,26 @@ export interface CreateOrderResponse {
   createdAt?: string;
 }
 
+export interface PaymentToken {
+  dataDescriptor: string;
+  dataValue: string;
+}
+
+export interface CompletePaymentRequest {
+  token: PaymentToken;
+  amount: number;
+  customerId?: number;
+  pointsToRedeem?: number;
+}
+
+export interface OrderCompletionResult {
+  success: boolean;
+  transactionId?: string;
+  ticketId?: number;
+  dailyOrderNumber?: number;
+  errorMessage?: string;
+}
+
 export const OrderAPI = {
   create: (data: CreateOrderRequest) =>
     apiClient("/Orders", {
@@ -99,6 +119,13 @@ export const OrderAPI = {
       body: JSON.stringify(data),
       headers: { "X-Idempotency-Key": crypto.randomUUID() },
     }),
+
+  completePayment: (salesId: number, data: CompletePaymentRequest): Promise<OrderCompletionResult> =>
+    apiClient(`/Orders/${salesId}/complete-payment`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
   getStatus: (id: number) => apiClient(`/Orders/${id}/status`),
   getOrderHistory: (customerId: number) =>
     apiClient(`/Orders/history/${customerId}`),

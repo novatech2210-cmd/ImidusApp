@@ -41,6 +41,7 @@ function OrderConfirmationContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
   const total = searchParams.get('total');
+  const transactionId = searchParams.get('transactionId');
   const isScheduled = searchParams.get('scheduled') === 'true';
   const scheduledDateTime = searchParams.get('scheduledDateTime');
   const confirmationCode = searchParams.get('confirmationCode');
@@ -296,7 +297,12 @@ function OrderConfirmationContent() {
           <div className="flex items-center justify-center gap-3 py-4 bg-green-50 rounded-xl border border-green-200">
             <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
             <span className="text-green-800 font-semibold">
-              ✓ Payment confirmed via Authorize.net
+              ✓ Payment confirmed
+              {transactionId && (
+                <span className="text-xs text-gray-500 ml-2">
+                  (Txn: {transactionId.substring(0, 10)}...)
+                </span>
+              )}
             </span>
           </div>
         </div>
