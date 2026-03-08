@@ -17,6 +17,11 @@ export async function apiClient(path: string, options: RequestInit = {}) {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
+  // Add idempotency key for register requests
+  if (path.includes("/auth/register")) {
+    headers["Idempotency-Key"] = `reg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
   const url = `${API_BASE}${path}`;
   console.log(`[API] Fetching: ${url}`); // Debug logging
 
