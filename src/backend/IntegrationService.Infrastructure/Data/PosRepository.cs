@@ -247,13 +247,13 @@ namespace IntegrationService.Infrastructure.Data
                     i.Bar,
                     i.Taste,
                     i.OpenItem,
-                    i.ScaleItem,
-                    i.PrintOrder
+                    i.ScaleItem
+                    /* PrintOrder removed - does not exist in tblItem */
                 FROM dbo.tblItem i
                 WHERE i.CategoryID = @CategoryId
                   AND i.Status = 1
-                  AND i.OpenItem = 1
-                ORDER BY i.PrintOrder";
+                  AND i.OnlineItem = 1
+                ORDER BY i.IName";
 
             using var connection = CreateConnection();
             var items = await connection.QueryAsync<MenuItem>(sql, new { CategoryId = categoryId });
@@ -1419,13 +1419,15 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Get customer by phone number
+        /// NOTE: Email and Password do not exist in POS tblCustomer schema
         /// </summary>
         public async Task<PosCustomer?> GetCustomerByPhoneAsync(string phone)
         {
             const string sql = @"
                 SELECT
-                    ID, FName, LName, Phone, Email, Address,
-                    CustomerNum, EarnedPoints, PointsManaged, Gender, Password
+                    ID, FName, LName, Phone, Address,
+                    CustomerNum, EarnedPoints, PointsManaged, Gender,
+                    DateEntered, LastVisit, CardValue, Savings, CreditBalance, CustomerNote
                 FROM dbo.tblCustomer
                 WHERE Phone = @Phone";
 
@@ -1435,29 +1437,28 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Get customer by email address
+        /// NOTE: Email column does not exist in POS tblCustomer - queries by CustomerNum or returns null
+        /// Email is stored in IntegrationService overlay tables
         /// </summary>
         public async Task<PosCustomer?> GetCustomerByEmailAsync(string email)
         {
-            const string sql = @"
-                SELECT TOP 1
-                    ID, FName, LName, Phone, Email, Address,
-                    CustomerNum, EarnedPoints, PointsManaged, Gender, Password
-                FROM dbo.tblCustomer
-                WHERE Email = @Email";
-
-            using var connection = CreateConnection();
-            return await connection.QueryFirstOrDefaultAsync<PosCustomer>(sql, new { Email = email });
+            // Email doesn't exist in tblCustomer schema
+            // Return null - caller should check IntegrationService.User table
+            _logger.LogWarning("GetCustomerByEmail called but Email column does not exist in POS tblCustomer");
+            return null;
         }
 
         /// <summary>
         /// Get customer by ID
+        /// NOTE: Email and Password do not exist in POS tblCustomer schema
         /// </summary>
         public async Task<PosCustomer?> GetCustomerByIdAsync(int id)
         {
             const string sql = @"
                 SELECT
-                    ID, FName, LName, Phone, Email, Address,
-                    CustomerNum, EarnedPoints, PointsManaged, Gender, Password
+                    ID, FName, LName, Phone, Address,
+                    CustomerNum, EarnedPoints, PointsManaged, Gender,
+                    DateEntered, LastVisit, CardValue, Savings, CreditBalance, CustomerNote
                 FROM dbo.tblCustomer
                 WHERE ID = @Id";
 
@@ -1467,22 +1468,36 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Insert new customer
+        /// NOTE: Email and Password do not exist in POS schema - set in IntegrationService overlay
+        /// CustomerNum is required (not nullable) - uses phone or generates unique value
         /// </summary>
         public async Task<int> InsertCustomerAsync(PosCustomer customer)
         {
+            // CustomerNum is required in POS schema - generate if not provided
+            var customerNum = !string.IsNullOrWhiteSpace(customer.CustomerNum) 
+                ? customer.CustomerNum 
+                : (!string.IsNullOrWhiteSpace(customer.Phone) ? customer.Phone : Guid.NewGuid().ToString("N")[..20]);
+
             const string sql = @"
                 INSERT INTO dbo.tblCustomer (
-                    FName, LName, Phone, Email, Address,
-                    CustomerNum, EarnedPoints, PointsManaged, Password
+                    FName, LName, Phone, Address,
+                    CustomerNum, EarnedPoints, PointsManaged
                 )
                 VALUES (
-                    @FName, @LName, @Phone, @Email, @Address,
-                    @CustomerNum, 0, 1, @Password
+                    @FName, @LName, @Phone, @Address,
+                    @CustomerNum, 0, 1
                 );
                 SELECT SCOPE_IDENTITY();";
 
             using var connection = CreateConnection();
-            return await connection.QuerySingleAsync<int>(sql, customer);
+            return await connection.QuerySingleAsync<int>(sql, new 
+            { 
+                customer.FName, 
+                customer.LName, 
+                customer.Phone, 
+                customer.Address,
+                CustomerNum = customerNum
+            });
         }
 
         /// <summary>

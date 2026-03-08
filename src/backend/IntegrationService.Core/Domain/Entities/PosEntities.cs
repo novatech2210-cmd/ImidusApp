@@ -356,8 +356,8 @@ namespace IntegrationService.Core.Domain.Entities
         // Inventory
         public bool ManageInv { get; set; }
 
-        // Display Order
-        public int PrintOrder { get; set; }
+        // Display Order - Removed: PrintOrder does not exist in tblItem
+        // public int PrintOrder { get; set; }
 
         // Navigation
         public Category? Category { get; set; }
@@ -390,7 +390,7 @@ namespace IntegrationService.Core.Domain.Entities
         public Size? Size { get; set; }
 
         // Helpers
-        public bool InStock => OnHandQty == null || OnHandQty > 0;
+        public bool InStock => OnHandQty == null || OnHandQty >= 0;  // 0 means in stock for POS (not tracked)
     }
 
     /// <summary>
@@ -456,13 +456,11 @@ namespace IntegrationService.Core.Domain.Entities
         public string? FName { get; set; }
         public string? LName { get; set; }
 
-        // Contact
+        // Contact (NOTE: Email does not exist in POS tblCustomer - stored in IntegrationService overlay)
         public string? Phone { get; set; }
+        // Email is stored in IntegrationService.User or CustomerAuth table
         public string? Email { get; set; }
         public string? Address { get; set; }
-
-        // Authentication (legacy plaintext, migrating to hashed)
-        public string? Password { get; set; }
 
         // Identifiers
         public string? CustomerNum { get; set; }
@@ -471,9 +469,16 @@ namespace IntegrationService.Core.Domain.Entities
         public int EarnedPoints { get; set; }
         public bool PointsManaged { get; set; }
 
-        // Demographics
-        public char? Gender { get; set; }
-        public DateTime? Birthday { get; set; }
+        // Demographics (Gender is bit in POS: 0=Female, 1=Male)
+        public bool? Gender { get; set; }
+        public DateTime? DateEntered { get; set; }
+        public DateTime? LastVisit { get; set; }
+
+        // POS specific fields
+        public decimal? CardValue { get; set; }
+        public decimal? Savings { get; set; }
+        public decimal? CreditBalance { get; set; }
+        public string? CustomerNote { get; set; }
 
         // Segmentation (for RFM analysis)
         public int? CustomerTypeID { get; set; }
