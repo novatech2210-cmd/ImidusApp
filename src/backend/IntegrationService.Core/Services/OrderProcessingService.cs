@@ -100,9 +100,9 @@ namespace IntegrationService.Core.Services
                     PSTRate = taxRates.PST,
                     PST2Rate = taxRates.PST2,
                     CustomerID = request.CustomerID ?? 1,
-                    CashierID = 1,  // System user for online orders
+                    CashierID = 999,  // Online cashier ID per project constants
                     TableID = 201,  // Online/takeout orders use TableID 201
-                    StationID = 1,
+                    StationID = 2,  // DESKTOP-DEMO (online orders)
                     Guests = 1,
                     TakeOutOrder = request.IsTakeout,
                     DeliveryChargeAmt = request.DeliveryCharge,
