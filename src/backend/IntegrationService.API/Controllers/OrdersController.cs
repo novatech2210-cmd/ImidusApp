@@ -78,7 +78,7 @@ namespace IntegrationService.API.Controllers
                     }).ToList(),
                     PaymentAuthCode = request.PaymentAuthorizationNo,
                     PaymentBatchNo = request.PaymentBatchNo,
-                    PaymentTypeID = request.PaymentTypeId,
+                    PaymentTypeID = request.PaymentTypeId ?? (byte)PaymentType.Visa,
                     TipAmount = request.TipAmount,
                     IsTakeout = true
                 };
@@ -223,6 +223,57 @@ namespace IntegrationService.API.Controllers
                 return StatusCode(500, new { error = "Failed to retrieve order history" });
             }
         }
+
+        /// <summary>
+        /// Get recent orders for admin dashboard
+        /// SSOT Compliant: Reads from POS database (ground truth)
+        /// </summary>
+        [HttpGet("recent")]
+        [ProducesResponseType(typeof(List<RecentOrderDto>), 200)]
+        public async Task<IActionResult> GetRecentOrders([FromQuery] int days = 1)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching orders from last {Days} days", days);
+
+                var startDate = DateTime.Now.AddDays(-days);
+                var endDate = DateTime.Now.AddDays(1);
+
+                // Get orders from POS database (SSOT - ground truth)
+                var orders = await _posRepo.GetOrdersByDateRangeAsync(startDate, endDate);
+
+                // Map to DTOs with customer info
+                var orderDtos = new List<RecentOrderDto>();
+                foreach (var order in orders)
+                {
+                    // Get customer info from POS if available
+                    PosCustomer? customer = null;
+                    if (order.CustomerID.HasValue && order.CustomerID.Value > 0)
+                    {
+                        customer = await _posRepo.GetCustomerByIdAsync(order.CustomerID.Value);
+                    }
+                    
+                    orderDtos.Add(new RecentOrderDto
+                    {
+                        SalesId = order.ID,
+                        DailyOrderNumber = order.DailyOrderNumber,
+                        CustomerName = customer != null ? $"{customer.FName} {customer.LName}".Trim() : "Guest",
+                        TotalAmount = order.SubTotal + order.GSTAmt + order.PSTAmt + order.PST2Amt - order.DSCAmt,
+                        TransType = order.TransType,
+                        SaleDateTime = order.SaleDateTime,
+                        ItemCount = order.Items?.Count ?? 0,
+                        PaymentStatus = order.TransType == 1 ? "Paid" : "Pending"
+                    });
+                }
+
+                return Ok(orderDtos.OrderByDescending(o => o.SaleDateTime));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get recent orders");
+                return StatusCode(500, new { error = "Failed to retrieve recent orders" });
+            }
+        }
     }
 
     /// <summary>
@@ -251,5 +302,20 @@ namespace IntegrationService.API.Controllers
         public string SizeName { get; set; } = "";
         public decimal ItemQty { get; set; }
         public decimal UnitPrice { get; set; }
+    }
+
+    /// <summary>
+    /// Recent order DTO for admin dashboard
+    /// </summary>
+    public class RecentOrderDto
+    {
+        public int SalesId { get; set; }
+        public int DailyOrderNumber { get; set; }
+        public string CustomerName { get; set; } = "";
+        public decimal TotalAmount { get; set; }
+        public int TransType { get; set; }
+        public DateTime SaleDateTime { get; set; }
+        public int ItemCount { get; set; }
+        public string PaymentStatus { get; set; } = "";
     }
 }
