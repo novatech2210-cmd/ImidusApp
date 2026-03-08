@@ -54,11 +54,11 @@ namespace IntegrationService.Infrastructure.Data
                         UPDATE tblOrderNumber
                         SET OrderNumber = OrderNumber + 1
                         OUTPUT INSERTED.OrderNumber
-                        WHERE OrderDate = @Today
+                        WHERE CalledDateTime = @Today
 
                         IF @@ROWCOUNT = 0
                         BEGIN
-                            INSERT INTO tblOrderNumber (OrderDate, OrderNumber)
+                            INSERT INTO tblOrderNumber (CalledDateTime, OrderNumber)
                             VALUES (@Today, 1)
                             SELECT 1
                         END";

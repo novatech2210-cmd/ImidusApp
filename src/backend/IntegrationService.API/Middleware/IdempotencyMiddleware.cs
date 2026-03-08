@@ -40,9 +40,18 @@ namespace IntegrationService.API.Middleware
                 return;
             }
 
-            // Extract Idempotency-Key header
-            if (!context.Request.Headers.TryGetValue("Idempotency-Key", out var idempotencyKey) ||
-                string.IsNullOrWhiteSpace(idempotencyKey))
+            // Extract Idempotency-Key header (accept both X-Idempotency-Key and Idempotency-Key)
+            string? idempotencyKey = null;
+            if (context.Request.Headers.TryGetValue("X-Idempotency-Key", out var xKey) && !string.IsNullOrWhiteSpace(xKey))
+            {
+                idempotencyKey = xKey.ToString();
+            }
+            else if (context.Request.Headers.TryGetValue("Idempotency-Key", out var headerKey) && !string.IsNullOrWhiteSpace(headerKey))
+            {
+                idempotencyKey = headerKey.ToString();
+            }
+
+            if (string.IsNullOrWhiteSpace(idempotencyKey))
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsJsonAsync(new
