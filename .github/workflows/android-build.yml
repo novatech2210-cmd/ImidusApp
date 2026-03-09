@@ -52,12 +52,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-          cache-dependency-path: ${{ env.WORKING_DIR }}/yarn.lock
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
       - name: Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
@@ -109,80 +112,80 @@ jobs:
           path: ${{ env.WORKING_DIR }}/android/app/build/outputs/apk/debug/*.apk
           retention-days: 7
 
-       - name: Create Release (on tags)
-         if: startsWith(github.ref, 'refs/tags/v')
-         uses: softprops/action-gh-release@v1
-         with:
-           files: ${{ env.WORKING_DIR }}/android/app/build/outputs/apk/release/*.apk
-           generate_release_notes: true
+      - name: Create Release (on tags)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.WORKING_DIR }}/android/app/build/outputs/apk/release/*.apk
+          generate_release_notes: true
 
-       - name: Extract version from package.json
-         id: version
-         if: ${{ github.event.inputs.upload_to_s3 == 'true' || startsWith(github.ref, 'refs/tags/v') }}
-         working-directory: ${{ env.WORKING_DIR }}
-         run: |
-           VERSION=$(jq -r '.version' package.json)
-           # Use tag name if available, otherwise construct from package.json
-           if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-             VERSION="${{ github.ref_name }}"
-           else
-             VERSION="v${VERSION}"
-           fi
-           echo "app_version=${VERSION}" >> $GITHUB_OUTPUT
-           echo "commit_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Extract version from package.json
+        id: version
+        if: ${{ github.event.inputs.upload_to_s3 == 'true' || startsWith(github.ref, 'refs/tags/v') }}
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          # Use tag name if available, otherwise construct from package.json
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            VERSION="${{ github.ref_name }}"
+          else
+            VERSION="v${VERSION}"
+          fi
+          echo "app_version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "commit_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-       - name: Create version.json manifest
-         if: ${{ github.event.inputs.upload_to_s3 == 'true' || startsWith(github.ref, 'refs/tags/v') }}
-         working-directory: ${{ env.WORKING_DIR }}/android
-         run: |
-           cat > version.json <<EOF
-           {
-             "platform": "android",
-             "app_version": "${{ steps.version.outputs.app_version }}",
-             "build_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-             "commit": "${{ github.sha }}",
-             "commit_short": "${{ steps.version.outputs.commit_short }}",
-             "branch": "${{ github.ref_name }}",
-             "build_number": "${{ github.run_number }}",
-             "build_id": "${{ github.run_id }}",
-             "testflight_status": "not_applicable"
-           }
-           EOF
+      - name: Create version.json manifest
+        if: ${{ github.event.inputs.upload_to_s3 == 'true' || startsWith(github.ref, 'refs/tags/v') }}
+        working-directory: ${{ env.WORKING_DIR }}/android
+        run: |
+          cat > version.json <<EOF
+          {
+            "platform": "android",
+            "app_version": "${{ steps.version.outputs.app_version }}",
+            "build_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "commit": "${{ github.sha }}",
+            "commit_short": "${{ steps.version.outputs.commit_short }}",
+            "branch": "${{ github.ref_name }}",
+            "build_number": "${{ github.run_number }}",
+            "build_id": "${{ github.run_id }}",
+            "testflight_status": "not_applicable"
+          }
+          EOF
 
-       - name: Configure AWS credentials
-         if: ${{ github.event.inputs.upload_to_s3 == 'true' || startsWith(github.ref, 'refs/tags/v') }}
-         uses: aws-actions/configure-aws-credentials@v4
-         with:
-           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-           aws-region: us-east-1
+      - name: Configure AWS credentials
+        if: ${{ github.event.inputs.upload_to_s3 == 'true' || startsWith(github.ref, 'refs/tags/v') }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-       - name: Upload APK to S3
-         if: |
-           (github.event.inputs.upload_to_s3 == 'true' || startsWith(github.ref, 'refs/tags/v')) &&
-           github.event.inputs.build_type != 'debug'
-         working-directory: ${{ env.WORKING_DIR }}/android
-         run: |
-           APP_VERSION="${{ steps.version.outputs.app_version }}"
-           S3_PATH="s3://${{ env.S3_BUCKET }}/${{ env.S3_PREFIX }}/mobile/android/v${APP_VERSION}/"
-           
-           # Upload APK
-           aws s3 cp app/build/outputs/apk/release/*.apk \
-             "${S3_PATH}" \
-             --acl public-read
-           
-           # Upload version manifest
-           aws s3 cp version.json \
-             "${S3_PATH}version.json" \
-             --acl public-read \
-             --content-type application/json
-           
-           echo "✅ Android build uploaded to S3"
-           echo "Path: ${S3_PATH}"
+      - name: Upload APK to S3
+        if: |
+          (github.event.inputs.upload_to_s3 == 'true' || startsWith(github.ref, 'refs/tags/v')) &&
+          github.event.inputs.build_type != 'debug'
+        working-directory: ${{ env.WORKING_DIR }}/android
+        run: |
+          APP_VERSION="${{ steps.version.outputs.app_version }}"
+          S3_PATH="s3://${{ env.S3_BUCKET }}/${{ env.S3_PREFIX }}/mobile/android/v${APP_VERSION}/"
 
-       - name: Cleanup keystore
-         if: always()
-         working-directory: ${{ env.WORKING_DIR }}/android
-         run: |
-           rm -f app/imidus-release.keystore
-           rm -f keystore.properties
+          # Upload APK
+          aws s3 cp app/build/outputs/apk/release/*.apk \
+            "${S3_PATH}" \
+            --acl public-read
+
+          # Upload version manifest
+          aws s3 cp version.json \
+            "${S3_PATH}version.json" \
+            --acl public-read \
+            --content-type application/json
+
+          echo "Android build uploaded to S3"
+          echo "Path: ${S3_PATH}"
+
+      - name: Cleanup keystore
+        if: always()
+        working-directory: ${{ env.WORKING_DIR }}/android
+        run: |
+          rm -f app/imidus-release.keystore
+          rm -f keystore.properties

@@ -38,12 +38,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-          cache-dependency-path: ${{ env.WORKING_DIR }}/yarn.lock
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
       - name: Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Install CocoaPods dependencies
         working-directory: ${{ env.WORKING_DIR }}/ios
@@ -127,88 +130,88 @@ jobs:
           path: ${{ env.WORKING_DIR }}/ios/build/*.ipa
           retention-days: 30
 
-       - name: Extract version from package.json
-         id: version
-         if: ${{ github.event.inputs.upload_to_s3 == 'true' }}
-         working-directory: ${{ env.WORKING_DIR }}
-         run: |
-           VERSION=$(jq -r '.version' package.json)
-           # Use tag name if available, otherwise construct from package.json
-           if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-             VERSION="${{ github.ref_name }}"
-           else
-             VERSION="v${VERSION}"
-           fi
-           echo "app_version=${VERSION}" >> $GITHUB_OUTPUT
-           echo "commit_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Extract version from package.json
+        id: version
+        if: ${{ github.event.inputs.upload_to_s3 == 'true' }}
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          # Use tag name if available, otherwise construct from package.json
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            VERSION="${{ github.ref_name }}"
+          else
+            VERSION="v${VERSION}"
+          fi
+          echo "app_version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "commit_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-       - name: Create version.json manifest
-         if: ${{ github.event.inputs.upload_to_s3 == 'true' }}
-         working-directory: ${{ env.WORKING_DIR }}/ios
-         run: |
-           # Extract iOS SDK version and min deployment target from Podfile
-           MIN_IOS_VERSION=$(grep -m1 "platform :ios" Podfile | grep -oE "[0-9]+\.[0-9]+" | head -1 || echo "14.0")
-           
-           cat > version.json <<EOF
-           {
-             "platform": "ios",
-             "app_version": "${{ steps.version.outputs.app_version }}",
-             "build_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-             "commit": "${{ github.sha }}",
-             "commit_short": "${{ steps.version.outputs.commit_short }}",
-             "branch": "${{ github.ref_name }}",
-             "build_number": "${{ github.run_number }}",
-             "build_id": "${{ github.run_id }}",
-             "min_ios_version": "${MIN_IOS_VERSION}",
-             "testflight_status": "submitted"
-           }
-           EOF
+      - name: Create version.json manifest
+        if: ${{ github.event.inputs.upload_to_s3 == 'true' }}
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        run: |
+          # Extract iOS SDK version and min deployment target from Podfile
+          MIN_IOS_VERSION=$(grep -m1 "platform :ios" Podfile | grep -oE "[0-9]+\.[0-9]+" | head -1 || echo "14.0")
 
-       - name: Configure AWS credentials
-         if: ${{ github.event.inputs.upload_to_s3 == 'true' }}
-         uses: aws-actions/configure-aws-credentials@v4
-         with:
-           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-           aws-region: us-east-1
+          cat > version.json <<EOF
+          {
+            "platform": "ios",
+            "app_version": "${{ steps.version.outputs.app_version }}",
+            "build_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "commit": "${{ github.sha }}",
+            "commit_short": "${{ steps.version.outputs.commit_short }}",
+            "branch": "${{ github.ref_name }}",
+            "build_number": "${{ github.run_number }}",
+            "build_id": "${{ github.run_id }}",
+            "min_ios_version": "${MIN_IOS_VERSION}",
+            "testflight_status": "submitted"
+          }
+          EOF
 
-       - name: Upload IPA to S3
-         if: ${{ github.event.inputs.upload_to_s3 == 'true' }}
-         working-directory: ${{ env.WORKING_DIR }}/ios
-         run: |
-           APP_VERSION="${{ steps.version.outputs.app_version }}"
-           S3_PATH="s3://${{ env.S3_BUCKET }}/${{ env.S3_PREFIX }}/mobile/ios/v${APP_VERSION}/"
-           
-           # Upload IPA
-           aws s3 cp build/*.ipa \
-             "${S3_PATH}" \
-             --acl public-read
-           
-           # Upload dSYM for crash reporting
-           if [ -d "build/ImidusCustomerApp.xcarchive/dSYMs" ]; then
-             zip -r build/ImidusCustomerApp.dSYM.zip build/ImidusCustomerApp.xcarchive/dSYMs
-             aws s3 cp build/ImidusCustomerApp.dSYM.zip \
-               "${S3_PATH}ImidusCustomerApp.dSYM.zip" \
-               --acl public-read
-           fi
-           
-           # Upload version manifest
-           aws s3 cp version.json \
-             "${S3_PATH}version.json" \
-             --acl public-read \
-             --content-type application/json
-           
-           echo "✅ iOS build uploaded to S3"
-           echo "Path: ${S3_PATH}"
+      - name: Configure AWS credentials
+        if: ${{ github.event.inputs.upload_to_s3 == 'true' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-       - name: Cleanup keychain
-         if: always()
-         run: security delete-keychain build.keychain || true
-       
-       - name: Cleanup sensitive files
-         if: always()
-         working-directory: ${{ env.WORKING_DIR }}/ios
-         run: |
-           rm -f certificate.p12
-           rm -f AuthKey.p8
-           rm -f ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+      - name: Upload IPA to S3
+        if: ${{ github.event.inputs.upload_to_s3 == 'true' }}
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        run: |
+          APP_VERSION="${{ steps.version.outputs.app_version }}"
+          S3_PATH="s3://${{ env.S3_BUCKET }}/${{ env.S3_PREFIX }}/mobile/ios/v${APP_VERSION}/"
+
+          # Upload IPA
+          aws s3 cp build/*.ipa \
+            "${S3_PATH}" \
+            --acl public-read
+
+          # Upload dSYM for crash reporting
+          if [ -d "build/ImidusCustomerApp.xcarchive/dSYMs" ]; then
+            zip -r build/ImidusCustomerApp.dSYM.zip build/ImidusCustomerApp.xcarchive/dSYMs
+            aws s3 cp build/ImidusCustomerApp.dSYM.zip \
+              "${S3_PATH}ImidusCustomerApp.dSYM.zip" \
+              --acl public-read
+          fi
+
+          # Upload version manifest
+          aws s3 cp version.json \
+            "${S3_PATH}version.json" \
+            --acl public-read \
+            --content-type application/json
+
+          echo "iOS build uploaded to S3"
+          echo "Path: ${S3_PATH}"
+
+      - name: Cleanup keychain
+        if: always()
+        run: security delete-keychain build.keychain || true
+
+      - name: Cleanup sensitive files
+        if: always()
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        run: |
+          rm -f certificate.p12
+          rm -f AuthKey.p8
+          rm -f ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
