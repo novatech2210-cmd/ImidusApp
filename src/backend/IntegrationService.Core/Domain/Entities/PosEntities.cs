@@ -213,7 +213,7 @@ namespace IntegrationService.Core.Domain.Entities
         // Pricing & Quantity
         public decimal Qty { get; set; }
         public decimal UnitPrice { get; set; }
-        public decimal? PricePerWeightUnit { get; set; }
+        public decimal PricePerWeightUnit { get; set; }
 
         // Modifiers
         public string? Tastes { get; set; }
@@ -226,10 +226,10 @@ namespace IntegrationService.Core.Domain.Entities
 
         // Discounts
         public decimal DSCAmt { get; set; }
-        public decimal? DSCAmtEmployee { get; set; }
-        public decimal? DSCAmtType1 { get; set; }
-        public decimal? DSCAmtType2 { get; set; }
-        public decimal? DayHourDiscountRate { get; set; }
+        public decimal DSCAmtEmployee { get; set; }
+        public decimal DSCAmtType1 { get; set; }
+        public decimal DSCAmtType2 { get; set; }
+        public decimal DayHourDiscountRate { get; set; }
         public bool ApplyNoDSC { get; set; }
 
         // Kitchen Routing
@@ -245,6 +245,9 @@ namespace IntegrationService.Core.Domain.Entities
         // Special Flags
         public bool OpenItem { get; set; }
         public bool ExtraChargeItem { get; set; }
+
+        // Status (Active/Pending in kitchen)
+        public bool Status { get; set; } = true;
 
         // Calculated Property
         public decimal LineTotal => (Qty * UnitPrice) - DSCAmt;

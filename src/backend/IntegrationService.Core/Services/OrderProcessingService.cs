@@ -641,11 +641,17 @@ namespace IntegrationService.Core.Services
 
                     // Defaults for online orders
                     DSCAmt = 0,
+                    DSCAmtEmployee = 0,
+                    DSCAmtType1 = 0,
+                    DSCAmtType2 = 0,
+                    DayHourDiscountRate = 0,
+                    PricePerWeightUnit = 0,
                     ApplyNoDSC = sizeData?.ApplyNoDSC ?? false,
                     PersonIndex = 1,
                     SeparateBillPrint = false,
                     OpenItem = menuItem?.OpenItem ?? false,
-                    ExtraChargeItem = false
+                    ExtraChargeItem = false,
+                    Status = true
                 };
 
                 await _posRepo.InsertPendingOrderItemAsync(pendingItem, transaction);
