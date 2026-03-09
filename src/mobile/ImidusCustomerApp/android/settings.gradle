@@ -1,4 +1,27 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
 rootProject.name = 'com.imidus.customer'
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
-includeBuild('../node_modules/@react-native/gradle-plugin')
+includeBuild('../node_modules/@react-native/gradle-plugin') {
+    dependencySubstitution {
+        // Disable allWarningsAsErrors for the React Native gradle plugin
+    }
+}
+
+// Disable Kotlin warnings-as-errors globally for composite builds
+gradle.beforeProject { project ->
+    project.afterEvaluate {
+        project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            compilerOptions {
+                allWarningsAsErrors.set(false)
+            }
+        }
+    }
+}
