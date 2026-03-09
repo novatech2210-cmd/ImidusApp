@@ -189,3 +189,81 @@ button {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
+
+/* ── Scrollbar Hide Utility ─────────────────────────── */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* ── Category Tab Buttons ───────────────────────────── */
+.category-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  border-radius: var(--radius-pos);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--divider);
+  transition: all 0.2s ease;
+}
+.category-tab:hover {
+  background: var(--bg-active);
+  color: var(--text-primary);
+}
+.category-tab.active {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue-vibrant);
+  box-shadow: 0 0 12px rgba(30, 90, 168, 0.3);
+}
+
+/* ── Product Card Styling ───────────────────────────── */
+.product-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.product-card:hover {
+  border-color: var(--text-dim);
+}
+
+.product-image {
+  background: linear-gradient(135deg, var(--bg-active) 0%, var(--bg-surface) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-info {
+  padding: 16px;
+}
+
+.product-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.product-description {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.product-price {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gold-vibrant);
+}
