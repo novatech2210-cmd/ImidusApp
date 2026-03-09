@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Distribution method -->
+    <key>method</key>
+    <string>app-store</string>
+
+    <!-- Apple Developer Team ID -->
+    <!-- Get from: https://developer.apple.com/account/#/membership -->
+    <key>teamID</key>
+    <string>8B82Y8XKB4</string>
+
+    <!-- Signing style -->
+    <key>signingStyle</key>
+    <string>automatic</string>
+
+    <!-- Strip Swift symbols for smaller binary -->
+    <key>stripSwiftSymbols</key>
+    <true/>
+
+    <!-- Upload symbols for crash reporting -->
+    <key>uploadSymbols</key>
+    <true/>
+
+    <!-- Bitcode (disabled for faster builds) -->
+    <key>uploadBitcode</key>
+    <false/>
+
+    <!-- No thinning (universal binary) -->
+    <key>thinning</key>
+    <string>&lt;none&gt;</string>
+
+    <!-- Export destination -->
+    <key>destination</key>
+    <string>export</string>
+
+    <!-- Compile bitcode (disabled) -->
+    <key>compileBitcode</key>
+    <false/>
+
+    <!-- Provisioning profiles (auto-managed) -->
+    <!-- Uncomment if using manual profiles:
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.imidus.customer</key>
+        <string>ImidusCustomerApp AppStore Profile</string>
+    </dict>
+    -->
+</dict>
+</plist>

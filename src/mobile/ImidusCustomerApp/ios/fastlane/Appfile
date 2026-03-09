@@ -1,0 +1,15 @@
+# Appfile for ImidusCustomerApp
+
+# Apple Developer Portal configuration
+app_identifier("com.imidus.customer") # The bundle identifier of your app
+apple_id(ENV["FASTLANE_APPLE_ID"] || "novatech2210@gmail.com") # Your Apple email address
+
+# Team ID from Apple Developer Portal
+# Find at: https://developer.apple.com/account/#/membership
+team_id(ENV["FASTLANE_TEAM_ID"] || "8B82Y8XKB4") # Replace with actual Team ID
+
+# iTunes Connect Team ID (if different from Developer Portal)
+itc_team_id(ENV["FASTLANE_ITC_TEAM_ID"] || "8B82Y8XKB4")
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile

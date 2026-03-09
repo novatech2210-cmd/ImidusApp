@@ -1,0 +1,251 @@
+name: iOS Build & Release
+
+on:
+  push:
+    branches:
+      - main
+      - release/*
+    paths:
+      - 'src/mobile/ImidusCustomerApp/**'
+      - '.github/workflows/ios-build-release.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/mobile/ImidusCustomerApp/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      upload_to_testflight:
+        description: 'Upload to TestFlight'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  WORKING_DIR: src/mobile/ImidusCustomerApp
+
+jobs:
+  build-ios:
+    name: Build iOS App
+    runs-on: macos-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: ${{ env.WORKING_DIR }}/pnpm-lock.yaml
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install Dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: ${{ env.WORKING_DIR }}/ios
+
+      - name: Install Fastlane
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        run: |
+          gem install bundler
+          bundle install
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install CocoaPods Dependencies
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        run: |
+          pod install --repo-update
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.WORKING_DIR }}/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Import Apple Certificates
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.IOS_KEYCHAIN_PASSWORD }}
+        run: |
+          # Create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # Import certificate from secrets
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+
+          # Create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # Import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+      - name: Import Provisioning Profile
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        env:
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          # Create provisioning profile directory
+          PP_PATH=~/Library/MobileDevice/Provisioning\ Profiles
+          mkdir -p "$PP_PATH"
+
+          # Import provisioning profile from secrets
+          echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode -o "$PP_PATH/profile.mobileprovision"
+
+      - name: Increment Build Number
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        run: |
+          # Get current build number
+          BUILD_NUMBER=$(date +%Y%m%d%H%M)
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
+
+          # Update build number in Xcode project
+          agvtool new-version -all $BUILD_NUMBER
+
+      - name: Build iOS Archive (Staging)
+        if: github.event.inputs.environment == 'staging' || github.ref != 'refs/heads/main'
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        env:
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120
+          FASTLANE_XCODE_LIST_TIMEOUT: 120
+        run: |
+          bundle exec fastlane build_staging
+
+      - name: Build iOS Archive (Production)
+        if: github.event.inputs.environment == 'production' || github.ref == 'refs/heads/main'
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        env:
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120
+          FASTLANE_XCODE_LIST_TIMEOUT: 120
+        run: |
+          bundle exec fastlane build_production
+
+      - name: Export IPA
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        run: |
+          bundle exec fastlane export_ipa
+
+      - name: Upload IPA to TestFlight
+        if: github.event.inputs.upload_to_testflight == true || (github.ref == 'refs/heads/main' && github.event_name == 'push')
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        env:
+          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          FASTLANE_USER: ${{ secrets.APPLE_ID }}
+          FASTLANE_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+        run: |
+          bundle exec fastlane upload_testflight
+
+      - name: Upload IPA to S3
+        if: success()
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          # Install AWS CLI
+          pip3 install awscli
+
+          # Upload IPA
+          IPA_PATH="${{ env.WORKING_DIR }}/ios/build/ImidusCustomerApp.ipa"
+          S3_PATH="s3://inirestaurant/novatech/ios/ImidusCustomerApp-${{ env.BUILD_NUMBER }}.ipa"
+
+          aws s3 cp "$IPA_PATH" "$S3_PATH"
+
+          # Generate pre-signed URL (7 days)
+          DOWNLOAD_URL=$(aws s3 presign "$S3_PATH" --expires-in 604800)
+          echo "Download URL: $DOWNLOAD_URL" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v3
+        if: success()
+        with:
+          name: ImidusCustomerApp-iOS-${{ env.BUILD_NUMBER }}
+          path: ${{ env.WORKING_DIR }}/ios/build/ImidusCustomerApp.ipa
+          retention-days: 30
+
+      - name: Upload dSYM for Crash Reporting
+        uses: actions/upload-artifact@v3
+        if: success()
+        with:
+          name: ImidusCustomerApp-iOS-dSYM-${{ env.BUILD_NUMBER }}
+          path: ${{ env.WORKING_DIR }}/ios/build/ImidusCustomerApp.app.dSYM.zip
+          retention-days: 90
+
+      - name: Create GitHub Release
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ios-v1.0-${{ env.BUILD_NUMBER }}
+          name: iOS Release v1.0 (Build ${{ env.BUILD_NUMBER }})
+          body: |
+            ## iOS App Release
+
+            **Build Number**: ${{ env.BUILD_NUMBER }}
+            **Environment**: Production
+            **Branch**: ${{ github.ref_name }}
+            **Commit**: ${{ github.sha }}
+
+            ### Installation
+
+            1. Download IPA from artifacts or S3
+            2. Install via TestFlight (if uploaded)
+            3. Or use Apple Configurator for enterprise distribution
+
+            ### Changes
+
+            ${{ github.event.head_commit.message }}
+          files: |
+            ${{ env.WORKING_DIR }}/ios/build/ImidusCustomerApp.ipa
+          draft: false
+          prerelease: false
+
+      - name: Cleanup Keychain
+        if: always()
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db || true
+
+      - name: Send Slack Notification
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            iOS Build ${{ job.status }}
+            Build Number: ${{ env.BUILD_NUMBER }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
