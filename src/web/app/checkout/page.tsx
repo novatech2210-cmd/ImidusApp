@@ -1,37 +1,44 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { useCart } from '@/context/CartContext';
-import { OrderAPI, AuthAPI, ScheduledOrderAPI, CustomerAPI } from '@/lib/api';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { CreditCardIcon, LockClosedIcon, ClockIcon } from '@heroicons/react/24/solid';
-import { TimeSlotPicker } from '@/components/TimeSlotPicker';
+import { useState, useEffect, useRef } from "react";
+import { useCart } from "@/context/CartContext";
+import { OrderAPI, AuthAPI, ScheduledOrderAPI, CustomerAPI } from "@/lib/api";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  CreditCardIcon,
+  LockClosedIcon,
+  ClockIcon,
+} from "@heroicons/react/24/solid";
+import { TimeSlotPicker } from "@/components/TimeSlotPicker";
 
 // Authorize.net Accept.js configuration from environment variables
-const AUTHORIZE_NET_API_LOGIN_ID = process.env.NEXT_PUBLIC_AUTH_NET_API_LOGIN_ID || '';
-const AUTHORIZE_NET_PUBLIC_CLIENT_KEY = process.env.NEXT_PUBLIC_AUTH_NET_PUBLIC_KEY || '';
-const AUTHORIZE_NET_ENV = process.env.NEXT_PUBLIC_AUTH_NET_ENVIRONMENT || 'sandbox';
+const AUTHORIZE_NET_API_LOGIN_ID =
+  process.env.NEXT_PUBLIC_AUTH_NET_API_LOGIN_ID || "";
+const AUTHORIZE_NET_PUBLIC_CLIENT_KEY =
+  process.env.NEXT_PUBLIC_AUTH_NET_PUBLIC_KEY || "";
+const AUTHORIZE_NET_ENV =
+  process.env.NEXT_PUBLIC_AUTH_NET_ENVIRONMENT || "sandbox";
 
 // Load Authorize.net Accept.js script
 const loadAcceptJS = () => {
   return new Promise<void>((resolve, reject) => {
-    if (typeof window === 'undefined') {
-      reject(new Error('Window not available'));
+    if (typeof window === "undefined") {
+      reject(new Error("Window not available"));
       return;
     }
-    
+
     // @ts-ignore
     if (window.Accept) {
       resolve();
       return;
     }
 
-    const script = document.createElement('script');
-    script.src = 'https://js.authorize.net/v1/Accept.js';
+    const script = document.createElement("script");
+    script.src = "https://js.authorize.net/v1/Accept.js";
     script.async = true;
     script.onload = () => resolve();
-    script.onerror = () => reject(new Error('Failed to load Accept.js'));
+    script.onerror = () => reject(new Error("Failed to load Accept.js"));
     document.body.appendChild(script);
   });
 };
@@ -39,29 +46,31 @@ const loadAcceptJS = () => {
 export default function CheckoutPage() {
   const { items, total, subtotal, clearCart } = useCart();
   const router = useRouter();
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [step, setStep] = useState<'info' | 'payment' | 'processing' | 'success'>('info');
-  
+  const [step, setStep] = useState<
+    "info" | "payment" | "processing" | "success"
+  >("info");
+
   // Customer info
   const [customerInfo, setCustomerInfo] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
-    email: '',
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
   });
-  
+
   // Payment info
   const [cardInfo, setCardInfo] = useState({
-    cardNumber: '',
-    expiry: '',
-    cvv: '',
+    cardNumber: "",
+    expiry: "",
+    cvv: "",
   });
 
   // Tip state
   const [tipAmount, setTipAmount] = useState(0);
-  const [customTip, setCustomTip] = useState('');
+  const [customTip, setCustomTip] = useState("");
   const [showCustomTip, setShowCustomTip] = useState(false);
 
   // Order IDs from Step 1
@@ -73,11 +82,16 @@ export default function CheckoutPage() {
   const [scheduledDateTime, setScheduledDateTime] = useState<Date | null>(null);
 
   // Check if cart is empty
-  if (items.length === 0 && step !== 'success') {
+  if (items.length === 0 && step !== "success") {
     return (
       <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)] card">
-        <h2 className="text-2xl font-bold text-[#1A1A2E] mb-4">Your cart is empty</h2>
-        <Link href="/menu" className="text-[#1E5AA8] hover:text-[#D4AF37] font-semibold transition-colors">
+        <h2 className="text-2xl font-bold text-[#1A1A2E] mb-4">
+          Your cart is empty
+        </h2>
+        <Link
+          href="/menu"
+          className="text-[#1E5AA8] hover:text-[#D4AF37] font-semibold transition-colors"
+        >
           ← Back to Menu
         </Link>
       </div>
@@ -86,8 +100,12 @@ export default function CheckoutPage() {
 
   const handleCustomerSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerInfo.firstName || !customerInfo.lastName || !customerInfo.phone) {
-      setError('Please fill in all required fields');
+    if (
+      !customerInfo.firstName ||
+      !customerInfo.lastName ||
+      !customerInfo.phone
+    ) {
+      setError("Please fill in all required fields");
       return;
     }
 
@@ -98,7 +116,7 @@ export default function CheckoutPage() {
       // Step 1a: Customer lookup
       const customerResponse = await CustomerAPI.lookup(
         customerInfo.phone,
-        customerInfo.email
+        customerInfo.email,
       );
       setCustomerId(customerResponse.customerId);
 
@@ -106,7 +124,7 @@ export default function CheckoutPage() {
       const orderTotal = total + tipAmount;
 
       // Step 1c: Create pending order (no payment yet)
-      const orderItems = items.map(item => ({
+      const orderItems = items.map((item) => ({
         menuItemId: item.menuItemId,
         sizeId: item.sizeId,
         quantity: item.quantity,
@@ -115,12 +133,12 @@ export default function CheckoutPage() {
 
       if (isScheduledOrder) {
         if (!scheduledDateTime) {
-          throw new Error('Please select a pickup date and time');
+          throw new Error("Please select a pickup date and time");
         }
 
         const minTime = new Date(Date.now() + 30 * 60000);
         if (scheduledDateTime < minTime) {
-          throw new Error('Pickup time must be at least 30 minutes from now');
+          throw new Error("Pickup time must be at least 30 minutes from now");
         }
 
         // Scheduled orders skip payment step
@@ -129,18 +147,22 @@ export default function CheckoutPage() {
           scheduledDateTime: scheduledDateTime.toISOString(),
           items: orderItems,
           tipAmount: tipAmount,
-          specialInstructions: '',
+          specialInstructions: "",
           idempotencyKey: crypto.randomUUID(),
         };
 
         const orderResponse = await ScheduledOrderAPI.create(scheduledRequest);
 
         if (!orderResponse.success) {
-          throw new Error(orderResponse.message || 'Scheduled order creation failed');
+          throw new Error(
+            orderResponse.message || "Scheduled order creation failed",
+          );
         }
 
         clearCart();
-        router.push(`/order/confirmation?scheduledOrderId=${orderResponse.scheduledOrderId}&total=${orderTotal}&scheduled=true`);
+        router.push(
+          `/order/confirmation?scheduledOrderId=${orderResponse.scheduledOrderId}&total=${orderTotal}&scheduled=true`,
+        );
       } else {
         // Immediate order: Create pending order
         const orderRequest = {
@@ -152,21 +174,20 @@ export default function CheckoutPage() {
         const orderResponse = await OrderAPI.create(orderRequest);
 
         if (!orderResponse.success) {
-          throw new Error(orderResponse.message || 'Order creation failed');
+          throw new Error(orderResponse.message || "Order creation failed");
         }
 
         setSalesId(orderResponse.salesId);
-        setStep('payment');
+        setStep("payment");
 
-        loadAcceptJS().catch(err => {
-          console.error('Failed to load payment system:', err);
-          setError('Payment system unavailable. Please try again.');
+        loadAcceptJS().catch((err) => {
+          console.error("Failed to load payment system:", err);
+          setError("Payment system unavailable. Please try again.");
         });
       }
-
     } catch (err: any) {
-      console.error('Customer/Order creation error:', err);
-      setError(err.message || 'Failed to create order. Please try again.');
+      console.error("Customer/Order creation error:", err);
+      setError(err.message || "Failed to create order. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -176,20 +197,20 @@ export default function CheckoutPage() {
     e.preventDefault();
 
     if (!salesId) {
-      setError('Order not found. Please start over.');
+      setError("Order not found. Please start over.");
       return;
     }
 
     setError(null);
     setLoading(true);
-    setStep('processing');
+    setStep("processing");
 
     try {
       await loadAcceptJS();
 
-      const [expMonth, expYear] = cardInfo.expiry.split('/');
+      const [expMonth, expYear] = cardInfo.expiry.split("/");
       if (!expMonth || !expYear) {
-        throw new Error('Invalid expiry date format. Use MM/YY');
+        throw new Error("Invalid expiry date format. Use MM/YY");
       }
 
       const secureData = {
@@ -198,9 +219,9 @@ export default function CheckoutPage() {
           apiLoginID: AUTHORIZE_NET_API_LOGIN_ID,
         },
         cardData: {
-          cardNumber: cardInfo.cardNumber.replace(/\s/g, ''),
+          cardNumber: cardInfo.cardNumber.replace(/\s/g, ""),
           month: expMonth,
-          year: '20' + expYear,
+          year: "20" + expYear,
           cardCode: cardInfo.cvv,
         },
       };
@@ -209,8 +230,13 @@ export default function CheckoutPage() {
       const response = await new Promise((resolve, reject) => {
         // @ts-ignore
         window.Accept.dispatchData(secureData, (response: any) => {
-          if (response.messages.resultCode === 'Error') {
-            reject(new Error(response.messages.message[0]?.text || 'Payment processing failed'));
+          if (response.messages.resultCode === "Error") {
+            reject(
+              new Error(
+                response.messages.message[0]?.text ||
+                  "Payment processing failed",
+              ),
+            );
           } else {
             resolve(response);
           }
@@ -231,22 +257,26 @@ export default function CheckoutPage() {
         pointsToRedeem: 0,
       };
 
-      const paymentResponse = await OrderAPI.completePayment(salesId, paymentRequest);
+      const paymentResponse = await OrderAPI.completePayment(
+        salesId,
+        paymentRequest,
+      );
 
       if (!paymentResponse.success) {
-        throw new Error(paymentResponse.errorMessage || 'Payment processing failed');
+        throw new Error(
+          paymentResponse.errorMessage || "Payment processing failed",
+        );
       }
 
       clearCart();
-      setStep('success');
+      setStep("success");
       router.push(
-        `/order/confirmation?orderId=${paymentResponse.dailyOrderNumber}&total=${total + tipAmount}&transactionId=${paymentResponse.transactionId}`
+        `/order/confirmation?orderId=${paymentResponse.dailyOrderNumber}&total=${total + tipAmount}&transactionId=${paymentResponse.transactionId}`,
       );
-
     } catch (err: any) {
-      console.error('Payment error:', err);
-      setError(err.message || 'Payment processing failed. Please try again.');
-      setStep('payment');
+      console.error("Payment error:", err);
+      setError(err.message || "Payment processing failed. Please try again.");
+      setStep("payment");
     } finally {
       setLoading(false);
     }
@@ -257,20 +287,32 @@ export default function CheckoutPage() {
   const pst = 0;
 
   return (
-      <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-[#1E5AA8] mb-8 tracking-tight">Checkout</h1>
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold text-[#1E5AA8] mb-8 tracking-tight">
+        Checkout
+      </h1>
 
       {/* Progress Steps */}
       <div className="flex items-center mb-8">
-        <div className={`flex-1 h-2 rounded-full ${step === 'info' ? 'bg-[#D4AF37]' : 'bg-[#1E5AA8]'}`} />
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center mx-2 ${step === 'info' ? 'bg-[#D4AF37] text-white' : 'bg-[#1E5AA8] text-white'}`}>
+        <div
+          className={`flex-1 h-2 rounded-full ${step === "info" ? "bg-[#D4AF37]" : "bg-[#1E5AA8]"}`}
+        />
+        <div
+          className={`w-8 h-8 rounded-full flex items-center justify-center mx-2 ${step === "info" ? "bg-[#D4AF37] text-white" : "bg-[#1E5AA8] text-white"}`}
+        >
           1
         </div>
-        <div className={`flex-1 h-2 rounded-full ${step === 'payment' || step === 'processing' || step === 'success' ? 'bg-[#1E5AA8]' : 'bg-gray-200'}`} />
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center mx-2 ${step === 'payment' || step === 'processing' ? 'bg-[#D4AF37] text-white' : step === 'success' ? 'bg-[#1E5AA8] text-white' : 'bg-gray-200'}`}>
+        <div
+          className={`flex-1 h-2 rounded-full ${step === "payment" || step === "processing" || step === "success" ? "bg-[#1E5AA8]" : "bg-gray-200"}`}
+        />
+        <div
+          className={`w-8 h-8 rounded-full flex items-center justify-center mx-2 ${step === "payment" || step === "processing" ? "bg-[#D4AF37] text-white" : step === "success" ? "bg-[#1E5AA8] text-white" : "bg-gray-200"}`}
+        >
           2
         </div>
-        <div className={`flex-1 h-2 rounded-full ${step === 'success' ? 'bg-[#1E5AA8]' : 'bg-gray-200'}`} />
+        <div
+          className={`flex-1 h-2 rounded-full ${step === "success" ? "bg-[#1E5AA8]" : "bg-gray-200"}`}
+        />
       </div>
 
       {error && (
@@ -282,10 +324,12 @@ export default function CheckoutPage() {
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Left Column - Forms */}
         <div>
-          {step === 'info' && (
+          {step === "info" && (
             <form onSubmit={handleCustomerSubmit} className="card card-body">
-              <h2 className="text-xl font-bold text-[#1A1A2E] mb-6">Customer Information</h2>
-              
+              <h2 className="text-xl font-bold text-[#1A1A2E] mb-6">
+                Customer Information
+              </h2>
+
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-semibold text-[#4A4A5A] mb-2">
@@ -295,7 +339,12 @@ export default function CheckoutPage() {
                     type="text"
                     required
                     value={customerInfo.firstName}
-                    onChange={(e) => setCustomerInfo({...customerInfo, firstName: e.target.value})}
+                    onChange={(e) =>
+                      setCustomerInfo({
+                        ...customerInfo,
+                        firstName: e.target.value,
+                      })
+                    }
                     className="input"
                   />
                 </div>
@@ -307,7 +356,12 @@ export default function CheckoutPage() {
                     type="text"
                     required
                     value={customerInfo.lastName}
-                    onChange={(e) => setCustomerInfo({...customerInfo, lastName: e.target.value})}
+                    onChange={(e) =>
+                      setCustomerInfo({
+                        ...customerInfo,
+                        lastName: e.target.value,
+                      })
+                    }
                     className="input"
                   />
                 </div>
@@ -321,7 +375,9 @@ export default function CheckoutPage() {
                   type="tel"
                   required
                   value={customerInfo.phone}
-                  onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
+                  onChange={(e) =>
+                    setCustomerInfo({ ...customerInfo, phone: e.target.value })
+                  }
                   className="input"
                   placeholder="(123) 456-7890"
                 />
@@ -334,7 +390,9 @@ export default function CheckoutPage() {
                 <input
                   type="email"
                   value={customerInfo.email}
-                  onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
+                  onChange={(e) =>
+                    setCustomerInfo({ ...customerInfo, email: e.target.value })
+                  }
                   className="input"
                   placeholder="you@example.com"
                 />
@@ -347,22 +405,22 @@ export default function CheckoutPage() {
                 </label>
 
                 <div className="grid grid-cols-4 gap-2 mb-2">
-                  {[0, 2, 5, 10].map(amount => (
+                  {[0, 2, 5, 10].map((amount) => (
                     <button
                       key={amount}
                       type="button"
                       onClick={() => {
                         setTipAmount(amount);
                         setShowCustomTip(false);
-                        setCustomTip('');
+                        setCustomTip("");
                       }}
                       className={`py-2 px-3 rounded-lg border-2 font-semibold transition-all ${
                         tipAmount === amount && !showCustomTip
-                          ? 'border-[#D4AF37] bg-[#D4AF37] text-white'
-                          : 'border-gray-300 bg-white text-[#4A4A5A] hover:border-[#1E5AA8]'
+                          ? "border-[#D4AF37] bg-[#D4AF37] text-white"
+                          : "border-gray-300 bg-white text-[#4A4A5A] hover:border-[#1E5AA8]"
                       }`}
                     >
-                      {amount === 0 ? 'No Tip' : `$${amount}`}
+                      {amount === 0 ? "No Tip" : `$${amount}`}
                     </button>
                   ))}
                 </div>
@@ -372,7 +430,9 @@ export default function CheckoutPage() {
                   onClick={() => setShowCustomTip(!showCustomTip)}
                   className="text-sm text-[#1E5AA8] hover:text-[#D4AF37] font-medium"
                 >
-                  {showCustomTip ? '← Back to preset tips' : 'Enter custom amount'}
+                  {showCustomTip
+                    ? "← Back to preset tips"
+                    : "Enter custom amount"}
                 </button>
 
                 {showCustomTip && (
@@ -413,7 +473,8 @@ export default function CheckoutPage() {
                       Schedule for Later
                     </span>
                     <p className="text-xs text-[#71717A]">
-                      Order now, pickup later. Minimum 30 minutes advance notice.
+                      Order now, pickup later. Minimum 30 minutes advance
+                      notice.
                     </p>
                   </div>
                 </label>
@@ -429,22 +490,21 @@ export default function CheckoutPage() {
                 )}
               </div>
 
-              <button
-                type="submit"
-                className="w-full btn btn-primary"
-              >
+              <button type="submit" className="w-full btn btn-primary">
                 Continue to Payment
               </button>
             </form>
           )}
 
-          {step === 'payment' && (
+          {step === "payment" && (
             <form onSubmit={handlePaymentSubmit} className="card card-body">
               <div className="flex items-center gap-2 mb-6">
                 <CreditCardIcon className="w-6 h-6 text-[#1E5AA8]" />
-                <h2 className="text-xl font-bold text-[#1A1A2E]">Payment Information</h2>
+                <h2 className="text-xl font-bold text-[#1A1A2E]">
+                  Payment Information
+                </h2>
               </div>
-              
+
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-[#4A4A5A] mb-2">
                   Card Number *
@@ -456,9 +516,12 @@ export default function CheckoutPage() {
                   value={cardInfo.cardNumber}
                   onChange={(e) => {
                     // Format card number with spaces
-                    const value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, '');
-                    const formatted = value.match(/.{1,4}/g)?.join(' ') || value;
-                    setCardInfo({...cardInfo, cardNumber: formatted});
+                    const value = e.target.value
+                      .replace(/\s/g, "")
+                      .replace(/[^0-9]/g, "");
+                    const formatted =
+                      value.match(/.{1,4}/g)?.join(" ") || value;
+                    setCardInfo({ ...cardInfo, cardNumber: formatted });
                   }}
                   className="input font-mono"
                   placeholder="1234 5678 9012 3456"
@@ -476,11 +539,11 @@ export default function CheckoutPage() {
                     maxLength={5}
                     value={cardInfo.expiry}
                     onChange={(e) => {
-                      let value = e.target.value.replace(/[^0-9]/g, '');
+                      let value = e.target.value.replace(/[^0-9]/g, "");
                       if (value.length >= 2) {
-                        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                        value = value.slice(0, 2) + "/" + value.slice(2, 4);
                       }
-                      setCardInfo({...cardInfo, expiry: value});
+                      setCardInfo({ ...cardInfo, expiry: value });
                     }}
                     className="input font-mono"
                     placeholder="12/25"
@@ -495,7 +558,12 @@ export default function CheckoutPage() {
                     required
                     maxLength={4}
                     value={cardInfo.cvv}
-                    onChange={(e) => setCardInfo({...cardInfo, cvv: e.target.value.replace(/\D/g, '')})}
+                    onChange={(e) =>
+                      setCardInfo({
+                        ...cardInfo,
+                        cvv: e.target.value.replace(/\D/g, ""),
+                      })
+                    }
                     className="input font-mono"
                     placeholder="123"
                   />
@@ -512,12 +580,12 @@ export default function CheckoutPage() {
                 disabled={loading}
                 className="w-full btn btn-gold disabled:opacity-50"
               >
-                {loading ? 'Processing...' : `Pay $${total.toFixed(2)}`}
+                {loading ? "Processing..." : `Pay $${total.toFixed(2)}`}
               </button>
 
               <button
                 type="button"
-                onClick={() => setStep('info')}
+                onClick={() => setStep("info")}
                 className="w-full mt-3 py-2 text-[#4A4A5A] hover:text-[#1E5AA8] font-medium"
               >
                 ← Back to Customer Info
@@ -525,10 +593,12 @@ export default function CheckoutPage() {
             </form>
           )}
 
-          {step === 'processing' && (
+          {step === "processing" && (
             <div className="card card-body text-center">
               <div className="w-16 h-16 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-[#1A1A2E] mb-2">Processing Payment...</h2>
+              <h2 className="text-xl font-bold text-[#1A1A2E] mb-2">
+                Processing Payment...
+              </h2>
               <p className="text-[#4A4A5A]">Please do not close this window</p>
             </div>
           )}
@@ -536,17 +606,23 @@ export default function CheckoutPage() {
 
         {/* Right Column - Order Summary */}
         <div className="card card-body h-fit">
-          <h2 className="text-xl font-bold text-[#1A1A2E] mb-6">Order Summary</h2>
-          
+          <h2 className="text-xl font-bold text-[#1A1A2E] mb-6">
+            Order Summary
+          </h2>
+
           <div className="space-y-3 mb-6">
             {items.map((item) => (
               <div key={item.id} className="flex justify-between text-sm">
                 <div>
-                  <span className="font-semibold text-[#1A1A2E]">{item.name}</span>
+                  <span className="font-semibold text-[#1A1A2E]">
+                    {item.name}
+                  </span>
                   <span className="text-[#71717A]"> × {item.quantity}</span>
                   <div className="text-xs text-[#71717A]">{item.sizeName}</div>
                 </div>
-                <span className="font-mono font-semibold">${(item.price * item.quantity).toFixed(2)}</span>
+                <span className="font-mono font-semibold">
+                  ${(item.price * item.quantity).toFixed(2)}
+                </span>
               </div>
             ))}
           </div>
@@ -586,14 +662,16 @@ export default function CheckoutPage() {
                 Scheduled Pickup
               </p>
               <p className="text-sm text-[#4A4A5A]">
-                {scheduledDateTime.toLocaleDateString('en-US', { 
-                  weekday: 'long',
-                  month: 'long',
-                  day: 'numeric'
-                })} at {scheduledDateTime.toLocaleTimeString('en-US', { 
-                  hour: 'numeric',
-                  minute: '2-digit',
-                  hour12: true 
+                {scheduledDateTime.toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                })}{" "}
+                at{" "}
+                {scheduledDateTime.toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
                 })}
               </p>
             </div>
@@ -601,10 +679,10 @@ export default function CheckoutPage() {
 
           <div className="mt-6 p-4 bg-[rgba(212,175,55,0.08)] border border-[rgba(212,175,55,0.2)] rounded-lg">
             <p className="text-sm text-[#4A4A5A]">
-              <strong>Note:</strong> {isScheduledOrder 
+              <strong>Note:</strong>{" "}
+              {isScheduledOrder
                 ? "Your order will be prepared for your scheduled pickup time. Please arrive within 15 minutes of your selected time."
-                : "Orders are prepared fresh. Estimated pickup time will be provided after order confirmation."
-              }
+                : "Orders are prepared fresh. Estimated pickup time will be provided after order confirmation."}
             </p>
           </div>
         </div>

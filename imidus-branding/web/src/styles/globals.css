@@ -9,54 +9,56 @@
 /* ── Brand tokens ──────────────────────────────────────────────────────────── */
 :root {
   /* Primary palette */
-  --color-brand-blue:   #1E5AA8;
-  --color-brand-gold:   #D4AF37;
-  --color-dark-bg:      #1A1A2E;
+  --color-brand-blue: #1e5aa8;
+  --color-brand-gold: #d4af37;
+  --color-dark-bg: #1a1a2e;
 
   /* Surfaces */
-  --color-white:        #FFFFFF;
-  --color-light-blue:   #D6E4F7;
-  --color-light-gold:   #FDF6E3;
-  --color-light-gray:   #F5F5F5;
-  --color-mid-gray:     #DDDDDD;
+  --color-white: #ffffff;
+  --color-light-blue: #d6e4f7;
+  --color-light-gold: #fdf6e3;
+  --color-light-gray: #f5f5f5;
+  --color-mid-gray: #dddddd;
 
   /* Text */
-  --color-text:         #222222;
-  --color-text-muted:   #888888;
-  --color-text-on-dark: #FFFFFF;
+  --color-text: #222222;
+  --color-text-muted: #888888;
+  --color-text-on-dark: #ffffff;
   --color-text-on-gold: #222222;
 
   /* Status */
-  --color-error:        #C62828;
-  --color-error-light:  #FFEBEE;
-  --color-success:      #2E7D32;
-  --color-success-light:#E8F5E9;
-  --color-warning:      #E65100;
-  --color-warning-light:#FFF3E0;
+  --color-error: #c62828;
+  --color-error-light: #ffebee;
+  --color-success: #2e7d32;
+  --color-success-light: #e8f5e9;
+  --color-warning: #e65100;
+  --color-warning-light: #fff3e0;
 
   /* Shadows */
-  --shadow-sm:  0 1px 4px rgba(30, 90, 168, 0.08);
-  --shadow-md:  0 2px 8px rgba(30, 90, 168, 0.12);
-  --shadow-lg:  0 4px 16px rgba(26, 26, 46, 0.16);
+  --shadow-sm: 0 1px 4px rgba(30, 90, 168, 0.08);
+  --shadow-md: 0 2px 8px rgba(30, 90, 168, 0.12);
+  --shadow-lg: 0 4px 16px rgba(26, 26, 46, 0.16);
 
   /* Border radius */
-  --radius-sm:  4px;
-  --radius-md:  8px;
-  --radius-lg:  12px;
-  --radius-xl:  16px;
-  --radius-full:9999px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
 
   /* Transitions */
   --transition: 0.2s ease;
 
   /* Z-index layers */
-  --z-sticky:  100;
-  --z-modal:   200;
-  --z-toast:   300;
+  --z-sticky: 100;
+  --z-modal: 200;
+  --z-toast: 300;
 }
 
 /* ── Reset & base ──────────────────────────────────────────────────────────── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -69,8 +71,9 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto,
-               Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
   font-size: 1rem;
   line-height: 1.5;
   color: var(--color-text);
@@ -89,15 +92,28 @@ a:hover {
 }
 
 /* ── Typography ────────────────────────────────────────────────────────────── */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 700;
   color: var(--color-brand-blue);
   line-height: 1.25;
 }
-h1 { font-size: 2rem; }
-h2 { font-size: 1.5rem; }
-h3 { font-size: 1.25rem; }
-h4 { font-size: 1.125rem; }
+h1 {
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.5rem;
+}
+h3 {
+  font-size: 1.25rem;
+}
+h4 {
+  font-size: 1.125rem;
+}
 
 .price {
   font-size: 1.125rem;
@@ -171,7 +187,7 @@ h4 { font-size: 1.125rem; }
 .btn-ghost-dark {
   background: transparent;
   color: var(--color-white);
-  border: 1.5px solid rgba(255,255,255,0.4);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
 }
 .btn-ghost-dark:hover:not(:disabled) {
   border-color: var(--color-brand-gold);
@@ -187,7 +203,9 @@ h4 { font-size: 1.125rem; }
   font-size: 0.9375rem;
   color: var(--color-text);
   background: var(--color-white);
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
   outline: none;
 }
 .input:focus {
@@ -229,11 +247,26 @@ h4 { font-size: 1.125rem; }
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-.badge-blue   { background: var(--color-light-blue); color: var(--color-brand-blue); }
-.badge-gold   { background: var(--color-brand-gold); color: var(--color-text-on-gold); }
-.badge-success{ background: var(--color-success-light); color: var(--color-success); }
-.badge-error  { background: var(--color-error-light); color: var(--color-error); }
-.badge-warning{ background: var(--color-warning-light); color: var(--color-warning); }
+.badge-blue {
+  background: var(--color-light-blue);
+  color: var(--color-brand-blue);
+}
+.badge-gold {
+  background: var(--color-brand-gold);
+  color: var(--color-text-on-gold);
+}
+.badge-success {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+.badge-error {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+.badge-warning {
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+}
 
 /* ── Loyalty surface ───────────────────────────────────────────────────────── */
 .loyalty-surface {
@@ -256,7 +289,17 @@ h4 { font-size: 1.125rem; }
 }
 
 /* ── Scrollbar (Webkit) ────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--color-light-gray); }
-::-webkit-scrollbar-thumb { background: var(--color-brand-blue); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-brand-gold); }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-light-gray);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-blue);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-gold);
+}

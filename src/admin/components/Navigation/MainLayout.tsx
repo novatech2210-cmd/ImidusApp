@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Sidebar from './Sidebar';
-import Header from './Header';
+import React from "react";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -27,9 +27,7 @@ export default function MainLayout({
 
         {/* Page Content */}
         <main className="flex-1 overflow-auto">
-          <div className="h-full">
-            {children}
-          </div>
+          <div className="h-full">{children}</div>
         </main>
       </div>
     </div>

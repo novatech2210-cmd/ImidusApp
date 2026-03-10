@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 
 // Sync status types
 type SyncStatus = "online" | "offline" | "syncing" | "error";
@@ -28,10 +34,10 @@ const DEFAULT_POLLING_INTERVAL = 30000;
 // Health check interval (5 seconds when showing syncing)
 const HEALTH_CHECK_INTERVAL = 5000;
 
-export function SyncProvider({ 
+export function SyncProvider({
   children,
-  pollingInterval = DEFAULT_POLLING_INTERVAL 
-}: { 
+  pollingInterval = DEFAULT_POLLING_INTERVAL,
+}: {
   children: React.ReactNode;
   pollingInterval?: number;
 }) {
@@ -50,7 +56,11 @@ export function SyncProvider({
   // Check sync status with backend API
   const checkSync = useCallback(async () => {
     try {
-      setState(prev => ({ ...prev, status: "syncing", message: "Checking..." }));
+      setState((prev) => ({
+        ...prev,
+        status: "syncing",
+        message: "Checking...",
+      }));
 
       const startTime = performance.now();
       const response = await fetch(
@@ -60,17 +70,19 @@ export function SyncProvider({
           headers: { "Content-Type": "application/json" },
           // Short timeout for health checks
           signal: AbortSignal.timeout(5000),
-        }
+        },
       );
       const latency = performance.now() - startTime;
 
       if (response.ok) {
         const data = await response.json();
-        
+
         setState({
           status: data.isHealthy ? "online" : "error",
           isHealthy: data.isHealthy,
-          message: data.message || (data.isHealthy ? "POS Connected" : "Connection Issue"),
+          message:
+            data.message ||
+            (data.isHealthy ? "POS Connected" : "Connection Issue"),
           lastSyncTime: new Date(),
           posLatency: data.posDatabaseLatency || latency,
           categoriesAvailable: data.categoriesAvailable || 0,
@@ -105,8 +117,8 @@ export function SyncProvider({
   const startPolling = useCallback(() => {
     if (pollingTimer) return; // Already polling
 
-    setState(prev => ({ ...prev, isPolling: true }));
-    
+    setState((prev) => ({ ...prev, isPolling: true }));
+
     // Immediate first check
     checkSync();
 
@@ -124,7 +136,7 @@ export function SyncProvider({
       clearInterval(pollingTimer);
       setPollingTimer(null);
     }
-    setState(prev => ({ ...prev, isPolling: false }));
+    setState((prev) => ({ ...prev, isPolling: false }));
   }, [pollingTimer]);
 
   // Auto-start polling on mount
@@ -151,20 +163,25 @@ export function SyncProvider({
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [checkSync]);
 
   // Online/offline event handling
   useEffect(() => {
     const handleOnline = () => {
       console.log("[Sync] Browser online event, checking sync");
-      setState(prev => ({ ...prev, status: "syncing", message: "Reconnecting..." }));
+      setState((prev) => ({
+        ...prev,
+        status: "syncing",
+        message: "Reconnecting...",
+      }));
       checkSync();
     };
 
     const handleOffline = () => {
       console.log("[Sync] Browser offline event");
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         status: "offline",
         isHealthy: false,

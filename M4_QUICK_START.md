@@ -3,6 +3,7 @@
 ## 📋 What's Ready (Backend: 80%)
 
 The backend already has:
+
 - ✅ AdminPortalService with all core logic
 - ✅ Admin controller with all endpoints
 - ✅ Dashboard summary, sales charts, popular items
@@ -20,6 +21,7 @@ The backend already has:
 ## 🚀 Quick Implementation Path (8 weeks)
 
 ### Week 1-2: Dashboard & UI Scaffold
+
 1. Create admin portal Next.js app in `/src/admin`
 2. Setup auth pages (login, session management)
 3. Build shared components (Sidebar, Header, Tables, Forms)
@@ -30,6 +32,7 @@ The backend already has:
 **Deliverable:** Working dashboard showing real KPIs
 
 ### Week 3: Order Management
+
 1. Build OrderQueue table component with filtering
 2. Implement OrderDetail modal (expand, view items)
 3. Create RefundForm with confirmation
@@ -39,6 +42,7 @@ The backend already has:
 **Deliverable:** Fully functional order management
 
 ### Week 4: Customer CRM
+
 1. Implement RFM segmentation view (donut chart)
 2. Build CustomerList table with segment badges
 3. Create CustomerProfile page (history, loyalty points)
@@ -48,6 +52,7 @@ The backend already has:
 **Deliverable:** Complete CRM dashboard
 
 ### Week 5-6: Campaign Builder
+
 1. Build CampaignList with status badges
 2. Create CampaignBuilder multi-step form
 3. Implement AudienceBuilder (RFM filters, spend, frequency)
@@ -58,6 +63,7 @@ The backend already has:
 **Deliverable:** Full campaign builder end-to-end
 
 ### Week 7: Menu + Rewards + Logs
+
 1. Menu management: Category grid + item cards
 2. Real-time inventory display (from backend)
 3. Menu overlay (enable/disable, featured)
@@ -67,6 +73,7 @@ The backend already has:
 **Deliverable:** All remaining features complete
 
 ### Week 8: Security + Testing + Deploy
+
 1. JWT authentication (login flow)
 2. Role-based access control (middleware)
 3. IP whitelisting config UI
@@ -149,23 +156,24 @@ The backend already has:
 
 ## 🛠️ Tech Stack Decisions
 
-| Layer | Technology | Why |
-|-------|-----------|-----|
-| Framework | Next.js 14 App Router | SSR, built-in routing, API routes |
-| UI Components | shadcn/ui (Radix + Tailwind) | Accessible, customizable, dark mode |
-| Forms | React Hook Form + Zod | Type-safe validation, minimal re-renders |
-| Data Fetching | TanStack Query (React Query) | Caching, auto-refetch, background updates |
-| Charts | Recharts | Simple, declarative, responsive |
-| Tables | TanStack Table (React Table) | Headless, sortable, paginated |
-| Auth | NextAuth.js or JWT (httpOnly) | Secure, standard approach |
-| CSS | Tailwind CSS | Utility-first, rapid development |
-| HTTP Client | Axios (configured) | Interceptors, global error handling |
+| Layer         | Technology                    | Why                                       |
+| ------------- | ----------------------------- | ----------------------------------------- |
+| Framework     | Next.js 14 App Router         | SSR, built-in routing, API routes         |
+| UI Components | shadcn/ui (Radix + Tailwind)  | Accessible, customizable, dark mode       |
+| Forms         | React Hook Form + Zod         | Type-safe validation, minimal re-renders  |
+| Data Fetching | TanStack Query (React Query)  | Caching, auto-refetch, background updates |
+| Charts        | Recharts                      | Simple, declarative, responsive           |
+| Tables        | TanStack Table (React Table)  | Headless, sortable, paginated             |
+| Auth          | NextAuth.js or JWT (httpOnly) | Secure, standard approach                 |
+| CSS           | Tailwind CSS                  | Utility-first, rapid development          |
+| HTTP Client   | Axios (configured)            | Interceptors, global error handling       |
 
 ---
 
 ## 📊 Key Endpoints to Connect
 
 ### Dashboard
+
 ```
 GET /api/admin/dashboard/summary?startDate=2026-02-06&endDate=2026-03-06
 Response: { totalOrders, totalRevenue, averageOrderValue, totalCustomers }
@@ -178,6 +186,7 @@ Response: [{ itemId: 101, itemName: "Pizza", quantity: 45, revenue: 450 }]
 ```
 
 ### Orders
+
 ```
 GET /api/admin/orders/queue?status=open&limit=50&searchTerm=ORD001
 Response: [{ id, customerName, items, total, status, createdAt }]
@@ -188,6 +197,7 @@ Response: { success: true, message: "Refund processed" }
 ```
 
 ### Customers
+
 ```
 GET /api/admin/customers/segments
 Response: { VIP: 5, Loyal: 25, Regular: 100, AtRisk: 8 }
@@ -200,6 +210,7 @@ Response: { profile, orders: [], loyaltyPoints: 450 }
 ```
 
 ### Campaigns
+
 ```
 GET /api/admin/campaigns
 Response: [{ id, name, status, recipientsCount, sentDate }]
@@ -213,6 +224,7 @@ Response: { success: true, deliveredCount: 45 }
 ```
 
 ### Menu
+
 ```
 GET /api/admin/menu/overrides
 Response: [{ itemId, itemName, isAvailable, displayPrice, stock }]
@@ -223,6 +235,7 @@ Response: { success: true }
 ```
 
 ### Logs
+
 ```
 GET /api/admin/logs?limit=100&action=RefundProcessed
 Response: [{ id, timestamp, adminUser, action, resourceType, resourceId }]
@@ -291,12 +304,14 @@ Response: [{ id, timestamp, adminUser, action, resourceType, resourceId }]
 ## 📞 Support & Escalation
 
 **If backend endpoint returns error:**
+
 1. Check backend logs: `tail -f /tmp/backend.log`
 2. Verify database connection in appsettings.json
 3. Test endpoint directly: `curl http://10.0.0.26:5004/api/admin/dashboard/summary`
 4. Check if table exists in IntegrationService DB
 
 **If frontend won't connect to backend:**
+
 1. Verify backend is running: `ps aux | grep dotnet`
 2. Check CORS config in Program.cs
 3. Check network connectivity: `ping 10.0.0.26`
@@ -305,4 +320,3 @@ Response: [{ id, timestamp, adminUser, action, resourceType, resourceId }]
 ---
 
 **Next Step:** Start building Dashboard page + navigation scaffold (Week 1)
-

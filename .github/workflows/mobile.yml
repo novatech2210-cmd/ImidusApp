@@ -4,27 +4,27 @@ on:
   push:
     branches: [main, develop]
     paths:
-      - 'src/mobile/**'
-      - '.github/workflows/mobile.yml'
+      - "src/mobile/**"
+      - ".github/workflows/mobile.yml"
   pull_request:
     branches: [main]
     paths:
-      - 'src/mobile/**'
+      - "src/mobile/**"
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Deployment environment'
+        description: "Deployment environment"
         required: true
-        default: 'staging'
+        default: "staging"
         type: choice
         options:
           - staging
           - production
 
 env:
-  NODE_VERSION: '18'
-  JAVA_VERSION: '17'
-  RUBY_VERSION: '3.0'
+  NODE_VERSION: "18"
+  JAVA_VERSION: "17"
+  RUBY_VERSION: "3.0"
 
 jobs:
   # ============================================================================
@@ -36,7 +36,7 @@ jobs:
     defaults:
       run:
         working-directory: src/mobile
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,7 +45,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: src/mobile/package-lock.json
 
       - name: Install dependencies
@@ -78,7 +78,7 @@ jobs:
     defaults:
       run:
         working-directory: src/mobile
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -87,14 +87,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: src/mobile/package-lock.json
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'temurin'
+          distribution: "temurin"
 
       - name: Install dependencies
         run: npm ci
@@ -178,7 +178,7 @@ jobs:
     defaults:
       run:
         working-directory: src/mobile
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -187,7 +187,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: src/mobile/package-lock.json
 
       - name: Setup Ruby
@@ -221,16 +221,16 @@ jobs:
           # Decode certificates and provisioning profiles
           echo "${{ secrets.IOS_CERTIFICATE_BASE64 }}" | base64 -d > certs/distribution.p12
           echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 -d > certs/AppStore.mobileprovision
-          
+
           # Create keychain
           security create-keychain -p "${{ secrets.IOS_KEYCHAIN_PASSWORD }}" build.keychain
           security unlock-keychain -p "${{ secrets.IOS_KEYCHAIN_PASSWORD }}" build.keychain
           security set-keychain-settings -t 3600 -u build.keychain
-          
+
           # Import certificate
           security import certs/distribution.p12 -k build.keychain -P "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple: -k "${{ secrets.IOS_KEYCHAIN_PASSWORD }}" build.keychain
-          
+
           # Install provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp certs/AppStore.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
@@ -255,7 +255,7 @@ jobs:
             -destination 'generic/platform=iOS' \
             -archivePath build/ImidusCustomerApp.xcarchive \
             clean archive
-          
+
           xcodebuild -exportArchive \
             -archivePath build/ImidusCustomerApp.xcarchive \
             -exportOptionsPlist exportOptions.plist \
@@ -288,7 +288,7 @@ jobs:
     needs: [build-android, build-ios]
     if: always()
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Notify success
         if: needs.build-android.result == 'success' && needs.build-ios.result == 'success'

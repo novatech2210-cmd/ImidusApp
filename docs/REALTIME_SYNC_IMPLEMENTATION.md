@@ -14,14 +14,15 @@
 
 **New Controller:** `src/backend/IntegrationService.API/Controllers/SyncController.cs`
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `GET /api/Sync/status` | Read | Full sync status with POS connectivity |
-| `GET /api/Sync/health` | Read | Lightweight health check |
-| `GET /api/Sync/stats` | Read | POS database statistics |
-| `POST /api/Sync/check` | Read | Force manual sync check |
+| Endpoint               | Method | Description                            |
+| ---------------------- | ------ | -------------------------------------- |
+| `GET /api/Sync/status` | Read   | Full sync status with POS connectivity |
+| `GET /api/Sync/health` | Read   | Lightweight health check               |
+| `GET /api/Sync/stats`  | Read   | POS database statistics                |
+| `POST /api/Sync/check` | Read   | Force manual sync check                |
 
 **SSOT Compliance:**
+
 - ✅ **Read from POS anytime** - `GetCategoriesAsync()` verifies connectivity
 - ✅ **Never write to POS directly** - All endpoints are read-only
 - ✅ **Never modify POS schema** - Uses existing `IPosRepository` methods
@@ -49,15 +50,15 @@
 
 ### Features Implemented
 
-| Feature | Status | Details |
-|---------|--------|---------|
-| **Automatic Polling** | ✅ | Every 30 seconds (configurable) |
-| **Status States** | ✅ | online, offline, syncing, error |
-| **Latency Display** | ✅ | Shows POS database query time |
-| **Hover Tooltip** | ✅ | Detailed sync information |
-| **Browser Events** | ✅ | Handles online/offline/visibilitychange |
-| **Manual Refresh** | ✅ | Click to force sync check |
-| **SSOT Verification** | ✅ | Reads from POS, never writes |
+| Feature               | Status | Details                                 |
+| --------------------- | ------ | --------------------------------------- |
+| **Automatic Polling** | ✅     | Every 30 seconds (configurable)         |
+| **Status States**     | ✅     | online, offline, syncing, error         |
+| **Latency Display**   | ✅     | Shows POS database query time           |
+| **Hover Tooltip**     | ✅     | Detailed sync information               |
+| **Browser Events**    | ✅     | Handles online/offline/visibilitychange |
+| **Manual Refresh**    | ✅     | Click to force sync check               |
+| **SSOT Verification** | ✅     | Reads from POS, never writes            |
 
 ---
 
@@ -95,6 +96,7 @@
 ## Visual States
 
 ### Online (POS Connected)
+
 ```
 🟢 POS Connected
 - Green pulsing dot
@@ -103,6 +105,7 @@
 ```
 
 ### Syncing (Checking Status)
+
 ```
 🟠 Checking...
 - Orange spinning icon
@@ -111,6 +114,7 @@
 ```
 
 ### Offline (No Connection)
+
 ```
 🔴 Offline
 - Red static dot
@@ -119,6 +123,7 @@
 ```
 
 ### Error (API Issue)
+
 ```
 ⚠️ Connection Issue
 - Red dot with exclamation
@@ -206,6 +211,7 @@ curl http://localhost:5004/api/Sync/status
 ### API Response Examples
 
 **Healthy Status:**
+
 ```json
 {
   "status": "online",
@@ -221,6 +227,7 @@ curl http://localhost:5004/api/Sync/status
 ```
 
 **Offline Status:**
+
 ```json
 {
   "status": "offline",
@@ -248,9 +255,9 @@ curl http://localhost:5004/api/Sync/status
 ```css
 /* customer-theme.css */
 :root {
-  --sync-online: #2E7D32;    /* Green */
-  --sync-syncing: #E65100;   /* Orange */
-  --sync-offline: #C62828;  /* Red */
+  --sync-online: #2e7d32; /* Green */
+  --sync-syncing: #e65100; /* Orange */
+  --sync-offline: #c62828; /* Red */
 }
 ```
 
@@ -258,34 +265,36 @@ curl http://localhost:5004/api/Sync/status
 
 ## Performance
 
-| Metric | Target | Achieved |
-|--------|--------|----------|
-| Polling Interval | 30s | ✅ 30s (configurable) |
-| API Response Time | < 100ms | ✅ ~40-60ms |
-| UI Update Latency | < 16ms | ✅ Instant |
-| Memory Usage | Minimal | ✅ React context |
-| Network Overhead | Low | ✅ ~500 bytes/request |
+| Metric            | Target  | Achieved              |
+| ----------------- | ------- | --------------------- |
+| Polling Interval  | 30s     | ✅ 30s (configurable) |
+| API Response Time | < 100ms | ✅ ~40-60ms           |
+| UI Update Latency | < 16ms  | ✅ Instant            |
+| Memory Usage      | Minimal | ✅ React context      |
+| Network Overhead  | Low     | ✅ ~500 bytes/request |
 
 ---
 
 ## SSOT Principles Verified
 
-| Principle | Implementation | Evidence |
-|-----------|---------------|----------|
-| **Read from POS anytime** | `SyncController` reads categories from POS | `SyncController.cs:52` |
-| **Write to POS only via backend** | No write endpoints in SyncController | Read-only controller |
-| **Never modify POS schema** | Uses existing `GetCategoriesAsync()` | `IPosRepository` interface |
-| **Never modify POS code** | External API layer | Separate controller |
-| **Ground truth verification** | Direct POS query for status | Dapper → tblCategory |
+| Principle                         | Implementation                             | Evidence                   |
+| --------------------------------- | ------------------------------------------ | -------------------------- |
+| **Read from POS anytime**         | `SyncController` reads categories from POS | `SyncController.cs:52`     |
+| **Write to POS only via backend** | No write endpoints in SyncController       | Read-only controller       |
+| **Never modify POS schema**       | Uses existing `GetCategoriesAsync()`       | `IPosRepository` interface |
+| **Never modify POS code**         | External API layer                         | Separate controller        |
+| **Ground truth verification**     | Direct POS query for status                | Dapper → tblCategory       |
 
 ---
 
 ## Files Modified/Created
 
 ### Backend
+
 - ✅ `src/backend/IntegrationService.API/Controllers/SyncController.cs` (NEW)
 
 ### Frontend
+
 - ✅ `src/web/context/SyncContext.tsx` (NEW)
 - ✅ `src/web/components/SyncIndicator.tsx` (NEW)
 - ✅ `src/web/lib/api.ts` (MODIFIED - Added SyncAPI)

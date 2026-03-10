@@ -5,6 +5,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 ## Test Environment Setup
 
 ### System Requirements
+
 - **Backend:** .NET 8 Windows Service running at http://10.0.0.26:5000
 - **Web:** Next.js 14 at http://10.0.0.26:3000
 - **Mobile:** APK v0.0.1+ for Android, IPA v0.0.1+ for iOS
@@ -15,11 +16,13 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 ### Test Data Requirements
 
 #### Customers
+
 - Create at least 2 test customers with different email addresses
 - One customer with existing loyalty points balance (for loyalty testing)
 - One customer with no prior order history
 
 #### Menu Items
+
 - Verify all 7 categories are present:
   1. Appetizers
   2. Entrees
@@ -32,12 +35,14 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 - At least one item marked out-of-stock (for inventory testing)
 
 #### Payment Credentials
+
 - Authorize.net Test Card: 4111111111111111
 - Expiration: 12/25 (any future month/year)
 - CVV: 123 (any 3 digits)
 - Postal Code: 12345 (any 5 digits)
 
 #### CashierID Mapping
+
 - **999:** Online orders (permanent)
 - **998:** Test orders (for this test cycle)
 
@@ -50,6 +55,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 **Objective:** Verify customer can register and access menu
 
 **Steps:**
+
 1. Navigate to http://10.0.0.26:3000
 2. Click "Register" or create account link
 3. Enter email: `test-web-{timestamp}@imidus.local`
@@ -62,6 +68,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 10. Login with new credentials
 
 **Expected Results:**
+
 - Registration form validates email format
 - Password requirements enforced (minimum 8 chars, mixed case, number)
 - Confirmation email sent within 30 seconds
@@ -70,6 +77,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 - Menu page displays after login
 
 **Success Criteria:**
+
 - [ ] Registration completes without errors
 - [ ] Confirmation email received
 - [ ] Login successful
@@ -84,6 +92,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 **Prerequisites:** Logged in as test customer on web
 
 **Steps:**
+
 1. Verify menu page displays all 7 categories
 2. Count items in each category:
    - Appetizers: verify count
@@ -103,6 +112,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 10. Verify cart now shows 2 items
 
 **Expected Results:**
+
 - All 7 categories visible and scrollable
 - Item counts match database
 - Item detail panel displays correctly
@@ -111,6 +121,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 - Cart updates in real-time
 
 **Success Criteria:**
+
 - [ ] All 7 categories visible with correct item counts
 - [ ] Item details display correctly
 - [ ] Size selection updates price
@@ -126,6 +137,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 **Prerequisites:** Cart contains 2-3 items on web
 
 **Steps:**
+
 1. Click "Checkout" button
 2. Verify order summary shows:
    - All items with quantities
@@ -152,6 +164,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
    - Total amount charged
 
 **Expected Results:**
+
 - Checkout displays correct totals
 - GST calculated correctly (6% rate)
 - Payment form accepts test card
@@ -160,6 +173,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 - Order number is unique and incrementing
 
 **Success Criteria:**
+
 - [ ] All totals calculated correctly
 - [ ] GST is exactly 6%
 - [ ] Payment succeeds with test card
@@ -175,6 +189,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 **Prerequisites:** Order just placed on web
 
 **Steps:**
+
 1. On order confirmation page, click "Track Order" or navigate to order history
 2. Find the order just placed
 3. Verify it shows "Pending" status initially
@@ -185,11 +200,13 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 8. Verify notification or status change message displayed
 
 **Expected Results:**
+
 - Order tracking page shows pending orders
 - Status updates within 30 seconds after backend change
 - Both platforms show consistent status
 
 **Success Criteria:**
+
 - [ ] Order tracking page accessible
 - [ ] Initial status is "Pending"
 - [ ] Status updates reflected on page
@@ -204,6 +221,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 **Prerequisites:** APK v0.0.1 file available
 
 **Steps:**
+
 1. On Android device/emulator, install APK:
    ```bash
    adb install -r ImidusCustomerApp-v0.0.1.apk
@@ -222,6 +240,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
    ```
 
 **Expected Results:**
+
 - APK installs without errors
 - App launches successfully
 - SplashScreen shows brand colors
@@ -229,6 +248,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 - Login screen renders correctly
 
 **Success Criteria:**
+
 - [ ] APK installs successfully
 - [ ] App launches without crashes
 - [ ] SplashScreen displays
@@ -244,6 +264,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 **Prerequisites:** App launched and showing login screen
 
 **Steps:**
+
 1. Click "Sign Up" or "Create Account" link
 2. Fill in registration form:
    - Email: `test-android-{timestamp}@imidus.local`
@@ -259,6 +280,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 10. Verify colors match Imidus branding (gold #D4AF37, blue #002366)
 
 **Expected Results:**
+
 - Registration form validates inputs
 - Password requirements enforced
 - Auto-login works after registration
@@ -269,6 +291,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 - Branding colors correct
 
 **Success Criteria:**
+
 - [ ] Registration succeeds
 - [ ] Auto-login works
 - [ ] Menu shows all 7 categories
@@ -284,6 +307,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 **Prerequisites:** Registered on Android, viewing menu
 
 **Steps:**
+
 1. Browse menu and select 3 items from different categories
 2. Add first item to cart
 3. Verify cart badge appears and shows "1"
@@ -308,6 +332,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 15. Navigate to order tracking
 
 **Expected Results:**
+
 - Cart updates in real-time
 - Cart badge shows item count
 - Totals calculated correctly (including 6% GST)
@@ -317,6 +342,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 - Order number matches backend
 
 **Success Criteria:**
+
 - [ ] Cart updates real-time
 - [ ] Totals match web calculations
 - [ ] Payment succeeds
@@ -331,6 +357,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 **Prerequisites:** Order placed on Android, Firebase FCM configured
 
 **Steps:**
+
 1. After placing order, note the order number
 2. Keep Android app in foreground
 3. In backend or admin panel, change order status to "Ready for Pickup"
@@ -343,6 +370,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 10. Tap notification to open app and jump to order
 
 **Expected Results:**
+
 - Notification appears within 30 seconds of status change
 - Notification displays meaningful message (e.g., "Your order is ready!")
 - Notification includes order number and status
@@ -350,6 +378,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 - Tapping notification navigates correctly
 
 **Success Criteria:**
+
 - [ ] Notification received within 30 seconds
 - [ ] Notification displays correct information
 - [ ] Notification works in background
@@ -364,6 +393,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 **Prerequisites:** IPA file available for iOS simulator or device
 
 **Steps:**
+
 1. On iOS simulator:
    ```bash
    xcrun simctl install booted ImidusCustomerApp-v0.0.1.ipa
@@ -378,12 +408,14 @@ Complete test plan for verifying order flow across all three platforms: web, mob
    ```
 
 **Expected Results:**
+
 - IPA installs without errors
 - App launches successfully
 - SplashScreen and Login visible
 - No crashes or exceptions
 
 **Success Criteria:**
+
 - [ ] IPA installs successfully
 - [ ] App launches without crashes
 - [ ] Login screen visible
@@ -397,6 +429,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 **Prerequisites:** Loyalty system configured in POS database
 
 **Steps:**
+
 1. Login as customer with existing loyalty balance (or check current balance)
 2. Place test order for $100+
 3. Note starting points balance
@@ -414,6 +447,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 14. Verify redemption logged in tblPointsDetail
 
 **Expected Results:**
+
 - Points earned correctly (1 per $10)
 - Points balance updates after order
 - Redemption slider works smoothly
@@ -422,6 +456,7 @@ Complete test plan for verifying order flow across all three platforms: web, mob
 - No duplicate point transactions
 
 **Success Criteria:**
+
 - [ ] Points earned correctly
 - [ ] Points balance updates
 - [ ] Redemption works
@@ -439,6 +474,7 @@ curl -X GET http://10.0.0.26:5000/api/Sync/status
 ```
 
 **Expected Response:**
+
 ```json
 {
   "status": "online",
@@ -449,6 +485,7 @@ curl -X GET http://10.0.0.26:5000/api/Sync/status
 ```
 
 **Success Criteria:**
+
 - [ ] Returns 200 OK
 - [ ] Status is "online"
 - [ ] Database connected
@@ -461,6 +498,7 @@ curl -X GET http://10.0.0.26:5000/api/Menu/categories
 ```
 
 **Expected Response:**
+
 ```json
 {
   "categories": [
@@ -472,6 +510,7 @@ curl -X GET http://10.0.0.26:5000/api/Menu/categories
 ```
 
 **Success Criteria:**
+
 - [ ] Returns 200 OK
 - [ ] All 7 categories present
 - [ ] Item counts match UI
@@ -484,6 +523,7 @@ curl -X GET http://10.0.0.26:5000/api/Orders/history/{customerId}
 ```
 
 **Expected Response:**
+
 ```json
 {
   "orders": [
@@ -491,13 +531,14 @@ curl -X GET http://10.0.0.26:5000/api/Orders/history/{customerId}
       "order_id": "ORD-001",
       "date": "2026-03-07",
       "status": "completed",
-      "total": 25.50
+      "total": 25.5
     }
   ]
 }
 ```
 
 **Success Criteria:**
+
 - [ ] Returns 200 OK
 - [ ] Orders list non-empty if orders placed
 - [ ] Order details correct
@@ -520,10 +561,12 @@ curl -X POST http://10.0.0.26:5000/api/Orders \
 ```
 
 **Expected Results:**
+
 - First request: Returns 201 Created with order ID
 - Second request: Returns same order ID, no duplicate order created
 
 **Success Criteria:**
+
 - [ ] Idempotency key prevents duplicate orders
 - [ ] Same response returned on retry
 - [ ] No duplicate DB entries
@@ -538,6 +581,7 @@ Check backend logs during tests:
 ```
 
 **Success Criteria:**
+
 - [ ] No SQL Server connection errors
 - [ ] No transaction rollbacks
 - [ ] No N+1 query problems
@@ -553,6 +597,7 @@ Check backend logs during tests:
 **Cause:** Schema issue in order history view/query
 
 **Workaround:**
+
 - Verify orders exist in tblOrders via SQL query
 - Check customer ID matches in order detail queries
 - Manually verify via backend logs
@@ -566,6 +611,7 @@ Check backend logs during tests:
 **Cause:** Tax included in loyalty calculation (should exclude GST)
 
 **Workaround:**
+
 - Check tblMisc SRPR value (should be '10@1')
 - Manually verify point math: (Total / 10) rounded down
 
@@ -578,6 +624,7 @@ Check backend logs during tests:
 **Cause:** Certificates not provided by client
 
 **Workaround:**
+
 - Use Debug or Ad-Hoc certificate for testing
 - Skip TestFlight upload, use S3-only deployment
 
@@ -587,15 +634,15 @@ Check backend logs during tests:
 
 ## Test Execution Schedule
 
-| Phase | Duration | Testers | Devices |
-|-------|----------|---------|---------|
-| Setup & Preparation | 15 min | 1 | N/A |
-| Web Platform Tests | 45 min | 1 | Desktop/Browser |
-| Android Platform Tests | 45 min | 1 | Emulator or Device |
-| iOS Platform Tests | 45 min | 1 | Simulator or Device |
-| Backend Integration | 30 min | 1 | API Client |
-| Cross-Platform Verification | 30 min | 1 | All platforms |
-| **Total** | **210 min** | | |
+| Phase                       | Duration    | Testers | Devices             |
+| --------------------------- | ----------- | ------- | ------------------- |
+| Setup & Preparation         | 15 min      | 1       | N/A                 |
+| Web Platform Tests          | 45 min      | 1       | Desktop/Browser     |
+| Android Platform Tests      | 45 min      | 1       | Emulator or Device  |
+| iOS Platform Tests          | 45 min      | 1       | Simulator or Device |
+| Backend Integration         | 30 min      | 1       | API Client          |
+| Cross-Platform Verification | 30 min      | 1       | All platforms       |
+| **Total**                   | **210 min** |         |                     |
 
 ---
 

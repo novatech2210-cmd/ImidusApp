@@ -4,33 +4,49 @@
  * gold typography, branded inputs and CTA button.
  */
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  View, Text, Image, TextInput, TouchableOpacity,
-  StyleSheet, SafeAreaView, StatusBar, KeyboardAvoidingView,
-  Platform, ActivityIndicator, Alert,
-} from 'react-native';
-import { Colors, TextStyles, Spacing, BorderRadius, Shadow, Images } from '@/theme';
+  View,
+  Text,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  StatusBar,
+  KeyboardAvoidingView,
+  Platform,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import {
+  Colors,
+  TextStyles,
+  Spacing,
+  BorderRadius,
+  Shadow,
+  Images,
+} from "@/theme";
 
 interface LoginScreenProps {
   onLogin: (phone: string, password: string) => Promise<void>;
 }
 
 export default function LoginScreen({ onLogin }: LoginScreenProps) {
-  const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!phone.trim() || !password.trim()) {
-      Alert.alert('Required', 'Please enter your phone number and password.');
+      Alert.alert("Required", "Please enter your phone number and password.");
       return;
     }
     setLoading(true);
     try {
       await onLogin(phone.trim(), password);
     } catch (err: any) {
-      Alert.alert('Login Failed', err?.message ?? 'Please try again.');
+      Alert.alert("Login Failed", err?.message ?? "Please try again.");
     } finally {
       setLoading(false);
     }
@@ -43,7 +59,7 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
       {/* Full-screen brand-blue background */}
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         {/* ── Blue gradient banner logo ───────────────── */}
         <View style={styles.bannerWrapper}>
@@ -102,19 +118,22 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
             disabled={loading}
             activeOpacity={0.85}
           >
-            {loading
-              ? <ActivityIndicator color={Colors.textOnGold} />
-              : <Text style={styles.loginButtonText}>SIGN IN</Text>
-            }
+            {loading ? (
+              <ActivityIndicator color={Colors.textOnGold} />
+            ) : (
+              <Text style={styles.loginButtonText}>SIGN IN</Text>
+            )}
           </TouchableOpacity>
 
           {/* Guest / register links */}
           <TouchableOpacity style={styles.linkRow}>
-            <Text style={styles.link}>New customer?  </Text>
+            <Text style={styles.link}>New customer? </Text>
             <Text style={[styles.link, styles.linkAccent]}>Create Account</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.linkRow}>
-            <Text style={[styles.link, styles.linkAccent]}>Continue as Guest</Text>
+            <Text style={[styles.link, styles.linkAccent]}>
+              Continue as Guest
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -140,19 +159,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.brandBlue,
-    alignItems: 'center',
+    alignItems: "center",
     paddingHorizontal: Spacing.base,
   },
 
   // Banner logo
   bannerWrapper: {
-    width: '100%',
+    width: "100%",
     paddingTop: Spacing.lg,
     paddingBottom: Spacing.sm,
-    alignItems: 'center',
+    alignItems: "center",
   },
   bannerLogo: {
-    width: '85%',
+    width: "85%",
     height: 56,
   },
 
@@ -178,7 +197,7 @@ const styles = StyleSheet.create({
 
   // Login card
   card: {
-    width: '100%',
+    width: "100%",
     backgroundColor: Colors.white,
     borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
@@ -186,19 +205,19 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: "700",
     color: Colors.brandBlue,
     marginBottom: Spacing.lg,
-    textAlign: 'center',
+    textAlign: "center",
   },
 
   // Input
   inputLabel: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.textPrimary,
     marginBottom: Spacing.xs,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   input: {
@@ -218,8 +237,8 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: Colors.brandGold,
     borderRadius: BorderRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: Spacing.sm,
     marginBottom: Spacing.md,
     ...Shadow.sm,
@@ -229,15 +248,15 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     color: Colors.textOnGold,
     letterSpacing: 1.5,
   },
 
   // Links
   linkRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     paddingVertical: Spacing.xs,
   },
   link: {
@@ -246,13 +265,13 @@ const styles = StyleSheet.create({
   },
   linkAccent: {
     color: Colors.brandBlue,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 
   // Footer
   footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: Spacing.lg,
     gap: Spacing.sm,
   },

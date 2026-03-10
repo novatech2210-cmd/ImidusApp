@@ -42,7 +42,8 @@ export default function LoginPage() {
             style={{
               width: 56,
               height: 56,
-              background: "linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue))",
+              background:
+                "linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue))",
               borderRadius: 14,
               display: "flex",
               alignItems: "center",
@@ -58,7 +59,13 @@ export default function LoginPage() {
           <h1 style={{ fontSize: 24, fontWeight: 800, margin: "0 0 6px" }}>
             Welcome Back
           </h1>
-          <p style={{ color: "var(--color-text-muted)", fontSize: 14, margin: 0 }}>
+          <p
+            style={{
+              color: "var(--color-text-muted)",
+              fontSize: 14,
+              margin: 0,
+            }}
+          >
             Sign in to access your account and rewards
           </p>
         </div>
@@ -141,7 +148,10 @@ export default function LoginPage() {
           }}
         >
           Don&apos;t have an account?{" "}
-          <Link href="/register" style={{ color: "var(--color-brand-blue)", fontWeight: 600 }}>
+          <Link
+            href="/register"
+            style={{ color: "var(--color-brand-blue)", fontWeight: 600 }}
+          >
             Create one
           </Link>
         </div>

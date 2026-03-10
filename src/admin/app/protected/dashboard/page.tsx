@@ -1,25 +1,33 @@
-'use client';
+"use client";
 
-import React, { useMemo } from 'react';
-import MainLayout from '@/components/Navigation/MainLayout';
-import DashboardSummary from './DashboardSummary';
-import SalesChart from './SalesChart';
-import PopularItems from './PopularItems';
-import Spinner from '@/components/Loading/Spinner';
-import { useDashboardSummary, useSalesChart, usePopularItems } from '@/lib/hooks';
+import React, { useMemo } from "react";
+import MainLayout from "@/components/Navigation/MainLayout";
+import DashboardSummary from "./DashboardSummary";
+import SalesChart from "./SalesChart";
+import PopularItems from "./PopularItems";
+import Spinner from "@/components/Loading/Spinner";
+import {
+  useDashboardSummary,
+  useSalesChart,
+  usePopularItems,
+} from "@/lib/hooks";
 
 export default function DashboardPage() {
   // Get date range (last 30 days)
-  const endDate = new Date().toISOString().split('T')[0];
-  const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  const endDate = new Date().toISOString().split("T")[0];
+  const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split("T")[0];
 
   // Fetch data
   const summaryQuery = useDashboardSummary(startDate, endDate);
-  const chartQuery = useSalesChart(startDate, endDate, 'day');
+  const chartQuery = useSalesChart(startDate, endDate, "day");
   const itemsQuery = usePopularItems(10);
 
-  const isLoading = summaryQuery.isPending || chartQuery.isPending || itemsQuery.isPending;
-  const isError = summaryQuery.isError || chartQuery.isError || itemsQuery.isError;
+  const isLoading =
+    summaryQuery.isPending || chartQuery.isPending || itemsQuery.isPending;
+  const isError =
+    summaryQuery.isError || chartQuery.isError || itemsQuery.isError;
 
   // Format chart data
   const chartData = useMemo(() => {

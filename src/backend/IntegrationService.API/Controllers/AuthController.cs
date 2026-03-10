@@ -76,7 +76,7 @@ namespace IntegrationService.API.Controllers
                     {
                         return BadRequest(new { error = "A user with this phone number already exists" });
                     }
-                    
+
                     // Customer exists in POS but no User account - link to existing
                     _logger.LogInformation("Linking new User account to existing POS customer ID {CustomerId}", existingCustomer.ID);
                 }
@@ -91,10 +91,10 @@ namespace IntegrationService.API.Controllers
                         EarnedPoints = 0,
                         PointsManaged = true
                     };
-                    
+
                     var customerId = await _posRepository.InsertCustomerAsync(existingCustomer);
                     existingCustomer.ID = customerId;
-                    
+
                     _logger.LogInformation("Created new POS customer: ID={CustomerId}, Phone={Phone}", customerId, cleanPhone);
                 }
 
@@ -114,7 +114,7 @@ namespace IntegrationService.API.Controllers
                 };
 
                 var userId = await _userRepository.CreateAsync(user);
-                
+
                 _logger.LogInformation("Created new User account: ID={UserId}, CustomerID={CustomerId}, Email={Email}",
                     userId, existingCustomer.ID, request.Email);
 
@@ -161,7 +161,7 @@ namespace IntegrationService.API.Controllers
                 if (user == null && !string.IsNullOrWhiteSpace(request.Phone))
                 {
                     var cleanPhone = Regex.Replace(request.Phone, @"\D", "");
-                    
+
                     // Find POS customer by phone
                     customer = await _posRepository.GetCustomerByPhoneAsync(cleanPhone);
                     if (customer != null)
@@ -196,10 +196,10 @@ namespace IntegrationService.API.Controllers
                 if (!passwordValid)
                 {
                     _logger.LogWarning("Invalid password attempt for user ID {UserId}", user.ID);
-                    
+
                     // Increment failed attempts
                     await _userRepository.IncrementAccessFailedCountAsync(user.ID);
-                    
+
                     // Lock out after 5 failed attempts
                     if (user.AccessFailedCount + 1 >= 5)
                     {
@@ -208,14 +208,14 @@ namespace IntegrationService.API.Controllers
                         _logger.LogWarning("Locked out user ID {UserId} after 5 failed attempts", user.ID);
                         return Unauthorized(new { error = "Too many failed attempts. Account locked for 15 minutes." });
                     }
-                    
+
                     return Unauthorized(new { error = "Invalid credentials" });
                 }
 
                 // Password valid - update last login
                 await _userRepository.UpdateLastLoginAsync(user.ID);
-                
-                _logger.LogInformation("Successful login for user ID {UserId}, customer ID {CustomerId}", 
+
+                _logger.LogInformation("Successful login for user ID {UserId}, customer ID {CustomerId}",
                     user.ID, user.CustomerID);
 
                 // Generate JWT token

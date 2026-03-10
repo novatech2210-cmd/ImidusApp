@@ -1,32 +1,38 @@
 # End-to-End Testing Guide
 
 ## Overview
+
 This document provides comprehensive testing procedures for the IMIDUS POS Integration system across all platforms.
 
 ## Test Environments
 
 ### Backend API
+
 - **Development:** http://localhost:5004/api
 - **Swagger UI:** http://localhost:5004/swagger
 - **Health Check:** http://localhost:5004/health
 
 ### Web Platform
+
 - **Development:** http://localhost:3000
 - **Staging:** https://s3.inirestaurant/novatech/web/staging/
 - **Production:** https://s3.inirestaurant/novatech/web/production/
 
 ### Mobile Apps
+
 - **Android:** http://10.0.2.2:5004/api (emulator)
 - **iOS:** http://localhost:5004/api (simulator)
 
 ## Quick Test Commands
 
 ### Run All Tests
+
 ```bash
 ./scripts/05_e2e_test.sh
 ```
 
 ### Test Individual Components
+
 ```bash
 # Database setup
 ./scripts/01_setup_database.sh
@@ -44,6 +50,7 @@ curl http://localhost:5004/api/Menu/categories
 ### 1. Complete Customer Flow (Mobile/Web)
 
 **Steps:**
+
 1. Register new customer account
 2. Browse menu categories
 3. View items by category
@@ -56,6 +63,7 @@ curl http://localhost:5004/api/Menu/categories
 10. Track order status
 
 **Expected Results:**
+
 - Order created in tblSales with TransType=2 (Open)
 - Items inserted in tblPendingOrders
 - Payment recorded in tblPayment
@@ -65,6 +73,7 @@ curl http://localhost:5004/api/Menu/categories
 ### 2. Payment Flow Testing
 
 **Test Cards (Authorize.net Sandbox):**
+
 - Visa: `4111111111111111`
 - MasterCard: `5424000000000015`
 - Amex: `378282246310005`
@@ -72,6 +81,7 @@ curl http://localhost:5004/api/Menu/categories
 - CVV: Any 3-4 digits
 
 **Scenarios:**
+
 1. Full payment with credit card
 2. Partial payment (card + cash)
 3. Failed payment (use `4000000000000002`)
@@ -80,11 +90,13 @@ curl http://localhost:5004/api/Menu/categories
 ### 3. Order Lifecycle Testing
 
 **States to Test:**
+
 1. **Open (TransType=2)** - Order placed, payment pending
 2. **Completed (TransType=1)** - Payment confirmed, items moved to tblSalesDetail
 3. **Refunded (TransType=0)** - Refund processed
 
 **Verification:**
+
 - Check tblSales.TransType
 - Verify tblPendingOrders vs tblSalesDetail
 - Confirm payment in tblPayment
@@ -92,6 +104,7 @@ curl http://localhost:5004/api/Menu/categories
 ### 4. Idempotency Testing
 
 **Test:**
+
 1. Create order with idempotency key
 2. Submit same request again with same key
 3. Verify only one order created
@@ -100,6 +113,7 @@ curl http://localhost:5004/api/Menu/categories
 ### 5. Concurrency Testing
 
 **Test:**
+
 1. Submit multiple simultaneous orders
 2. Verify all get unique DailyOrderNumbers
 3. Check no duplicate order numbers
@@ -108,6 +122,7 @@ curl http://localhost:5004/api/Menu/categories
 ### 6. Admin Portal Testing
 
 **Dashboard:**
+
 1. View order queue
 2. Filter by status (Open/Completed/Refunded)
 3. Search by order number
@@ -115,6 +130,7 @@ curl http://localhost:5004/api/Menu/categories
 5. Verify real-time updates (poll every 30s)
 
 **Operational Views:**
+
 1. Menu availability (read-only)
 2. Inventory levels (read-only)
 3. Sales reports
@@ -123,6 +139,7 @@ curl http://localhost:5004/api/Menu/categories
 ### 7. POS Synchronization Testing
 
 **Verify:**
+
 1. Online orders appear in POS as regular tickets
 2. Payment totals match
 3. Tax calculations correct (GST/PST)
@@ -132,6 +149,7 @@ curl http://localhost:5004/api/Menu/categories
 ## Acceptance Criteria
 
 ### Functional Requirements
+
 - ✅ Orders appear in POS within 5 seconds
 - ✅ Payments post correctly to tblPayment
 - ✅ Order numbers are sequential and unique
@@ -140,6 +158,7 @@ curl http://localhost:5004/api/Menu/categories
 - ✅ Authentication/JWT works across all platforms
 
 ### Performance Requirements
+
 - ✅ API responds within 500ms for menu queries
 - ✅ Order creation completes within 2 seconds
 - ✅ Payment processing completes within 5 seconds
@@ -147,6 +166,7 @@ curl http://localhost:5004/api/Menu/categories
 - ✅ Mobile app loads menu within 3 seconds
 
 ### Security Requirements
+
 - ✅ JWT tokens expire after 30 days
 - ✅ Refresh tokens valid for 60 days
 - ✅ Card data never stored (tokenization only)
@@ -156,17 +176,20 @@ curl http://localhost:5004/api/Menu/categories
 ## Automated Test Scripts
 
 ### Backend Unit Tests
+
 ```bash
 cd src/backend
 dotnet test --verbosity normal
 ```
 
 ### Payment Integration Tests
+
 ```bash
 ./scripts/02_test_payments.sh
 ```
 
 ### End-to-End Tests
+
 ```bash
 ./scripts/05_e2e_test.sh
 ```
@@ -174,6 +197,7 @@ dotnet test --verbosity normal
 ## Manual Testing Checklist
 
 ### Mobile App (iOS/Android)
+
 - [ ] App launches without crashes
 - [ ] Splash screen displays correctly
 - [ ] Login works with valid credentials
@@ -189,6 +213,7 @@ dotnet test --verbosity normal
 - [ ] Logout clears session
 
 ### Web Platform
+
 - [ ] Homepage loads
 - [ ] Menu displays correctly
 - [ ] Responsive design on mobile browsers
@@ -199,6 +224,7 @@ dotnet test --verbosity normal
 - [ ] Order history displays
 
 ### Admin Portal
+
 - [ ] Dashboard loads with KPIs
 - [ ] Order queue displays
 - [ ] Status filtering works
@@ -208,6 +234,7 @@ dotnet test --verbosity normal
 - [ ] Reports generate correctly
 
 ### Backend API
+
 - [ ] Health check returns 200
 - [ ] Swagger UI accessible
 - [ ] All endpoints respond
@@ -219,12 +246,14 @@ dotnet test --verbosity normal
 ## Debugging Failed Tests
 
 ### Database Connection Issues
+
 1. Verify SQL Server is running
 2. Check connection strings in appsettings.json
 3. Test with sqlcmd: `sqlcmd -S localhost -U sa -P <password> -Q "SELECT 1"`
 4. Check firewall settings (port 1433)
 
 ### Payment Failures
+
 1. Verify Authorize.net credentials
 2. Check if using sandbox vs production
 3. Review backend logs for API errors
@@ -232,6 +261,7 @@ dotnet test --verbosity normal
 5. Check network connectivity
 
 ### Authentication Issues
+
 1. Verify JWT secret matches
 2. Check token expiration
 3. Test with fresh registration
@@ -239,6 +269,7 @@ dotnet test --verbosity normal
 5. Verify CORS allows origin
 
 ### Order Creation Failures
+
 1. Check database connectivity
 2. Verify idempotency key is unique
 3. Review OrderProcessingService logs
@@ -248,6 +279,7 @@ dotnet test --verbosity normal
 ## Test Data Management
 
 ### Cleaning Up Test Data
+
 ```sql
 -- Remove test customers
 DELETE FROM tblCustomer WHERE Email LIKE '%test%' OR Email LIKE '%e2e%';
@@ -259,6 +291,7 @@ DELETE FROM tblSales WHERE CustomerID IN (
 ```
 
 ### Creating Test Data
+
 ```bash
 # Generate test orders
 curl -X POST http://localhost:5004/api/Orders \
@@ -276,6 +309,7 @@ curl -X POST http://localhost:5004/api/Orders \
 ## Continuous Testing
 
 ### Pre-Commit Checks
+
 ```bash
 # Run before every commit
 dotnet build
@@ -284,6 +318,7 @@ npm run lint  # in web directory
 ```
 
 ### CI/CD Pipeline Tests
+
 - Backend builds on every PR
 - Tests run on every push
 - Mobile builds on tag creation
@@ -293,6 +328,7 @@ npm run lint  # in web directory
 ## Reporting Issues
 
 When reporting test failures, include:
+
 1. Test scenario name
 2. Expected vs actual result
 3. Error messages/logs
@@ -303,12 +339,14 @@ When reporting test failures, include:
 ## Success Metrics
 
 **Minimum Viable Product (MVP):**
+
 - 90%+ of automated tests passing
 - All critical paths manually tested
 - No blocking bugs
 - POS integration verified
 
 **Production Ready:**
+
 - 95%+ of automated tests passing
 - Performance requirements met
 - Security audit passed

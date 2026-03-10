@@ -1,8 +1,18 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, YAxis as YAxisType } from 'recharts';
-import { SkeletonChart } from '@/components/Loading/Skeleton';
+import React from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  YAxis as YAxisType,
+} from "recharts";
+import { SkeletonChart } from "@/components/Loading/Skeleton";
 
 interface SalesChartProps {
   data: Array<{
@@ -30,13 +40,16 @@ export default function SalesChart({ data, loading = false }: SalesChartProps) {
     <div className="bg-white p-6 rounded-lg border border-gray-200">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Sales Trend</h3>
       <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+        <LineChart
+          data={data}
+          margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" fontSize={12} />
           <YAxisType fontSize={12} />
           <Tooltip
             formatter={(value) => {
-              if (typeof value === 'number') {
+              if (typeof value === "number") {
                 return value.toLocaleString();
               }
               return value;
@@ -47,7 +60,7 @@ export default function SalesChart({ data, loading = false }: SalesChartProps) {
             type="monotone"
             dataKey="revenue"
             stroke="#f97316"
-            dot={{ fill: '#f97316', r: 4 }}
+            dot={{ fill: "#f97316", r: 4 }}
             activeDot={{ r: 6 }}
             name="Revenue ($)"
           />
@@ -55,7 +68,7 @@ export default function SalesChart({ data, loading = false }: SalesChartProps) {
             type="monotone"
             dataKey="orderCount"
             stroke="#3b82f6"
-            dot={{ fill: '#3b82f6', r: 4 }}
+            dot={{ fill: "#3b82f6", r: 4 }}
             activeDot={{ r: 6 }}
             name="Orders"
           />

@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useLogin } from '@/lib/hooks';
-import { saveToken, saveUser } from '@/lib/auth';
-import { Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useLogin } from "@/lib/hooks";
+import { saveToken, saveUser } from "@/lib/auth";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const { mutate: login, isPending } = useLogin();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     login(
       { email, password },
@@ -24,12 +24,15 @@ export default function LoginPage() {
         onSuccess: (data) => {
           saveToken(data.token, data.refreshToken);
           saveUser(data.user);
-          router.push('/protected/dashboard');
+          router.push("/protected/dashboard");
         },
         onError: (err: any) => {
-          setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+          setError(
+            err.response?.data?.message ||
+              "Login failed. Please check your credentials.",
+          );
         },
-      }
+      },
     );
   };
 
@@ -77,7 +80,7 @@ export default function LoginPage() {
               </label>
               <div className="relative">
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
@@ -103,7 +106,11 @@ export default function LoginPage() {
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center">
-                <input type="checkbox" className="rounded mr-2" disabled={isPending} />
+                <input
+                  type="checkbox"
+                  className="rounded mr-2"
+                  disabled={isPending}
+                />
                 <span className="text-gray-600">Remember me</span>
               </label>
               <a href="#" className="text-blue-600 hover:text-blue-700">
@@ -117,14 +124,17 @@ export default function LoginPage() {
               disabled={isPending}
               className="btn-primary w-full py-2.5 mt-6"
             >
-              {isPending ? 'Signing in...' : 'Sign In'}
+              {isPending ? "Signing in..." : "Sign In"}
             </button>
           </form>
 
           {/* Footer */}
           <p className="text-center text-sm text-gray-600 mt-6">
-            Don't have an account?{' '}
-            <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
+            Don't have an account?{" "}
+            <a
+              href="#"
+              className="text-blue-600 hover:text-blue-700 font-medium"
+            >
               Contact Support
             </a>
           </p>

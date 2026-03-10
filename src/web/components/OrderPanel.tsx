@@ -1,8 +1,8 @@
 "use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 import { useCart } from "@/context/CartContext";
-import { ShoppingBagIcon } from '@heroicons/react/24/solid';
+import { ShoppingBagIcon } from "@heroicons/react/24/solid";
 
 export function OrderPanel() {
   const { items, subtotal, tax, total, count, clearCart } = useCart();
@@ -40,7 +40,9 @@ export function OrderPanel() {
                 d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
               />
             </svg>
-            <p className="font-bold uppercase tracking-tighter text-sm">Your cart is empty</p>
+            <p className="font-bold uppercase tracking-tighter text-sm">
+              Your cart is empty
+            </p>
             <p className="text-xs mt-2 opacity-70">Add items from the menu</p>
           </div>
         ) : (
@@ -85,9 +87,7 @@ export function OrderPanel() {
             <span className="text-[#71717A] text-[10px] uppercase font-black tracking-wider">
               Total
             </span>
-            <span className="price text-2xl">
-              ${total.toFixed(2)}
-            </span>
+            <span className="price text-2xl">${total.toFixed(2)}</span>
           </div>
           <p className="text-[10px] text-[#71717A] text-right italic">
             Incl. 6% GST
@@ -96,7 +96,7 @@ export function OrderPanel() {
 
         <Link
           href="/cart"
-          className={`block w-full btn btn-gold text-center py-4 ${items.length === 0 ? 'opacity-50 pointer-events-none' : ''}`}
+          className={`block w-full btn btn-gold text-center py-4 ${items.length === 0 ? "opacity-50 pointer-events-none" : ""}`}
         >
           View Cart & Checkout
         </Link>

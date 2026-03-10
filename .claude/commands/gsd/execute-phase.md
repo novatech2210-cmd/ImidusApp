@@ -13,6 +13,7 @@ allowed-tools:
   - TodoWrite
   - AskUserQuestion
 ---
+
 <objective>
 Execute all plans in a phase using wave-based parallel execution.
 
@@ -32,6 +33,7 @@ Phase: $ARGUMENTS
 **Source of Truth:** INI_Restaurant database (MS SQL Server 2005 Express) — all implementations must validate against actual database schema, constraints, and stored procedures.
 
 **Flags:**
+
 - `--gaps-only` — Execute only gap closure plans (plans with `gap_closure: true` in frontmatter). Use after verify-work creates fix plans.
 
 Context files are resolved inside the workflow via `gsd-tools init execute-phase` and per-subagent `<files_to_read>` blocks.

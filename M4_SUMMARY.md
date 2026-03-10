@@ -13,6 +13,7 @@
 M4 completes the IMIDUS POS Integration platform with a comprehensive merchant admin portal. The backend infrastructure is **80% complete** - all core business logic is implemented and tested. This document provides everything needed to build the frontend UI and connect it to the existing backend.
 
 **What's Done (Backend):**
+
 - ✅ 11 database repositories with SSOT compliance
 - ✅ 40+ API endpoints for admin operations
 - ✅ AdminPortalService with 100+ methods
@@ -24,6 +25,7 @@ M4 completes the IMIDUS POS Integration platform with a comprehensive merchant a
 - ✅ Menu overlay architecture
 
 **What Remains (Frontend):**
+
 - ⏳ Admin portal UI (Next.js)
 - ⏳ Dashboard visualization (charts, KPIs)
 - ⏳ Order management interface
@@ -37,18 +39,18 @@ M4 completes the IMIDUS POS Integration platform with a comprehensive merchant a
 
 ## 📊 Feature Status Matrix
 
-| Feature | Backend | Frontend | Integration Tests | Status |
-|---------|---------|----------|------------------|--------|
-| Dashboard KPIs | ✅ | ⏳ | ⏳ | 40% |
-| Order Queue | ✅ | ⏳ | ⏳ | 30% |
-| Refund Processing | ✅ | ⏳ | ⏳ | 40% |
-| Customer RFM | ✅ | ⏳ | ⏳ | 20% |
-| Campaign Builder | ✅ | ⏳ | ⏳ | 20% |
-| Menu Overlay | ✅ | ⏳ | ⏳ | 15% |
-| Birthday Rewards | ✅ | ⏳ | ⏳ | 40% |
-| Activity Logs | ✅ | ⏳ | ⏳ | 30% |
-| Authentication | ⏳ | ⏳ | ⏳ | 10% |
-| **Overall** | **✅ 80%** | **⏳ 0%** | **⏳ 0%** | **~27%** |
+| Feature           | Backend    | Frontend  | Integration Tests | Status   |
+| ----------------- | ---------- | --------- | ----------------- | -------- |
+| Dashboard KPIs    | ✅         | ⏳        | ⏳                | 40%      |
+| Order Queue       | ✅         | ⏳        | ⏳                | 30%      |
+| Refund Processing | ✅         | ⏳        | ⏳                | 40%      |
+| Customer RFM      | ✅         | ⏳        | ⏳                | 20%      |
+| Campaign Builder  | ✅         | ⏳        | ⏳                | 20%      |
+| Menu Overlay      | ✅         | ⏳        | ⏳                | 15%      |
+| Birthday Rewards  | ✅         | ⏳        | ⏳                | 40%      |
+| Activity Logs     | ✅         | ⏳        | ⏳                | 30%      |
+| Authentication    | ⏳         | ⏳        | ⏳                | 10%      |
+| **Overall**       | **✅ 80%** | **⏳ 0%** | **⏳ 0%**         | **~27%** |
 
 ---
 
@@ -85,6 +87,7 @@ M4 completes the IMIDUS POS Integration platform with a comprehensive merchant a
 ## 📦 Deliverables
 
 ### 1. **M4_IMPLEMENTATION_SPEC.md** (51 KB - Full Technical Specification)
+
 - Complete feature breakdown for all 7 areas
 - API endpoints with request/response examples
 - Database schema (SQL DDL) for all new tables
@@ -93,6 +96,7 @@ M4 completes the IMIDUS POS Integration platform with a comprehensive merchant a
 - Acceptance criteria for production
 
 ### 2. **M4_QUICK_START.md** (4 KB - Developer Quick Reference)
+
 - What's ready vs. what needs to be built
 - Recommended tech stack with rationale
 - Week-by-week development path
@@ -107,6 +111,7 @@ M4 completes the IMIDUS POS Integration platform with a comprehensive merchant a
 ## 🚀 Getting Started (First Steps)
 
 ### Step 1: Verify Backend is Ready
+
 ```bash
 # Test all admin endpoints
 curl http://10.0.0.26:5004/api/admin/dashboard/summary
@@ -119,6 +124,7 @@ curl http://10.0.0.26:5004/api/admin/logs
 ```
 
 ### Step 2: Create Next.js Admin App Skeleton
+
 ```bash
 cd /home/kali/Desktop/TOAST/src
 npx create-next-app@latest admin --typescript --tailwind --app
@@ -128,6 +134,7 @@ npm install axios zod react-hook-form recharts @tanstack/react-query
 ```
 
 ### Step 3: Setup Environment
+
 ```bash
 # .env.local
 NEXT_PUBLIC_API_URL=http://10.0.0.26:5004
@@ -135,6 +142,7 @@ JWT_SECRET=your-secret-key-here
 ```
 
 ### Step 4: Create Layout + Navigation
+
 ```bash
 # app/layout.tsx - Root layout with sidebar
 # app/(protected)/layout.tsx - Authenticated routes
@@ -143,6 +151,7 @@ JWT_SECRET=your-secret-key-here
 ```
 
 ### Step 5: Build Dashboard
+
 ```bash
 # app/(protected)/dashboard/page.tsx
 # components/DashboardSummary.tsx
@@ -155,6 +164,7 @@ JWT_SECRET=your-secret-key-here
 ## 🔌 Key Endpoints Reference
 
 ### Dashboard
+
 ```
 GET /api/admin/dashboard/summary
 GET /api/admin/dashboard/sales-chart
@@ -162,6 +172,7 @@ GET /api/admin/dashboard/popular-items
 ```
 
 ### Orders
+
 ```
 GET /api/admin/orders/queue
 POST /api/admin/orders/{id}/refund
@@ -169,12 +180,14 @@ POST /api/admin/orders/{id}/cancel
 ```
 
 ### Customers
+
 ```
 GET /api/admin/customers/segments
 GET /api/admin/customers/{id}/history
 ```
 
 ### Campaigns
+
 ```
 GET /api/admin/campaigns
 POST /api/admin/campaigns
@@ -182,6 +195,7 @@ POST /api/admin/campaigns/{id}/send
 ```
 
 ### Menu
+
 ```
 GET /api/admin/menu/overrides
 PUT /api/admin/menu/overrides/{id}
@@ -189,6 +203,7 @@ GET /api/admin/menu/inventory
 ```
 
 ### Logs
+
 ```
 GET /api/admin/logs
 ```
@@ -198,6 +213,7 @@ GET /api/admin/logs
 ## 📋 Implementation Checklist (Week-by-Week)
 
 ### ✅ Pre-Development
+
 - [x] Backend analysis complete
 - [x] Database schema designed
 - [x] API endpoints verified
@@ -205,6 +221,7 @@ GET /api/admin/logs
 - [x] Quick start guide created
 
 ### Week 1-2: Scaffold & Dashboard
+
 - [ ] Create Next.js app + install deps
 - [ ] Setup environment variables
 - [ ] Create auth/login page
@@ -215,6 +232,7 @@ GET /api/admin/logs
 - [ ] Deploy to staging
 
 ### Week 3: Order Management
+
 - [ ] Build order queue table with filtering
 - [ ] Implement order detail modal
 - [ ] Create refund form + confirmation
@@ -223,6 +241,7 @@ GET /api/admin/logs
 - [ ] Test refund flow end-to-end
 
 ### Week 4: Customer CRM
+
 - [ ] Implement customer segmentation chart
 - [ ] Build customer list with segment badges
 - [ ] Create customer profile page
@@ -231,6 +250,7 @@ GET /api/admin/logs
 - [ ] Show loyalty points
 
 ### Week 5-6: Campaign Builder
+
 - [ ] Build campaign list view
 - [ ] Create multi-step campaign builder
 - [ ] Implement audience targeting UI
@@ -239,6 +259,7 @@ GET /api/admin/logs
 - [ ] Build campaign analytics dashboard
 
 ### Week 7: Menu + Rewards + Logs
+
 - [ ] Menu management category + item grid
 - [ ] Real-time inventory display
 - [ ] Menu enable/disable toggle
@@ -247,6 +268,7 @@ GET /api/admin/logs
 - [ ] IP whitelist management
 
 ### Week 8: Security + Testing + Deploy
+
 - [ ] Implement JWT authentication
 - [ ] Add role-based access control
 - [ ] Write E2E tests (Playwright)
@@ -276,17 +298,20 @@ GET /api/admin/logs
 ## 🔐 Security Implementation
 
 ### Authentication
+
 - JWT tokens (expires 24 hours)
 - Secure httpOnly cookies
 - POST /api/auth/admin-login endpoint
 - Token refresh mechanism
 
 ### Authorization
+
 - Role-based access control: Admin, Manager, Cashier, Viewer
 - Middleware to enforce roles
 - Activity logging for all mutations
 
 ### Data Protection
+
 - IP whitelisting option
 - Concurrent session limits
 - 90-day activity log retention
@@ -296,13 +321,13 @@ GET /api/admin/logs
 
 ## 📊 Performance Targets
 
-| Metric | Target | Current |
-|--------|--------|---------|
-| Dashboard load | < 2s | Unknown (no UI yet) |
-| Order queue load | < 1s | Backend: 50ms |
-| Campaign creation | < 3s | Backend: 100ms |
+| Metric            | Target  | Current              |
+| ----------------- | ------- | -------------------- |
+| Dashboard load    | < 2s    | Unknown (no UI yet)  |
+| Order queue load  | < 1s    | Backend: 50ms        |
+| Campaign creation | < 3s    | Backend: 100ms       |
 | Real-time updates | < 500ms | Needs implementation |
-| Database queries | < 200ms | Current: 50-100ms |
+| Database queries  | < 200ms | Current: 50-100ms    |
 
 ---
 
@@ -319,22 +344,26 @@ GET /api/admin/logs
 ## 🧪 Testing Strategy
 
 ### Unit Tests
+
 - Components (50+ components)
 - Utilities & helpers
 - Target: 80% coverage
 
 ### Integration Tests
+
 - API endpoints (40+ endpoints)
 - End-to-end workflows
 - Database transactions
 
 ### E2E Tests
+
 - Dashboard flow
 - Order refund flow
 - Campaign creation & send
 - User login & access control
 
 ### Performance Tests
+
 - Load testing: 100+ concurrent users
 - Lighthouse audit (>90 score)
 - Core Web Vitals compliance
@@ -344,6 +373,7 @@ GET /api/admin/logs
 ## 🚢 Deployment Strategy
 
 ### Pre-Deployment
+
 - [ ] Environment variables configured
 - [ ] Database migrations applied
 - [ ] SSL certificates installed
@@ -351,6 +381,7 @@ GET /api/admin/logs
 - [ ] Monitoring/alerts setup
 
 ### Staging Deployment
+
 - [ ] Deploy to staging environment
 - [ ] Run full E2E test suite
 - [ ] Performance testing
@@ -358,6 +389,7 @@ GET /api/admin/logs
 - [ ] UAT with client
 
 ### Production Deployment
+
 - [ ] Blue-green deployment strategy
 - [ ] Zero-downtime upgrade
 - [ ] Database backup before deployment
@@ -383,6 +415,7 @@ By end of M4, the admin portal should:
 ## 🎓 Learning Resources
 
 ### Technologies
+
 - [Next.js 14 Docs](https://nextjs.org/docs)
 - [React Server Components](https://react.dev/reference/rsc/use-client)
 - [TypeScript](https://www.typescriptlang.org/docs/)
@@ -392,6 +425,7 @@ By end of M4, the admin portal should:
 - [TanStack Query](https://tanstack.com/query)
 
 ### Best Practices
+
 - SSOT (Single Source of Truth)
 - Clean Architecture
 - SOLID Principles
@@ -403,17 +437,20 @@ By end of M4, the admin portal should:
 ## 📞 Support & Escalation
 
 ### Backend Issues
+
 - Check backend logs: `tail -f /tmp/backend.log`
 - Verify database connection
 - Test endpoint: `curl http://10.0.0.26:5004/api/...`
 - If issue persists, contact backend developer
 
 ### Database Issues
+
 - Check SQL Server connection
 - Verify migrations applied: `SELECT * FROM INFORMATION_SCHEMA.TABLES`
 - Review transaction logs
 
 ### Frontend Issues
+
 - Check browser console for errors
 - Clear cache: `npm run build && npm start`
 - Check environment variables in `.env.local`
@@ -422,17 +459,17 @@ By end of M4, the admin portal should:
 
 ## 💰 Budget Breakdown
 
-| Component | Hours | Rate | Cost |
-|-----------|-------|------|------|
-| Dashboard & UI Scaffold | 80 | $50 | $4,000 |
-| Order Management | 60 | $50 | $3,000 |
-| Customer CRM | 40 | $50 | $2,000 |
-| Campaign Builder | 80 | $50 | $4,000 |
-| Menu + Rewards + Logs | 50 | $50 | $2,500 |
-| Security & Auth | 40 | $60 | $2,400 |
-| Testing | 60 | $50 | $3,000 |
-| Deployment | 20 | $60 | $1,200 |
-| **Total** | **430** | | **$22,100** |
+| Component               | Hours   | Rate | Cost        |
+| ----------------------- | ------- | ---- | ----------- |
+| Dashboard & UI Scaffold | 80      | $50  | $4,000      |
+| Order Management        | 60      | $50  | $3,000      |
+| Customer CRM            | 40      | $50  | $2,000      |
+| Campaign Builder        | 80      | $50  | $4,000      |
+| Menu + Rewards + Logs   | 50      | $50  | $2,500      |
+| Security & Auth         | 40      | $60  | $2,400      |
+| Testing                 | 60      | $50  | $3,000      |
+| Deployment              | 20      | $60  | $1,200      |
+| **Total**               | **430** |      | **$22,100** |
 
 **Milestone Value: $1,000 (fixed by contract)**
 
@@ -474,4 +511,3 @@ By end of M4, the admin portal should:
 - `/src/backend/IntegrationService.Core/Services/AdminPortalService.cs` - Backend logic
 - `/src/backend/IntegrationService.API/Controllers/AdminController.cs` - API endpoints
 - `/CLAUDE.md` - Project configuration
-

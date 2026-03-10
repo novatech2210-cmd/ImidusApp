@@ -1,12 +1,12 @@
 "use client";
 
 import {
-    ChartBarIcon,
-    ClipboardDocumentListIcon,
-    HomeIcon,
-    ShoppingCartIcon,
-    Square3Stack3DIcon,
-    UserIcon,
+  ChartBarIcon,
+  ClipboardDocumentListIcon,
+  HomeIcon,
+  ShoppingCartIcon,
+  Square3Stack3DIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

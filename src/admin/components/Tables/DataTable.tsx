@@ -1,7 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
-import { ChevronUp, ChevronDown, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from 'lucide-react';
+import React, { useState, useMemo } from "react";
+import {
+  ChevronUp,
+  ChevronDown,
+  ChevronsLeft,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsRight,
+} from "lucide-react";
 
 export interface Column<T> {
   key: keyof T;
@@ -21,7 +28,7 @@ interface DataTableProps<T> {
   sortableBy?: (keyof T)[];
 }
 
-type SortDirection = 'asc' | 'desc' | null;
+type SortDirection = "asc" | "desc" | null;
 
 export default function DataTable<T extends { id?: number | string }>({
   columns,
@@ -29,7 +36,7 @@ export default function DataTable<T extends { id?: number | string }>({
   pageSize = 10,
   onRowClick,
   loading = false,
-  emptyMessage = 'No data available',
+  emptyMessage = "No data available",
   sortableBy = [],
 }: DataTableProps<T>) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,8 +51,8 @@ export default function DataTable<T extends { id?: number | string }>({
       const aVal = a[sortKey];
       const bVal = b[sortKey];
 
-      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
   }, [data, sortKey, sortDirection]);
@@ -59,22 +66,23 @@ export default function DataTable<T extends { id?: number | string }>({
   const handleSort = (key: keyof T) => {
     if (sortKey === key) {
       // Cycle through: asc -> desc -> null
-      if (sortDirection === 'asc') {
-        setSortDirection('desc');
-      } else if (sortDirection === 'desc') {
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else if (sortDirection === "desc") {
         setSortDirection(null);
         setSortKey(null);
       }
     } else {
       setSortKey(key);
-      setSortDirection('asc');
+      setSortDirection("asc");
       setCurrentPage(1);
     }
   };
 
   const getSortIcon = (key: keyof T) => {
     if (sortKey !== key) return <ChevronUp size={14} className="opacity-30" />;
-    if (sortDirection === 'asc') return <ChevronUp size={14} className="text-orange-500" />;
+    if (sortDirection === "asc")
+      return <ChevronUp size={14} className="text-orange-500" />;
     return <ChevronDown size={14} className="text-orange-500" />;
   };
 
@@ -107,14 +115,16 @@ export default function DataTable<T extends { id?: number | string }>({
                 <th
                   key={String(column.key)}
                   className={`px-6 py-3 text-left font-medium text-gray-700 ${
-                    column.width ? `w-${column.width}` : ''
+                    column.width ? `w-${column.width}` : ""
                   }`}
                 >
                   <button
                     onClick={() => handleSort(column.key)}
                     disabled={!column.sortable}
                     className={`flex items-center gap-1 ${
-                      column.sortable ? 'cursor-pointer hover:text-gray-900' : 'cursor-default'
+                      column.sortable
+                        ? "cursor-pointer hover:text-gray-900"
+                        : "cursor-default"
                     }`}
                   >
                     {column.label}
@@ -130,12 +140,17 @@ export default function DataTable<T extends { id?: number | string }>({
                 key={row.id || idx}
                 onClick={() => onRowClick?.(row)}
                 className={`border-b border-gray-200 ${
-                  onRowClick ? 'hover:bg-gray-50 cursor-pointer' : ''
+                  onRowClick ? "hover:bg-gray-50 cursor-pointer" : ""
                 }`}
               >
                 {columns.map((column) => (
-                  <td key={String(column.key)} className="px-6 py-3 text-gray-900">
-                    {column.render ? column.render(row[column.key], row) : String(row[column.key] ?? '-')}
+                  <td
+                    key={String(column.key)}
+                    className="px-6 py-3 text-gray-900"
+                  >
+                    {column.render
+                      ? column.render(row[column.key], row)
+                      : String(row[column.key] ?? "-")}
                   </td>
                 ))}
               </tr>
@@ -148,7 +163,8 @@ export default function DataTable<T extends { id?: number | string }>({
       {totalPages > 1 && (
         <div className="flex items-center justify-between text-sm text-gray-600">
           <p>
-            Showing {startIdx + 1} to {Math.min(endIdx, sortedData.length)} of {sortedData.length}
+            Showing {startIdx + 1} to {Math.min(endIdx, sortedData.length)} of{" "}
+            {sortedData.length}
           </p>
           <div className="flex items-center gap-1">
             <button
@@ -175,8 +191,8 @@ export default function DataTable<T extends { id?: number | string }>({
                   onClick={() => setCurrentPage(pageNum)}
                   className={`px-3 py-1 rounded text-sm ${
                     pageNum === currentPage
-                      ? 'bg-orange-500 text-white'
-                      : 'hover:bg-gray-100'
+                      ? "bg-orange-500 text-white"
+                      : "hover:bg-gray-100"
                   }`}
                 >
                   {pageNum}

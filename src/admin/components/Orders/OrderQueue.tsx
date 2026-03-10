@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import DataTable, { Column } from '@/components/Tables/DataTable';
-import { SkeletonTable } from '@/components/Loading/Skeleton';
+import React from "react";
+import DataTable, { Column } from "@/components/Tables/DataTable";
+import { SkeletonTable } from "@/components/Loading/Skeleton";
 
 interface OrderItem {
   id: number;
@@ -18,8 +18,8 @@ interface Order {
   customerPhone?: string;
   items: OrderItem[];
   total: number;
-  status: 'pending' | 'completed' | 'cancelled' | 'refunded';
-  paymentStatus: 'paid' | 'pending' | 'failed' | 'refunded';
+  status: "pending" | "completed" | "cancelled" | "refunded";
+  paymentStatus: "paid" | "pending" | "failed" | "refunded";
   createdAt: string;
 }
 
@@ -29,57 +29,66 @@ interface OrderQueueProps {
   onOrderClick?: (order: Order) => void;
 }
 
-export default function OrderQueue({ orders, loading = false, onOrderClick }: OrderQueueProps) {
+export default function OrderQueue({
+  orders,
+  loading = false,
+  onOrderClick,
+}: OrderQueueProps) {
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      completed: 'bg-green-100 text-green-800',
-      cancelled: 'bg-red-100 text-red-800',
-      refunded: 'bg-gray-100 text-gray-800',
+      pending: "bg-yellow-100 text-yellow-800",
+      completed: "bg-green-100 text-green-800",
+      cancelled: "bg-red-100 text-red-800",
+      refunded: "bg-gray-100 text-gray-800",
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || "bg-gray-100 text-gray-800";
   };
 
   const columns: Column<Order>[] = [
     {
-      key: 'orderNumber',
-      label: 'Order #',
+      key: "orderNumber",
+      label: "Order #",
       sortable: true,
     },
     {
-      key: 'customerName',
-      label: 'Customer',
+      key: "customerName",
+      label: "Customer",
       sortable: true,
     },
     {
-      key: 'total',
-      label: 'Total',
+      key: "total",
+      label: "Total",
       sortable: true,
-      render: (value) => `$${(value / 100).toLocaleString('en-US', { maximumFractionDigits: 2 })}`,
+      render: (value) =>
+        `$${(value / 100).toLocaleString("en-US", { maximumFractionDigits: 2 })}`,
     },
     {
-      key: 'status',
-      label: 'Status',
+      key: "status",
+      label: "Status",
       sortable: true,
       render: (value) => (
-        <span className={`px-2 py-1 text-xs font-medium rounded ${getStatusColor(value)}`}>
+        <span
+          className={`px-2 py-1 text-xs font-medium rounded ${getStatusColor(value)}`}
+        >
           {value.charAt(0).toUpperCase() + value.slice(1)}
         </span>
       ),
     },
     {
-      key: 'paymentStatus',
-      label: 'Payment',
+      key: "paymentStatus",
+      label: "Payment",
       sortable: true,
       render: (value) => (
-        <span className={`px-2 py-1 text-xs font-medium rounded ${getStatusColor(value)}`}>
+        <span
+          className={`px-2 py-1 text-xs font-medium rounded ${getStatusColor(value)}`}
+        >
           {value.charAt(0).toUpperCase() + value.slice(1)}
         </span>
       ),
     },
     {
-      key: 'createdAt',
-      label: 'Time',
+      key: "createdAt",
+      label: "Time",
       render: (value) => new Date(value).toLocaleTimeString(),
     },
   ];

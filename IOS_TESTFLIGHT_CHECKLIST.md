@@ -55,6 +55,7 @@
 **Checklist for Part 2a - Create Signing Certificate:**
 
 **On Local Machine:**
+
 - [ ] Opened Keychain Access
 - [ ] Requested Certificate from Certificate Authority
 - [ ] Email: Your Apple ID email
@@ -63,6 +64,7 @@
 - [ ] `.certSigningRequest` file ready to upload
 
 **In App Store Connect:**
+
 - [ ] Navigated to Certificates section
 - [ ] Created new "Apple Distribution" certificate
 - [ ] Uploaded `.certSigningRequest` file
@@ -282,9 +284,11 @@
 **If using automated deployment:**
 
 - [ ] Created base64-encoded P12 certificate:
+
   ```bash
   base64 -i MyCertificate.p12 | pbcopy
   ```
+
   - [ ] Stored as `IOS_P12_CERTIFICATE_BASE64`
 
 - [ ] Created P12 password:
@@ -294,9 +298,11 @@
   - [ ] Stored as `IOS_KEYCHAIN_PASSWORD`
 
 - [ ] Created base64-encoded provisioning profile:
+
   ```bash
   base64 -i "Imidus Customer App Distribution.mobileprovision" | pbcopy
   ```
+
   - [ ] Stored as `IOS_PROVISIONING_PROFILE_BASE64`
 
 - [ ] Stored API Key credentials:
@@ -314,15 +320,15 @@
 
 ## Troubleshooting Quick Reference
 
-| Issue | Solution | Checklist |
-|-------|----------|-----------|
-| Missing Privacy Policy | Add HTTPS URL in App Store Connect → App Information | [ ] |
-| Certificate not trusted | Re-download & install from App Store Connect → Certificates | [ ] |
-| Bundle ID mismatch | Verify in Xcode matches `com.imidus.customerapp` exactly | [ ] |
-| Build fails to export | Check ExportOptions.plist Team ID is correct | [ ] |
-| TestFlight upload fails | Verify IPA file integrity & re-download Transporter | [ ] |
-| Build still processing | Wait 30+ min or contact Apple Support | [ ] |
-| Testers can't install | Verify their device UDID is registered & in provisioning profile | [ ] |
+| Issue                   | Solution                                                         | Checklist |
+| ----------------------- | ---------------------------------------------------------------- | --------- |
+| Missing Privacy Policy  | Add HTTPS URL in App Store Connect → App Information             | [ ]       |
+| Certificate not trusted | Re-download & install from App Store Connect → Certificates      | [ ]       |
+| Bundle ID mismatch      | Verify in Xcode matches `com.imidus.customerapp` exactly         | [ ]       |
+| Build fails to export   | Check ExportOptions.plist Team ID is correct                     | [ ]       |
+| TestFlight upload fails | Verify IPA file integrity & re-download Transporter              | [ ]       |
+| Build still processing  | Wait 30+ min or contact Apple Support                            | [ ]       |
+| Testers can't install   | Verify their device UDID is registered & in provisioning profile | [ ]       |
 
 ---
 
@@ -336,9 +342,8 @@
 - [ ] Feedback collection process established
 - [ ] CI/CD automation ready (optional)
 
-**Date Completed:** _______________
+**Date Completed:** ******\_\_\_******
 
-**Completed By:** _______________
+**Completed By:** ******\_\_\_******
 
 **Contact for Issues:** novatech2210@gmail.com
-

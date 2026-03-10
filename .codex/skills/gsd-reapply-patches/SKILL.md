@@ -6,44 +6,55 @@ metadata:
 ---
 
 <codex_skill_adapter>
+
 ## A. Skill Invocation
+
 - This skill is invoked by mentioning `$gsd-reapply-patches`.
 - Treat all user text after `$gsd-reapply-patches` as `{{GSD_ARGS}}`.
 - If no arguments are present, treat `{{GSD_ARGS}}` as empty.
 
 ## B. AskUserQuestion → request_user_input Mapping
+
 GSD workflows use `AskUserQuestion` (Claude Code syntax). Translate to Codex `request_user_input`:
 
 Parameter mapping:
+
 - `header` → `header`
 - `question` → `question`
 - Options formatted as `"Label" — description` → `{label: "Label", description: "description"}`
 - Generate `id` from header: lowercase, replace spaces with underscores
 
 Batched calls:
+
 - `AskUserQuestion([q1, q2])` → single `request_user_input` with multiple entries in `questions[]`
 
 Multi-select workaround:
+
 - Codex has no `multiSelect`. Use sequential single-selects, or present a numbered freeform list asking the user to enter comma-separated numbers.
 
 Execute mode fallback:
+
 - When `request_user_input` is rejected (Execute mode), present a plain-text numbered list and pick a reasonable default.
 
 ## C. Task() → spawn_agent Mapping
+
 GSD workflows use `Task(...)` (Claude Code syntax). Translate to Codex collaboration tools:
 
 Direct mapping:
+
 - `Task(subagent_type="X", prompt="Y")` → `spawn_agent(agent_type="X", message="Y")`
 - `Task(model="...")` → omit (Codex uses per-role config, not inline model selection)
 - `fork_context: false` by default — GSD agents load their own context via `<files_to_read>` blocks
 
 Parallel fan-out:
+
 - Spawn multiple agents → collect agent IDs → `wait(ids)` for all to complete
 
 Result parsing:
+
 - Look for structured markers in agent output: `CHECKPOINT`, `PLAN COMPLETE`, `SUMMARY`, etc.
 - `close_agent(id)` after collecting results from each agent
-</codex_skill_adapter>
+  </codex_skill_adapter>
 
 <purpose>
 After a GSD update wipes and reinstalls files, this command merges user's previously saved local modifications back into the new version. Uses intelligent comparison to handle cases where the upstream file also changed.
@@ -80,12 +91,14 @@ fi
 Read `backup-meta.json` from the patches directory.
 
 **If no patches found:**
+
 ```
 No local patches found. Nothing to reapply.
 
 Local patches are automatically saved when you run $gsd-update
 after modifying any GSD workflow, command, or agent files.
 ```
+
 Exit.
 
 ## Step 2: Show patch summary
@@ -110,7 +123,6 @@ For each file in `backup-meta.json`:
 1. **Read the backed-up version** (user's modified copy from `gsd-local-patches/`)
 2. **Read the newly installed version** (current file after update)
 3. **Compare and merge:**
-
    - If the new file is identical to the backed-up file: skip (modification was incorporated upstream)
    - If the new file differs: identify the user's modifications and apply them to the new version
 
@@ -138,6 +150,7 @@ After reapplying, regenerate the file manifest so future updates correctly detec
 ## Step 5: Cleanup option
 
 Ask user:
+
 - "Keep patch backups for reference?" → preserve `gsd-local-patches/`
 - "Clean up patch backups?" → remove `gsd-local-patches/` directory
 
@@ -158,8 +171,9 @@ Ask user:
 </process>
 
 <success_criteria>
+
 - [ ] All backed-up patches processed
 - [ ] User modifications merged into new version
 - [ ] Conflicts resolved with user input
 - [ ] Status reported for each file
-</success_criteria>
+      </success_criteria>

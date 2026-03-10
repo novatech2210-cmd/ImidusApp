@@ -17,22 +17,26 @@ To complete schema discovery:
 Based on existing PosEntities.cs in the codebase, the following tables are expected:
 
 ### Core Menu Tables
+
 - `tblItem` - Menu items
 - `tblCategory` - Item categories
 - `tblAvailableSize` - Item size pricing
 - `tblSize` - Size definitions
 
 ### Order Tables
+
 - `tblSales` - Completed orders
 - `tblSalesDetail` - Order line items
 - `tblPendingOrders` - In-progress orders (20+ columns - ALL required on insert)
 - `tblPayment` - Payment records
 
 ### Customer Tables
+
 - `tblCustomer` - Customer records
 - `tblMisc` - Miscellaneous data (may include loyalty points)
 
 ### Online Order Tables
+
 - `tblOnlineOrderCompany` - Third-party delivery registration
 - `tblSalesOfOnlineOrders` - Online order tracking
 - `tblTable` - Table assignments
@@ -70,5 +74,5 @@ ORDER BY TABLE_NAME, ORDINAL_POSITION;
 
 ---
 
-*Generated: 2026-02-25*
-*Last Updated: Pending database restore*
+_Generated: 2026-02-25_
+_Last Updated: Pending database restore_

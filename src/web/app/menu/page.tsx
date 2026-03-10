@@ -57,7 +57,7 @@ export default function MenuPage() {
 
   const handleQuickAdd = (item: MenuItem) => {
     // Add first available size by default
-    const availableSize = item.sizes.find(s => s.inStock) || item.sizes[0];
+    const availableSize = item.sizes.find((s) => s.inStock) || item.sizes[0];
     if (availableSize) {
       addItem({
         menuItemId: item.itemId,
@@ -65,7 +65,8 @@ export default function MenuPage() {
         name: item.name,
         sizeName: availableSize.sizeName,
         price: availableSize.price,
-        categoryName: categories.find(c => c.categoryId === selectedCat)?.name || '',
+        categoryName:
+          categories.find((c) => c.categoryId === selectedCat)?.name || "",
       });
       setAdded(item.itemId);
       setTimeout(() => setAdded(null), 1200);
@@ -123,14 +124,18 @@ export default function MenuPage() {
                 <h2 className="text-2xl font-bold text-[#1E5AA8] tracking-tight">
                   {activeCategory?.name || "Menu"}
                 </h2>
-                <p className="text-sm text-[#71717A] mt-1">{items.length} items available</p>
+                <p className="text-sm text-[#71717A] mt-1">
+                  {items.length} items available
+                </p>
               </div>
 
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
                 {items.map((item) => (
                   <div key={item.itemId} className="product-card">
                     {/* Item Image/Icon */}
-                    <Link href={`/menu/item/${item.itemId}?category=${selectedCat}`}>
+                    <Link
+                      href={`/menu/item/${item.itemId}?category=${selectedCat}`}
+                    >
                       <div className="product-image h-40">
                         {item.imageUrl ? (
                           <img
@@ -145,12 +150,14 @@ export default function MenuPage() {
                     </Link>
 
                     <div className="product-info">
-                      <Link href={`/menu/item/${item.itemId}?category=${selectedCat}`}>
+                      <Link
+                        href={`/menu/item/${item.itemId}?category=${selectedCat}`}
+                      >
                         <h3 className="product-name hover:text-[#1E5AA8] transition-colors">
                           {item.name}
                         </h3>
                       </Link>
-                      
+
                       {item.description && (
                         <p className="product-description line-clamp-2">
                           {item.description}
@@ -159,15 +166,20 @@ export default function MenuPage() {
 
                       <div className="flex items-center justify-between mt-4">
                         <span className="product-price">
-                          ${item.sizes[0]?.price.toFixed(2) || '0.00'}
+                          ${item.sizes[0]?.price.toFixed(2) || "0.00"}
                         </span>
-                        
+
                         <button
                           onClick={() => handleQuickAdd(item)}
-                          disabled={!item.isAvailable || !item.sizes.some(s => s.inStock)}
+                          disabled={
+                            !item.isAvailable ||
+                            !item.sizes.some((s) => s.inStock)
+                          }
                           className={`btn btn-gold w-10 h-10 p-0 rounded-full ${
-                            added === item.itemId ? "!bg-green-600 !text-white" : ""
-                          } ${(!item.isAvailable || !item.sizes.some(s => s.inStock)) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            added === item.itemId
+                              ? "!bg-green-600 !text-white"
+                              : ""
+                          } ${!item.isAvailable || !item.sizes.some((s) => s.inStock) ? "opacity-50 cursor-not-allowed" : ""}`}
                         >
                           {added === item.itemId ? (
                             <CheckIcon className="w-5 h-5" />
@@ -189,7 +201,9 @@ export default function MenuPage() {
 
               {items.length === 0 && !loading && (
                 <div className="text-center py-16 card">
-                  <p className="text-[#71717A] font-medium">No items available in this category</p>
+                  <p className="text-[#71717A] font-medium">
+                    No items available in this category
+                  </p>
                 </div>
               )}
             </>

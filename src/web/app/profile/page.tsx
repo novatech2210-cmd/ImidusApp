@@ -2,7 +2,14 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
-import { UserCircleIcon, EnvelopeIcon, PhoneIcon, MapPinIcon, CalendarIcon, CreditCardIcon } from "@heroicons/react/24/outline";
+import {
+  UserCircleIcon,
+  EnvelopeIcon,
+  PhoneIcon,
+  MapPinIcon,
+  CalendarIcon,
+  CreditCardIcon,
+} from "@heroicons/react/24/outline";
 
 interface CustomerProfile {
   customerId: number;
@@ -71,8 +78,12 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
         <div className="text-center">
           <UserCircleIcon className="w-24 h-24 text-gray-300 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Sign In Required</h1>
-          <p className="text-gray-600 mb-6">Please sign in to view your profile</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Sign In Required
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Please sign in to view your profile
+          </p>
           <a
             href="/login"
             className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
@@ -121,54 +132,68 @@ export default function ProfilePage() {
           <div className="p-6">
             <div className="grid grid-cols-2 gap-4 mb-8">
               <div className="bg-blue-50 rounded-xl p-4 text-center">
-                <p className="text-3xl font-bold text-blue-600">{profile?.earnedPoints || 0}</p>
+                <p className="text-3xl font-bold text-blue-600">
+                  {profile?.earnedPoints || 0}
+                </p>
                 <p className="text-sm text-gray-600">Points</p>
               </div>
               <div className="bg-green-50 rounded-xl p-4 text-center">
                 <p className="text-3xl font-bold text-green-600">
-                  ${((profile?.savings || 0) + (profile?.creditBalance || 0)).toFixed(2)}
+                  $
+                  {(
+                    (profile?.savings || 0) + (profile?.creditBalance || 0)
+                  ).toFixed(2)}
                 </p>
                 <p className="text-sm text-gray-600">Rewards</p>
               </div>
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">Account Details</h2>
-              
+              <h2 className="text-lg font-semibold text-gray-900">
+                Account Details
+              </h2>
+
               {profile?.phone && (
                 <div className="flex items-center gap-3 text-gray-600">
                   <PhoneIcon className="w-5 h-5" />
                   <span>{profile.phone}</span>
                 </div>
               )}
-              
+
               {profile?.email && (
                 <div className="flex items-center gap-3 text-gray-600">
                   <EnvelopeIcon className="w-5 h-5" />
                   <span>{profile.email}</span>
                 </div>
               )}
-              
+
               {profile?.address && (
                 <div className="flex items-center gap-3 text-gray-600">
                   <MapPinIcon className="w-5 h-5" />
                   <span>{profile.address}</span>
                 </div>
               )}
-              
+
               {profile?.lastVisit && (
                 <div className="flex items-center gap-3 text-gray-600">
                   <CalendarIcon className="w-5 h-5" />
-                  <span>Last visit: {new Date(profile.lastVisit).toLocaleDateString()}</span>
+                  <span>
+                    Last visit:{" "}
+                    {new Date(profile.lastVisit).toLocaleDateString()}
+                  </span>
                 </div>
               )}
             </div>
 
             <div className="mt-8 pt-6 border-t border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Statistics</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Order Statistics
+              </h2>
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-4 bg-gray-50 rounded-xl">
-                  <p className="text-2xl font-bold text-gray-900">{profile?.totalOrders || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {profile?.totalOrders || 0}
+                  </p>
                   <p className="text-sm text-gray-600">Total Orders</p>
                 </div>
                 <div className="text-center p-4 bg-gray-50 rounded-xl">

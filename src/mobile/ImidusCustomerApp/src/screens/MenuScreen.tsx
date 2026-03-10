@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, {useEffect, useState, useRef, useCallback} from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -7,20 +7,24 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import BottomSheet from '@gorhom/bottom-sheet';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { MenuItemCard } from '../components/MenuItemCard';
-import { SkeletonMenuList } from '../components/SkeletonMenuCard';
-import { ItemDetailSheet } from '../components/ItemDetailSheet';
-import { fetchMenuWithCache, getCachedMenu, fetchItemsByCategory } from '../services/menuService';
-import { addToCart } from '../store/cartSlice';
-import { RootState } from '../store';
-import { Colors } from '../theme/colors';
-import { Spacing } from '../theme/spacing';
-import { Category, MenuItem, MenuItemSize } from '../types/menu.types';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {MenuItemCard} from '../components/MenuItemCard';
+import {SkeletonMenuList} from '../components/SkeletonMenuCard';
+import {ItemDetailSheet} from '../components/ItemDetailSheet';
+import {
+  fetchMenuWithCache,
+  getCachedMenu,
+  fetchItemsByCategory,
+} from '../services/menuService';
+import {addToCart} from '../store/cartSlice';
+import {RootState} from '../store';
+import {Colors} from '../theme/colors';
+import {Spacing} from '../theme/spacing';
+import {Category, MenuItem, MenuItemSize} from '../types/menu.types';
 
 interface MenuSection {
   title: string;
@@ -31,7 +35,9 @@ interface MenuSection {
 const MenuScreen = ({navigation}: any) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [sections, setSections] = useState<MenuSection[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -89,20 +95,23 @@ const MenuScreen = ({navigation}: any) => {
   const loadAllCategoryItems = async (categoriesToLoad: Category[]) => {
     try {
       // Load items for all categories in parallel
-      const itemPromises = categoriesToLoad.map(async (cat) => {
+      const itemPromises = categoriesToLoad.map(async cat => {
         try {
           const items = await fetchItemsByCategory(cat.categoryId);
           return {
             title: cat.name,
             categoryId: cat.categoryId,
-            data: items
+            data: items,
           };
         } catch (error) {
-          console.error(`Error loading items for category ${cat.categoryId}:`, error);
+          console.error(
+            `Error loading items for category ${cat.categoryId}:`,
+            error,
+          );
           return {
             title: cat.name,
             categoryId: cat.categoryId,
-            data: []
+            data: [],
           };
         }
       });
@@ -132,7 +141,7 @@ const MenuScreen = ({navigation}: any) => {
         sectionIndex,
         itemIndex: 0,
         animated: true,
-        viewPosition: 0
+        viewPosition: 0,
       });
     }
 
@@ -141,7 +150,7 @@ const MenuScreen = ({navigation}: any) => {
       categoryListRef.current.scrollToIndex({
         index,
         animated: true,
-        viewPosition: 0.5
+        viewPosition: 0.5,
       });
     }
   };
@@ -151,16 +160,22 @@ const MenuScreen = ({navigation}: any) => {
     bottomSheetRef.current?.expand();
   };
 
-  const handleAddToCart = (item: MenuItem, size: MenuItemSize, quantity: number) => {
-    dispatch(addToCart({
-      menuItemId: item.itemId,
-      sizeId: size.sizeId,
-      name: item.name,
-      sizeName: size.sizeName,
-      price: size.price,
-      quantity,
-      imageUrl: item.imageUrl
-    }));
+  const handleAddToCart = (
+    item: MenuItem,
+    size: MenuItemSize,
+    quantity: number,
+  ) => {
+    dispatch(
+      addToCart({
+        menuItemId: item.itemId,
+        sizeId: size.sizeId,
+        name: item.name,
+        sizeName: size.sizeName,
+        price: size.price,
+        quantity,
+        imageUrl: item.imageUrl,
+      }),
+    );
   };
 
   const renderCategory = ({item, index}: {item: Category; index: number}) => (
@@ -187,10 +202,7 @@ const MenuScreen = ({navigation}: any) => {
   );
 
   const renderItem = ({item}: {item: MenuItem}) => (
-    <MenuItemCard
-      item={item}
-      onPress={() => handleItemPress(item)}
-    />
+    <MenuItemCard item={item} onPress={() => handleItemPress(item)} />
   );
 
   const onViewableItemsChanged = useRef(({viewableItems}: any) => {
@@ -200,19 +212,21 @@ const MenuScreen = ({navigation}: any) => {
         setSelectedCategoryId(firstVisibleSection.categoryId);
 
         // Scroll category tab into view
-        const categoryIndex = categories.findIndex(c => c.categoryId === firstVisibleSection.categoryId);
+        const categoryIndex = categories.findIndex(
+          c => c.categoryId === firstVisibleSection.categoryId,
+        );
         if (categoryIndex !== -1 && categoryListRef.current) {
           categoryListRef.current.scrollToIndex({
             index: categoryIndex,
             animated: true,
-            viewPosition: 0.5
+            viewPosition: 0.5,
           });
         }
       }
     }
   }).current;
 
-  const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
+  const viewConfigRef = useRef({viewAreaCoveragePercentThreshold: 50}).current;
 
   if (error) {
     return (
@@ -263,7 +277,7 @@ const MenuScreen = ({navigation}: any) => {
             sections={sections}
             renderItem={renderItem}
             renderSectionHeader={renderSectionHeader}
-            keyExtractor={(item) => item.itemId.toString()}
+            keyExtractor={item => item.itemId.toString()}
             contentContainerStyle={styles.itemList}
             stickySectionHeadersEnabled={false}
             onViewableItemsChanged={onViewableItemsChanged}

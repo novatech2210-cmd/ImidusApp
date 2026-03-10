@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 
 interface DecodedToken {
   sub: string;
@@ -12,25 +12,25 @@ interface DecodedToken {
 }
 
 export function saveToken(token: string, refreshToken: string): void {
-  localStorage.setItem('adminToken', token);
-  localStorage.setItem('adminRefreshToken', refreshToken);
+  localStorage.setItem("adminToken", token);
+  localStorage.setItem("adminRefreshToken", refreshToken);
 }
 
 export function getToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem('adminToken');
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("adminToken");
 }
 
 export function getRefreshToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem('adminRefreshToken');
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("adminRefreshToken");
 }
 
 export function clearTokens(): void {
-  if (typeof window === 'undefined') return;
-  localStorage.removeItem('adminToken');
-  localStorage.removeItem('adminRefreshToken');
-  localStorage.removeItem('adminUser');
+  if (typeof window === "undefined") return;
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("adminRefreshToken");
+  localStorage.removeItem("adminUser");
 }
 
 export function isTokenExpired(token: string): boolean {
@@ -63,7 +63,7 @@ export function hasPermission(permission: string): boolean {
   const decoded = decodeToken(token);
   if (!decoded) return false;
 
-  return decoded.permissions?.includes(permission) || decoded.role === 'admin';
+  return decoded.permissions?.includes(permission) || decoded.role === "admin";
 }
 
 export function getUserRole(): string | null {
@@ -75,11 +75,11 @@ export function getUserRole(): string | null {
 }
 
 export function saveUser(user: any): void {
-  localStorage.setItem('adminUser', JSON.stringify(user));
+  localStorage.setItem("adminUser", JSON.stringify(user));
 }
 
 export function getUser(): any {
-  if (typeof window === 'undefined') return null;
-  const user = localStorage.getItem('adminUser');
+  if (typeof window === "undefined") return null;
+  const user = localStorage.getItem("adminUser");
   return user ? JSON.parse(user) : null;
 }

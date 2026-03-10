@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { TrendingUp, ShoppingCart, Users, DollarSign } from 'lucide-react';
-import Skeleton from '@/components/Loading/Skeleton';
+import React from "react";
+import { TrendingUp, ShoppingCart, Users, DollarSign } from "lucide-react";
+import Skeleton from "@/components/Loading/Skeleton";
 
 interface KPICardProps {
   title: string;
@@ -12,7 +12,13 @@ interface KPICardProps {
   loading?: boolean;
 }
 
-function KPICard({ title, value, change, icon, loading = false }: KPICardProps) {
+function KPICard({
+  title,
+  value,
+  change,
+  icon,
+  loading = false,
+}: KPICardProps) {
   if (loading) {
     return (
       <div className="bg-white p-6 rounded-lg border border-gray-200">
@@ -34,8 +40,10 @@ function KPICard({ title, value, change, icon, loading = false }: KPICardProps) 
       </div>
       <p className="text-2xl font-bold text-gray-900">{value}</p>
       {change !== undefined && (
-        <p className={`text-xs mt-2 ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-          {change >= 0 ? '↑' : '↓'} {Math.abs(change)}% vs last period
+        <p
+          className={`text-xs mt-2 ${change >= 0 ? "text-green-600" : "text-red-600"}`}
+        >
+          {change >= 0 ? "↑" : "↓"} {Math.abs(change)}% vs last period
         </p>
       )}
     </div>
@@ -52,7 +60,10 @@ interface DashboardSummaryProps {
   loading?: boolean;
 }
 
-export default function DashboardSummary({ data, loading = false }: DashboardSummaryProps) {
+export default function DashboardSummary({
+  data,
+  loading = false,
+}: DashboardSummaryProps) {
   const defaultData = {
     totalOrders: 0,
     totalRevenue: 0,
@@ -72,7 +83,7 @@ export default function DashboardSummary({ data, loading = false }: DashboardSum
       />
       <KPICard
         title="Revenue"
-        value={`$${(summary.totalRevenue / 100).toLocaleString('en-US', { maximumFractionDigits: 2 })}`}
+        value={`$${(summary.totalRevenue / 100).toLocaleString("en-US", { maximumFractionDigits: 2 })}`}
         change={summary.revenueGrowth}
         icon={<DollarSign size={20} />}
         loading={loading}

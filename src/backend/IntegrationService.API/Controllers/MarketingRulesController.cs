@@ -41,7 +41,7 @@ namespace IntegrationService.API.Controllers
         public async Task<ActionResult> GetAll([FromQuery] bool activeOnly = false)
         {
             var rules = await _ruleRepo.GetAllAsync(activeOnly);
-            
+
             var dtos = rules.Select(r => new MarketingRuleDto
             {
                 Id = r.Id,
@@ -255,10 +255,11 @@ namespace IntegrationService.API.Controllers
 
                 if (success)
                 {
-                    return Ok(new { 
-                        success = true, 
+                    return Ok(new
+                    {
+                        success = true,
                         isActive = existing.IsActive,
-                        message = $"Rule {(existing.IsActive ? "activated" : "deactivated")} successfully" 
+                        message = $"Rule {(existing.IsActive ? "activated" : "deactivated")} successfully"
                     });
                 }
 
@@ -278,7 +279,7 @@ namespace IntegrationService.API.Controllers
         public async Task<ActionResult<UpsellAnalyticsDto>> GetAnalytics()
         {
             var analytics = await _upsellService.GetAnalyticsAsync();
-            
+
             return Ok(new UpsellAnalyticsDto
             {
                 TotalRules = analytics.TotalRules,
@@ -324,7 +325,7 @@ namespace IntegrationService.API.Controllers
                 };
 
                 var suggestions = await _upsellService.EvaluateUpsellSuggestionsAsync(coreRequest);
-                
+
                 return Ok(suggestions);
             }
             catch (Exception ex)
@@ -343,8 +344,8 @@ namespace IntegrationService.API.Controllers
             try
             {
                 var result = await _upsellService.AcceptUpsellSuggestionAsync(
-                    request.RuleId, 
-                    request.ScheduledOrderId, 
+                    request.RuleId,
+                    request.ScheduledOrderId,
                     request.SessionId
                 );
 

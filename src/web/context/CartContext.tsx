@@ -29,7 +29,7 @@ const CartContext = createContext<CartContextType | null>(null);
 
 // Tax rates matching POS system
 const GST_RATE = 0.06;
-const PST_RATE = 0.00;
+const PST_RATE = 0.0;
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -62,9 +62,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const updateQty = (id: string, qty: number) => {
     if (qty <= 0) return removeItem(id);
     setItems((prev) =>
-      prev.map((i) =>
-        i.id === id ? { ...i, quantity: qty } : i,
-      ),
+      prev.map((i) => (i.id === id ? { ...i, quantity: qty } : i)),
     );
   };
 
@@ -77,7 +75,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <CartContext.Provider
-      value={{ items, addItem, removeItem, updateQty, clearCart, total, subtotal, tax, count }}
+      value={{
+        items,
+        addItem,
+        removeItem,
+        updateQty,
+        clearCart,
+        total,
+        subtotal,
+        tax,
+        count,
+      }}
     >
       {children}
     </CartContext.Provider>

@@ -1,19 +1,19 @@
 import React from 'react';
 import {
-    Alert,
-    FlatList,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { createOrder } from '../services/orderService';
-import { RootState } from '../store';
-import { removeFromCart, updateQuantity } from '../store/cartSlice';
-import { Colors } from '../theme/colors';
-import { Spacing } from '../theme/spacing';
+import {useDispatch, useSelector} from 'react-redux';
+import {createOrder} from '../services/orderService';
+import {RootState} from '../store';
+import {removeFromCart, updateQuantity} from '../store/cartSlice';
+import {Colors} from '../theme/colors';
+import {Spacing} from '../theme/spacing';
 
 const CartScreen = ({navigation}: any) => {
   const cartItems = useSelector((state: RootState) => state.cart.items);
@@ -28,7 +28,10 @@ const CartScreen = ({navigation}: any) => {
 
   const handleCheckout = async () => {
     if (cartItems.length === 0) {
-      Alert.alert('Empty Cart', 'Please add items to your cart before checkout.');
+      Alert.alert(
+        'Empty Cart',
+        'Please add items to your cart before checkout.',
+      );
       return;
     }
 
@@ -39,10 +42,11 @@ const CartScreen = ({navigation}: any) => {
       const orderResponse = await createOrder(
         user?.customerId || null,
         cartItems,
-        0 // tipAmount (can be enhanced later)
+        0, // tipAmount (can be enhanced later)
       );
 
-      const { salesId, dailyOrderNumber, orderTotal, gstTotal, pstTotal } = orderResponse;
+      const {salesId, dailyOrderNumber, orderTotal, gstTotal, pstTotal} =
+        orderResponse;
 
       // Navigate to checkout with SERVER totals (not client-calculated)
       navigation.navigate('Checkout', {
@@ -54,7 +58,10 @@ const CartScreen = ({navigation}: any) => {
         orderItems: cartItems, // For display in checkout
       });
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to create order. Please try again.');
+      Alert.alert(
+        'Error',
+        error.message || 'Failed to create order. Please try again.',
+      );
     } finally {
       setLoading(false);
     }
@@ -141,7 +148,11 @@ const CartScreen = ({navigation}: any) => {
             </Text>
 
             <TouchableOpacity
-              style={[styles.checkoutButton, (cartItems.length === 0 || loading) && styles.checkoutButtonDisabled]}
+              style={[
+                styles.checkoutButton,
+                (cartItems.length === 0 || loading) &&
+                  styles.checkoutButtonDisabled,
+              ]}
               onPress={handleCheckout}
               disabled={cartItems.length === 0 || loading}>
               <Text style={styles.checkoutButtonText}>

@@ -51,11 +51,11 @@ export default function OrderHistoryPage() {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Fetch from API - SSOT: Reads from POS database
       const data = await OrderAPI.getOrderHistory(customerId);
       setOrders(data);
-      
+
       // Auto-select first order if available
       if (data.length > 0 && !selectedOrder) {
         setSelectedOrder(data[0]);
@@ -94,13 +94,16 @@ export default function OrderHistoryPage() {
     }
   };
 
-  const filteredOrders = filterStatus === "all" 
-    ? orders 
-    : orders.filter(o => o.status.toLowerCase() === filterStatus);
+  const filteredOrders =
+    filterStatus === "all"
+      ? orders
+      : orders.filter((o) => o.status.toLowerCase() === filterStatus);
 
   const calculateStats = () => {
     const total = orders.length;
-    const completed = orders.filter(o => o.status.toLowerCase() === "completed").length;
+    const completed = orders.filter(
+      (o) => o.status.toLowerCase() === "completed",
+    ).length;
     const totalSpent = orders.reduce((sum, o) => sum + o.totalAmount, 0);
     return { total, completed, totalSpent };
   };
@@ -116,7 +119,9 @@ export default function OrderHistoryPage() {
             <ClipboardDocumentCheckIcon className="w-6 h-6 text-[#D4AF37]" />
           </div>
         </div>
-        <p className="mt-4 text-lg font-semibold text-gray-300">Loading order history...</p>
+        <p className="mt-4 text-lg font-semibold text-gray-300">
+          Loading order history...
+        </p>
         <p className="text-sm text-gray-500">Fetching from POS database</p>
       </div>
     );
@@ -128,9 +133,11 @@ export default function OrderHistoryPage() {
         <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-4">
           <span className="text-4xl">⚠️</span>
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">Error Loading Orders</h2>
+        <h2 className="text-2xl font-bold text-white mb-2">
+          Error Loading Orders
+        </h2>
         <p className="text-gray-400 mb-6 text-center max-w-md">{error}</p>
-        <button 
+        <button
           onClick={loadOrderHistory}
           className="px-6 py-3 bg-[#1E5AA8] text-white font-bold rounded-xl hover:bg-[#174785] transition-colors"
         >
@@ -189,7 +196,7 @@ export default function OrderHistoryPage() {
                 No orders found
               </p>
               <p className="text-sm text-text-dim mb-6">
-                {filterStatus !== "all" 
+                {filterStatus !== "all"
                   ? `No ${filterStatus} orders found. Try a different filter.`
                   : "You haven't placed any orders yet."}
               </p>
@@ -218,18 +225,24 @@ export default function OrderHistoryPage() {
                       Order #{order.dailyOrderNumber}
                     </p>
                     <p className="text-lg font-bold text-white">
-                      {new Date(order.saleDateTime).toLocaleDateString('en-US', {
-                        weekday: 'short',
-                        month: 'short',
-                        day: 'numeric'
-                      })}
+                      {new Date(order.saleDateTime).toLocaleDateString(
+                        "en-US",
+                        {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                        },
+                      )}
                     </p>
                     <p className="text-xs text-text-dim mt-1">
-                      {new Date(order.saleDateTime).toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: true
-                      })}
+                      {new Date(order.saleDateTime).toLocaleTimeString(
+                        "en-US",
+                        {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        },
+                      )}
                     </p>
                   </div>
                   <div
@@ -272,14 +285,17 @@ export default function OrderHistoryPage() {
                     Order #{selectedOrder.dailyOrderNumber}
                   </h2>
                   <p className="text-xs text-text-dim font-bold uppercase mt-1">
-                    {new Date(selectedOrder.saleDateTime).toLocaleString('en-US', {
-                      weekday: 'long',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: 'numeric',
-                      minute: '2-digit',
-                      hour12: true
-                    })}
+                    {new Date(selectedOrder.saleDateTime).toLocaleString(
+                      "en-US",
+                      {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      },
+                    )}
                   </p>
                 </div>
                 <div
@@ -314,7 +330,10 @@ export default function OrderHistoryPage() {
               {selectedOrder.details && selectedOrder.details.length > 0 ? (
                 <div className="space-y-4">
                   {selectedOrder.details.map((detail, idx) => (
-                    <div key={idx} className="flex justify-between items-start py-3 border-b border-divider/50 last:border-0">
+                    <div
+                      key={idx}
+                      className="flex justify-between items-start py-3 border-b border-divider/50 last:border-0"
+                    >
                       <div className="flex gap-3">
                         <span className="bg-bg-surface text-gold font-black px-2.5 py-1 rounded border border-divider text-sm min-w-[28px] text-center">
                           {detail.itemQty}
@@ -359,9 +378,7 @@ export default function OrderHistoryPage() {
               </div>
               <div className="flex justify-between text-sm font-bold text-text-secondary uppercase">
                 <span>PST (0%)</span>
-                <span className="font-mono">
-                  $0.00
-                </span>
+                <span className="font-mono">$0.00</span>
               </div>
               {selectedOrder.dscAmt > 0 && (
                 <div className="flex justify-between text-sm font-bold text-green-400 uppercase">

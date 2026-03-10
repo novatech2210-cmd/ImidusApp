@@ -1,8 +1,15 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
-import { SkeletonChart } from '@/components/Loading/Skeleton';
+import React from "react";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { SkeletonChart } from "@/components/Loading/Skeleton";
 
 interface SegmentData {
   name: string;
@@ -15,9 +22,19 @@ interface SegmentationChartProps {
   loading?: boolean;
 }
 
-const COLORS = ['#f97316', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+const COLORS = [
+  "#f97316",
+  "#3b82f6",
+  "#10b981",
+  "#f59e0b",
+  "#8b5cf6",
+  "#ec4899",
+];
 
-export default function SegmentationChart({ data, loading = false }: SegmentationChartProps) {
+export default function SegmentationChart({
+  data,
+  loading = false,
+}: SegmentationChartProps) {
   if (loading) {
     return <SkeletonChart />;
   }
@@ -32,7 +49,9 @@ export default function SegmentationChart({ data, loading = false }: Segmentatio
 
   return (
     <div className="bg-white p-6 rounded-lg border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Customer Segments</h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        Customer Segments
+      </h3>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
@@ -46,7 +65,10 @@ export default function SegmentationChart({ data, loading = false }: Segmentatio
             dataKey="value"
           >
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} />
+              <Cell
+                key={`cell-${index}`}
+                fill={entry.color || COLORS[index % COLORS.length]}
+              />
             ))}
           </Pie>
           <Tooltip formatter={(value) => value.toLocaleString()} />

@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
-import MainLayout from '@/components/Navigation/MainLayout';
-import CampaignList from '@/components/Campaigns/CampaignList';
-import CampaignBuilder from '@/components/Campaigns/CampaignBuilder';
-import { useCampaignList, useSendCampaign } from '@/lib/hooks';
-import Spinner from '@/components/Loading/Spinner';
-import { Plus, Filter, RotateCcw } from 'lucide-react';
+import React, { useState, useMemo } from "react";
+import MainLayout from "@/components/Navigation/MainLayout";
+import CampaignList from "@/components/Campaigns/CampaignList";
+import CampaignBuilder from "@/components/Campaigns/CampaignBuilder";
+import { useCampaignList, useSendCampaign } from "@/lib/hooks";
+import Spinner from "@/components/Loading/Spinner";
+import { Plus, Filter, RotateCcw } from "lucide-react";
 
 interface Campaign {
   id: number;
   name: string;
-  type: 'email' | 'sms' | 'push';
-  status: 'draft' | 'scheduled' | 'sent' | 'paused';
+  type: "email" | "sms" | "push";
+  status: "draft" | "scheduled" | "sent" | "paused";
   targetAudience: number;
   sent: number;
   opened?: number;
@@ -22,15 +22,21 @@ interface Campaign {
 }
 
 export default function CampaignsPage() {
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>("");
   const [showBuilder, setShowBuilder] = useState(false);
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
-
-  const { data: campaigns = [], isPending: isLoading, refetch } = useCampaignList(
-    statusFilter || undefined
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(
+    null,
   );
 
-  const { mutate: sendCampaign, isPending: isSending } = useSendCampaign(selectedCampaign?.id ?? 0);
+  const {
+    data: campaigns = [],
+    isPending: isLoading,
+    refetch,
+  } = useCampaignList(statusFilter || undefined);
+
+  const { mutate: sendCampaign, isPending: isSending } = useSendCampaign(
+    selectedCampaign?.id ?? 0,
+  );
 
   const campaignsData = useMemo(() => {
     return Array.isArray(campaigns)
@@ -59,7 +65,9 @@ export default function CampaignsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Campaigns</h1>
-            <p className="text-gray-600">Create and manage marketing campaigns</p>
+            <p className="text-gray-600">
+              Create and manage marketing campaigns
+            </p>
           </div>
           <button
             onClick={() => setShowBuilder(true)}
@@ -99,7 +107,7 @@ export default function CampaignsPage() {
             {/* Reset */}
             <div className="flex items-end">
               <button
-                onClick={() => setStatusFilter('')}
+                onClick={() => setStatusFilter("")}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <RotateCcw size={16} />
@@ -128,9 +136,12 @@ export default function CampaignsPage() {
           <div className="bg-white p-6 rounded-lg border border-gray-200 space-y-4">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">{selectedCampaign.name}</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {selectedCampaign.name}
+                </h3>
                 <p className="text-sm text-gray-600">
-                  Created {new Date(selectedCampaign.createdAt).toLocaleDateString()}
+                  Created{" "}
+                  {new Date(selectedCampaign.createdAt).toLocaleDateString()}
                 </p>
               </div>
               <button
@@ -144,30 +155,40 @@ export default function CampaignsPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <p className="text-xs text-gray-500 uppercase">Type</p>
-                <p className="text-sm font-medium text-gray-900">{selectedCampaign.type}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {selectedCampaign.type}
+                </p>
               </div>
               <div>
                 <p className="text-xs text-gray-500 uppercase">Status</p>
-                <p className="text-sm font-medium text-gray-900 capitalize">{selectedCampaign.status}</p>
+                <p className="text-sm font-medium text-gray-900 capitalize">
+                  {selectedCampaign.status}
+                </p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 uppercase">Target Audience</p>
-                <p className="text-sm font-medium text-gray-900">{selectedCampaign.targetAudience.toLocaleString()}</p>
+                <p className="text-xs text-gray-500 uppercase">
+                  Target Audience
+                </p>
+                <p className="text-sm font-medium text-gray-900">
+                  {selectedCampaign.targetAudience.toLocaleString()}
+                </p>
               </div>
               <div>
                 <p className="text-xs text-gray-500 uppercase">Sent</p>
-                <p className="text-sm font-medium text-gray-900">{selectedCampaign.sent.toLocaleString()}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {selectedCampaign.sent.toLocaleString()}
+                </p>
               </div>
             </div>
 
-            {selectedCampaign.status === 'draft' && (
+            {selectedCampaign.status === "draft" && (
               <div className="flex gap-2 pt-2">
                 <button
                   onClick={handleSendCampaign}
                   disabled={isSending}
                   className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 font-medium"
                 >
-                  {isSending ? 'Sending...' : 'Send Campaign'}
+                  {isSending ? "Sending..." : "Send Campaign"}
                 </button>
               </div>
             )}

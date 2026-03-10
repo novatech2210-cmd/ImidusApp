@@ -1,14 +1,18 @@
 import React from 'react';
-import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
-import { Colors } from '../theme/colors';
-import { Spacing } from '../theme/spacing';
+import {View, ActivityIndicator, Text, StyleSheet} from 'react-native';
+import {Colors} from '../theme/colors';
+import {Spacing} from '../theme/spacing';
 
 const SplashScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.brandText}>Imidus</Text>
       <Text style={styles.subtitle}>Customer Ordering</Text>
-      <ActivityIndicator size="large" color={Colors.primary} style={styles.loader} />
+      <ActivityIndicator
+        size="large"
+        color={Colors.primary}
+        style={styles.loader}
+      />
     </View>
   );
 };

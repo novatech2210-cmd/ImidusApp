@@ -88,9 +88,9 @@ namespace IntegrationService.API.Controllers
         [HttpGet("health")]
         public IActionResult HealthCheck()
         {
-            return Ok(new 
-            { 
-                status = "healthy", 
+            return Ok(new
+            {
+                status = "healthy",
                 timestamp = DateTime.UtcNow,
                 serverTime = DateTime.Now
             });
@@ -170,7 +170,7 @@ namespace IntegrationService.API.Controllers
         public DateTime Timestamp { get; set; }
         public DateTime ServerTime { get; set; }
         public DateTime? LastSuccessfulSync { get; set; }
-        
+
         // POS Database (INI_Restaurant) - Ground Truth
         public string PosDatabaseStatus { get; set; } = "unknown"; // connected, error, empty
         public double? PosDatabaseLatency { get; set; } // milliseconds
@@ -187,12 +187,12 @@ namespace IntegrationService.API.Controllers
         public string DatabaseStatus { get; set; } = "unknown";
         public string ErrorMessage { get; set; }
         public DateTime? LastCheckTime { get; set; }
-        
+
         // Order Statistics (from POS - SSOT)
         public int TotalOrdersToday { get; set; }
         public decimal TotalRevenueToday { get; set; }
         public decimal AverageOrderValue { get; set; }
-        
+
         // Menu Statistics
         public int TotalCategories { get; set; }
         public int TotalMenuItems { get; set; }

@@ -9,42 +9,51 @@ All components are now connected and configured. The backend, mobile app, and we
 ## What Was Fixed
 
 ### 1. Backend (.NET API)
+
 **Location**: `src/backend/IntegrationService.API/`
 
 **Changes Made**:
+
 - ✅ Fixed CORS policy to allow web (localhost:3000, 3001) and mobile (any origin)
 - ✅ Added fallback connection strings for all repositories (graceful degradation)
 - ✅ API runs on port 5004 (verified in `launchSettings.json`)
 - ✅ Build succeeds with 0 errors
 
 **Key Files**:
+
 - `Program.cs` - CORS policies added
 - `appsettings.json` - Connection strings configured
 - `Properties/launchSettings.json` - Port 5004 confirmed
 
 ### 2. Web Platform (Next.js)
+
 **Location**: `src/web/`
 
 **Changes Made**:
+
 - ✅ Updated API client to use `http://localhost:5004/api`
 - ✅ Created `.env` (production) and `.env.example` (template)
 - ✅ Updated `.gitignore` to keep `.env.local` private
 - ✅ Added typed API helpers: MenuAPI, OrderAPI, AuthAPI, CustomerAPI, LoyaltyAPI
 
 **Key Files**:
+
 - `lib/api.ts` - API client with correct port and types
 - `.env` - Production environment variables
 - `.env.example` - Template for developers
 
 ### 3. Mobile App (React Native)
+
 **Location**: `src/mobile/ImidusCustomerApp/`
 
 **Changes Made**:
+
 - ✅ Updated environment config to use `http://10.0.2.2:5004/api` (Android emulator)
 - ✅ Created `.env.example` template
 - ✅ API client already configured with JWT interceptors
 
 **Key Files**:
+
 - `src/config/environment.ts` - Environment configuration
 - `src/api/apiClient.ts` - Axios client with auth interceptors
 
@@ -55,26 +64,31 @@ All components are now connected and configured. The backend, mobile app, and we
 All endpoints are prefixed with `/api`:
 
 ### Auth
+
 - `POST /api/Auth/login` - Login with phone/email + password
 - `POST /api/Auth/register` - Register new customer
 - `GET /api/Auth/me` - Get current user profile (requires auth)
 - `POST /api/Auth/refresh` - Refresh JWT token
 
 ### Menu
+
 - `GET /api/Menu/categories` - Get all categories
 - `GET /api/Menu/items/{categoryId}` - Get items by category
 - `GET /api/Menu` - Get full menu
 - `GET /api/Menu/{itemId}/sizes` - Get item sizes
 
 ### Orders
+
 - `POST /api/Orders` - Create new order (requires idempotency key)
 - `GET /api/Orders/{id}/status` - Get order status
 - `GET /api/Orders/history/{customerId}` - Get order history
 
 ### Customers
+
 - `GET /api/Customers/lookup?phone={}&email={}` - Lookup customer
 
 ### Health
+
 - `GET /health` - Basic health check
 - `GET /api/Health/deep` - Deep health check with DB connectivity
 
@@ -90,6 +104,7 @@ dotnet run
 ```
 
 **Verify it's running**:
+
 - Swagger UI: http://localhost:5004/swagger
 - Health check: http://localhost:5004/health
 
@@ -109,6 +124,7 @@ npm run dev
 ```
 
 **Access the web app**:
+
 - URL: http://localhost:3000
 - The web app will connect to backend at http://localhost:5004/api
 
@@ -125,6 +141,7 @@ npx react-native run-ios
 ```
 
 **Mobile app configuration**:
+
 - Android emulator uses `10.0.2.2:5004` (maps to host localhost)
 - iOS simulator uses `localhost:5004`
 - Physical devices need your machine's IP address
@@ -136,11 +153,13 @@ npx react-native run-ios
 ### Web Platform
 
 **Production** (`.env`):
+
 ```
 NEXT_PUBLIC_API_URL=https://api.imidus.com/api
 ```
 
 **Development** (`.env.local` - gitignored):
+
 ```
 NEXT_PUBLIC_API_URL=http://localhost:5004/api
 ```
@@ -148,12 +167,14 @@ NEXT_PUBLIC_API_URL=http://localhost:5004/api
 ### Mobile App
 
 **Development** (`.env`):
+
 ```
 API_BASE_URL=http://10.0.2.2:5004/api
 API_TIMEOUT=30000
 ```
 
 **Production**:
+
 ```
 API_BASE_URL=https://api.imidus.com/api
 ```
@@ -163,10 +184,13 @@ API_BASE_URL=https://api.imidus.com/api
 ## Testing the Connection
 
 ### 1. Backend Health Check
+
 ```bash
 curl http://localhost:5004/health
 ```
+
 Expected response:
+
 ```json
 {
   "status": "Healthy",
@@ -176,16 +200,20 @@ Expected response:
 ```
 
 ### 2. Test Menu Endpoint
+
 ```bash
 curl http://localhost:5004/api/Menu/categories
 ```
 
 ### 3. Web Platform Connection
+
 Open browser to http://localhost:3000 and try to:
+
 - View menu (should fetch from `/api/Menu/categories`)
 - Login (should POST to `/api/Auth/login`)
 
 ### 4. Mobile App Connection
+
 1. Start Android emulator
 2. Run the app
 3. Check Metro bundler logs for API requests
@@ -196,7 +224,9 @@ Open browser to http://localhost:3000 and try to:
 ## Troubleshooting
 
 ### CORS Errors
+
 If you see CORS errors in browser console:
+
 - Ensure backend CORS policy includes your web app URL
 - Check that `Program.cs` has both policies applied:
   ```csharp
@@ -205,16 +235,19 @@ If you see CORS errors in browser console:
   ```
 
 ### Connection Refused
+
 - Verify backend is running: `dotnet run` in IntegrationService.API folder
 - Check port 5004 is not blocked by firewall
 - For mobile: ensure 10.0.2.2 is correct for Android emulator
 
 ### Database Connection Errors
+
 - Backend has fallback connection strings (graceful degradation)
 - For full functionality, restore INI_Restaurant.Bak to SQL Server
 - Update `appsettings.json` with your SQL Server credentials
 
 ### Authentication Failures
+
 - JWT secret is configured in `appsettings.json`
 - Web: check localStorage has `auth_token`
 - Mobile: check AsyncStorage has `@imidus_auth_token`
@@ -225,11 +258,13 @@ If you see CORS errors in browser console:
 ## Known Issues
 
 ### Tests
+
 - 5 unit tests failing in `OrderStatusPollingServiceTests` (pre-existing Moq issue with mocking extension methods)
 - These tests don't affect the production API
 - All other tests pass (42 passed, 13 skipped for DB integration)
 
 ### Database
+
 - Backend will start without database (graceful degradation)
 - Menu and order endpoints will return errors if DB not connected
 - Health check at `/health` works without database
@@ -260,6 +295,7 @@ If you see CORS errors in browser console:
 ## Files Modified
 
 ### Backend
+
 - `src/backend/IntegrationService.API/Program.cs` - CORS policies
 - `src/backend/IntegrationService.Infrastructure/Data/OnlineOrderStatusRepository.cs` - Fallback connection string
 - `src/backend/IntegrationService.Infrastructure/Data/NotificationLogRepository.cs` - Fallback connection string
@@ -268,12 +304,14 @@ If you see CORS errors in browser console:
 - `src/backend/IntegrationService.Tests/appsettings.json` - Test configuration
 
 ### Web
+
 - `src/web/lib/api.ts` - API client with correct port and types
 - `src/web/.env` - Production environment
 - `src/web/.env.example` - Template
 - `src/web/.gitignore` - Updated to allow `.env` but ignore `.env.local`
 
 ### Mobile
+
 - `src/mobile/ImidusCustomerApp/src/config/environment.ts` - Environment configuration
 - `src/mobile/ImidusCustomerApp/.env.example` - Template
 

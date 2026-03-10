@@ -3,10 +3,11 @@
 ## 📦 What Client Gets
 
 ### Android APK
+
 ```
 File: deliverables/ImidusCustomerApp-v2.apk
 Size: 59 MB
-How to install: 
+How to install:
   1. Transfer to Android phone
   2. Tap file
   3. Tap Install
@@ -14,7 +15,8 @@ How to install:
 Time: 1 minute
 ```
 
-### iOS App  
+### iOS App
+
 ```
 Format: TestFlight
 How to access:
@@ -26,6 +28,7 @@ Time: 1 minute
 ```
 
 ### Backend API
+
 ```
 File: ImidusIntegrationService.msi
 How to install on Windows:
@@ -39,6 +42,7 @@ Verify: http://localhost:5004/api/Sync/status
 ```
 
 ### Web App
+
 ```
 Format: Docker (recommended)
 How to run:
@@ -52,23 +56,28 @@ Time: 2 minutes
 ## 🧪 Test Scenarios (5 minutes each)
 
 **Test 1: Registration**
+
 - Web: Register → Verify email → Login
 - Mobile: Register → Auto-login to menu
 
 **Test 2: Menu Browse**
+
 - Web: View 7 categories, 30+ items
 - Mobile: Scroll categories, items load
 
 **Test 3: Order Placement**
+
 - Web: Add 3 items → Cart → Checkout → Pay
 - Card: 4111111111111111 / 12/25 / 123
 
 **Test 4: Order Tracking**
+
 - Mobile: View order status (Pending)
 - Backend: Change status to Ready
 - Mobile: Refresh → See status update
 
 **Test 5: Cross-Platform**
+
 - Web: Place order
 - Mobile: Login with same account
 - Mobile: See same order in tracking
@@ -99,6 +108,7 @@ CLIENT_EMAIL_TEMPLATE.txt
 ## 💾 Files to Deliver
 
 ### Required Files
+
 ```
 ✅ ImidusCustomerApp-v2.apk (59 MB)
 ✅ CLIENT_DELIVERY_PACKAGE.md
@@ -108,6 +118,7 @@ CLIENT_EMAIL_TEMPLATE.txt
 ```
 
 ### Optional Files
+
 ```
 ✅ CLIENT_EMAIL_TEMPLATE.txt (copy-paste to email)
 ✅ MILESTONE_3_DELIVERY_COMPLETE.md (this summary)
@@ -141,16 +152,19 @@ Step 4: Quick Test (2 min)
 ## 🔧 System Requirements
 
 **Backend (Windows)**
+
 - Windows Server 2016+ or Win10/11 Pro
 - SQL Server 2005 Express+
 - 2GB disk space
 - Port 5004 available
 
 **Web App**
+
 - Docker installed (or Node.js 18+)
 - Port 3000 available
 
 **Mobile**
+
 - Android 10+ device (APK)
 - iOS 12+ device (TestFlight)
 
@@ -167,11 +181,13 @@ Step 4: Quick Test (2 min)
 ## 📞 Support
 
 **For Issues:**
+
 - Email: novatech2210@gmail.com
 - Include: Platform, error message, steps to reproduce
 - Response: Within 24 hours
 
 **Test Card:**
+
 - Number: 4111111111111111
 - Expiry: 12/25
 - CVV: 123
@@ -194,4 +210,4 @@ Step 4: Quick Test (2 min)
 **Installation Time:** 15 minutes
 **Technical Complexity:** None (no build process)
 
-*Prepared: March 6, 2026*
+_Prepared: March 6, 2026_

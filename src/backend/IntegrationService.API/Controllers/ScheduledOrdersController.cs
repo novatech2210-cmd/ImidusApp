@@ -155,7 +155,7 @@ namespace IntegrationService.API.Controllers
             try
             {
                 var orders = await _scheduledOrderRepo.GetByCustomerIdAsync(customerId);
-                
+
                 var dtos = orders.Select(o => new ScheduledOrderDto
                 {
                     Id = o.Id,

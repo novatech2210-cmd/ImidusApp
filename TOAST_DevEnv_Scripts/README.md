@@ -23,6 +23,7 @@ chmod +x setup-dev-env.sh
 ## Script Details
 
 ### setup-dev-env.sh
+
 - Configures Node.js 18 via NVM
 - Installs pnpm package manager
 - Sets up Android SDK environment
@@ -30,12 +31,14 @@ chmod +x setup-dev-env.sh
 - Verifies Docker SQL Server
 
 ### test-apps.sh
+
 - Tests database connectivity
 - Builds and tests backend API
 - Builds and tests web application
 - Builds Android APK
 
 ### prepare-delivery.sh
+
 - Packages all deliverables
 - Creates documentation
 - Uploads to AWS S3

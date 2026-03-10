@@ -15,7 +15,8 @@ export function Navbar() {
           style={{
             width: 38,
             height: 38,
-            background: "linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue))",
+            background:
+              "linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue))",
             borderRadius: 8,
             display: "flex",
             alignItems: "center",
@@ -39,7 +40,13 @@ export function Navbar() {
           >
             INI Restaurant
           </div>
-          <div style={{ fontSize: 10, color: "var(--color-text-muted)", letterSpacing: 1 }}>
+          <div
+            style={{
+              fontSize: 10,
+              color: "var(--color-text-muted)",
+              letterSpacing: 1,
+            }}
+          >
             IMIDUS TECHNOLOGIES
           </div>
         </div>
@@ -89,7 +96,11 @@ export function Navbar() {
             <span className="badge-gold">⭐ {user.earnedPoints} pts</span>
             <Link
               href="/profile"
-              style={{ fontSize: 14, fontWeight: 600, color: "var(--color-brand-blue)" }}
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: "var(--color-brand-blue)",
+              }}
             >
               {user.firstName}
             </Link>

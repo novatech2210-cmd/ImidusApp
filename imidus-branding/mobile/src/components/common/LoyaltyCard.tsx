@@ -4,9 +4,9 @@
  * Used on the home screen and loyalty tab.
  */
 
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { Colors, Spacing, BorderRadius, Shadow, Images } from '@/theme';
+import React from "react";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { Colors, Spacing, BorderRadius, Shadow, Images } from "@/theme";
 
 interface LoyaltyCardProps {
   customerName: string;
@@ -25,12 +25,18 @@ export default function LoyaltyCard({
     <View style={[styles.card, birthdayMonth && styles.birthdayCard]}>
       {/* Header row */}
       <View style={styles.headerRow}>
-        <Image source={Images.logoTriangle} style={styles.icon} resizeMode="contain" />
+        <Image
+          source={Images.logoTriangle}
+          style={styles.icon}
+          resizeMode="contain"
+        />
         <View style={styles.headerText}>
           <Text style={styles.greeting}>Welcome back,</Text>
           <Text style={styles.name}>{customerName}</Text>
         </View>
-        {birthdayMonth && <Text style={styles.birthdayBadge}>🎂 Birthday Month!</Text>}
+        {birthdayMonth && (
+          <Text style={styles.birthdayBadge}>🎂 Birthday Month!</Text>
+        )}
       </View>
 
       {/* Divider */}
@@ -43,7 +49,11 @@ export default function LoyaltyCard({
           <Text style={styles.pointsLabel}>LOYALTY POINTS</Text>
         </View>
         {onRedeem && (
-          <TouchableOpacity style={styles.redeemBtn} onPress={onRedeem} activeOpacity={0.85}>
+          <TouchableOpacity
+            style={styles.redeemBtn}
+            onPress={onRedeem}
+            activeOpacity={0.85}
+          >
             <Text style={styles.redeemText}>REDEEM</Text>
           </TouchableOpacity>
         )}
@@ -51,7 +61,9 @@ export default function LoyaltyCard({
 
       {birthdayMonth && (
         <View style={styles.birthdayBanner}>
-          <Text style={styles.birthdayText}>🎉 You have a birthday reward waiting! Tap Redeem to apply.</Text>
+          <Text style={styles.birthdayText}>
+            🎉 You have a birthday reward waiting! Tap Redeem to apply.
+          </Text>
         </View>
       )}
     </View>
@@ -75,8 +87,8 @@ const styles = StyleSheet.create({
   },
 
   headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: Spacing.sm,
   },
   icon: {
@@ -89,23 +101,23 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 11,
     color: Colors.textMuted,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   name: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     color: Colors.textPrimary,
   },
   birthdayBadge: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: "700",
     color: Colors.brandBlue,
     backgroundColor: Colors.lightBlue,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 2,
     borderRadius: BorderRadius.full,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
 
   divider: {
@@ -116,22 +128,22 @@ const styles = StyleSheet.create({
   },
 
   pointsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   pointsBalance: {
     fontSize: 36,
-    fontWeight: '700',
+    fontWeight: "700",
     color: Colors.brandGold,
     letterSpacing: -1,
   },
   pointsLabel: {
     fontSize: 10,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.textMuted,
     letterSpacing: 1.5,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     marginTop: 2,
   },
   redeemBtn: {
@@ -143,7 +155,7 @@ const styles = StyleSheet.create({
   },
   redeemText: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: "700",
     color: Colors.textOnGold,
     letterSpacing: 1,
   },
@@ -157,7 +169,7 @@ const styles = StyleSheet.create({
   birthdayText: {
     fontSize: 12,
     color: Colors.white,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 18,
   },
 });

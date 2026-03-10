@@ -4,14 +4,14 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/web/**'
-      - '.github/workflows/web-deploy.yml'
+      - "src/web/**"
+      - ".github/workflows/web-deploy.yml"
   workflow_dispatch:
     inputs:
       deploy_target:
-        description: 'Deployment target'
+        description: "Deployment target"
         required: true
-        default: 'staging'
+        default: "staging"
         type: choice
         options:
           - staging
@@ -19,7 +19,7 @@ on:
 
 env:
   WEB_DIR: src/web
-  NODE_VERSION: '20'
+  NODE_VERSION: "20"
   S3_BUCKET: inirestaurant
   S3_PREFIX: novatech
 
@@ -36,7 +36,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: ${{ env.WEB_DIR }}/package-lock.json
 
       - name: Install dependencies

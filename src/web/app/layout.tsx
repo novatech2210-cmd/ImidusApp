@@ -50,9 +50,7 @@ export default function RootLayout({
                       <SyncIndicator />
                     </div>
                   </header>
-                  <div className="content-area">
-                    {children}
-                  </div>
+                  <div className="content-area">{children}</div>
                 </main>
                 <OrderPanel />
               </div>

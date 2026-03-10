@@ -5,8 +5,8 @@
  */
 
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { Colors, Spacing, BorderRadius, Shadow, Images } from '@/theme';
+import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {Colors, Spacing, BorderRadius, Shadow, Images} from '@/theme';
 
 interface LoyaltyCardProps {
   customerName: string;
@@ -25,12 +25,18 @@ export default function LoyaltyCard({
     <View style={[styles.card, birthdayMonth && styles.birthdayCard]}>
       {/* Header row */}
       <View style={styles.headerRow}>
-        <Image source={Images.logoTriangle} style={styles.icon} resizeMode="contain" />
+        <Image
+          source={Images.logoTriangle}
+          style={styles.icon}
+          resizeMode="contain"
+        />
         <View style={styles.headerText}>
           <Text style={styles.greeting}>Welcome back,</Text>
           <Text style={styles.name}>{customerName}</Text>
         </View>
-        {birthdayMonth && <Text style={styles.birthdayBadge}>🎂 Birthday Month!</Text>}
+        {birthdayMonth && (
+          <Text style={styles.birthdayBadge}>🎂 Birthday Month!</Text>
+        )}
       </View>
 
       {/* Divider */}
@@ -43,7 +49,10 @@ export default function LoyaltyCard({
           <Text style={styles.pointsLabel}>LOYALTY POINTS</Text>
         </View>
         {onRedeem && (
-          <TouchableOpacity style={styles.redeemBtn} onPress={onRedeem} activeOpacity={0.85}>
+          <TouchableOpacity
+            style={styles.redeemBtn}
+            onPress={onRedeem}
+            activeOpacity={0.85}>
             <Text style={styles.redeemText}>REDEEM</Text>
           </TouchableOpacity>
         )}
@@ -51,7 +60,9 @@ export default function LoyaltyCard({
 
       {birthdayMonth && (
         <View style={styles.birthdayBanner}>
-          <Text style={styles.birthdayText}>🎉 You have a birthday reward waiting! Tap Redeem to apply.</Text>
+          <Text style={styles.birthdayText}>
+            🎉 You have a birthday reward waiting! Tap Redeem to apply.
+          </Text>
         </View>
       )}
     </View>

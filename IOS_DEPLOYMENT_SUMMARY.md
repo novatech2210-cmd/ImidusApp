@@ -2,7 +2,7 @@
 
 **Date:** March 6, 2026  
 **Client:** Imidus Technologies / INI_Restaurant  
-**Status:** ✅ Documentation Complete & in S3  
+**Status:** ✅ Documentation Complete & in S3
 
 ---
 
@@ -11,6 +11,7 @@
 Complete iOS TestFlight deployment documentation with step-by-step instructions for non-technical client setup.
 
 **Files in S3:**
+
 1. **IOS_TESTFLIGHT_SETUP.md** (13.8 KB)
    - 10-part comprehensive guide
    - 3000+ words covering every step
@@ -32,6 +33,7 @@ Complete iOS TestFlight deployment documentation with step-by-step instructions 
 ### Phase 1: Initial Setup (Est. 1-2 hours)
 
 **Client provides:**
+
 1. Apple Developer Account credentials
 2. Bundle ID: `com.imidus.customerapp`
 3. Privacy Policy URL (HTTPS required)
@@ -39,11 +41,13 @@ Complete iOS TestFlight deployment documentation with step-by-step instructions 
 5. Contact email for TestFlight notifications
 
 **We provide:**
+
 1. Complete setup guide (IOS_TESTFLIGHT_SETUP.md)
 2. Step-by-step checklist (IOS_TESTFLIGHT_CHECKLIST.md)
 3. Technical support email: novatech2210@gmail.com
 
 ### Phase 2: Apple Account Configuration (Est. 45 min)
+
 - Create app record in App Store Connect
 - Generate signing certificates
 - Register test devices
@@ -51,12 +55,14 @@ Complete iOS TestFlight deployment documentation with step-by-step instructions 
 - Configure API key for CI/CD
 
 ### Phase 3: Build & Upload (Est. 30 min)
+
 - Build iOS IPA locally (or trigger via GitHub Actions)
 - Upload to TestFlight via Transporter
 - Wait for Apple processing (10-30 min)
 - Enable testers access
 
 ### Phase 4: Tester Distribution (Est. 10 min)
+
 - Create tester groups (internal + external)
 - Invite testers via email
 - Testers accept and install via TestFlight app
@@ -67,6 +73,7 @@ Complete iOS TestFlight deployment documentation with step-by-step instructions 
 ## 🔑 Critical Configuration Values
 
 **Must be exactly:**
+
 - Bundle ID: `com.imidus.customerapp`
 - Privacy Policy URL: Must be HTTPS (no exceptions)
 - Certificate type: Apple Distribution (not Development)
@@ -79,6 +86,7 @@ Complete iOS TestFlight deployment documentation with step-by-step instructions 
 ### IOS_TESTFLIGHT_SETUP.md
 
 **Structure:**
+
 - Overview & timeline
 - Prerequisites (what client needs)
 - Part 1: App Store Connect Setup (15 min)
@@ -95,6 +103,7 @@ Complete iOS TestFlight deployment documentation with step-by-step instructions 
 - Files & links reference
 
 **Key Features:**
+
 - Shell command snippets (copy-paste ready)
 - Decision trees for choosing options
 - Common issues with solutions
@@ -104,6 +113,7 @@ Complete iOS TestFlight deployment documentation with step-by-step instructions 
 ### IOS_TESTFLIGHT_CHECKLIST.md
 
 **Structure:**
+
 - Pre-setup verification (8 items)
 - Part 1: App Store Connect (12 items)
 - Part 2: Certificates & Provisioning (22 items)
@@ -120,6 +130,7 @@ Complete iOS TestFlight deployment documentation with step-by-step instructions 
 - Completion sign-off section
 
 **Key Features:**
+
 - 80+ checkboxes for progress tracking
 - Estimated time per section
 - Quick reference troubleshooting table
@@ -129,24 +140,26 @@ Complete iOS TestFlight deployment documentation with step-by-step instructions 
 
 ## 🚀 Implementation Timeline
 
-| Phase | Time | Client Action | Novatech Support |
-|-------|------|---------------|------------------|
-| Setup | 1-2 hrs | Follow guide & run commands | 24-hr email support |
-| Apple Processing | 10-30 min | Wait (automatic) | Monitor & assist |
-| Tester Distribution | 10 min | Invite testers | Provide test scenarios |
-| Testing | 1-2 weeks | Run test scenarios | Track feedback |
-| Iteration | Ongoing | Report bugs | Fix & redeploy builds |
+| Phase               | Time      | Client Action               | Novatech Support       |
+| ------------------- | --------- | --------------------------- | ---------------------- |
+| Setup               | 1-2 hrs   | Follow guide & run commands | 24-hr email support    |
+| Apple Processing    | 10-30 min | Wait (automatic)            | Monitor & assist       |
+| Tester Distribution | 10 min    | Invite testers              | Provide test scenarios |
+| Testing             | 1-2 weeks | Run test scenarios          | Track feedback         |
+| Iteration           | Ongoing   | Report bugs                 | Fix & redeploy builds  |
 
 ---
 
 ## 📲 iOS Build Availability
 
 **Current Status:**
+
 - React Native source code ready at: `src/mobile/ImidusCustomerApp`
 - GitHub workflow configured: `.github/workflows/ios-build.yml`
 - Can build locally on Mac or via GitHub Actions
 
 **Build Specifications:**
+
 - Target iOS: 13.0+
 - Bundle ID: `com.imidus.customerapp`
 - Version: 1.0
@@ -157,12 +170,14 @@ Complete iOS TestFlight deployment documentation with step-by-step instructions 
 ## 🔐 Security Considerations
 
 **What we're handling:**
+
 - Signing certificates (encrypted in keychain)
 - Provisioning profiles (installed locally only)
 - API keys (stored in GitHub Secrets, never in code)
 - Tester device UDIDs (registered in Apple Developer)
 
 **What client manages:**
+
 - Apple ID credentials (never shared with us)
 - Privacy Policy (their responsibility)
 - Tester list management
@@ -214,6 +229,7 @@ Complete iOS TestFlight deployment documentation with step-by-step instructions 
 ## 📞 Support Structure
 
 **Client has 24-hour response SLA for:**
+
 - Build failures or errors
 - Apple account issues
 - TestFlight deployment questions
@@ -240,12 +256,12 @@ Complete iOS TestFlight deployment documentation with step-by-step instructions 
 
 ## 📚 Document Locations
 
-| Document | Location | Purpose |
-|----------|----------|---------|
-| IOS_TESTFLIGHT_SETUP.md | S3 + Repo | Complete setup guide (read first) |
-| IOS_TESTFLIGHT_CHECKLIST.md | S3 + Repo | Progress tracking during setup |
-| ios-build.yml | `.github/workflows/` | CI/CD workflow for builds |
-| ImidusCustomerApp.xcworkspace | `src/mobile/ImidusCustomerApp/ios/` | Xcode project |
+| Document                      | Location                            | Purpose                           |
+| ----------------------------- | ----------------------------------- | --------------------------------- |
+| IOS_TESTFLIGHT_SETUP.md       | S3 + Repo                           | Complete setup guide (read first) |
+| IOS_TESTFLIGHT_CHECKLIST.md   | S3 + Repo                           | Progress tracking during setup    |
+| ios-build.yml                 | `.github/workflows/`                | CI/CD workflow for builds         |
+| ImidusCustomerApp.xcworkspace | `src/mobile/ImidusCustomerApp/ios/` | Xcode project                     |
 
 ---
 
@@ -269,6 +285,7 @@ Complete iOS TestFlight deployment documentation with step-by-step instructions 
 **iOS TestFlight deployment documentation is COMPLETE and READY for client use.**
 
 Client can now:
+
 1. Download IOS_TESTFLIGHT_SETUP.md from S3
 2. Follow 10-part guide step-by-step
 3. Use IOS_TESTFLIGHT_CHECKLIST.md to track progress
@@ -278,7 +295,6 @@ Client can now:
 
 ---
 
-*Documentation prepared: March 6, 2026*  
-*Support: novatech2210@gmail.com*  
-*Next: Await M3 acceptance, then begin M4 planning*
-
+_Documentation prepared: March 6, 2026_  
+_Support: novatech2210@gmail.com_  
+_Next: Await M3 acceptance, then begin M4 planning_

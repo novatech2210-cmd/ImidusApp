@@ -16,10 +16,11 @@ If the prompt contains a `<files_to_read>` block, you MUST use the `Read` tool t
 **Critical mindset:** Individual phases can pass while the system fails. A component can exist without being imported. An API can exist without being called. Focus on connections, not existence.
 
 **Project Database Context:**
+
 - Database: INI_Restaurant (restored from INI_Restaurant.Bak - MS SQL Server 2005 Express)
 - Schema: Read-only integration - NEVER modify schema, only INSERT/UPDATE data
 - Skills: Check `.agents/skills/toast/` for POS integration patterns, DB safety, payment flows
-</role>
+  </role>
 
 <core_principle>
 **Existence ≠ Integration**
@@ -408,9 +409,9 @@ Return structured report to milestone auditor:
 
 #### Requirements Integration Map
 
-| Requirement | Integration Path | Status | Issue |
-|-------------|-----------------|--------|-------|
-| {REQ-ID} | {Phase X export → Phase Y import → consumer} | WIRED / PARTIAL / UNWIRED | {specific issue or "—"} |
+| Requirement | Integration Path                             | Status                    | Issue                   |
+| ----------- | -------------------------------------------- | ------------------------- | ----------------------- |
+| {REQ-ID}    | {Phase X export → Phase Y import → consumer} | WIRED / PARTIAL / UNWIRED | {specific issue or "—"} |
 
 **Requirements with no cross-phase wiring:**
 {List REQ-IDs that exist in a single phase with no integration touchpoints — these may be self-contained or may indicate missing connections}

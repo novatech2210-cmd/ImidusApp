@@ -1,5 +1,5 @@
-import { CreateOrderRequest, CreateOrderResponse } from '../types/cart.types';
-import { ENV } from '../config/environment';
+import {CreateOrderRequest, CreateOrderResponse} from '../types/cart.types';
+import {ENV} from '../config/environment';
 
 export const orderApi = {
   /**

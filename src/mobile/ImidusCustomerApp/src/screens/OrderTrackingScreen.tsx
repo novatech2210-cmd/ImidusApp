@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -8,8 +8,8 @@ import {
   SafeAreaView,
 } from 'react-native';
 import apiClient from '../api/apiClient';
-import { Colors } from '../theme/colors';
-import { Spacing } from '../theme/spacing';
+import {Colors} from '../theme/colors';
+import {Spacing} from '../theme/spacing';
 
 interface OrderStatus {
   salesId: number;
@@ -18,9 +18,11 @@ interface OrderStatus {
   orderTotal: number;
 }
 
-const OrderTrackingScreen = ({ route, navigation }: any) => {
-  const { salesId, dailyOrderNumber } = route.params;
-  const [status, setStatus] = useState<'pending' | 'completed' | 'error'>('pending');
+const OrderTrackingScreen = ({route, navigation}: any) => {
+  const {salesId, dailyOrderNumber} = route.params;
+  const [status, setStatus] = useState<'pending' | 'completed' | 'error'>(
+    'pending',
+  );
   const [orderData, setOrderData] = useState<OrderStatus | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -74,8 +76,12 @@ const OrderTrackingScreen = ({ route, navigation }: any) => {
         {status === 'pending' && (
           <View style={styles.statusCard}>
             <ActivityIndicator size="large" color={Colors.primary} />
-            <Text style={styles.statusText}>Your order is being prepared...</Text>
-            <Text style={styles.subText}>We'll notify you when it's ready!</Text>
+            <Text style={styles.statusText}>
+              Your order is being prepared...
+            </Text>
+            <Text style={styles.subText}>
+              We'll notify you when it's ready!
+            </Text>
           </View>
         )}
 
@@ -83,14 +89,18 @@ const OrderTrackingScreen = ({ route, navigation }: any) => {
           <View style={[styles.statusCard, styles.completedCard]}>
             <Text style={styles.completedIcon}>✓</Text>
             <Text style={styles.statusText}>Order Ready for Pickup!</Text>
-            <Text style={styles.subText}>Please collect your order at the counter.</Text>
+            <Text style={styles.subText}>
+              Please collect your order at the counter.
+            </Text>
           </View>
         )}
 
         {status === 'error' && (
           <View style={styles.statusCard}>
             <Text style={styles.errorText}>Unable to load order status.</Text>
-            <TouchableOpacity onPress={fetchOrderStatus} style={styles.retryButton}>
+            <TouchableOpacity
+              onPress={fetchOrderStatus}
+              style={styles.retryButton}>
               <Text style={styles.retryButtonText}>Retry</Text>
             </TouchableOpacity>
           </View>
@@ -98,8 +108,7 @@ const OrderTrackingScreen = ({ route, navigation }: any) => {
 
         <TouchableOpacity
           style={styles.doneButton}
-          onPress={() => navigation.navigate('Menu')}
-        >
+          onPress={() => navigation.navigate('Menu')}>
           <Text style={styles.doneButtonText}>Back to Menu</Text>
         </TouchableOpacity>
       </View>
@@ -137,7 +146,7 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: Spacing.xl,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,

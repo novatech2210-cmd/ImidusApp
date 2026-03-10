@@ -5,6 +5,7 @@ Complete guide for setting up CI/CD pipelines and GitHub Actions secrets for the
 ## Overview
 
 The project uses GitHub Actions for automated building and deployment of:
+
 - Android APK builds → S3
 - iOS IPA builds → TestFlight + S3
 - Backend .NET MSI → S3
@@ -18,10 +19,12 @@ All sensitive credentials are stored as GitHub repository secrets (not in code).
 For uploading artifacts to S3, you need AWS IAM credentials with S3 access.
 
 **Secret Names:**
+
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
 
 **How to Generate:**
+
 1. Log in to AWS Console (aws.amazon.com)
 2. Navigate to IAM → Users
 3. Select your IAM user
@@ -31,6 +34,7 @@ For uploading artifacts to S3, you need AWS IAM credentials with S3 access.
 7. Copy the Access Key ID and Secret Access Key into GitHub Secrets
 
 **IAM Policy Required:**
+
 ```json
 {
   "Version": "2012-10-17",
@@ -99,6 +103,7 @@ cat keystore_base64.txt
    - `KEY_ALIAS` = `imidus-release`
 
 **Security Best Practices:**
+
 - Never commit the raw `.keystore` file to Git
 - Store only the base64 version in GitHub Secrets
 - Rotate keystore password annually
@@ -230,6 +235,7 @@ If signing the MSI installer:
 ### Android Build Workflow
 
 **Automatic Triggers:**
+
 - Push to `main`, `develop`, or `feature/*` branches with changes to `src/mobile/ImidusCustomerApp/**`
 - Pull request to `main` with mobile changes
 
@@ -245,6 +251,7 @@ If signing the MSI installer:
 ### iOS Build Workflow
 
 **Automatic Triggers:**
+
 - Push to `main` with changes to `src/mobile/ImidusCustomerApp/**`
 
 **Manual Trigger:**
@@ -259,6 +266,7 @@ If signing the MSI installer:
 ### Backend Build Workflow
 
 **Automatic Triggers:**
+
 - Push to `main` or `develop` with changes to `src/backend/**`
 
 **Manual Trigger:**
@@ -276,6 +284,7 @@ If signing the MSI installer:
 To create a coordinated release across all platforms:
 
 1. **Create Release Tag:**
+
    ```bash
    git tag -a v1.0.1 -m "Release v1.0.1 - Bug fixes and improvements"
    git push origin v1.0.1
@@ -301,6 +310,7 @@ To create a coordinated release across all platforms:
 **Problem:** Workflow fails with "secrets.AWS_ACCESS_KEY_ID is not set"
 
 **Solution:**
+
 1. Verify secret exists in GitHub Settings → Secrets
 2. Ensure secret name matches exactly (case-sensitive)
 3. Re-save secret value (sometimes helps)
@@ -311,6 +321,7 @@ To create a coordinated release across all platforms:
 **Problem:** `Failed to decrypt keystore` or keystore not found
 
 **Solution:**
+
 1. Verify `ANDROID_KEYSTORE_BASE64` secret contains valid base64
 2. Verify passwords match: `KEYSTORE_PASSWORD`, `KEY_PASSWORD`
 3. Test locally: decode base64 and verify keystore is valid
@@ -321,6 +332,7 @@ To create a coordinated release across all platforms:
 **Problem:** `Security Error: -25295` or certificate import failure
 
 **Solution:**
+
 1. Verify certificate validity on Apple Developer
 2. Recreate P12 with correct password
 3. Verify `IOS_KEYCHAIN_PASSWORD` is set correctly
@@ -331,6 +343,7 @@ To create a coordinated release across all platforms:
 **Problem:** `An error occurred (AccessDenied) when calling the PutObject operation`
 
 **Solution:**
+
 1. Verify AWS credentials are active (not expired)
 2. Check IAM policy allows `s3:PutObject` on `inirestaurant` bucket
 3. Verify bucket name and prefix are correct

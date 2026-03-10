@@ -52,7 +52,7 @@ class NotificationService {
           token,
           platform: Platform.OS,
           customerId,
-        }
+        },
       );
 
       console.log('FCM token registered with backend:', response.data);

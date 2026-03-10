@@ -1,6 +1,7 @@
 # Step 1: Entity Models Update
 
 ## 🎯 Goal
+
 Update all C# entity classes to match the **INI_Restaurant database schema** (restored from INI_Restaurant.Bak — the single source of truth for all POS data).
 
 **File:** `backend/IntegrationService.Core/Domain/Entities/PosEntities.cs`
@@ -13,15 +14,15 @@ Update all C# entity classes to match the **INI_Restaurant database schema** (re
 
 ### Summary of Updates
 
-| Entity Class | Changes | Priority |
-|--------------|---------|----------|
-| `PosTicket` | Rename 12+ properties, add tax fields | 🔴 CRITICAL |
+| Entity Class    | Changes                                          | Priority    |
+| --------------- | ------------------------------------------------ | ----------- |
+| `PosTicket`     | Rename 12+ properties, add tax fields            | 🔴 CRITICAL |
 | `PosTicketItem` | Rename properties, add SizeID, add kitchen flags | 🔴 CRITICAL |
-| `PosTender` | Rename properties, update payment type | 🔴 CRITICAL |
-| `MenuItem` | Rename properties, remove BasePrice | 🔴 CRITICAL |
-| `AvailableSize` | **NEW CLASS** - Size-based pricing | 🔴 CRITICAL |
-| `Size` | **NEW CLASS** - Size definitions | 🟡 MEDIUM |
-| `Category` | Update property names | 🟢 LOW |
+| `PosTender`     | Rename properties, update payment type           | 🔴 CRITICAL |
+| `MenuItem`      | Rename properties, remove BasePrice              | 🔴 CRITICAL |
+| `AvailableSize` | **NEW CLASS** - Size-based pricing               | 🔴 CRITICAL |
+| `Size`          | **NEW CLASS** - Size definitions                 | 🟡 MEDIUM   |
+| `Category`      | Update property names                            | 🟢 LOW      |
 
 ---
 
@@ -361,6 +362,7 @@ namespace IntegrationService.Core.Domain.Entities
 ## ✅ What Changed?
 
 ### PosTicket (tblSales)
+
 ```csharp
 // BEFORE
 public int TicketID { get; set; }
@@ -382,6 +384,7 @@ public int DailyOrderNumber { get; set; }  // NEW
 ```
 
 ### PosTicketItem (tblSalesDetail)
+
 ```csharp
 // BEFORE
 public int TicketItemID { get; set; }
@@ -401,6 +404,7 @@ public bool KitchenF { get; set; }
 ```
 
 ### MenuItem (tblItem)
+
 ```csharp
 // BEFORE
 public int MenuItemId { get; set; }
@@ -416,6 +420,7 @@ public bool ManageInv { get; set; }  // NEW
 ```
 
 ### NEW: AvailableSize
+
 ```csharp
 // CRITICAL NEW CLASS
 public class AvailableSize
@@ -435,6 +440,7 @@ public class AvailableSize
 After updating `PosEntities.cs`:
 
 ### 1. Build the Project
+
 ```bash
 cd /home/kali/Desktop/TOAST/backend
 dotnet build
@@ -443,11 +449,13 @@ dotnet build
 **Expected:** Should compile with NO errors (but Repository/Service may have errors until we update those next)
 
 ### 2. Check for Compilation Errors
+
 ```bash
 dotnet build 2>&1 | grep error
 ```
 
 **Common errors at this stage:**
+
 - Repository methods still using old property names (fix in Step 2)
 - Service layer still using old property names (fix in Step 3)
 

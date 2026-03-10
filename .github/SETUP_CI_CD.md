@@ -7,6 +7,7 @@ This guide explains how to configure GitHub Actions for automated Android APK an
 ### Required GitHub Secrets
 
 1. **ANDROID_KEYSTORE_BASE64** - Base64 encoded keystore file
+
    ```bash
    # Generate from your keystore:
    base64 -i android/app/imidus-release.keystore | tr -d '\n'
@@ -43,6 +44,7 @@ keytool -genkeypair -v \
 ### Required GitHub Secrets
 
 1. **IOS_P12_CERTIFICATE_BASE64** - Base64 encoded .p12 certificate
+
    ```bash
    base64 -i Certificates.p12 | tr -d '\n'
    ```
@@ -115,11 +117,13 @@ keytool -genkeypair -v \
 ## Troubleshooting
 
 ### Android Build Fails
+
 - Check keystore secret is correctly base64 encoded
 - Verify all passwords are correct
 - Check build.gradle for SDK version compatibility
 
 ### iOS Build Fails
+
 - Verify certificate hasn't expired
 - Check provisioning profile matches bundle ID
 - Ensure App Store Connect API key has correct permissions

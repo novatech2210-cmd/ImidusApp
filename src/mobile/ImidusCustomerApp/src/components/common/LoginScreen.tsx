@@ -4,19 +4,35 @@
  * gold typography, branded inputs and CTA button.
  */
 
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
-  View, Text, Image, TextInput, TouchableOpacity,
-  StyleSheet, SafeAreaView, StatusBar, KeyboardAvoidingView,
-  Platform, ActivityIndicator, Alert,
+  View,
+  Text,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  StatusBar,
+  KeyboardAvoidingView,
+  Platform,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
-import { Colors, TextStyles, Spacing, BorderRadius, Shadow, Images } from '@/theme';
+import {
+  Colors,
+  TextStyles,
+  Spacing,
+  BorderRadius,
+  Shadow,
+  Images,
+} from '@/theme';
 
 interface LoginScreenProps {
   onLogin: (phone: string, password: string) => Promise<void>;
 }
 
-export default function LoginScreen({ onLogin }: LoginScreenProps) {
+export default function LoginScreen({onLogin}: LoginScreenProps) {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -43,8 +59,7 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
       {/* Full-screen brand-blue background */}
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         {/* ── Blue gradient banner logo ───────────────── */}
         <View style={styles.bannerWrapper}>
           <Image
@@ -100,21 +115,23 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
             style={[styles.loginButton, loading && styles.loginButtonDisabled]}
             onPress={handleLogin}
             disabled={loading}
-            activeOpacity={0.85}
-          >
-            {loading
-              ? <ActivityIndicator color={Colors.textOnGold} />
-              : <Text style={styles.loginButtonText}>SIGN IN</Text>
-            }
+            activeOpacity={0.85}>
+            {loading ? (
+              <ActivityIndicator color={Colors.textOnGold} />
+            ) : (
+              <Text style={styles.loginButtonText}>SIGN IN</Text>
+            )}
           </TouchableOpacity>
 
           {/* Guest / register links */}
           <TouchableOpacity style={styles.linkRow}>
-            <Text style={styles.link}>New customer?  </Text>
+            <Text style={styles.link}>New customer? </Text>
             <Text style={[styles.link, styles.linkAccent]}>Create Account</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.linkRow}>
-            <Text style={[styles.link, styles.linkAccent]}>Continue as Guest</Text>
+            <Text style={[styles.link, styles.linkAccent]}>
+              Continue as Guest
+            </Text>
           </TouchableOpacity>
         </View>
 

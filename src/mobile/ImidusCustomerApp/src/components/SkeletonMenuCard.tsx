@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 export const SkeletonMenuCard: React.FC = () => (
@@ -8,8 +8,7 @@ export const SkeletonMenuCard: React.FC = () => (
       flexDirection="row"
       alignItems="center"
       marginBottom={16}
-      paddingHorizontal={16}
-    >
+      paddingHorizontal={16}>
       <SkeletonPlaceholder.Item width={80} height={80} borderRadius={8} />
       <SkeletonPlaceholder.Item marginLeft={12} flex={1}>
         <SkeletonPlaceholder.Item width="80%" height={20} />
@@ -22,12 +21,14 @@ export const SkeletonMenuCard: React.FC = () => (
 
 export const SkeletonMenuList: React.FC = () => (
   <View style={styles.container}>
-    {[1, 2, 3, 4, 5, 6].map(i => <SkeletonMenuCard key={i} />)}
+    {[1, 2, 3, 4, 5, 6].map(i => (
+      <SkeletonMenuCard key={i} />
+    ))}
   </View>
 );
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 16
-  }
+    paddingVertical: 16,
+  },
 });

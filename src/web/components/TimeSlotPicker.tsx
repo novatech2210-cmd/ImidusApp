@@ -16,10 +16,10 @@ interface TimeSlotPickerProps {
   minLeadTimeMinutes?: number;
 }
 
-export function TimeSlotPicker({ 
-  selectedDateTime, 
+export function TimeSlotPicker({
+  selectedDateTime,
   onSelect,
-  minLeadTimeMinutes = 30 
+  minLeadTimeMinutes = 30,
 }: TimeSlotPickerProps) {
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
@@ -32,12 +32,12 @@ export function TimeSlotPicker({
     const date = new Date(today);
     date.setDate(today.getDate() + i);
     return {
-      value: date.toISOString().split('T')[0],
-      display: date.toLocaleDateString('en-US', { 
-        weekday: 'short', 
-        month: 'short', 
-        day: 'numeric' 
-      })
+      value: date.toISOString().split("T")[0],
+      display: date.toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      }),
     };
   });
 
@@ -52,7 +52,7 @@ export function TimeSlotPicker({
       setLoading(true);
       try {
         const response = await apiClient(
-          `/ScheduledOrders/timeslots?date=${selectedDate}&leadTimeMinutes=${minLeadTimeMinutes}`
+          `/ScheduledOrders/timeslots?date=${selectedDate}&leadTimeMinutes=${minLeadTimeMinutes}`,
         );
         setAvailableSlots(response.availableSlots || []);
       } catch (error) {
@@ -71,26 +71,26 @@ export function TimeSlotPicker({
     const slots: TimeSlot[] = [];
     const startHour = 11;
     const endHour = 21;
-    
+
     for (let hour = startHour; hour < endHour; hour++) {
       for (let min = 0; min < 60; min += 15) {
-        const time = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+        const time = `${hour.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}`;
         const dateTime = new Date(`${selectedDate}T${time}`);
         const minTime = new Date(Date.now() + minLeadTimeMinutes * 60000);
         const isAvailable = dateTime > minTime;
-        
+
         slots.push({
           time,
-          displayText: dateTime.toLocaleTimeString('en-US', { 
-            hour: 'numeric', 
-            minute: '2-digit',
-            hour12: true 
+          displayText: dateTime.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
           }),
-          isAvailable
+          isAvailable,
         });
       }
     }
-    
+
     setAvailableSlots(slots);
   };
 
@@ -134,11 +134,14 @@ export function TimeSlotPicker({
             <ClockIcon className="w-4 h-4 inline mr-1" />
             Select Time
           </label>
-          
+
           {loading ? (
             <div className="flex gap-2 flex-wrap">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="w-20 h-10 bg-gray-200 animate-pulse rounded-lg" />
+                <div
+                  key={i}
+                  className="w-20 h-10 bg-gray-200 animate-pulse rounded-lg"
+                />
               ))}
             </div>
           ) : availableSlots.length === 0 ? (
@@ -175,14 +178,16 @@ export function TimeSlotPicker({
             Pickup scheduled for:
           </p>
           <p className="text-lg font-bold text-[#D4AF37]">
-            {selectedDateTime.toLocaleDateString('en-US', { 
-              weekday: 'long',
-              month: 'long',
-              day: 'numeric'
-            })} at {selectedDateTime.toLocaleTimeString('en-US', { 
-              hour: 'numeric',
-              minute: '2-digit',
-              hour12: true 
+            {selectedDateTime.toLocaleDateString("en-US", {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+            })}{" "}
+            at{" "}
+            {selectedDateTime.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
             })}
           </p>
         </div>
@@ -193,13 +198,13 @@ export function TimeSlotPicker({
 
 // Utility to format scheduled time
 export function formatScheduledTime(dateTime: Date | string): string {
-  const date = typeof dateTime === 'string' ? new Date(dateTime) : dateTime;
-  return date.toLocaleString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
+  const date = typeof dateTime === "string" ? new Date(dateTime) : dateTime;
+  return date.toLocaleString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
   });
 }

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Modal from '@/components/Dialogs/Modal';
-import FormBuilder, { FormField } from '@/components/Forms/FormBuilder';
-import { useRefundOrder } from '@/lib/hooks';
+import React, { useState } from "react";
+import Modal from "@/components/Dialogs/Modal";
+import FormBuilder, { FormField } from "@/components/Forms/FormBuilder";
+import { useRefundOrder } from "@/lib/hooks";
 
 interface RefundDialogProps {
   isOpen: boolean;
@@ -22,8 +22,8 @@ export default function RefundDialog({
 }: RefundDialogProps) {
   const [values, setValues] = useState<Record<string, any>>({
     refundAmount: orderTotal,
-    reason: '',
-    notes: '',
+    reason: "",
+    notes: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -31,41 +31,43 @@ export default function RefundDialog({
 
   const fields: FormField[] = [
     {
-      name: 'refundAmount',
-      label: 'Refund Amount ($)',
-      type: 'number',
+      name: "refundAmount",
+      label: "Refund Amount ($)",
+      type: "number",
       required: true,
       validation: (value) => {
-        if (!value || parseFloat(value) <= 0) return 'Amount must be greater than 0';
-        if (parseFloat(value) > orderTotal / 100) return 'Amount exceeds order total';
+        if (!value || parseFloat(value) <= 0)
+          return "Amount must be greater than 0";
+        if (parseFloat(value) > orderTotal / 100)
+          return "Amount exceeds order total";
         return undefined;
       },
     },
     {
-      name: 'reason',
-      label: 'Reason',
-      type: 'select',
+      name: "reason",
+      label: "Reason",
+      type: "select",
       required: true,
       options: [
-        { value: 'customer_request', label: 'Customer Request' },
-        { value: 'order_error', label: 'Order Error' },
-        { value: 'item_unavailable', label: 'Item Unavailable' },
-        { value: 'duplicate_order', label: 'Duplicate Order' },
-        { value: 'other', label: 'Other' },
+        { value: "customer_request", label: "Customer Request" },
+        { value: "order_error", label: "Order Error" },
+        { value: "item_unavailable", label: "Item Unavailable" },
+        { value: "duplicate_order", label: "Duplicate Order" },
+        { value: "other", label: "Other" },
       ],
     },
     {
-      name: 'notes',
-      label: 'Internal Notes',
-      type: 'textarea',
-      placeholder: 'Add any internal notes about this refund...',
+      name: "notes",
+      label: "Internal Notes",
+      type: "textarea",
+      placeholder: "Add any internal notes about this refund...",
     },
   ];
 
   const handleChange = (name: string, value: any) => {
     setValues((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -98,12 +100,12 @@ export default function RefundDialog({
       },
       {
         onSuccess: () => {
-          setValues({ refundAmount: orderTotal, reason: '', notes: '' });
+          setValues({ refundAmount: orderTotal, reason: "", notes: "" });
           setErrors({});
           onClose();
           onSuccess?.();
         },
-      }
+      },
     );
   };
 
@@ -115,7 +117,7 @@ export default function RefundDialog({
         errors={errors}
         onChange={handleChange}
         onSubmit={handleSubmit}
-        submitLabel={isPending ? 'Processing...' : 'Confirm Refund'}
+        submitLabel={isPending ? "Processing..." : "Confirm Refund"}
         isLoading={isPending}
       />
     </Modal>

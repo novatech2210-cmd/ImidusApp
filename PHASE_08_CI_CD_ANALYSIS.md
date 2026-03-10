@@ -2,7 +2,7 @@
 
 **Analysis Date:** March 6, 2026  
 **Current Branch:** `feature/pos-schema-update` (76 commits ahead of remote)  
-**Milestone Status:** M3 COMPLETE, M4 IN PROGRESS, M5 PENDING  
+**Milestone Status:** M3 COMPLETE, M4 IN PROGRESS, M5 PENDING
 
 ---
 
@@ -35,12 +35,12 @@ The TOAST project has **80% of CI/CD infrastructure already in place** as commit
 
 **Key Findings:**
 
-| Workflow | Status | Triggers | Platforms | Output |
-|----------|--------|----------|-----------|--------|
-| backend-build.yml | ✅ READY | push(main,develop), PR, dispatch | ubuntu-latest, windows-latest | MSI + API binaries |
-| web-deploy.yml | ✅ READY | push(main), dispatch | ubuntu-latest | S3 deployment |
-| ios-build.yml | ✅ READY | push(main), dispatch | macos-latest | IPA → TestFlight |
-| android-build.yml | ✅ READY | push(main,develop,feature/*), PR, dispatch | ubuntu-latest | APK artifacts |
+| Workflow          | Status   | Triggers                                    | Platforms                     | Output             |
+| ----------------- | -------- | ------------------------------------------- | ----------------------------- | ------------------ |
+| backend-build.yml | ✅ READY | push(main,develop), PR, dispatch            | ubuntu-latest, windows-latest | MSI + API binaries |
+| web-deploy.yml    | ✅ READY | push(main), dispatch                        | ubuntu-latest                 | S3 deployment      |
+| ios-build.yml     | ✅ READY | push(main), dispatch                        | macos-latest                  | IPA → TestFlight   |
+| android-build.yml | ✅ READY | push(main,develop,feature/\*), PR, dispatch | ubuntu-latest                 | APK artifacts      |
 
 ---
 
@@ -49,6 +49,7 @@ The TOAST project has **80% of CI/CD infrastructure already in place** as commit
 **File:** `.github/workflows/backend-build.yml` (185 lines)
 
 #### What's Working:
+
 ```yaml
 ✅ Multi-stage build:
   - Stage 1: Build & Test (ubuntu-latest with SQL Server service)
@@ -80,6 +81,7 @@ The TOAST project has **80% of CI/CD infrastructure already in place** as commit
    - `CLOUDFRONT_DISTRIBUTION_ID` - for cache invalidation (optional)
 
 #### Backend Build Output Structure:
+
 ```
 artifacts/
 ├── backend-api/                    # Published .NET 8 binaries
@@ -96,6 +98,7 @@ artifacts/
 ```
 
 #### Database Setup for Tests:
+
 ```yaml
 services:
   sqlserver:
@@ -112,6 +115,7 @@ services:
 **File:** `.github/workflows/web-deploy.yml` (98 lines)
 
 #### What's Working:
+
 ```yaml
 ✅ Next.js build with environment variables:
   - NEXT_PUBLIC_API_URL (staging vs production)
@@ -126,6 +130,7 @@ services:
 ```
 
 #### Current Configuration:
+
 ```bash
 Working Directory: src/web/
 Package Manager: npm (package-lock.json present)
@@ -160,6 +165,7 @@ S3 Prefix: novatech/web/{staging|production}
 **File:** `.github/workflows/ios-build.yml` (125 lines)
 
 #### What's Working:
+
 ```yaml
 ✅ Full iOS code signing flow:
   - P12 certificate import to keychain
@@ -173,6 +179,7 @@ S3 Prefix: novatech/web/{staging|production}
 ```
 
 #### Current Configuration:
+
 ```bash
 Working Directory: src/mobile/ImidusCustomerApp/
 XCode Workspace: ios/ImidusCustomerApp.xcworkspace
@@ -183,15 +190,15 @@ Export: ExportOptions.plist
 
 #### Critical Required Secrets:
 
-| Secret | Purpose | Status | Notes |
-|--------|---------|--------|-------|
-| IOS_P12_CERTIFICATE_BASE64 | Code signing cert | ⚠️ MISSING | Must be base64 encoded .p12 file |
-| IOS_P12_PASSWORD | P12 password | ⚠️ MISSING | Used to import cert to keychain |
-| IOS_KEYCHAIN_PASSWORD | Temp keychain password | ⚠️ MISSING | Any strong password works |
-| IOS_PROVISIONING_PROFILE_BASE64 | App Store profile | ⚠️ MISSING | base64 encoded .mobileprovision |
-| APP_STORE_CONNECT_API_KEY_ID | ASC API Key ID | ⚠️ MISSING | From App Store Connect → Users & Access |
-| APP_STORE_CONNECT_API_ISSUER_ID | ASC Issuer ID | ⚠️ MISSING | From App Store Connect |
-| APP_STORE_CONNECT_API_KEY_BASE64 | ASC .p8 key | ⚠️ MISSING | base64 encoded AuthKey_XXXXXX.p8 |
+| Secret                           | Purpose                | Status     | Notes                                   |
+| -------------------------------- | ---------------------- | ---------- | --------------------------------------- |
+| IOS_P12_CERTIFICATE_BASE64       | Code signing cert      | ⚠️ MISSING | Must be base64 encoded .p12 file        |
+| IOS_P12_PASSWORD                 | P12 password           | ⚠️ MISSING | Used to import cert to keychain         |
+| IOS_KEYCHAIN_PASSWORD            | Temp keychain password | ⚠️ MISSING | Any strong password works               |
+| IOS_PROVISIONING_PROFILE_BASE64  | App Store profile      | ⚠️ MISSING | base64 encoded .mobileprovision         |
+| APP_STORE_CONNECT_API_KEY_ID     | ASC API Key ID         | ⚠️ MISSING | From App Store Connect → Users & Access |
+| APP_STORE_CONNECT_API_ISSUER_ID  | ASC Issuer ID          | ⚠️ MISSING | From App Store Connect                  |
+| APP_STORE_CONNECT_API_KEY_BASE64 | ASC .p8 key            | ⚠️ MISSING | base64 encoded AuthKey_XXXXXX.p8        |
 
 #### What Needs Fixing:
 
@@ -217,6 +224,7 @@ Export: ExportOptions.plist
 **File:** `.github/workflows/android-build.yml` (110 lines)
 
 #### What's Working:
+
 ```yaml
 ✅ Gradle build system integration
 ✅ Keystore decoding from base64 secret
@@ -227,6 +235,7 @@ Export: ExportOptions.plist
 ```
 
 #### Current Configuration:
+
 ```bash
 Working Directory: src/mobile/ImidusCustomerApp/
 Java Version: 17
@@ -238,14 +247,15 @@ Properties: keystore.properties (auto-generated in CI)
 
 #### Critical Required Secrets:
 
-| Secret | Purpose | Status | Notes |
-|--------|---------|--------|-------|
-| ANDROID_KEYSTORE_BASE64 | Signing keystore | ⚠️ MISSING | base64 encoded .keystore file |
-| KEYSTORE_PASSWORD | Keystore password | ⚠️ MISSING | Current: ImidusSecure2024 (in docs) |
-| KEY_PASSWORD | Key password | ⚠️ MISSING | Current: ImidusSecure2024 (in docs) |
-| KEY_ALIAS | Key alias | ⚠️ MISSING | Current: imidus-key (in docs) |
+| Secret                  | Purpose           | Status     | Notes                               |
+| ----------------------- | ----------------- | ---------- | ----------------------------------- |
+| ANDROID_KEYSTORE_BASE64 | Signing keystore  | ⚠️ MISSING | base64 encoded .keystore file       |
+| KEYSTORE_PASSWORD       | Keystore password | ⚠️ MISSING | Current: ImidusSecure2024 (in docs) |
+| KEY_PASSWORD            | Key password      | ⚠️ MISSING | Current: ImidusSecure2024 (in docs) |
+| KEY_ALIAS               | Key alias         | ⚠️ MISSING | Current: imidus-key (in docs)       |
 
 #### Android Build Output:
+
 ```bash
 # Release APK
 app/build/outputs/apk/release/app-release.apk
@@ -270,6 +280,7 @@ app/build/outputs/apk/debug/app-debug.apk
    - Should be more robust with error handling
 
 #### Android SDK Setup:
+
 ```yaml
 - uses: android-actions/setup-android@v3
   # Installs:
@@ -289,6 +300,7 @@ app/build/outputs/apk/debug/app-debug.apk
 **Delivery:** Self-contained executable (no .NET runtime dependency)
 
 #### WiX Configuration
+
 **File:** `installer/ImidusIntegrationService.wxs` (109 lines)
 
 ```xml
@@ -325,6 +337,7 @@ app/build/outputs/apk/debug/app-debug.apk
 ```
 
 **Publish Command (from workflow):**
+
 ```bash
 dotnet publish --configuration Release \
   --output ./publish \
@@ -335,11 +348,13 @@ dotnet publish --configuration Release \
 ```
 
 **Result:**
+
 - Single executable file: `IntegrationService.API.exe` (~80-100 MB self-contained)
 - No .NET 8 runtime installation required on target
 - Includes all dependencies and native libraries
 
 #### Docker Support (Optional)
+
 **File:** `src/backend/IntegrationService.API/Dockerfile`
 
 ```dockerfile
@@ -366,6 +381,7 @@ Runners: xunit.runner.visualstudio
 ```
 
 #### Test Structure:
+
 ```
 IntegrationService.Tests/
 ├── Controllers/             # API endpoint tests
@@ -424,6 +440,7 @@ Service Start:
 **Flow:** GitHub → xcodebuild → IPA → App Store Connect → TestFlight
 
 #### Requirements:
+
 ```
 ✅ Apple Developer Account
 ✅ App ID in Developer Portal
@@ -438,6 +455,7 @@ Service Start:
 #### What's Broken:
 
 1. **Missing ExportOptions.plist:**
+
    ```xml
    ios/ExportOptions.plist should contain:
    <key>method</key><string>app-store</string>
@@ -463,6 +481,7 @@ Service Start:
 **Flow:** GitHub → Gradle → APK → GitHub Artifacts (+ optional Google Play)
 
 #### Requirements:
+
 ```
 ✅ Keystore file (.keystore) with signing key
 ✅ build.gradle configuration
@@ -492,12 +511,13 @@ android/
 ```
 
 #### Security Concern:
+
 ```
 ⚠️ CRITICAL: keystore.properties in repo shows passwords!
    File: android/keystore.properties
    Line: storePassword=...
    Line: keyPassword=...
-   
+
 ACTION: Add to .gitignore, use GitHub Secrets in CI only
 ```
 
@@ -532,6 +552,7 @@ s3://inirestaurant/
 ### 4.2 AWS Credentials Required
 
 **Secrets needed:**
+
 ```
 AWS_ACCESS_KEY_ID          - IAM access key
 AWS_SECRET_ACCESS_KEY      - IAM secret key
@@ -539,6 +560,7 @@ CLOUDFRONT_DISTRIBUTION_ID - For web platform cache invalidation
 ```
 
 **IAM Policy Required:**
+
 ```json
 {
   "Version": "2012-10-17",
@@ -595,11 +617,11 @@ android-build.yml:
 
 ```yaml
 Retention Policies:
-  ✅ Backend API:     30 days
-  ✅ Backend MSI:     90 days
-  ✅ iOS IPA:         30 days
-  ✅ Android APK:     30 days (debug), 7 days (debug)
-  ✅ Web deployment:  None (direct to S3)
+  ✅ Backend API: 30 days
+  ✅ Backend MSI: 90 days
+  ✅ iOS IPA: 30 days
+  ✅ Android APK: 30 days (debug), 7 days (debug)
+  ✅ Web deployment: None (direct to S3)
 ```
 
 ### 5.3 Build Strategies
@@ -630,6 +652,7 @@ Mobile:
 **Location:** `src/backend/IntegrationService.Tests/`
 
 #### Test Projects:
+
 ```
 Controllers/
 ├── NotificationsControllerTests.cs
@@ -646,6 +669,7 @@ Infrastructure/
 ```
 
 #### Current Issues:
+
 1. Tests not confirmed running in CI workflow
 2. No coverage percentage targets defined
 3. No code coverage reports uploaded
@@ -658,6 +682,7 @@ Infrastructure/
 **Location:** `scripts/05_e2e_test.sh` (346 lines)
 
 #### Test Coverage:
+
 ```
 ✅ Test 1: Backend API Health Check
 ✅ Test 2: Database Connectivity
@@ -671,6 +696,7 @@ Infrastructure/
 ```
 
 #### How to Run:
+
 ```bash
 ./scripts/05_e2e_test.sh
 
@@ -681,6 +707,7 @@ Environment Variables:
 ```
 
 #### Test Output:
+
 ```
 TOTAL TESTS: 9
 PASSED: X tests
@@ -694,6 +721,7 @@ Exit Code: 0 (all passed) or 1 (failures)
 ### 6.3 Database Setup for Testing
 
 **Files:**
+
 ```
 scripts/01_start_sqlserver_docker.sh     - Start SQL Server in Docker
 scripts/02_restore_database.sh           - Restore INI_Restaurant.Bak
@@ -701,6 +729,7 @@ scripts/03_create_backend_db.sh          - Create IntegrationService DB
 ```
 
 **Docker Compose:**
+
 ```yaml
 src/backend/docker-compose.yml:
   - SQL Server 2022 container
@@ -719,17 +748,17 @@ src/backend/docker-compose.yml:
    Status: Referenced in Phase8_CICD_Workflows.zip but not in .github/workflows/
    Purpose: Unified S3 deployment orchestration
    Issue: Workflow dispatch from backend-build.yml doesn't exist
-   
+
 ❌ unified-deploy.yml (or main-deploy.yml)
    Status: Not created
    Purpose: Coordinate all platform deployments
    Issue: No approval gate for production
-   
+
 ❌ monitoring-dashboard.yml
    Status: Not created
    Purpose: Post-deployment validation
    Issue: No automated health checks after deployment
-   
+
 ❌ rollback.yml
    Status: Not created
    Purpose: Emergency rollback procedures
@@ -784,20 +813,20 @@ src/backend/docker-compose.yml:
 
 ### 8.1 Work Breakdown
 
-| Task | Effort | Priority | Blocker? |
-|------|--------|----------|----------|
-| Fix iOS CocoaPods/ExportOptions.plist | 2-4h | HIGH | ✅ YES (iOS build broken) |
-| Fix Android keystore security (remove from repo) | 1-2h | HIGH | ✅ YES (security) |
-| Fix package manager consistency (npm → pnpm) | 2-3h | MEDIUM | ✅ Potential |
-| Create/fix missing XUnit test execution | 3-5h | MEDIUM | ✅ Backend validation |
-| Create s3-upload.yml workflow | 3-5h | HIGH | ✅ YES (deployment) |
-| Create unified-deploy.yml workflow | 4-6h | HIGH | ✅ YES (coordination) |
-| Configure all GitHub Secrets | 2-3h | HIGH | ✅ YES (build blocker) |
-| Create production approval gates | 2-3h | MEDIUM | Recommended |
-| Create rollback procedures | 3-4h | MEDIUM | Recommended |
-| Create health check automation | 3-5h | MEDIUM | Recommended |
-| Document deployment procedures | 2-3h | LOW | Reference |
-| **TOTAL** | **~35-48h** | - | - |
+| Task                                             | Effort      | Priority | Blocker?                  |
+| ------------------------------------------------ | ----------- | -------- | ------------------------- |
+| Fix iOS CocoaPods/ExportOptions.plist            | 2-4h        | HIGH     | ✅ YES (iOS build broken) |
+| Fix Android keystore security (remove from repo) | 1-2h        | HIGH     | ✅ YES (security)         |
+| Fix package manager consistency (npm → pnpm)     | 2-3h        | MEDIUM   | ✅ Potential              |
+| Create/fix missing XUnit test execution          | 3-5h        | MEDIUM   | ✅ Backend validation     |
+| Create s3-upload.yml workflow                    | 3-5h        | HIGH     | ✅ YES (deployment)       |
+| Create unified-deploy.yml workflow               | 4-6h        | HIGH     | ✅ YES (coordination)     |
+| Configure all GitHub Secrets                     | 2-3h        | HIGH     | ✅ YES (build blocker)    |
+| Create production approval gates                 | 2-3h        | MEDIUM   | Recommended               |
+| Create rollback procedures                       | 3-4h        | MEDIUM   | Recommended               |
+| Create health check automation                   | 3-5h        | MEDIUM   | Recommended               |
+| Document deployment procedures                   | 2-3h        | LOW      | Reference                 |
+| **TOTAL**                                        | **~35-48h** | -        | -                         |
 
 ### 8.2 Critical Path Items (Must Complete First)
 
@@ -861,6 +890,7 @@ From Client Clarification Needed:
 ### 10.1 Immediate Actions (This Week)
 
 1. **Fix iOS Build:**
+
    ```bash
    # Create ios/ExportOptions.plist
    cat > src/mobile/ImidusCustomerApp/ios/ExportOptions.plist << 'EOF'
@@ -882,6 +912,7 @@ From Client Clarification Needed:
    ```
 
 2. **Fix Android Security:**
+
    ```bash
    # Add to .gitignore
    echo "android/keystore.properties" >> .gitignore
@@ -890,6 +921,7 @@ From Client Clarification Needed:
    ```
 
 3. **Fix Package Manager:**
+
    ```bash
    # Update workflows to use pnpm consistently
    # In ios-build.yml and android-build.yml:
@@ -1059,4 +1091,3 @@ The TOAST project has **solid CI/CD foundation** with 80% of workflows already c
 **Total realistic effort: 35-50 hours for complete Phase 08 implementation**
 
 **Risk Assessment: LOW** - All components exist, just need integration and configuration.
-

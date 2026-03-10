@@ -4,32 +4,32 @@ on:
   push:
     branches: [main, feature/*, develop]
     paths:
-      - 'src/mobile/ImidusCustomerApp/**'
-      - '.github/workflows/android-build.yml'
+      - "src/mobile/ImidusCustomerApp/**"
+      - ".github/workflows/android-build.yml"
   pull_request:
     branches: [main]
     paths:
-      - 'src/mobile/ImidusCustomerApp/**'
+      - "src/mobile/ImidusCustomerApp/**"
   workflow_dispatch:
     inputs:
       build_type:
-        description: 'Build type (debug/release)'
+        description: "Build type (debug/release)"
         required: true
-        default: 'release'
+        default: "release"
         type: choice
         options:
           - debug
           - release
       upload_to_s3:
-        description: 'Upload to S3 after build'
+        description: "Upload to S3 after build"
         required: false
         default: false
         type: boolean
 
 env:
   WORKING_DIR: src/mobile/ImidusCustomerApp
-  JAVA_VERSION: '17'
-  NODE_VERSION: '18'
+  JAVA_VERSION: "17"
+  NODE_VERSION: "18"
   S3_BUCKET: inirestaurant
   S3_PREFIX: novatech
 
@@ -45,7 +45,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: "zulu"
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: Setup Node.js

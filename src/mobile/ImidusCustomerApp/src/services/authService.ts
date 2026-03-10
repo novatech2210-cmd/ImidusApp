@@ -47,18 +47,24 @@ class AuthService {
    */
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post<AuthResponse>('/auth/register', data);
+      const response = await apiClient.post<AuthResponse>(
+        '/auth/register',
+        data,
+      );
 
       // Store tokens and user data
       await this.storeAuthData(
         response.data.token,
         response.data.refreshToken,
-        response.data.user
+        response.data.user,
       );
 
       return response.data;
     } catch (error: any) {
-      console.error('[AuthService] Registration error:', error.response?.data || error.message);
+      console.error(
+        '[AuthService] Registration error:',
+        error.response?.data || error.message,
+      );
       throw this.handleAuthError(error);
     }
   }
@@ -74,12 +80,15 @@ class AuthService {
       await this.storeAuthData(
         response.data.token,
         response.data.refreshToken,
-        response.data.user
+        response.data.user,
       );
 
       return response.data;
     } catch (error: any) {
-      console.error('[AuthService] Login error:', error.response?.data || error.message);
+      console.error(
+        '[AuthService] Login error:',
+        error.response?.data || error.message,
+      );
       throw this.handleAuthError(error);
     }
   }
@@ -119,7 +128,10 @@ class AuthService {
 
       return response.data;
     } catch (error: any) {
-      console.error('[AuthService] Get current user error:', error.response?.data || error.message);
+      console.error(
+        '[AuthService] Get current user error:',
+        error.response?.data || error.message,
+      );
       throw this.handleAuthError(error);
     }
   }
@@ -143,12 +155,15 @@ class AuthService {
       await this.storeAuthData(
         response.data.token,
         response.data.refreshToken,
-        response.data.user
+        response.data.user,
       );
 
       return response.data;
     } catch (error: any) {
-      console.error('[AuthService] Token refresh error:', error.response?.data || error.message);
+      console.error(
+        '[AuthService] Token refresh error:',
+        error.response?.data || error.message,
+      );
       // If refresh fails, clear auth data
       await this.logout();
       throw this.handleAuthError(error);
@@ -208,7 +223,7 @@ class AuthService {
   private async storeAuthData(
     token: string,
     refreshToken: string,
-    user: UserProfile
+    user: UserProfile,
   ): Promise<void> {
     try {
       await AsyncStorage.multiSet([
@@ -242,11 +257,16 @@ class AuthService {
   private handleAuthError(error: any): Error {
     if (error.response) {
       // Server responded with error
-      const message = error.response.data?.error || error.response.data?.message || 'Authentication failed';
+      const message =
+        error.response.data?.error ||
+        error.response.data?.message ||
+        'Authentication failed';
       return new Error(message);
     } else if (error.request) {
       // Request made but no response
-      return new Error('Unable to connect to server. Please check your internet connection.');
+      return new Error(
+        'Unable to connect to server. Please check your internet connection.',
+      );
     } else {
       // Something else happened
       return new Error(error.message || 'An unexpected error occurred');

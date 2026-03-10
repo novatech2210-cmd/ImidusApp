@@ -58,7 +58,7 @@ builder.Services.AddCors(options =>
                   .AllowAnyMethod()
                   .AllowCredentials();
         });
-    
+
     options.AddPolicy("AllowMobileApp",
         policy =>
         {

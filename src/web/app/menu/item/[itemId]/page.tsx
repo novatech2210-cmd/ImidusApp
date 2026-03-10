@@ -1,25 +1,30 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useSearchParams, useParams } from 'next/navigation';
-import Link from 'next/link';
-import { MenuAPI, MenuItem } from '@/lib/api';
-import { useCart } from '@/context/CartContext';
-import { ArrowLeftIcon, PlusIcon, MinusIcon, ShoppingCartIcon } from '@heroicons/react/24/solid';
+import { useEffect, useState } from "react";
+import { useSearchParams, useParams } from "next/navigation";
+import Link from "next/link";
+import { MenuAPI, MenuItem } from "@/lib/api";
+import { useCart } from "@/context/CartContext";
+import {
+  ArrowLeftIcon,
+  PlusIcon,
+  MinusIcon,
+  ShoppingCartIcon,
+} from "@heroicons/react/24/solid";
 
 export default function ItemDetailPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const itemId = parseInt(params.itemId as string);
-  const categoryId = searchParams.get('category');
-  
+  const categoryId = searchParams.get("category");
+
   const [item, setItem] = useState<MenuItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
-  
+
   const { addItem } = useCart();
 
   useEffect(() => {
@@ -32,19 +37,19 @@ export default function ItemDetailPage() {
     try {
       setLoading(true);
       const items = await MenuAPI.getItemsByCategory(parseInt(categoryId!));
-      const foundItem = items.find(i => i.itemId === itemId);
+      const foundItem = items.find((i) => i.itemId === itemId);
       if (foundItem) {
         setItem(foundItem);
         // Select first available size by default
-        const availableSize = foundItem.sizes.find(s => s.inStock);
+        const availableSize = foundItem.sizes.find((s) => s.inStock);
         if (availableSize) {
           setSelectedSize(availableSize.sizeId);
         }
       } else {
-        setError('Item not found');
+        setError("Item not found");
       }
     } catch (err) {
-      setError('Failed to load item details');
+      setError("Failed to load item details");
       console.error(err);
     } finally {
       setLoading(false);
@@ -53,8 +58,8 @@ export default function ItemDetailPage() {
 
   const handleAddToCart = () => {
     if (!item || !selectedSize) return;
-    
-    const size = item.sizes.find(s => s.sizeId === selectedSize);
+
+    const size = item.sizes.find((s) => s.sizeId === selectedSize);
     if (!size) return;
 
     addItem({
@@ -64,7 +69,7 @@ export default function ItemDetailPage() {
       sizeName: size.sizeName,
       price: size.price,
       image: item.imageUrl,
-      categoryName: '', // Will be set from menu page
+      categoryName: "", // Will be set from menu page
     });
 
     // Add multiple quantities if needed
@@ -76,7 +81,7 @@ export default function ItemDetailPage() {
         sizeName: size.sizeName,
         price: size.price,
         image: item.imageUrl,
-        categoryName: '',
+        categoryName: "",
       });
     }
 
@@ -87,7 +92,9 @@ export default function ItemDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-lg font-semibold text-[#1E5AA8]">Loading item...</div>
+        <div className="text-lg font-semibold text-[#1E5AA8]">
+          Loading item...
+        </div>
       </div>
     );
   }
@@ -96,7 +103,9 @@ export default function ItemDetailPage() {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <p className="text-lg font-semibold text-red-600 mb-4">{error || 'Item not found'}</p>
+          <p className="text-lg font-semibold text-red-600 mb-4">
+            {error || "Item not found"}
+          </p>
           <Link href="/menu" className="text-[#1E5AA8] hover:underline">
             ← Back to Menu
           </Link>
@@ -105,14 +114,14 @@ export default function ItemDetailPage() {
     );
   }
 
-  const selectedSizeObj = item.sizes.find(s => s.sizeId === selectedSize);
+  const selectedSizeObj = item.sizes.find((s) => s.sizeId === selectedSize);
   const itemTotal = (selectedSizeObj?.price || 0) * quantity;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
       {/* Back Button */}
-      <Link 
-        href="/menu" 
+      <Link
+        href="/menu"
         className="inline-flex items-center gap-2 text-[#1E5AA8] hover:text-[#D4AF37] mb-6 transition-colors"
       >
         <ArrowLeftIcon className="w-5 h-5" />
@@ -138,8 +147,10 @@ export default function ItemDetailPage() {
 
           {/* Details Section */}
           <div className="p-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-3">{item.name}</h1>
-            
+            <h1 className="text-3xl font-bold text-gray-800 mb-3">
+              {item.name}
+            </h1>
+
             {item.description && (
               <p className="text-gray-600 mb-6">{item.description}</p>
             )}
@@ -157,18 +168,20 @@ export default function ItemDetailPage() {
                     disabled={!size.inStock}
                     className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
                       selectedSize === size.sizeId
-                        ? 'border-[#D4AF37] bg-[#FDF6E3]'
+                        ? "border-[#D4AF37] bg-[#FDF6E3]"
                         : size.inStock
-                        ? 'border-gray-200 hover:border-[#1E5AA8]'
-                        : 'border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed'
+                          ? "border-gray-200 hover:border-[#1E5AA8]"
+                          : "border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                        selectedSize === size.sizeId
-                          ? 'border-[#D4AF37] bg-[#D4AF37]'
-                          : 'border-gray-300'
-                      }`}>
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          selectedSize === size.sizeId
+                            ? "border-[#D4AF37] bg-[#D4AF37]"
+                            : "border-gray-300"
+                        }`}
+                      >
                         {selectedSize === size.sizeId && (
                           <div className="w-2 h-2 rounded-full bg-white" />
                         )}
@@ -176,7 +189,9 @@ export default function ItemDetailPage() {
                       <span className="font-medium text-gray-800">
                         {size.sizeName}
                         {!size.inStock && (
-                          <span className="ml-2 text-xs text-red-500">(Out of Stock)</span>
+                          <span className="ml-2 text-xs text-red-500">
+                            (Out of Stock)
+                          </span>
                         )}
                       </span>
                     </div>
@@ -226,9 +241,9 @@ export default function ItemDetailPage() {
                 disabled={!selectedSize || !selectedSizeObj?.inStock || added}
                 className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
                   added
-                    ? 'bg-green-500 text-white'
-                    : 'bg-[#1E5AA8] hover:bg-[#D4AF37] text-white'
-                } ${(!selectedSize || !selectedSizeObj?.inStock) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    ? "bg-green-500 text-white"
+                    : "bg-[#1E5AA8] hover:bg-[#D4AF37] text-white"
+                } ${!selectedSize || !selectedSizeObj?.inStock ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {added ? (
                   <>

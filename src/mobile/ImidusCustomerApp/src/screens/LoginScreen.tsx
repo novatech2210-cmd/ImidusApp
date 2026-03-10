@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -11,19 +11,21 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store';
-import { loginUser, clearError } from '../store/authSlice';
-import { Colors } from '../theme/colors';
-import { Spacing } from '../theme/spacing';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../store';
+import {loginUser, clearError} from '../store/authSlice';
+import {Colors} from '../theme/colors';
+import {Spacing} from '../theme/spacing';
 
 interface LoginScreenProps {
   navigation: any;
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isLoading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const {isLoading, error, isAuthenticated} = useSelector(
+    (state: RootState) => state.auth,
+  );
 
   const [phoneOrEmail, setPhoneOrEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -39,7 +41,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   useEffect(() => {
     if (error) {
       Alert.alert('Login Failed', error, [
-        { text: 'OK', onPress: () => dispatch(clearError()) },
+        {text: 'OK', onPress: () => dispatch(clearError())},
       ]);
     }
   }, [error, dispatch]);
@@ -61,9 +63,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     try {
       await dispatch(
         loginUser({
-          ...(isEmail ? { email: phoneOrEmail.trim() } : { phone: phoneOrEmail.trim() }),
+          ...(isEmail
+            ? {email: phoneOrEmail.trim()}
+            : {phone: phoneOrEmail.trim()}),
           password,
-        })
+        }),
       ).unwrap();
       // Navigation handled by useEffect when isAuthenticated becomes true
     } catch (err) {

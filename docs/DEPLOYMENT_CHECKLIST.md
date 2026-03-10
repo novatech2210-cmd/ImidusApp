@@ -29,6 +29,7 @@
 ### 3. Feature Completeness ✅
 
 #### Core Features:
+
 - [x] Homepage Banner Carousel with customer segments
 - [x] Menu system with categories and items
 - [x] Item detail page with size selection
@@ -40,6 +41,7 @@
 - [x] Real-time sync indicator
 
 #### Advanced Features:
+
 - [x] Scheduled orders (future pickup)
 - [x] Rule-based upselling engine
 - [x] Background scheduled order release service
@@ -109,6 +111,7 @@ dotnet publish IntegrationService.API/IntegrationService.API.csproj \
 ### Phase 3: Configuration
 
 #### Frontend Environment:
+
 ```bash
 # .env.production
 NEXT_PUBLIC_API_URL=https://api.imidus.com/api
@@ -116,6 +119,7 @@ NEXT_PUBLIC_AUTH_TOKEN_KEY=imidus_auth_token
 ```
 
 #### Backend Configuration:
+
 ```json
 // appsettings.Production.json
 {
@@ -176,12 +180,14 @@ curl https://api.imidus.com/api/Menu/categories
 ## Rollback Plan
 
 ### Frontend Rollback:
+
 ```bash
 # Restore previous version from S3 backup
 aws s3 sync s3://inirestaurant/novatech/web-backup/ s3://inirestaurant/novatech/web/
 ```
 
 ### Backend Rollback:
+
 1. Stop IntegrationService Windows Service
 2. Restore previous MSI backup
 3. Install previous version
@@ -191,15 +197,15 @@ aws s3 sync s3://inirestaurant/novatech/web-backup/ s3://inirestaurant/novatech/
 
 ## Milestone Acceptance Criteria
 
-| Criteria | Status | Evidence |
-|----------|--------|----------|
-| Responsive web ordering UI | ✅ | 13 pages, mobile-first design |
-| Authorize.net payment integration | ✅ | Accept.js tokenization implemented |
-| POS ticket sync | ✅ | Writes to tblSales/tblSalesDetail |
-| Future scheduled ordering | ✅ | ScheduledOrders table + background service |
-| Rule-based upselling | ✅ | MarketingRules table, deterministic logic |
-| Branding integration | ✅ | IMIDUSAPP theme applied |
-| SSOT compliance | ✅ | Full documentation |
+| Criteria                          | Status | Evidence                                   |
+| --------------------------------- | ------ | ------------------------------------------ |
+| Responsive web ordering UI        | ✅     | 13 pages, mobile-first design              |
+| Authorize.net payment integration | ✅     | Accept.js tokenization implemented         |
+| POS ticket sync                   | ✅     | Writes to tblSales/tblSalesDetail          |
+| Future scheduled ordering         | ✅     | ScheduledOrders table + background service |
+| Rule-based upselling              | ✅     | MarketingRules table, deterministic logic  |
+| Branding integration              | ✅     | IMIDUSAPP theme applied                    |
+| SSOT compliance                   | ✅     | Full documentation                         |
 
 ---
 
@@ -210,6 +216,7 @@ aws s3 sync s3://inirestaurant/novatech/web-backup/ s3://inirestaurant/novatech/
 **Status:** ✅ **READY FOR CLIENT ACCEPTANCE**
 
 **Pending:**
+
 - Client review and acceptance
 - S3 deployment execution
 - Windows Service MSI installation

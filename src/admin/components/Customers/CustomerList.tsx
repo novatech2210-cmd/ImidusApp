@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import React from 'react';
-import DataTable, { Column } from '@/components/Tables/DataTable';
-import { SkeletonTable } from '@/components/Loading/Skeleton';
+import React from "react";
+import DataTable, { Column } from "@/components/Tables/DataTable";
+import { SkeletonTable } from "@/components/Loading/Skeleton";
 
 interface Customer {
   id: number;
   name: string;
   email: string;
   phone: string;
-  segment: 'vip' | 'regular' | 'at_risk' | 'new';
+  segment: "vip" | "regular" | "at_risk" | "new";
   totalSpent: number;
   orderCount: number;
   lastOrder: string;
@@ -28,54 +28,57 @@ export default function CustomerList({
 }: CustomerListProps) {
   const getSegmentColor = (segment: string) => {
     const colors: Record<string, string> = {
-      vip: 'bg-purple-100 text-purple-800',
-      regular: 'bg-blue-100 text-blue-800',
-      at_risk: 'bg-red-100 text-red-800',
-      new: 'bg-green-100 text-green-800',
+      vip: "bg-purple-100 text-purple-800",
+      regular: "bg-blue-100 text-blue-800",
+      at_risk: "bg-red-100 text-red-800",
+      new: "bg-green-100 text-green-800",
     };
-    return colors[segment] || 'bg-gray-100 text-gray-800';
+    return colors[segment] || "bg-gray-100 text-gray-800";
   };
 
   const columns: Column<Customer>[] = [
     {
-      key: 'name',
-      label: 'Name',
+      key: "name",
+      label: "Name",
       sortable: true,
     },
     {
-      key: 'email',
-      label: 'Email',
+      key: "email",
+      label: "Email",
       sortable: true,
     },
     {
-      key: 'phone',
-      label: 'Phone',
+      key: "phone",
+      label: "Phone",
     },
     {
-      key: 'segment',
-      label: 'Segment',
+      key: "segment",
+      label: "Segment",
       sortable: true,
       render: (value) => (
-        <span className={`px-2 py-1 text-xs font-medium rounded ${getSegmentColor(value)}`}>
+        <span
+          className={`px-2 py-1 text-xs font-medium rounded ${getSegmentColor(value)}`}
+        >
           {value.toUpperCase()}
         </span>
       ),
     },
     {
-      key: 'totalSpent',
-      label: 'Total Spent',
+      key: "totalSpent",
+      label: "Total Spent",
       sortable: true,
-      render: (value) => `$${(value / 100).toLocaleString('en-US', { maximumFractionDigits: 2 })}`,
+      render: (value) =>
+        `$${(value / 100).toLocaleString("en-US", { maximumFractionDigits: 2 })}`,
     },
     {
-      key: 'orderCount',
-      label: 'Orders',
+      key: "orderCount",
+      label: "Orders",
       sortable: true,
       render: (value) => value.toLocaleString(),
     },
     {
-      key: 'lastOrder',
-      label: 'Last Order',
+      key: "lastOrder",
+      label: "Last Order",
       render: (value) => new Date(value).toLocaleDateString(),
     },
   ];

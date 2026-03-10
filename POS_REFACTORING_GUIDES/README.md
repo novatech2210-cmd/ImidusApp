@@ -12,16 +12,16 @@ Your TOAST backend was built with **assumed table/column names** for the INI_Res
 
 ### **Schema Differences**
 
-| **Assumed Name** | **Actual Name** | **Impact Level** |
-|------------------|-----------------|------------------|
-| `Tickets` table | `tblSales` | 🔴 HIGH - All queries |
-| `TicketItems` table | `tblSalesDetail` | 🔴 HIGH - All queries |
-| `Tenders` table | `tblPayment` | 🔴 HIGH - All queries |
-| `MenuItems` table | `tblItem` | 🔴 HIGH - All queries |
-| Simple pricing | `tblAvailableSize` (multi-size pricing) | 🔴 CRITICAL - Architecture change |
-| `TicketID` column | `ID` column | 🟡 MEDIUM - Naming |
-| `ItemName` column | `IName` column | 🟡 MEDIUM - Naming |
-| `Status` field | Multiple boolean flags | 🟡 MEDIUM - Logic change |
+| **Assumed Name**    | **Actual Name**                         | **Impact Level**                  |
+| ------------------- | --------------------------------------- | --------------------------------- |
+| `Tickets` table     | `tblSales`                              | 🔴 HIGH - All queries             |
+| `TicketItems` table | `tblSalesDetail`                        | 🔴 HIGH - All queries             |
+| `Tenders` table     | `tblPayment`                            | 🔴 HIGH - All queries             |
+| `MenuItems` table   | `tblItem`                               | 🔴 HIGH - All queries             |
+| Simple pricing      | `tblAvailableSize` (multi-size pricing) | 🔴 CRITICAL - Architecture change |
+| `TicketID` column   | `ID` column                             | 🟡 MEDIUM - Naming                |
+| `ItemName` column   | `IName` column                          | 🟡 MEDIUM - Naming                |
+| `Status` field      | Multiple boolean flags                  | 🟡 MEDIUM - Logic change          |
 
 ### **New Requirements**
 
@@ -43,6 +43,7 @@ Your TOAST backend was built with **assumed table/column names** for the INI_Res
 ## 📁 Files That Need Updates
 
 ### Backend (.NET 8)
+
 ```
 backend/
 ├── IntegrationService.Core/
@@ -60,6 +61,7 @@ backend/
 ```
 
 ### Mobile (React Native)
+
 ```
 mobile/
 ├── src/
@@ -81,6 +83,7 @@ mobile/
 Follow these guides **in order**:
 
 ### Phase 1: Backend Core (4-6 hours)
+
 1. **[Entity Models Update](./01_ENTITY_MODELS.md)** ⭐ START HERE
    - Update all C# entity classes
    - Match real database schema
@@ -97,18 +100,21 @@ Follow these guides **in order**:
    - Add size validation
 
 ### Phase 2: API Contract (2-3 hours)
+
 4. **[API Contract Changes](./04_API_UPDATES.md)**
    - Update DTOs
    - Add size parameters
    - Update Swagger docs
 
 ### Phase 3: Mobile App (3-4 hours)
+
 5. **[Mobile App Updates](./05_MOBILE_UPDATES.md)**
    - Add size selection UI
    - Update Redux state
    - Update API calls
 
 ### Phase 4: Testing (2-3 hours)
+
 6. **[Testing & Verification](./06_TESTING.md)**
    - Database test scripts
    - Integration tests
@@ -118,13 +124,13 @@ Follow these guides **in order**:
 
 ## ⏱️ Time Estimate
 
-| Phase | Tasks | Estimated Time |
-|-------|-------|----------------|
-| **Phase 1** | Backend entities, repository, services | 4-6 hours |
-| **Phase 2** | API contract updates | 2-3 hours |
-| **Phase 3** | Mobile app updates | 3-4 hours |
-| **Phase 4** | Testing & verification | 2-3 hours |
-| **TOTAL** | Complete refactoring | **11-16 hours** |
+| Phase       | Tasks                                  | Estimated Time  |
+| ----------- | -------------------------------------- | --------------- |
+| **Phase 1** | Backend entities, repository, services | 4-6 hours       |
+| **Phase 2** | API contract updates                   | 2-3 hours       |
+| **Phase 3** | Mobile app updates                     | 3-4 hours       |
+| **Phase 4** | Testing & verification                 | 2-3 hours       |
+| **TOTAL**   | Complete refactoring                   | **11-16 hours** |
 
 **Realistic timeline:** 2-3 working days
 
@@ -135,23 +141,27 @@ Follow these guides **in order**:
 You'll know the refactoring is complete when:
 
 ✅ **Backend:**
+
 - All entity models match real schema
 - All SQL queries use correct table/column names
 - Size parameter required for all item operations
 - Tax calculation uses GST/PST/PST2 fields
 
 ✅ **API:**
+
 - Menu endpoint returns items with sizes
 - Order creation requires sizeId parameter
 - Swagger documentation updated
 
 ✅ **Mobile:**
+
 - Menu displays size options
 - Product detail has size selector
 - Cart stores sizeId for each item
 - Checkout sends sizeId to API
 
 ✅ **Integration:**
+
 - Can retrieve menu from real POS database
 - Can create order that writes to tblSales
 - Order items write to tblSalesDetail with correct SizeID
@@ -163,6 +173,7 @@ You'll know the refactoring is complete when:
 ## 🔍 Before You Start
 
 ### 1. Backup Current Code
+
 ```bash
 cd /home/kali/Desktop/TOAST
 git add .
@@ -171,12 +182,14 @@ git checkout -b feature/pos-schema-update
 ```
 
 ### 2. Set Up Test Database Connection
+
 ```csharp
 // Test connection string to INI_Restaurant database (source of truth)
 "Server=localhost;Database=INI_Restaurant;User Id=sa;Password=YOUR_PASSWORD;TrustServerCertificate=True;"
 ```
 
 ### 3. Verify Database Access
+
 ```sql
 -- Test query to verify you can read from real database
 SELECT TOP 5
@@ -203,13 +216,17 @@ WHERE i.Status = 1 AND i.OnlineItem = 1
 ## 🆘 Troubleshooting
 
 ### "Can't connect to INI_Restaurant database"
+
 **Solution:** Check SQL Server is running and credentials are correct:
+
 ```bash
 sqlcmd -S localhost -U sa -P YOUR_PASSWORD -Q "SELECT DB_NAME()"
 ```
 
 ### "Table 'tblSales' not found"
+
 **Solution:** Verify database name is INI_Restaurant (not TOAST or ToastDB):
+
 ```sql
 USE INI_Restaurant;
 GO
@@ -217,7 +234,9 @@ SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tblSales';
 ```
 
 ### "Still seeing old column names in errors"
+
 **Solution:** Make sure you've updated ALL references:
+
 ```bash
 # Search for old column names
 cd /home/kali/Desktop/TOAST/backend

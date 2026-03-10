@@ -10,20 +10,23 @@ interface BannerCarouselProps {
   autoPlayInterval?: number; // ms
 }
 
-export function BannerCarousel({ 
-  slides, 
-  autoPlayInterval = 6000 
+export function BannerCarousel({
+  slides,
+  autoPlayInterval = 6000,
 }: BannerCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const goToSlide = useCallback((index: number) => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setCurrentIndex(index);
-    setTimeout(() => setIsAnimating(false), 500);
-  }, [isAnimating]);
+  const goToSlide = useCallback(
+    (index: number) => {
+      if (isAnimating) return;
+      setIsAnimating(true);
+      setCurrentIndex(index);
+      setTimeout(() => setIsAnimating(false), 500);
+    },
+    [isAnimating],
+  );
 
   const nextSlide = useCallback(() => {
     goToSlide((currentIndex + 1) % slides.length);
@@ -36,7 +39,7 @@ export function BannerCarousel({
   // Auto-play
   useEffect(() => {
     if (slides.length <= 1 || isPaused) return;
-    
+
     const interval = setInterval(nextSlide, autoPlayInterval);
     return () => clearInterval(interval);
   }, [slides.length, isPaused, autoPlayInterval, nextSlide]);
@@ -46,17 +49,17 @@ export function BannerCarousel({
   const currentSlide = slides[currentIndex];
 
   return (
-    <div 
+    <div
       className="relative w-full overflow-hidden rounded-2xl shadow-xl"
-      style={{ 
+      style={{
         boxShadow: "0 8px 32px rgba(30, 90, 168, 0.2)",
-        minHeight: "400px"
+        minHeight: "400px",
       }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Slides Container */}
-      <div 
+      <div
         className="flex transition-transform duration-500 ease-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
@@ -67,11 +70,11 @@ export function BannerCarousel({
             style={{ minHeight: "400px" }}
           >
             {/* Background */}
-            <div 
+            <div
               className="absolute inset-0"
               style={{ background: slide.bgGradient }}
             />
-            
+
             {/* Content */}
             <div className="relative z-10 h-full flex flex-col items-center justify-center px-8 py-12 text-center">
               {/* Badge */}
@@ -81,7 +84,7 @@ export function BannerCarousel({
               </div>
 
               {/* Title */}
-              <h2 
+              <h2
                 className="text-4xl lg:text-5xl font-black text-white uppercase tracking-tight leading-none mb-3"
                 style={{ textShadow: "0 2px 20px rgba(0,0,0,0.3)" }}
               >
@@ -89,7 +92,7 @@ export function BannerCarousel({
               </h2>
 
               {/* Subtitle */}
-              <p 
+              <p
                 className="text-xl lg:text-2xl text-white/90 font-semibold mb-4"
                 style={{ textShadow: "0 1px 10px rgba(0,0,0,0.3)" }}
               >
@@ -105,11 +108,11 @@ export function BannerCarousel({
 
               {/* CTA Button */}
               <Link href={slide.ctaLink}>
-                <button 
+                <button
                   className="px-8 py-4 bg-[#D4AF37] text-[#1A1A2E] font-bold rounded-xl transition-all hover:scale-105 hover:shadow-lg"
-                  style={{ 
+                  style={{
                     boxShadow: "0 4px 14px rgba(212, 175, 55, 0.4)",
-                    fontFamily: "var(--font-primary)"
+                    fontFamily: "var(--font-primary)",
                   }}
                 >
                   {slide.ctaText}
@@ -151,8 +154,8 @@ export function BannerCarousel({
                 key={index}
                 onClick={() => goToSlide(index)}
                 className={`w-2.5 h-2.5 rounded-full transition-all ${
-                  index === currentIndex 
-                    ? "bg-[#D4AF37] w-8" 
+                  index === currentIndex
+                    ? "bg-[#D4AF37] w-8"
                     : "bg-white/50 hover:bg-white/70"
                 }`}
                 aria-label={`Go to slide ${index + 1}`}

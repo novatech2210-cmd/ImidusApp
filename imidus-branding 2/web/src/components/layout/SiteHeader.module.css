@@ -69,7 +69,7 @@
   color: var(--color-brand-gold);
 }
 .navLink[aria-current="page"]::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -2px;
   left: 0.875rem;

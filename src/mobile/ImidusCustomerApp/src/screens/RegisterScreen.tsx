@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -12,19 +12,21 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store';
-import { registerUser, clearError } from '../store/authSlice';
-import { Colors } from '../theme/colors';
-import { Spacing } from '../theme/spacing';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../store';
+import {registerUser, clearError} from '../store/authSlice';
+import {Colors} from '../theme/colors';
+import {Spacing} from '../theme/spacing';
 
 interface RegisterScreenProps {
   navigation: any;
 }
 
-const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
+const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isLoading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const {isLoading, error, isAuthenticated} = useSelector(
+    (state: RootState) => state.auth,
+  );
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -34,7 +36,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   // Navigate to Menu if authenticated
   useEffect(() => {
@@ -47,7 +49,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
   useEffect(() => {
     if (error) {
       Alert.alert('Registration Failed', error, [
-        { text: 'OK', onPress: () => dispatch(clearError()) },
+        {text: 'OK', onPress: () => dispatch(clearError())},
       ]);
     }
   }, [error, dispatch]);
@@ -72,7 +74,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
   };
 
   const validateForm = (): boolean => {
-    const newErrors: { [key: string]: string } = {};
+    const newErrors: {[key: string]: string} = {};
 
     // First Name validation
     if (!firstName.trim()) {
@@ -140,7 +142,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
           phone: cleanPhone,
           email: email.trim(),
           password,
-        })
+        }),
       ).unwrap();
       // Navigation handled by useEffect when isAuthenticated becomes true
     } catch (err) {

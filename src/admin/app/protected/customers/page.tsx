@@ -1,36 +1,42 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
-import MainLayout from '@/components/Navigation/MainLayout';
-import CustomerList from '@/components/Customers/CustomerList';
-import CustomerProfile from '@/components/Customers/CustomerProfile';
-import SegmentationChart from '@/components/Customers/SegmentationChart';
-import { useCustomerList, useCustomerSegments, useCustomerProfile } from '@/lib/hooks';
-import Spinner from '@/components/Loading/Spinner';
-import { Filter, RotateCcw } from 'lucide-react';
+import React, { useState, useMemo } from "react";
+import MainLayout from "@/components/Navigation/MainLayout";
+import CustomerList from "@/components/Customers/CustomerList";
+import CustomerProfile from "@/components/Customers/CustomerProfile";
+import SegmentationChart from "@/components/Customers/SegmentationChart";
+import {
+  useCustomerList,
+  useCustomerSegments,
+  useCustomerProfile,
+} from "@/lib/hooks";
+import Spinner from "@/components/Loading/Spinner";
+import { Filter, RotateCcw } from "lucide-react";
 
 interface Customer {
   id: number;
   name: string;
   email: string;
   phone: string;
-  segment: 'vip' | 'regular' | 'at_risk' | 'new';
+  segment: "vip" | "regular" | "at_risk" | "new";
   totalSpent: number;
   orderCount: number;
   lastOrder: string;
 }
 
 export default function CustomersPage() {
-  const [segmentFilter, setSegmentFilter] = useState<string>('');
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [segmentFilter, setSegmentFilter] = useState<string>("");
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null,
+  );
   const [showProfile, setShowProfile] = useState(false);
 
-  const { data: segments = [], isPending: isLoadingSegments } = useCustomerSegments();
-  const { data: customers = [], isPending: isLoadingCustomers } = useCustomerList(
-    segmentFilter || undefined
-  );
+  const { data: segments = [], isPending: isLoadingSegments } =
+    useCustomerSegments();
+  const { data: customers = [], isPending: isLoadingCustomers } =
+    useCustomerList(segmentFilter || undefined);
   const { data: profile, isPending: isLoadingProfile } = useCustomerProfile(
-    selectedCustomer?.id ?? 0
+    selectedCustomer?.id ?? 0,
   );
 
   const customersData = useMemo(() => {
@@ -47,7 +53,7 @@ export default function CustomersPage() {
     return segments.map((segment: any, idx: number) => ({
       name: segment.name || segment,
       value: segment.count || segment.value || 0,
-      color: ['#f97316', '#3b82f6', '#10b981', '#f59e0b'][idx % 4],
+      color: ["#f97316", "#3b82f6", "#10b981", "#f59e0b"][idx % 4],
     }));
   }, [segments]);
 
@@ -63,7 +69,9 @@ export default function CustomersPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Customers</h1>
-            <p className="text-gray-600">View and manage customer relationships</p>
+            <p className="text-gray-600">
+              View and manage customer relationships
+            </p>
           </div>
         </div>
 
@@ -105,7 +113,7 @@ export default function CustomersPage() {
             {/* Reset */}
             <div className="flex items-end">
               <button
-                onClick={() => setSegmentFilter('')}
+                onClick={() => setSegmentFilter("")}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <RotateCcw size={16} />

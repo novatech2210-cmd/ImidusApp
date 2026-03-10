@@ -1,6 +1,7 @@
 # Step 6: Testing & Verification
 
 ## 🎯 Goal
+
 Verify that all POS integration updates work correctly with the INI_Restaurant database (source of truth).
 
 **Estimated time:** 2-3 hours
@@ -10,8 +11,11 @@ Verify that all POS integration updates work correctly with the INI_Restaurant d
 ## 📋 Testing Phases
 
 ### Phase 1: Database Connectivity (15 minutes)
+
 ### Phase 2: Menu Retrieval (30 minutes)
+
 ### Phase 3: Order Creation (1 hour)
+
 ### Phase 4: End-to-End Integration (1 hour)
 
 ---
@@ -243,6 +247,7 @@ WHERE ItemID = 101 AND SizeID = 1;
 ### Mobile App Test Flow
 
 1. **Launch Mobile App**
+
    ```bash
    cd /home/kali/Desktop/TOAST/mobile
    npx react-native run-android  # or run-ios
@@ -276,6 +281,7 @@ WHERE ItemID = 101 AND SizeID = 1;
    FROM tblSales
    ORDER BY ID DESC;
    ```
+
    - ✅ Order appears in INI_Restaurant database (source of truth)
    - ✅ DailyOrderNumber matches app display
    - ✅ All items have correct ItemID and SizeID
@@ -325,29 +331,37 @@ WHERE ItemID = 101 AND SizeID = 1;
 ## 🐛 Common Issues & Fixes
 
 ### Issue: "Invalid object name 'Tickets'"
+
 **Cause:** Old table name still in code
 **Fix:** Search for "Tickets" in codebase, replace with "tblSales"
+
 ```bash
 grep -r "FROM Tickets" backend/
 ```
 
 ### Issue: "Cannot insert NULL into column 'SizeID'"
+
 **Cause:** Code not providing SizeID
 **Fix:** Ensure all order items include sizeId
+
 ```csharp
 new PosTicketItem { ItemID = 101, SizeID = 1, ... }
 ```
 
 ### Issue: "No sizes returned for menu items"
+
 **Cause:** Join to tblAvailableSize missing or incorrect
 **Fix:** Verify SQL query includes:
+
 ```sql
 INNER JOIN tblAvailableSize a ON i.ItemID = a.ItemID
 ```
 
 ### Issue: "Tax calculation incorrect"
+
 **Cause:** Not reading from tblMisc or using hardcoded values
 **Fix:** Load tax rates dynamically:
+
 ```csharp
 var taxRates = await _posRepo.GetTaxRatesAsync();
 ```
@@ -389,11 +403,13 @@ Follow the deployment guides in `/workspace/group/DEPLOYMENT_GUIDES/`
 ### 3. Notify Team
 
 Email/Slack message:
+
 > **TOAST POS Integration Updated**
 >
 > The POS integration has been updated to match the INI_Restaurant database (source of truth) schema.
 >
 > **Key Changes:**
+>
 > - Menu items now support multiple sizes with different prices
 > - Size selection required when ordering
 > - All database queries updated to use correct table/column names
@@ -417,6 +433,7 @@ You've successfully refactored the TOAST POS integration to match the INI_Restau
 ✅ Full integration tested
 
 **Ready for:**
+
 - Milestone 4 features (push notifications, analytics, etc.)
 - Production deployment
 - Client acceptance testing

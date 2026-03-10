@@ -239,7 +239,11 @@ button {
 }
 
 .product-image {
-  background: linear-gradient(135deg, var(--bg-active) 0%, var(--bg-surface) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--bg-active) 0%,
+    var(--bg-surface) 100%
+  );
   display: flex;
   align-items: center;
   justify-content: center;

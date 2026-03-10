@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { MenuItem, MenuItemSize } from '../types/menu.types';
-import { Colors } from '../theme/colors';
-import { Spacing } from '../theme/spacing';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
+import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+import {MenuItem, MenuItemSize} from '../types/menu.types';
+import {Colors} from '../theme/colors';
+import {Spacing} from '../theme/spacing';
 
 interface ItemDetailSheetProps {
   item: MenuItem | null;
@@ -14,7 +20,7 @@ interface ItemDetailSheetProps {
 export const ItemDetailSheet: React.FC<ItemDetailSheetProps> = ({
   item,
   bottomSheetRef,
-  onAddToCart
+  onAddToCart,
 }) => {
   const [selectedSize, setSelectedSize] = useState<MenuItemSize | null>(null);
   const [quantity, setQuantity] = useState(1);
@@ -46,8 +52,7 @@ export const ItemDetailSheet: React.FC<ItemDetailSheetProps> = ({
       ref={bottomSheetRef}
       index={-1}
       snapPoints={['50%', '75%']}
-      enablePanDownToClose={true}
-    >
+      enablePanDownToClose={true}>
       <BottomSheetView style={styles.contentContainer}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Text style={styles.title}>{item.name}</Text>
@@ -68,20 +73,24 @@ export const ItemDetailSheet: React.FC<ItemDetailSheetProps> = ({
                 key={size.sizeId}
                 style={[
                   styles.sizeChip,
-                  selectedSize?.sizeId === size.sizeId && styles.sizeChipSelected
+                  selectedSize?.sizeId === size.sizeId &&
+                    styles.sizeChipSelected,
                 ]}
-                onPress={() => setSelectedSize(size)}
-              >
-                <Text style={[
-                  styles.sizeChipText,
-                  selectedSize?.sizeId === size.sizeId && styles.sizeChipTextSelected
-                ]}>
+                onPress={() => setSelectedSize(size)}>
+                <Text
+                  style={[
+                    styles.sizeChipText,
+                    selectedSize?.sizeId === size.sizeId &&
+                      styles.sizeChipTextSelected,
+                  ]}>
                   {size.sizeName}
                 </Text>
-                <Text style={[
-                  styles.sizeChipPrice,
-                  selectedSize?.sizeId === size.sizeId && styles.sizeChipPriceSelected
-                ]}>
+                <Text
+                  style={[
+                    styles.sizeChipPrice,
+                    selectedSize?.sizeId === size.sizeId &&
+                      styles.sizeChipPriceSelected,
+                  ]}>
                   ${size.price.toFixed(2)}
                 </Text>
               </TouchableOpacity>
@@ -93,27 +102,28 @@ export const ItemDetailSheet: React.FC<ItemDetailSheetProps> = ({
             <View style={styles.quantityControls}>
               <TouchableOpacity
                 style={styles.quantityButton}
-                onPress={() => setQuantity(Math.max(1, quantity - 1))}
-              >
+                onPress={() => setQuantity(Math.max(1, quantity - 1))}>
                 <Text style={styles.quantityButtonText}>-</Text>
               </TouchableOpacity>
               <Text style={styles.quantityText}>{quantity}</Text>
               <TouchableOpacity
                 style={styles.quantityButton}
-                onPress={() => setQuantity(quantity + 1)}
-              >
+                onPress={() => setQuantity(quantity + 1)}>
                 <Text style={styles.quantityButtonText}>+</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           <TouchableOpacity
-            style={[styles.addButton, !selectedSize && styles.addButtonDisabled]}
+            style={[
+              styles.addButton,
+              !selectedSize && styles.addButtonDisabled,
+            ]}
             onPress={handleAddToCart}
-            disabled={!selectedSize}
-          >
+            disabled={!selectedSize}>
             <Text style={styles.addButtonText}>
-              Add to Cart - ${((selectedSize?.price || 0) * quantity).toFixed(2)}
+              Add to Cart - $
+              {((selectedSize?.price || 0) * quantity).toFixed(2)}
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -125,18 +135,18 @@ export const ItemDetailSheet: React.FC<ItemDetailSheetProps> = ({
 const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
-    padding: Spacing.md
+    padding: Spacing.md,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: Colors.text,
-    marginBottom: Spacing.sm
+    marginBottom: Spacing.sm,
   },
   description: {
     fontSize: 16,
     color: Colors.textSecondary,
-    marginBottom: Spacing.md
+    marginBottom: Spacing.md,
   },
   badge: {
     alignSelf: 'flex-start',
@@ -144,23 +154,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
     borderRadius: 4,
-    marginBottom: Spacing.md
+    marginBottom: Spacing.md,
   },
   badgeText: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: Colors.text
+    color: Colors.text,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: Colors.text,
-    marginBottom: Spacing.sm
+    marginBottom: Spacing.sm,
   },
   sizeChips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: Spacing.lg
+    marginBottom: Spacing.lg,
   },
   sizeChip: {
     borderWidth: 1,
@@ -169,38 +179,38 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     borderRadius: 8,
     marginRight: Spacing.sm,
-    marginBottom: Spacing.sm
+    marginBottom: Spacing.sm,
   },
   sizeChipSelected: {
     borderColor: Colors.primary,
-    backgroundColor: '#FFF9E6'
+    backgroundColor: '#FFF9E6',
   },
   sizeChipText: {
     fontSize: 16,
     fontWeight: '500',
-    color: Colors.text
+    color: Colors.text,
   },
   sizeChipTextSelected: {
-    color: Colors.primary
+    color: Colors.primary,
   },
   sizeChipPrice: {
     fontSize: 14,
     color: Colors.textSecondary,
-    marginTop: 4
+    marginTop: 4,
   },
   sizeChipPriceSelected: {
     color: Colors.primary,
-    fontWeight: '600'
+    fontWeight: '600',
   },
   quantityRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.lg
+    marginBottom: Spacing.lg,
   },
   quantityControls: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   quantityButton: {
     width: 36,
@@ -208,31 +218,31 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     backgroundColor: Colors.lightGray,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   quantityButtonText: {
     fontSize: 20,
     fontWeight: '600',
-    color: Colors.text
+    color: Colors.text,
   },
   quantityText: {
     fontSize: 18,
     marginHorizontal: Spacing.md,
-    color: Colors.text
+    color: Colors.text,
   },
   addButton: {
     backgroundColor: Colors.primary,
     paddingVertical: Spacing.md,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: Spacing.sm
+    marginTop: Spacing.sm,
   },
   addButtonDisabled: {
-    backgroundColor: Colors.gray
+    backgroundColor: Colors.gray,
   },
   addButtonText: {
     fontSize: 18,
     fontWeight: '600',
-    color: Colors.white
-  }
+    color: Colors.white,
+  },
 });

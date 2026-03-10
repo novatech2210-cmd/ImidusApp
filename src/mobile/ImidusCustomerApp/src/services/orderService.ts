@@ -1,7 +1,7 @@
 import apiClient from '../api/apiClient';
-import { PaymentToken } from '../types/payment.types';
+import {PaymentToken} from '../types/payment.types';
 
-import { ENV } from '../config/environment';
+import {ENV} from '../config/environment';
 
 const API_BASE_URL = ENV.API_BASE_URL;
 
@@ -58,7 +58,7 @@ export const createOrder = async (
     quantity: number;
     price: number;
   }>,
-  tipAmount: number = 0
+  tipAmount: number = 0,
 ): Promise<CreateOrderResponse> => {
   try {
     // Generate idempotency key to prevent duplicate orders on retry
@@ -75,17 +75,22 @@ export const createOrder = async (
       tipAmount,
     };
 
-    const response = await apiClient.post<CreateOrderResponse>('/Orders', orderRequest, {
-      headers: {
-        'Idempotency-Key': idempotencyKey,
+    const response = await apiClient.post<CreateOrderResponse>(
+      '/Orders',
+      orderRequest,
+      {
+        headers: {
+          'Idempotency-Key': idempotencyKey,
+        },
       },
-    });
+    );
 
     return response.data;
   } catch (error: any) {
     console.error('Create order error:', error);
     throw new Error(
-      error.response?.data?.error || 'Failed to create order. Please try again.'
+      error.response?.data?.error ||
+        'Failed to create order. Please try again.',
     );
   }
 };
@@ -109,23 +114,26 @@ export async function completePayment(
   amount: number,
   dailyOrderNumber: number,
   customerId?: number | null,
-  pointsToRedeem?: number
+  pointsToRedeem?: number,
 ): Promise<OrderCompletionResult> {
   try {
-    const response = await fetch(`${API_BASE_URL}/orders/${salesId}/complete-payment`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${API_BASE_URL}/orders/${salesId}/complete-payment`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token: paymentToken,
+          amount,
+          salesId,
+          dailyOrderNumber,
+          customerId: customerId || undefined,
+          pointsToRedeem: pointsToRedeem || 0,
+        }),
       },
-      body: JSON.stringify({
-        token: paymentToken,
-        amount,
-        salesId,
-        dailyOrderNumber,
-        customerId: customerId || undefined,
-        pointsToRedeem: pointsToRedeem || 0,
-      }),
-    });
+    );
 
     const result = await response.json();
 

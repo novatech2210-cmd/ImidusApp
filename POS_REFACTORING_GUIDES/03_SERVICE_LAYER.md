@@ -1,6 +1,7 @@
 # Step 3: Service Layer Updates
 
 ## 🎯 Goal
+
 Update the OrderProcessingService to handle size-based pricing, tax calculation, and new database schema.
 
 **File:** `backend/IntegrationService.Core/Services/OrderProcessingService.cs`
@@ -395,6 +396,7 @@ namespace IntegrationService.Core.Services
 ## ✅ Key Changes Summary
 
 ### 1. Size is Now Required
+
 ```csharp
 // BEFORE
 public class OrderItemRequest {
@@ -412,6 +414,7 @@ public class OrderItemRequest {
 ```
 
 ### 2. Tax Calculation
+
 ```csharp
 // BEFORE
 var totalAmount = items.Sum(i => i.Price * i.Quantity);
@@ -425,12 +428,14 @@ var totalAmount = subtotal + gstAmt + pstAmt;
 ```
 
 ### 3. Daily Order Number
+
 ```csharp
 // NEW
 var dailyOrderNumber = await _posRepo.GetNextDailyOrderNumberAsync();
 ```
 
 ### 4. Inventory Validation
+
 ```csharp
 // BEFORE
 var stock = await _posRepo.GetItemStockAsync(itemId);
@@ -553,6 +558,7 @@ public class OrderProcessingServiceTests
 This service update changes the API contract:
 
 ### **API Input Changed:**
+
 ```json
 // OLD
 {
@@ -575,6 +581,7 @@ This service update changes the API contract:
 ```
 
 ### **API Output Changed:**
+
 ```json
 // OLD
 {

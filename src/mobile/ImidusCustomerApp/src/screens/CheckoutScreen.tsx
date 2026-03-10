@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -7,17 +7,17 @@ import {
   Modal,
   ActivityIndicator,
 } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useSelector } from 'react-redux';
+import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {useSelector} from 'react-redux';
 import Slider from '@react-native-community/slider';
 import PaymentForm from '../components/PaymentForm';
-import { tokenizeCard } from '../services/paymentService';
-import { completePayment } from '../services/orderService';
-import { CardData } from '../types/payment.types';
-import { RootState } from '../store';
-import { Colors } from '../theme/colors';
-import { Spacing } from '../theme/spacing';
+import {tokenizeCard} from '../services/paymentService';
+import {completePayment} from '../services/orderService';
+import {CardData} from '../types/payment.types';
+import {RootState} from '../store';
+import {Colors} from '../theme/colors';
+import {Spacing} from '../theme/spacing';
 
 type RootStackParamList = {
   Checkout: {
@@ -79,7 +79,9 @@ export default function CheckoutScreen() {
   const [error, setError] = useState<string | undefined>();
   const [pointsToRedeem, setPointsToRedeem] = useState(0);
 
-  const { customerId, balance } = useSelector((state: RootState) => state.loyalty);
+  const {customerId, balance} = useSelector(
+    (state: RootState) => state.loyalty,
+  );
 
   const subtotal = orderTotal - gstTotal - pstTotal;
 
@@ -87,7 +89,7 @@ export default function CheckoutScreen() {
   // Maximum redeemable: can't exceed balance or order total
   const maxRedeemablePoints = Math.min(
     balance,
-    Math.floor(orderTotal * 100) // 100 points = $1, so max points = total * 100
+    Math.floor(orderTotal * 100), // 100 points = $1, so max points = total * 100
   );
 
   // Calculate discount from points (100 points = $1)
@@ -117,7 +119,7 @@ export default function CheckoutScreen() {
         finalTotal, // Use final total after discount
         dailyOrderNumber,
         customerId,
-        pointsToRedeem
+        pointsToRedeem,
       );
 
       if (result.success) {
@@ -195,7 +197,8 @@ export default function CheckoutScreen() {
           <View style={styles.loyaltySection}>
             <Text style={styles.loyaltySectionTitle}>Use Loyalty Points</Text>
             <Text style={styles.balanceText}>
-              Available Balance: {balance} points (${(balance / 100).toFixed(2)} USD)
+              Available Balance: {balance} points (${(balance / 100).toFixed(2)}{' '}
+              USD)
             </Text>
 
             <Slider
@@ -219,9 +222,7 @@ export default function CheckoutScreen() {
               </Text>
             </View>
 
-            <Text style={styles.conversionNote}>
-              100 points = $1.00 off
-            </Text>
+            <Text style={styles.conversionNote}>100 points = $1.00 off</Text>
           </View>
         )}
 
@@ -258,7 +259,11 @@ export default function CheckoutScreen() {
         </View>
 
         {/* Payment Form */}
-        <PaymentForm onSubmit={handlePaymentSubmit} loading={loading} error={error} />
+        <PaymentForm
+          onSubmit={handlePaymentSubmit}
+          loading={loading}
+          error={error}
+        />
       </ScrollView>
 
       {/* Full-screen Loading Overlay */}
@@ -267,7 +272,9 @@ export default function CheckoutScreen() {
           <View style={styles.loadingCard}>
             <ActivityIndicator size="large" color={Colors.success} />
             <Text style={styles.loadingText}>{loadingStep}</Text>
-            <Text style={styles.loadingSubtext}>Please do not close this screen</Text>
+            <Text style={styles.loadingSubtext}>
+              Please do not close this screen
+            </Text>
           </View>
         </View>
       </Modal>

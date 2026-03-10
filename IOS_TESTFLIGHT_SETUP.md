@@ -11,7 +11,8 @@
 
 TestFlight is Apple's official beta testing platform. This guide walks through the complete setup process from App Store Connect to distributing builds to testers.
 
-**Timeline:** 
+**Timeline:**
+
 - Initial setup: 30-45 minutes
 - First build upload: 15-20 minutes
 - Build processing: 10-30 minutes
@@ -22,6 +23,7 @@ TestFlight is Apple's official beta testing platform. This guide walks through t
 ## 🔑 Prerequisites
 
 You will need:
+
 1. **Apple Developer Account** (enroll at developer.apple.com)
 2. **App Store Connect access** (developer.apple.com/app-store-connect)
 3. **Bundle ID:** `com.imidus.customerapp` (must match your Xcode config)
@@ -99,11 +101,13 @@ You will need:
 TestFlight requires registering test devices. Get the UDID from each tester's iPhone:
 
 **For each tester:**
+
 1. Connect their iPhone to their Mac
 2. Open **Xcode** → Window → **Devices and Simulators**
 3. Select their iPhone → Copy **Identifier** (40-character code)
 
 **Register in App Store Connect:**
+
 1. Go to **Certificates, Identifiers & Profiles** → **Devices**
 2. Click **+** → **Register Devices**
 3. Add each tester's device:
@@ -139,6 +143,7 @@ TestFlight requires registering test devices. Get the UDID from each tester's iP
 6. **IMPORTANT:** Note your **Key ID** (visible in the UI) and **Issuer ID** (shown after download)
 
 **Store these securely for CI/CD:**
+
 ```
 APP_STORE_CONNECT_API_KEY_ID = [Key ID from above]
 APP_STORE_CONNECT_API_ISSUER_ID = [Issuer ID from above]
@@ -205,6 +210,7 @@ Replace `YOUR_TEAM_ID` with your 10-digit Apple Team ID (found in App Store Conn
 ### Step 5a: Build on Local Mac
 
 **Prerequisites:**
+
 - macOS 13+ with Xcode 14+
 - CocoaPods installed: `sudo gem install cocoapods`
 - Node.js 18+
@@ -243,6 +249,7 @@ xcodebuild -exportArchive \
 ### Step 5b: Upload IPA to TestFlight
 
 **Option 1: Using Transporter App (GUI)**
+
 1. Download **Transporter** from App Store
 2. Open → Sign in with Apple ID
 3. Drag & drop the `.ipa` file
@@ -270,6 +277,7 @@ xcrun altool --upload-app -f ImidusCustomerApp.ipa \
 ### Step 6a: Add GitHub Secrets
 
 In your GitHub repo:
+
 1. Go to **Settings** → **Secrets and variables** → **Actions**
 2. Add these secrets:
 
@@ -284,6 +292,7 @@ APP_STORE_CONNECT_API_KEY_BASE64 = [base64-encoded AuthKey_*.p8]
 ```
 
 **How to create base64 values:**
+
 ```bash
 # For certificate
 base64 -i MyCertificate.p12 | pbcopy  # macOS
@@ -332,6 +341,7 @@ git push origin main
 ### Step 7c: Testers Accept Invitations
 
 Each tester will receive an email with a TestFlight link:
+
 1. Click link → Opens TestFlight app (or App Store)
 2. Click **Accept** or **Start Testing**
 3. App downloads and installs
@@ -351,17 +361,21 @@ Each tester will receive an email with a TestFlight link:
 ### Common Issues
 
 **"Missing Privacy Policy"**
+
 - Solution: Add privacy policy URL in App Store Connect (Part 1b)
 
 **"Certificate not trusted"**
+
 - Solution: Verify certificate was imported to Keychain correctly
 - Re-download from App Store Connect and double-click to install
 
 **"Provisioning profile doesn't match"**
+
 - Solution: Ensure bundle ID matches exactly: `com.imidus.customerapp`
 - Regenerate provisioning profile if needed
 
 **"Build still processing after 1 hour"**
+
 - Contact App Store Support
 - Usually indicates compliance review needed
 
@@ -370,17 +384,20 @@ Each tester will receive an email with a TestFlight link:
 ## Part 9: Version Management
 
 Each TestFlight build requires:
+
 - Unique **Build Number** (e.g., 1, 2, 3...)
 - Unique **Version Number** (e.g., 1.0, 1.1, 2.0...)
 
 **Increment Build Number Before Each Upload:**
 
 In Xcode:
+
 1. Select **ImidusCustomerApp** target
 2. Go to **Build Settings** → Search "build number"
 3. Increment **Bundle Version** (e.g., 1 → 2)
 
 Or edit directly:
+
 ```bash
 cd src/mobile/ImidusCustomerApp/ios/ImidusCustomerApp
 
@@ -396,6 +413,7 @@ plutil -p Info.plist | grep CFBundle
 ### Collecting Tester Feedback
 
 Testers submit feedback via TestFlight app:
+
 - **Crashes** → Automatic stack traces sent
 - **Session Logs** → 10 most recent sessions included
 - **Screenshots** → Attach with feedback
@@ -473,4 +491,3 @@ Once M3 (Web Platform) is approved and this iOS build is live:
 - **Apple Developer:** https://developer.apple.com
 - **Transporter App:** Download from Mac App Store
 - **TestFlight Support:** https://support.apple.com/en-us/105090
-

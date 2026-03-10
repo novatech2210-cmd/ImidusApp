@@ -1,9 +1,11 @@
 # Step 5: Mobile App Updates
 
 ## 🎯 Goal
+
 Update React Native mobile app to support size selection for menu items and pass `sizeId` to backend API.
 
 **Files to update:**
+
 - `mobile/src/types/menu.types.ts`
 - `mobile/src/types/cart.types.ts`
 - `mobile/src/features/menu/MenuItemCard.tsx`
@@ -33,11 +35,11 @@ Update React Native mobile app to support size selection for menu items and pass
 // NEW TYPE - represents one size/price combination
 export interface MenuItemSize {
   sizeId: number;
-  sizeName: string;  // "Small", "Medium", "Large", "Regular"
-  shortName?: string;  // "S", "M", "L"
+  sizeName: string; // "Small", "Medium", "Large", "Regular"
+  shortName?: string; // "S", "M", "L"
   price: number;
   inStock: boolean;
-  stockQuantity?: number | null;  // null = unlimited
+  stockQuantity?: number | null; // null = unlimited
   displayOrder: number;
 }
 
@@ -82,12 +84,12 @@ export interface Category {
 // Cart item
 // UPDATED: Now includes size information
 export interface CartItem {
-  id: string;  // Unique cart item ID (itemId + sizeId + timestamp)
+  id: string; // Unique cart item ID (itemId + sizeId + timestamp)
   menuItemId: number;
-  sizeId: number;  // ← NEW: REQUIRED
+  sizeId: number; // ← NEW: REQUIRED
   name: string;
-  sizeName: string;  // ← NEW: Display name for size
-  price: number;  // Unit price for this size
+  sizeName: string; // ← NEW: Display name for size
+  price: number; // Unit price for this size
   quantity: number;
   imageUrl?: string;
 
@@ -120,7 +122,7 @@ export interface CreateOrderRequest {
 
 export interface OrderItemRequest {
   menuItemId: number;
-  sizeId: number;  // ← NEW: REQUIRED
+  sizeId: number; // ← NEW: REQUIRED
   quantity: number;
   unitPrice: number;
   specialInstructions?: string;
@@ -144,8 +146,8 @@ export interface CreateOrderResponse {
 ### File: `src/features/cart/cartSlice.ts`
 
 ```typescript
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { CartState, CartItem } from '../../types/cart.types';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { CartState, CartItem } from "../../types/cart.types";
 
 const initialState: CartState = {
   items: [],
@@ -155,25 +157,29 @@ const initialState: CartState = {
 };
 
 const cartSlice = createSlice({
-  name: 'cart',
+  name: "cart",
   initialState,
   reducers: {
     // Add item to cart
     // UPDATED: Now requires sizeId and sizeName
-    addToCart: (state, action: PayloadAction<{
-      menuItemId: number;
-      sizeId: number;  // ← NEW
-      name: string;
-      sizeName: string;  // ← NEW
-      price: number;
-      quantity: number;
-      imageUrl?: string;
-    }>) => {
-      const { menuItemId, sizeId, name, sizeName, price, quantity, imageUrl } = action.payload;
+    addToCart: (
+      state,
+      action: PayloadAction<{
+        menuItemId: number;
+        sizeId: number; // ← NEW
+        name: string;
+        sizeName: string; // ← NEW
+        price: number;
+        quantity: number;
+        imageUrl?: string;
+      }>,
+    ) => {
+      const { menuItemId, sizeId, name, sizeName, price, quantity, imageUrl } =
+        action.payload;
 
       // Check if this exact item+size combination exists
       const existingItem = state.items.find(
-        item => item.menuItemId === menuItemId && item.sizeId === sizeId
+        (item) => item.menuItemId === menuItemId && item.sizeId === sizeId,
       );
 
       if (existingItem) {
@@ -199,12 +205,15 @@ const cartSlice = createSlice({
     },
 
     // Update item quantity
-    updateQuantity: (state, action: PayloadAction<{ id: string; quantity: number }>) => {
-      const item = state.items.find(i => i.id === action.payload.id);
+    updateQuantity: (
+      state,
+      action: PayloadAction<{ id: string; quantity: number }>,
+    ) => {
+      const item = state.items.find((i) => i.id === action.payload.id);
       if (item) {
         item.quantity = action.payload.quantity;
         if (item.quantity <= 0) {
-          state.items = state.items.filter(i => i.id !== action.payload.id);
+          state.items = state.items.filter((i) => i.id !== action.payload.id);
         }
         calculateTotals(state);
       }
@@ -212,7 +221,7 @@ const cartSlice = createSlice({
 
     // Remove item
     removeFromCart: (state, action: PayloadAction<string>) => {
-      state.items = state.items.filter(item => item.id !== action.payload);
+      state.items = state.items.filter((item) => item.id !== action.payload);
       calculateTotals(state);
     },
 
@@ -230,7 +239,7 @@ const cartSlice = createSlice({
 function calculateTotals(state: CartState) {
   state.subtotal = state.items.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
 
   // Tax calculation (example: 12% total tax)
@@ -243,7 +252,8 @@ function calculateTotals(state: CartState) {
   state.total = Math.round(state.total * 100) / 100;
 }
 
-export const { addToCart, updateQuantity, removeFromCart, clearCart } = cartSlice.actions;
+export const { addToCart, updateQuantity, removeFromCart, clearCart } =
+  cartSlice.actions;
 export default cartSlice.reducer;
 ```
 
@@ -620,9 +630,10 @@ const styles = StyleSheet.create({
 ### File: `src/api/orderApi.ts`
 
 ```typescript
-import { CreateOrderRequest, CreateOrderResponse } from '../types/cart.types';
+import { CreateOrderRequest, CreateOrderResponse } from "../types/cart.types";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost:5001/api';
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL || "https://localhost:5001/api";
 
 export const orderApi = {
   /**
@@ -634,15 +645,15 @@ export const orderApi = {
     const idempotencyKey = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     const response = await fetch(`${API_BASE_URL}/orders`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'X-Idempotency-Key': idempotencyKey,
+        "Content-Type": "application/json",
+        "X-Idempotency-Key": idempotencyKey,
       },
       body: JSON.stringify({
-        items: request.items.map(item => ({
+        items: request.items.map((item) => ({
           menuItemId: item.menuItemId,
-          sizeId: item.sizeId,  // ← NOW INCLUDED
+          sizeId: item.sizeId, // ← NOW INCLUDED
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           specialInstructions: item.specialInstructions,
@@ -660,7 +671,7 @@ export const orderApi = {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'Failed to create order');
+      throw new Error(error.message || "Failed to create order");
     }
 
     return response.json();

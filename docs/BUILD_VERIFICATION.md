@@ -235,6 +235,7 @@ aws s3api head-object --bucket inirestaurant \
 Before deploying to production, verify:
 
 ### Android
+
 - [ ] APK signed with correct certificate
 - [ ] Version code and name correct
 - [ ] App ID is `com.imidus.customer`
@@ -244,6 +245,7 @@ Before deploying to production, verify:
 - [ ] version.json present in S3
 
 ### iOS
+
 - [ ] IPA code signature valid
 - [ ] Provisioning profile matches app ID
 - [ ] App version correct in Info.plist
@@ -253,6 +255,7 @@ Before deploying to production, verify:
 - [ ] version.json present in S3
 
 ### Backend
+
 - [ ] MSI signature valid (if signed)
 - [ ] Service installs correctly
 - [ ] Service starts without errors
@@ -262,6 +265,7 @@ Before deploying to production, verify:
 - [ ] Files uploaded to S3 with correct path
 
 ### Coordination
+
 - [ ] All three platforms version numbers match (v1.0.1)
 - [ ] All three sets of artifacts in S3
 - [ ] Deployment manifests created

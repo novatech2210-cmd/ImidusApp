@@ -6,44 +6,55 @@ metadata:
 ---
 
 <codex_skill_adapter>
+
 ## A. Skill Invocation
+
 - This skill is invoked by mentioning `$gsd-debug`.
 - Treat all user text after `$gsd-debug` as `{{GSD_ARGS}}`.
 - If no arguments are present, treat `{{GSD_ARGS}}` as empty.
 
 ## B. AskUserQuestion → request_user_input Mapping
+
 GSD workflows use `AskUserQuestion` (Claude Code syntax). Translate to Codex `request_user_input`:
 
 Parameter mapping:
+
 - `header` → `header`
 - `question` → `question`
 - Options formatted as `"Label" — description` → `{label: "Label", description: "description"}`
 - Generate `id` from header: lowercase, replace spaces with underscores
 
 Batched calls:
+
 - `AskUserQuestion([q1, q2])` → single `request_user_input` with multiple entries in `questions[]`
 
 Multi-select workaround:
+
 - Codex has no `multiSelect`. Use sequential single-selects, or present a numbered freeform list asking the user to enter comma-separated numbers.
 
 Execute mode fallback:
+
 - When `request_user_input` is rejected (Execute mode), present a plain-text numbered list and pick a reasonable default.
 
 ## C. Task() → spawn_agent Mapping
+
 GSD workflows use `Task(...)` (Claude Code syntax). Translate to Codex collaboration tools:
 
 Direct mapping:
+
 - `Task(subagent_type="X", prompt="Y")` → `spawn_agent(agent_type="X", message="Y")`
 - `Task(model="...")` → omit (Codex uses per-role config, not inline model selection)
 - `fork_context: false` by default — GSD agents load their own context via `<files_to_read>` blocks
 
 Parallel fan-out:
+
 - Spawn multiple agents → collect agent IDs → `wait(ids)` for all to complete
 
 Result parsing:
+
 - Look for structured markers in agent output: `CHECKPOINT`, `PLAN COMPLETE`, `SUMMARY`, etc.
 - `close_agent(id)` after collecting results from each agent
-</codex_skill_adapter>
+  </codex_skill_adapter>
 
 <objective>
 Debug issues using scientific method with subagent isolation.
@@ -57,9 +68,11 @@ Debug issues using scientific method with subagent isolation.
 User's issue: {{GSD_ARGS}}
 
 Check for active sessions:
+
 ```bash
 ls .planning/debug/*.md 2>/dev/null | grep -v resolved | head -5
 ```
+
 </context>
 
 <process>
@@ -71,6 +84,7 @@ INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state load)
 ```
 
 Extract `commit_docs` from init JSON. Resolve debugger model:
+
 ```bash
 debugger_model=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" resolve-model gsd-debugger --raw)
 ```
@@ -78,10 +92,12 @@ debugger_model=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" resolve-mo
 ## 1. Check Active Sessions
 
 If active sessions exist AND no {{GSD_ARGS}}:
+
 - List sessions with status, hypothesis, next action
 - User picks number to resume OR describes new issue
 
 If {{GSD_ARGS}} provided OR user describes new issue:
+
 - Continue to symptom gathering
 
 ## 2. Gather Symptoms (if new issue)
@@ -137,6 +153,7 @@ Task(
 ## 4. Handle Agent Return
 
 **If `## ROOT CAUSE FOUND`:**
+
 - Display root cause and evidence summary
 - Offer options:
   - "Fix now" - spawn fix subagent
@@ -144,6 +161,7 @@ Task(
   - "Manual fix" - done
 
 **If `## CHECKPOINT REACHED`:**
+
 - Present checkpoint details to user
 - Get user response
 - If checkpoint type is `human-verify`:
@@ -152,6 +170,7 @@ Task(
 - Spawn continuation agent (see step 5)
 
 **If `## INVESTIGATION INCONCLUSIVE`:**
+
 - Show what was checked and eliminated
 - Offer options:
   - "Continue investigating" - spawn new agent with additional context
@@ -169,9 +188,10 @@ Continue debugging {slug}. Evidence is in the debug file.
 
 <prior_state>
 <files_to_read>
+
 - .planning/debug/{slug}.md (Debug session state)
-</files_to_read>
-</prior_state>
+  </files_to_read>
+  </prior_state>
 
 <checkpoint_response>
 **Type:** {checkpoint_type}
@@ -195,9 +215,10 @@ Task(
 </process>
 
 <success_criteria>
+
 - [ ] Active sessions checked
 - [ ] Symptoms gathered (if new)
 - [ ] gsd-debugger spawned with context
 - [ ] Checkpoints handled correctly
 - [ ] Root cause confirmed before fixing
-</success_criteria>
+      </success_criteria>

@@ -4,6 +4,7 @@
 
 **Date:** 2026-03-05  
 **Components:**
+
 1. Order Confirmation Page
 2. Order History Page with API Integration
 
@@ -18,6 +19,7 @@
 **File:** `src/web/app/order/confirmation/page.tsx`
 
 #### Features:
+
 - ✅ **Enhanced Styling**: Modern design with gradients, shadows, and animations
 - ✅ **Responsive Layout**: Works on mobile and desktop
 - ✅ **Success Animation**: Animated checkmark with bounce effect
@@ -31,6 +33,7 @@
 #### Visual States:
 
 **Success State:**
+
 ```
 ✅ Order Confirmed!
 ┌─────────────────────────────────────────┐
@@ -43,6 +46,7 @@
 ```
 
 **Scheduled Order State:**
+
 ```
 📅 Order Scheduled!
 ┌─────────────────────────────────────────┐
@@ -59,6 +63,7 @@
 **File:** `src/web/app/orders/page.tsx`
 
 #### Features:
+
 - ✅ **API Integration**: Fetches from `/api/Orders/history/{customerId}`
 - ✅ **SSOT Compliant**: Reads directly from POS database
 - ✅ **Order Statistics**: Shows total orders, amount spent
@@ -102,12 +107,14 @@
 **Controller:** `src/backend/IntegrationService.API/Controllers/OrdersController.cs`
 
 #### New Endpoint:
+
 ```csharp
 [HttpGet("history/{customerId}")]
 public async Task<IActionResult> GetOrderHistory(int customerId)
 ```
 
 **SSOT Implementation:**
+
 ```csharp
 // Reads from POS database (ground truth)
 var orders = await _posRepo.GetOrdersByCustomerIdAsync(customerId);
@@ -145,7 +152,7 @@ public async Task<IEnumerable<PosTicket>> GetOrdersByCustomerIdAsync(int custome
         FROM dbo.tblSales s
         WHERE s.CustomerID = @CustomerId
         ORDER BY s.SaleDateTime DESC";
-    
+
     // Load order items from tblSalesDetail
     foreach (var order in orders)
     {
@@ -158,13 +165,13 @@ public async Task<IEnumerable<PosTicket>> GetOrdersByCustomerIdAsync(int custome
 
 ## SSOT Compliance Verification
 
-| Principle | Implementation | Evidence |
-|-----------|---------------|----------|
-| **Read from POS anytime** | Order history queries `tblSales` and `tblSalesDetail` | `PosRepository.cs:601-634` |
-| **Write to POS only via backend** | API is GET only, no writes | `OrdersController.cs:175-214` |
-| **Never modify POS schema** | Uses existing tables | No ALTER TABLE statements |
-| **Never modify POS code** | External API controller | Separate from POS application |
-| **Ground truth verification** | Direct Dapper queries to POS | `GetOrdersByCustomerIdAsync` |
+| Principle                         | Implementation                                        | Evidence                      |
+| --------------------------------- | ----------------------------------------------------- | ----------------------------- |
+| **Read from POS anytime**         | Order history queries `tblSales` and `tblSalesDetail` | `PosRepository.cs:601-634`    |
+| **Write to POS only via backend** | API is GET only, no writes                            | `OrdersController.cs:175-214` |
+| **Never modify POS schema**       | Uses existing tables                                  | No ALTER TABLE statements     |
+| **Never modify POS code**         | External API controller                               | Separate from POS application |
+| **Ground truth verification**     | Direct Dapper queries to POS                          | `GetOrdersByCustomerIdAsync`  |
 
 ---
 
@@ -196,11 +203,11 @@ WEB UI (Order List + Detail Panel)
   "salesId": 123,
   "dailyOrderNumber": 456,
   "saleDateTime": "2026-03-05T14:30:00",
-  "subTotal": 36.00,
+  "subTotal": 36.0,
   "gstAmt": 2.16,
-  "pstAmt": 0.00,
-  "psT2Amt": 0.00,
-  "dscAmt": 0.00,
+  "pstAmt": 0.0,
+  "psT2Amt": 0.0,
+  "dscAmt": 0.0,
   "totalAmount": 38.16,
   "status": "Completed",
   "details": [
@@ -209,14 +216,14 @@ WEB UI (Order List + Detail Panel)
       "iName": "Burger",
       "sizeName": "Regular",
       "itemQty": 2,
-      "unitPrice": 12.00
+      "unitPrice": 12.0
     },
     {
       "itemId": 2,
       "iName": "Fries",
       "sizeName": "Large",
       "itemQty": 1,
-      "unitPrice": 8.00
+      "unitPrice": 8.0
     }
   ]
 }
@@ -227,6 +234,7 @@ WEB UI (Order List + Detail Panel)
 ## Testing
 
 ### Order Confirmation Page
+
 ```bash
 # After successful checkout
 curl -s http://localhost:3000/order/confirmation?orderId=123&total=38.16
@@ -236,6 +244,7 @@ curl -s http://localhost:3000/order/confirmation?scheduledOrderId=456&confirmati
 ```
 
 ### Order History API
+
 ```bash
 # Get order history for customer
 curl -s http://localhost:5004/api/Orders/history/1 | python3 -m json.tool
@@ -248,6 +257,7 @@ curl -s http://localhost:5004/api/Orders/history/1 | python3 -m json.tool
 ## Files Modified/Created
 
 ### Backend
+
 - ✅ `src/backend/IntegrationService.API/Controllers/OrdersController.cs` (MODIFIED)
   - Added `GetOrderHistory` endpoint
   - Added DTOs: `OrderHistoryDto`, `OrderDetailDto`
@@ -261,6 +271,7 @@ curl -s http://localhost:5004/api/Orders/history/1 | python3 -m json.tool
   - Queries `tblSales` and `tblSalesDetail`
 
 ### Frontend
+
 - ✅ `src/web/app/order/confirmation/page.tsx` (REWRITTEN)
   - Enhanced styling and animations
   - Support for immediate and scheduled orders

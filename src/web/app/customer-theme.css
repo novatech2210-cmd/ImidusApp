@@ -10,40 +10,40 @@
   /* ─────────────────────────────────────────────────────────────────────────────
    * BRAND FOUNDATION (Tokens - Never Hardcode)
    * ───────────────────────────────────────────────────────────────────────────── */
-  
+
   /* Core Brand */
-  --imidus-blue: #1E5AA8;
+  --imidus-blue: #1e5aa8;
   --imidus-blue-dark: #174785;
-  --imidus-blue-gradient: linear-gradient(135deg, #1E5AA8 0%, #174785 100%);
-  
-  --imidus-gold: #D4AF37;
+  --imidus-blue-gradient: linear-gradient(135deg, #1e5aa8 0%, #174785 100%);
+
+  --imidus-gold: #d4af37;
   --imidus-gold-soft: rgba(212, 175, 55, 0.12);
   --imidus-gold-glow: 0 2px 8px rgba(212, 175, 55, 0.25);
-  
-  --imidus-dark: #1A1A2E;
-  
+
+  --imidus-dark: #1a1a2e;
+
   /* ─────────────────────────────────────────────────────────────────────────────
    * ELEVATION SYSTEM (Modern SaaS Layering)
    * ───────────────────────────────────────────────────────────────────────────── */
-  
+
   /* L0: App Background */
-  --elevation-0-bg: #F5F5F5;
+  --elevation-0-bg: #f5f5f5;
   --elevation-0-shadow: none;
-  
+
   /* L1: Cards (Default) */
-  --elevation-1-bg: #FFFFFF;
+  --elevation-1-bg: #ffffff;
   --elevation-1-shadow: 0 2px 12px rgba(30, 90, 168, 0.08);
   --elevation-1-shadow-hover: 0 4px 16px rgba(30, 90, 168, 0.12);
-  
+
   /* L2: Elevated Cards / Modals */
-  --elevation-2-bg: #FFFFFF;
+  --elevation-2-bg: #ffffff;
   --elevation-2-shadow: 0 4px 24px rgba(30, 90, 168, 0.16);
-  
+
   /* L3: Floating CTAs / Primary Actions */
   --elevation-3-bg: var(--imidus-blue);
   --elevation-3-shadow: 0 4px 20px rgba(30, 90, 168, 0.25);
   --elevation-3-shadow-hover: 0 8px 30px rgba(30, 90, 168, 0.35);
-  
+
   /* ─────────────────────────────────────────────────────────────────────────────
    * SURFACE COLORS
    * ───────────────────────────────────────────────────────────────────────────── */
@@ -52,50 +52,51 @@
   --surface-modal: var(--elevation-2-bg);
   --surface-gold-soft: rgba(253, 246, 227, 0.8);
   --surface-blue-soft: rgba(214, 228, 247, 0.6);
-  
+
   /* ─────────────────────────────────────────────────────────────────────────────
    * TYPOGRAPHY SYSTEM
    * ───────────────────────────────────────────────────────────────────────────── */
-  --font-primary: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'Courier New', Courier, monospace;
-  --font-display: Georgia, 'Times New Roman', serif; /* For wordmark only */
-  
+  --font-primary:
+    -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Courier New", Courier, monospace;
+  --font-display: Georgia, "Times New Roman", serif; /* For wordmark only */
+
   /* Heading Hierarchy */
   --heading-weight: 700;
   --heading-spacing: 0.3px;
   --heading-color: var(--imidus-blue);
-  
+
   /* ─────────────────────────────────────────────────────────────────────────────
    * TEXT COLORS
    * ───────────────────────────────────────────────────────────────────────────── */
-  --text-primary: #1A1A2E;
-  --text-secondary: #4A4A5A;
-  --text-tertiary: #71717A;
-  --text-white: #FFFFFF;
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a5a;
+  --text-tertiary: #71717a;
+  --text-white: #ffffff;
   --text-gold: var(--imidus-gold);
-  
+
   /* ─────────────────────────────────────────────────────────────────────────────
    * STATUS COLORS (Modern Restaurant SaaS)
    * ───────────────────────────────────────────────────────────────────────────── */
   --status-confirmed-bg: rgba(46, 125, 50, 0.12);
-  --status-confirmed-text: #2E7D32;
-  --status-confirmed-icon: '✓';
-  
+  --status-confirmed-text: #2e7d32;
+  --status-confirmed-icon: "✓";
+
   --status-pending-bg: rgba(230, 81, 0, 0.12);
-  --status-pending-text: #E65100;
-  --status-pending-icon: '◐';
-  
+  --status-pending-text: #e65100;
+  --status-pending-icon: "◐";
+
   --status-preparing-bg: rgba(30, 90, 168, 0.12);
   --status-preparing-text: var(--imidus-blue);
-  --status-preparing-icon: '◐';
-  
+  --status-preparing-icon: "◐";
+
   --status-ready-bg: rgba(212, 175, 55, 0.15);
   --status-ready-text: var(--imidus-gold);
-  --status-ready-icon: '✓';
-  
+  --status-ready-icon: "✓";
+
   --status-error-bg: rgba(198, 40, 40, 0.12);
-  --status-error-text: #C62828;
-  
+  --status-error-text: #c62828;
+
   /* ─────────────────────────────────────────────────────────────────────────────
    * SPACING & RADIUS
    * ───────────────────────────────────────────────────────────────────────────── */
@@ -104,7 +105,7 @@
   --radius-lg: 14px;
   --radius-xl: 18px;
   --radius-full: 9999px;
-  
+
   /* ─────────────────────────────────────────────────────────────────────────────
    * ANIMATION CURVES
    * ───────────────────────────────────────────────────────────────────────────── */
@@ -112,14 +113,14 @@
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-fast: 150ms;
   --duration-normal: 250ms;
-  
+
   /* ─────────────────────────────────────────────────────────────────────────────
    * REAL-TIME INDICATORS
    * ───────────────────────────────────────────────────────────────────────────── */
-  --sync-online: #2E7D32;
-  --sync-syncing: #E65100;
-  --sync-offline: #C62828;
-  
+  --sync-online: #2e7d32;
+  --sync-syncing: #e65100;
+  --sync-offline: #c62828;
+
   /* Apply Base */
   font-family: var(--font-primary);
   background-color: var(--surface-app);
@@ -226,8 +227,15 @@
 }
 
 @keyframes pulse-dot {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.8; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -357,10 +365,18 @@
 }
 
 /* Status text colors */
-.text-green-400 { color: #4ade80; }
-.text-amber-400 { color: #fbbf24; }
-.text-red-400 { color: #f87171; }
-.text-gray-400 { color: #9ca3af; }
+.text-green-400 {
+  color: #4ade80;
+}
+.text-amber-400 {
+  color: #fbbf24;
+}
+.text-red-400 {
+  color: #f87171;
+}
+.text-gray-400 {
+  color: #9ca3af;
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * MAIN CONTENT AREA
@@ -381,16 +397,27 @@
 /* ─────────────────────────────────────────────────────────────────────────────
  * TYPOGRAPHY MODERNIZATION
  * ───────────────────────────────────────────────────────────────────────────── */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: var(--heading-weight);
   letter-spacing: var(--heading-spacing);
   color: var(--heading-color);
   line-height: 1.25;
 }
 
-h1 { font-size: 2rem; }
-h2 { font-size: 1.5rem; }
-h3 { font-size: 1.25rem; }
+h1 {
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.5rem;
+}
+h3 {
+  font-size: 1.25rem;
+}
 
 /* Prices - Premium Gold Display */
 .price {
@@ -466,7 +493,7 @@ h3 { font-size: 1.25rem; }
 }
 
 .btn-gold:hover:not(:disabled) {
-  background: #C4A030;
+  background: #c4a030;
   box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
   transform: translateY(-2px);
 }
@@ -530,7 +557,11 @@ h3 { font-size: 1.25rem; }
 
 .product-image {
   height: 180px;
-  background: linear-gradient(135deg, var(--surface-blue-soft) 0%, var(--surface-gold-soft) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--surface-blue-soft) 0%,
+    var(--surface-gold-soft) 100%
+  );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -539,10 +570,14 @@ h3 { font-size: 1.25rem; }
 }
 
 .product-image::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.03) 100%);
+  background: linear-gradient(
+    180deg,
+    transparent 50%,
+    rgba(0, 0, 0, 0.03) 100%
+  );
 }
 
 .product-info {
@@ -624,13 +659,17 @@ h3 { font-size: 1.25rem; }
 }
 
 .loyalty-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(212, 175, 55, 0.08) 0%,
+    transparent 70%
+  );
   pointer-events: none;
 }
 
@@ -640,7 +679,7 @@ h3 { font-size: 1.25rem; }
 .input {
   width: 100%;
   padding: 14px 18px;
-  border: 1.5px solid #E0E0E0;
+  border: 1.5px solid #e0e0e0;
   border-radius: var(--radius-md);
   font-size: 0.9375rem;
   color: var(--text-primary);
@@ -769,8 +808,14 @@ a:hover {
  * ANIMATIONS
  * ───────────────────────────────────────────────────────────────────────────── */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-in {
@@ -784,7 +829,7 @@ a:hover {
   .imidus-container {
     grid-template-columns: 70px 1fr;
   }
-  
+
   .pos-order-panel {
     position: fixed;
     right: 0;
@@ -795,7 +840,7 @@ a:hover {
     transition: transform var(--duration-normal) var(--ease-out);
     z-index: 150;
   }
-  
+
   .pos-order-panel.open {
     transform: translateX(0);
   }
@@ -805,15 +850,15 @@ a:hover {
   .imidus-header {
     padding: 14px 20px;
   }
-  
+
   .logo-text {
     font-size: 1.25rem;
   }
-  
+
   .content-area {
     padding: 20px;
   }
-  
+
   .menu-grid {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }

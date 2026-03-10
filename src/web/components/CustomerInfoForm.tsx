@@ -259,7 +259,9 @@ export function CustomerInfoForm({
               className={getInputClass("firstName")}
               aria-required="true"
               aria-invalid={!!errors.firstName}
-              aria-describedby={errors.firstName ? "firstName-error" : undefined}
+              aria-describedby={
+                errors.firstName ? "firstName-error" : undefined
+              }
               disabled={isLoading}
             />
             {touched.firstName && errors.firstName && (

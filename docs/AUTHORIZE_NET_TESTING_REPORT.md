@@ -52,38 +52,39 @@ The Authorize.net payment integration has been fully implemented and is ready fo
 
 ## SSOT Compliance Verification
 
-| Principle | Implementation | Status |
-|-----------|---------------|--------|
-| **Read from POS anytime** | Menu items, prices, stock status fetched fresh from `tblAvailableSize` on each request | ✅ |
-| **Write to POS only via backend** | All database writes go through `IPosRepository` interface using Dapper | ✅ |
-| **Atomic transactions** | `BEGIN TRANSACTION` / `COMMIT` / `ROLLBACK` with automatic void on failure | ✅ |
-| **Never modify POS schema** | Only uses existing tables (tblSales, tblSalesDetail, tblPayment, etc.) | ✅ |
-| **Never modify POS code** | External integration layer, no changes to POS application | ✅ |
-| **Overlay in IntegrationService** | Scheduled orders, marketing rules in separate database | ✅ |
+| Principle                         | Implementation                                                                         | Status |
+| --------------------------------- | -------------------------------------------------------------------------------------- | ------ |
+| **Read from POS anytime**         | Menu items, prices, stock status fetched fresh from `tblAvailableSize` on each request | ✅     |
+| **Write to POS only via backend** | All database writes go through `IPosRepository` interface using Dapper                 | ✅     |
+| **Atomic transactions**           | `BEGIN TRANSACTION` / `COMMIT` / `ROLLBACK` with automatic void on failure             | ✅     |
+| **Never modify POS schema**       | Only uses existing tables (tblSales, tblSalesDetail, tblPayment, etc.)                 | ✅     |
+| **Never modify POS code**         | External integration layer, no changes to POS application                              | ✅     |
+| **Overlay in IntegrationService** | Scheduled orders, marketing rules in separate database                                 | ✅     |
 
 ## Test Results
 
 ### Automated Tests (API Level)
 
-| Test | Result | Details |
-|------|--------|---------|
-| Backend API Health | ✅ PASS | 7 categories retrieved |
-| Menu Items (SSOT) | ✅ PASS | 30 items with live prices from POS |
-| Order Creation API | ⚠️ MANUAL | Requires real Accept.js token |
-| Payment Configuration | ✅ PASS | Sandbox credentials configured |
+| Test                  | Result    | Details                            |
+| --------------------- | --------- | ---------------------------------- |
+| Backend API Health    | ✅ PASS   | 7 categories retrieved             |
+| Menu Items (SSOT)     | ✅ PASS   | 30 items with live prices from POS |
+| Order Creation API    | ⚠️ MANUAL | Requires real Accept.js token      |
+| Payment Configuration | ✅ PASS   | Sandbox credentials configured     |
 
 ### Test Card Numbers (Authorize.net Sandbox)
 
-| Card Type | Number | Expiry | CVV | Expected Result |
-|-----------|--------|--------|-----|-----------------|
-| Visa (Success) | 4111111111111111 | 12/25 | 123 | ✅ Approved |
-| Visa (Decline) | 4000000000000002 | 12/25 | 123 | ❌ Declined |
-| MasterCard | 5555555555554444 | 12/25 | 123 | ✅ Approved |
-| Amex | 378282246310005 | 12/25 | 1234 | ✅ Approved |
+| Card Type      | Number           | Expiry | CVV  | Expected Result |
+| -------------- | ---------------- | ------ | ---- | --------------- |
+| Visa (Success) | 4111111111111111 | 12/25  | 123  | ✅ Approved     |
+| Visa (Decline) | 4000000000000002 | 12/25  | 123  | ❌ Declined     |
+| MasterCard     | 5555555555554444 | 12/25  | 123  | ✅ Approved     |
+| Amex           | 378282246310005  | 12/25  | 1234 | ✅ Approved     |
 
 ## Manual Testing Procedure
 
 ### Prerequisites
+
 1. Backend running on port 5004
 2. Web frontend running on port 3000
 3. SQL Server with INI_Restaurant database accessible
@@ -91,6 +92,7 @@ The Authorize.net payment integration has been fully implemented and is ready fo
 ### Test Steps
 
 #### Step 1: Navigate to Menu
+
 ```
 URL: http://localhost:3000/menu
 Action: Verify categories load from POS database
@@ -98,6 +100,7 @@ Expected: 7+ categories displayed (BREAKFAST, HOT SANDWICHES, etc.)
 ```
 
 #### Step 2: Select Item with Size Options
+
 ```
 URL: http://localhost:3000/menu/item/1?category=1
 Action: Click on item to view detail page
@@ -105,39 +108,43 @@ Expected: Item details load, size options displayed with prices from POS
 ```
 
 #### Step 3: Add to Cart
+
 ```
 Action: Select size, set quantity, click "Add to Cart"
 Expected: Success animation, item added to browser localStorage
 ```
 
 #### Step 4: Checkout
+
 ```
 URL: http://localhost:3000/checkout
 Action: Enter customer information
   - First Name: Test
-  - Last Name: Customer  
+  - Last Name: Customer
   - Phone: 555-123-4567
   - Email: test@example.com
 Expected: Form validation passes, proceed to payment
 ```
 
 #### Step 5: Enter Payment (Success Case)
+
 ```
 Card Number: 4111111111111111
 Expiry: 12/25
 CVV: 123
 Action: Click "Pay $X.XX"
-Expected: 
+Expected:
   - Accept.js tokenizes card (brief loading state)
   - Payment processes
   - Redirects to /order/confirmation?orderId=XXX
 ```
 
 #### Step 6: Verify in POS Database
+
 ```sql
 -- Check order was created
-SELECT TOP 1 SalesID, DailyOrderNumber, TransType, TotalAmt 
-FROM tblSales 
+SELECT TOP 1 SalesID, DailyOrderNumber, TransType, TotalAmt
+FROM tblSales
 ORDER BY SalesID DESC;
 
 -- Expected: TransType=1 (completed), matching order number
@@ -150,6 +157,7 @@ SELECT * FROM tblSalesDetail WHERE SalesID = <SalesID>;
 ```
 
 #### Step 7: Test Decline Scenario
+
 ```
 Repeat Steps 4-5 with:
 Card Number: 4000000000000002
@@ -157,12 +165,13 @@ Expected: Payment declined, error message shown, no order created in POS
 ```
 
 #### Step 8: Test Scheduled Order
+
 ```
 In checkout:
   1. Check "Schedule for Later"
   2. Select future date/time (min 30 minutes ahead)
   3. Complete payment
-Expected: 
+Expected:
   - Order stored in ScheduledOrders (IntegrationService DB)
   - Confirmation code displayed (SCH-XXXXXX)
   - NOT yet written to POS database
@@ -171,39 +180,40 @@ Expected:
 
 ## Security Features Verified
 
-| Feature | Implementation | Status |
-|---------|---------------|--------|
-| **PCI-DSS Compliance** | Accept.js tokenization, no raw card data on server | ✅ |
-| **Idempotency Protection** | `X-Idempotency-Key` header prevents duplicate charges | ✅ |
-| **Automatic Rollback** | Database transaction rollback + Authorize.net void on failure | ✅ |
-| **HTTPS Required** | All API calls use HTTPS in production | ✅ |
-| **Token Validation** | Payment tokens validated before processing | ✅ |
-| **Atomic Transactions** | All-or-nothing writes to POS database | ✅ |
+| Feature                    | Implementation                                                | Status |
+| -------------------------- | ------------------------------------------------------------- | ------ |
+| **PCI-DSS Compliance**     | Accept.js tokenization, no raw card data on server            | ✅     |
+| **Idempotency Protection** | `X-Idempotency-Key` header prevents duplicate charges         | ✅     |
+| **Automatic Rollback**     | Database transaction rollback + Authorize.net void on failure | ✅     |
+| **HTTPS Required**         | All API calls use HTTPS in production                         | ✅     |
+| **Token Validation**       | Payment tokens validated before processing                    | ✅     |
+| **Atomic Transactions**    | All-or-nothing writes to POS database                         | ✅     |
 
 ## Error Handling Test Cases
 
-| Scenario | Expected Behavior |
-|----------|-------------------|
-| Invalid card number | Declined by Authorize.net, error shown |
-| Expired card | Declined by Authorize.net, error shown |
-| Insufficient funds | Declined by Authorize.net, error shown |
-| Database connection lost | Rollback transaction, void charge, error shown |
-| Duplicate idempotency key | Return cached result, no double charge |
-| Network timeout | Retry with exponential backoff |
-| Partial DB write failure | Rollback all changes, void charge |
+| Scenario                  | Expected Behavior                              |
+| ------------------------- | ---------------------------------------------- |
+| Invalid card number       | Declined by Authorize.net, error shown         |
+| Expired card              | Declined by Authorize.net, error shown         |
+| Insufficient funds        | Declined by Authorize.net, error shown         |
+| Database connection lost  | Rollback transaction, void charge, error shown |
+| Duplicate idempotency key | Return cached result, no double charge         |
+| Network timeout           | Retry with exponential backoff                 |
+| Partial DB write failure  | Rollback all changes, void charge              |
 
 ## Performance Metrics
 
-| Metric | Target | Status |
-|--------|--------|--------|
-| API Response Time | < 500ms | ✅ ~150ms average |
-| Payment Processing | < 3 seconds | ✅ ~1.5s with Accept.js |
-| Database Transaction | < 1 second | ✅ ~200ms |
-| End-to-End Checkout | < 10 seconds | ✅ ~5 seconds |
+| Metric               | Target       | Status                  |
+| -------------------- | ------------ | ----------------------- |
+| API Response Time    | < 500ms      | ✅ ~150ms average       |
+| Payment Processing   | < 3 seconds  | ✅ ~1.5s with Accept.js |
+| Database Transaction | < 1 second   | ✅ ~200ms               |
+| End-to-End Checkout  | < 10 seconds | ✅ ~5 seconds           |
 
 ## Configuration
 
 ### Authorize.net Settings
+
 ```json
 {
   "ApiLoginId": "9JQVwben66U7",
@@ -214,10 +224,12 @@ Expected:
 ```
 
 ### Frontend Configuration (checkout/page.tsx)
+
 ```typescript
-const AUTHORIZE_NET_API_LOGIN_ID = '9JQVwben66U7';
-const AUTHORIZE_NET_PUBLIC_CLIENT_KEY = '7t8S6K3E3VV3qry33ZEWqQWqLq9xs4UmeNn268gFmZ6mdWWvz22zjHbaQH9Qmsrg';
-const AUTHORIZE_NET_ENV = 'sandbox';
+const AUTHORIZE_NET_API_LOGIN_ID = "9JQVwben66U7";
+const AUTHORIZE_NET_PUBLIC_CLIENT_KEY =
+  "7t8S6K3E3VV3qry33ZEWqQWqLq9xs4UmeNn268gFmZ6mdWWvz22zjHbaQH9Qmsrg";
+const AUTHORIZE_NET_ENV = "sandbox";
 ```
 
 ## Deployment Checklist
@@ -250,19 +262,21 @@ Before production deployment:
 
 ## Sign-off
 
-| Role | Name | Date | Signature |
-|------|------|------|-----------|
-| Developer | Chris (Novatech) | 2026-03-05 | ✅ |
-| QA Tester | [Pending] | | |
-| Client Acceptance | Sung Bin Im | | |
+| Role              | Name             | Date       | Signature |
+| ----------------- | ---------------- | ---------- | --------- |
+| Developer         | Chris (Novatech) | 2026-03-05 | ✅        |
+| QA Tester         | [Pending]        |            |           |
+| Client Acceptance | Sung Bin Im      |            |           |
 
 ---
 
 **Test Scripts:**
+
 - Python API Test: `test_authorize_net_payment.py`
 - Bash Integration Test: `test_authorize_net.sh`
 
 **Next Steps:**
+
 1. Execute manual browser tests with provided card numbers
 2. Verify order records appear in POS database
 3. Test scheduled order background release

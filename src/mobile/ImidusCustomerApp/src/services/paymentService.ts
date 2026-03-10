@@ -1,6 +1,6 @@
 // TODO: Install react-native-authorize-net-accept package for Phase 8 (CI/CD)
 // import AuthorizeNetAccept from 'react-native-authorize-net-accept';
-import { CardData, PaymentToken } from '../types/payment.types';
+import {CardData, PaymentToken} from '../types/payment.types';
 
 /**
  * Tokenize credit card data using Authorize.net Accept.js
@@ -18,7 +18,7 @@ import { CardData, PaymentToken } from '../types/payment.types';
  */
 export async function tokenizeCard(
   cardData: CardData,
-  publicClientKey: string
+  publicClientKey: string,
 ): Promise<PaymentToken> {
   try {
     // Strip spaces from card number (users may enter with spaces for readability)
@@ -41,10 +41,16 @@ export async function tokenizeCard(
     // Return mock token format
     return {
       dataDescriptor: 'COMMON.ACCEPT.INAPP.PAYMENT',
-      dataValue: 'mock_token_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+      dataValue:
+        'mock_token_' +
+        Date.now() +
+        '_' +
+        Math.random().toString(36).substr(2, 9),
     };
   } catch (error: any) {
     // Tokenization failed - card data invalid or network error
-    throw new Error('Tokenization failed: ' + (error.message || 'Unknown error'));
+    throw new Error(
+      'Tokenization failed: ' + (error.message || 'Unknown error'),
+    );
   }
 }

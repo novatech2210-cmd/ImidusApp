@@ -1,5 +1,9 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import authService, { RegisterData, LoginData, UserProfile } from '../services/authService';
+import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit';
+import authService, {
+  RegisterData,
+  LoginData,
+  UserProfile,
+} from '../services/authService';
 import NotificationService from '../services/NotificationService';
 
 // State interface
@@ -26,14 +30,14 @@ const initialState: AuthState = {
  */
 export const registerUser = createAsyncThunk(
   'auth/register',
-  async (data: RegisterData, { rejectWithValue }) => {
+  async (data: RegisterData, {rejectWithValue}) => {
     try {
       const response = await authService.register(data);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Registration failed');
     }
-  }
+  },
 );
 
 /**
@@ -41,7 +45,7 @@ export const registerUser = createAsyncThunk(
  */
 export const loginUser = createAsyncThunk(
   'auth/login',
-  async (data: LoginData, { rejectWithValue }) => {
+  async (data: LoginData, {rejectWithValue}) => {
     try {
       const response = await authService.login(data);
 
@@ -59,7 +63,7 @@ export const loginUser = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || 'Login failed');
     }
-  }
+  },
 );
 
 /**
@@ -67,14 +71,14 @@ export const loginUser = createAsyncThunk(
  */
 export const logoutUser = createAsyncThunk(
   'auth/logout',
-  async (_, { rejectWithValue }) => {
+  async (_, {rejectWithValue}) => {
     try {
       await authService.logout();
       return null;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Logout failed');
     }
-  }
+  },
 );
 
 /**
@@ -83,7 +87,7 @@ export const logoutUser = createAsyncThunk(
  */
 export const loadStoredAuth = createAsyncThunk(
   'auth/loadStored',
-  async (_, { rejectWithValue }) => {
+  async (_, {rejectWithValue}) => {
     try {
       const [token, user] = await Promise.all([
         authService.getStoredToken(),
@@ -96,18 +100,21 @@ export const loadStoredAuth = createAsyncThunk(
           await NotificationService.registerTokenWithBackend(user.id);
           NotificationService.setupTokenRefreshListener(user.id);
         } catch (notifError) {
-          console.warn('Failed to register FCM token on app launch:', notifError);
+          console.warn(
+            'Failed to register FCM token on app launch:',
+            notifError,
+          );
           // Don't block app launch on token registration failure
         }
 
-        return { token, user };
+        return {token, user};
       } else {
         return null;
       }
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to load stored auth');
     }
-  }
+  },
 );
 
 /**
@@ -115,14 +122,14 @@ export const loadStoredAuth = createAsyncThunk(
  */
 export const refreshUserData = createAsyncThunk(
   'auth/refreshUserData',
-  async (_, { rejectWithValue }) => {
+  async (_, {rejectWithValue}) => {
     try {
       const user = await authService.getCurrentUser();
       return user;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to refresh user data');
     }
-  }
+  },
 );
 
 // ===== SLICE =====
@@ -132,7 +139,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     // Manual logout action (for immediate state clear)
-    clearAuth: (state) => {
+    clearAuth: state => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
@@ -140,13 +147,13 @@ const authSlice = createSlice({
       state.error = null;
     },
     // Clear error
-    clearError: (state) => {
+    clearError: state => {
       state.error = null;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     // ===== REGISTER =====
-    builder.addCase(registerUser.pending, (state) => {
+    builder.addCase(registerUser.pending, state => {
       state.isLoading = true;
       state.error = null;
     });
@@ -163,7 +170,7 @@ const authSlice = createSlice({
     });
 
     // ===== LOGIN =====
-    builder.addCase(loginUser.pending, (state) => {
+    builder.addCase(loginUser.pending, state => {
       state.isLoading = true;
       state.error = null;
     });
@@ -180,10 +187,10 @@ const authSlice = createSlice({
     });
 
     // ===== LOGOUT =====
-    builder.addCase(logoutUser.pending, (state) => {
+    builder.addCase(logoutUser.pending, state => {
       state.isLoading = true;
     });
-    builder.addCase(logoutUser.fulfilled, (state) => {
+    builder.addCase(logoutUser.fulfilled, state => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
@@ -200,7 +207,7 @@ const authSlice = createSlice({
     });
 
     // ===== LOAD STORED AUTH =====
-    builder.addCase(loadStoredAuth.pending, (state) => {
+    builder.addCase(loadStoredAuth.pending, state => {
       state.isLoading = true;
     });
     builder.addCase(loadStoredAuth.fulfilled, (state, action) => {
@@ -211,13 +218,13 @@ const authSlice = createSlice({
       }
       state.isLoading = false;
     });
-    builder.addCase(loadStoredAuth.rejected, (state) => {
+    builder.addCase(loadStoredAuth.rejected, state => {
       state.isLoading = false;
       state.isAuthenticated = false;
     });
 
     // ===== REFRESH USER DATA =====
-    builder.addCase(refreshUserData.pending, (state) => {
+    builder.addCase(refreshUserData.pending, state => {
       // Don't set isLoading for refresh (background operation)
     });
     builder.addCase(refreshUserData.fulfilled, (state, action) => {
@@ -230,5 +237,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearAuth, clearError } = authSlice.actions;
+export const {clearAuth, clearError} = authSlice.actions;
 export default authSlice.reducer;

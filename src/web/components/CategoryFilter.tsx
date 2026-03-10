@@ -35,7 +35,7 @@ export function CategoryFilter({
   useEffect(() => {
     if (scrollRef.current && selectedId !== null) {
       const selectedButton = scrollRef.current.querySelector(
-        `[data-category-id="${selectedId}"]`
+        `[data-category-id="${selectedId}"]`,
       );
       if (selectedButton) {
         selectedButton.scrollIntoView({

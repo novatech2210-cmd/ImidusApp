@@ -43,9 +43,9 @@ export interface Order {
   gstAmt: number;
   pstAmt: number;
   total: number;
-  status: 'pending' | 'completed' | 'cancelled' | 'refunded';
+  status: "pending" | "completed" | "cancelled" | "refunded";
   paymentMethod: string;
-  paymentStatus: 'paid' | 'pending' | 'failed' | 'refunded';
+  paymentStatus: "paid" | "pending" | "failed" | "refunded";
   createdAt: string;
   updatedAt: string;
   salesId: number;
@@ -74,7 +74,7 @@ export interface Customer {
   lastName: string;
   email: string;
   phone: string;
-  segment: 'VIP' | 'Loyal' | 'Regular' | 'AtRisk' | 'New';
+  segment: "VIP" | "Loyal" | "Regular" | "AtRisk" | "New";
   totalSpend: number;
   visitCount: number;
   lastVisitDate: string;
@@ -104,7 +104,7 @@ export interface CustomerProfile {
 
 export interface LoyaltyTransaction {
   id: number;
-  type: 'earn' | 'redeem';
+  type: "earn" | "redeem";
   points: number;
   amount: number;
   description: string;
@@ -116,8 +116,8 @@ export interface LoyaltyTransaction {
 export interface Campaign {
   id: number;
   name: string;
-  type: 'marketing' | 'transactional' | 'birthday' | 'retention';
-  status: 'draft' | 'scheduled' | 'sent' | 'paused';
+  type: "marketing" | "transactional" | "birthday" | "retention";
+  status: "draft" | "scheduled" | "sent" | "paused";
   targetSegment: SegmentFilter;
   messageTitle: string;
   messageBody: string;
@@ -178,7 +178,7 @@ export interface ActivityLog {
 export interface BirthdayReward {
   id: number;
   name: string;
-  rewardType: 'points' | 'discount' | 'freeItem';
+  rewardType: "points" | "discount" | "freeItem";
   value: number;
   code?: string;
   isActive: boolean;
@@ -191,8 +191,8 @@ export interface TerminalBridgeRequest {
   orderId: number;
   amount: number;
   terminalId: string;
-  transactionType: 'sale' | 'refund' | 'void';
-  status: 'pending' | 'success' | 'failed' | 'cancelled';
+  transactionType: "sale" | "refund" | "void";
+  status: "pending" | "success" | "failed" | "cancelled";
   createdAt: string;
   respondedAt?: string;
   responseCode?: string;
@@ -227,7 +227,7 @@ export interface AdminUser {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'admin' | 'manager' | 'staff';
+  role: "admin" | "manager" | "staff";
   permissions: string[];
   createdAt: string;
 }

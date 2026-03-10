@@ -69,7 +69,9 @@ export function OrderSummary({
           )}
           <div className="flex justify-between text-sm font-bold text-[#1A1A2E] pt-1">
             <span>Total</span>
-            <span className="text-[#D4AF37]">${(total + tipAmount).toFixed(2)}</span>
+            <span className="text-[#D4AF37]">
+              ${(total + tipAmount).toFixed(2)}
+            </span>
           </div>
         </div>
       </div>
@@ -84,7 +86,9 @@ export function OrderSummary({
           <div key={item.id} className="flex justify-between items-start">
             <div className="flex-1">
               <div className="flex items-baseline gap-2">
-                <span className="font-semibold text-[#1A1A2E]">{item.name}</span>
+                <span className="font-semibold text-[#1A1A2E]">
+                  {item.name}
+                </span>
                 <span className="text-sm text-[#71717A]">x{item.quantity}</span>
               </div>
               <div className="text-xs text-[#71717A]">{item.sizeName}</div>
@@ -122,7 +126,9 @@ export function OrderSummary({
       <div className="border-t border-[rgba(30,90,168,0.08)] pt-3">
         <div className="flex justify-between text-xl font-bold">
           <span className="text-[#1A1A2E]">Total</span>
-          <span className="text-[#D4AF37]">${(total + tipAmount).toFixed(2)}</span>
+          <span className="text-[#D4AF37]">
+            ${(total + tipAmount).toFixed(2)}
+          </span>
         </div>
       </div>
     </div>

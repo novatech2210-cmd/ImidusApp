@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   Switch,
 } from 'react-native';
-import { CardData } from '../types/payment.types';
+import {CardData} from '../types/payment.types';
 
 interface PaymentFormProps {
   onSubmit: (cardData: CardData) => void;
@@ -20,13 +20,19 @@ interface PaymentFormProps {
  * Payment form component with credit card input and validation
  * Implements Luhn algorithm for card validation and auto-formatting
  */
-export default function PaymentForm({ onSubmit, loading, error }: PaymentFormProps) {
+export default function PaymentForm({
+  onSubmit,
+  loading,
+  error,
+}: PaymentFormProps) {
   const [cardNumber, setCardNumber] = useState('');
   const [expirationMonth, setExpirationMonth] = useState('');
   const [expirationYear, setExpirationYear] = useState('');
   const [cvv, setCvv] = useState('');
   const [saveCard, setSaveCard] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   /**
    * Format card number with spaces every 4 digits
@@ -99,7 +105,7 @@ export default function PaymentForm({ onSubmit, loading, error }: PaymentFormPro
     if (cleaned.length <= 16) {
       setCardNumber(formatCardNumber(cleaned));
       if (validationErrors.cardNumber) {
-        setValidationErrors({ ...validationErrors, cardNumber: '' });
+        setValidationErrors({...validationErrors, cardNumber: ''});
       }
     }
   };
@@ -145,7 +151,10 @@ export default function PaymentForm({ onSubmit, loading, error }: PaymentFormPro
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Card Number</Text>
         <TextInput
-          style={[styles.input, validationErrors.cardNumber ? styles.inputError : undefined]}
+          style={[
+            styles.input,
+            validationErrors.cardNumber ? styles.inputError : undefined,
+          ]}
           placeholder="1234 5678 9012 3456"
           keyboardType="numeric"
           value={cardNumber}
@@ -163,15 +172,18 @@ export default function PaymentForm({ onSubmit, loading, error }: PaymentFormPro
         <View style={[styles.inputGroup, styles.flex1]}>
           <Text style={styles.label}>Month</Text>
           <TextInput
-            style={[styles.input, validationErrors.expiration ? styles.inputError : undefined]}
+            style={[
+              styles.input,
+              validationErrors.expiration ? styles.inputError : undefined,
+            ]}
             placeholder="MM"
             keyboardType="numeric"
             value={expirationMonth}
-            onChangeText={(value) => {
+            onChangeText={value => {
               if (/^\d{0,2}$/.test(value)) {
                 setExpirationMonth(value);
                 if (validationErrors.expiration) {
-                  setValidationErrors({ ...validationErrors, expiration: '' });
+                  setValidationErrors({...validationErrors, expiration: ''});
                 }
               }
             }}
@@ -183,15 +195,18 @@ export default function PaymentForm({ onSubmit, loading, error }: PaymentFormPro
         <View style={[styles.inputGroup, styles.flex1, styles.marginLeft]}>
           <Text style={styles.label}>Year</Text>
           <TextInput
-            style={[styles.input, validationErrors.expiration ? styles.inputError : undefined]}
+            style={[
+              styles.input,
+              validationErrors.expiration ? styles.inputError : undefined,
+            ]}
             placeholder="YYYY"
             keyboardType="numeric"
             value={expirationYear}
-            onChangeText={(value) => {
+            onChangeText={value => {
               if (/^\d{0,4}$/.test(value)) {
                 setExpirationYear(value);
                 if (validationErrors.expiration) {
-                  setValidationErrors({ ...validationErrors, expiration: '' });
+                  setValidationErrors({...validationErrors, expiration: ''});
                 }
               }
             }}
@@ -203,16 +218,19 @@ export default function PaymentForm({ onSubmit, loading, error }: PaymentFormPro
         <View style={[styles.inputGroup, styles.cvvGroup]}>
           <Text style={styles.label}>CVV</Text>
           <TextInput
-            style={[styles.input, validationErrors.cvv ? styles.inputError : undefined]}
+            style={[
+              styles.input,
+              validationErrors.cvv ? styles.inputError : undefined,
+            ]}
             placeholder="123"
             keyboardType="numeric"
             secureTextEntry
             value={cvv}
-            onChangeText={(value) => {
+            onChangeText={value => {
               if (/^\d{0,4}$/.test(value)) {
                 setCvv(value);
                 if (validationErrors.cvv) {
-                  setValidationErrors({ ...validationErrors, cvv: '' });
+                  setValidationErrors({...validationErrors, cvv: ''});
                 }
               }
             }}
@@ -224,7 +242,9 @@ export default function PaymentForm({ onSubmit, loading, error }: PaymentFormPro
       {validationErrors.expiration && (
         <Text style={styles.errorText}>{validationErrors.expiration}</Text>
       )}
-      {validationErrors.cvv && <Text style={styles.errorText}>{validationErrors.cvv}</Text>}
+      {validationErrors.cvv && (
+        <Text style={styles.errorText}>{validationErrors.cvv}</Text>
+      )}
 
       {/* Save Card Option (V1 UI placeholder - not functional) */}
       <View style={styles.switchRow}>
@@ -233,7 +253,7 @@ export default function PaymentForm({ onSubmit, loading, error }: PaymentFormPro
           value={saveCard}
           onValueChange={setSaveCard}
           disabled={loading}
-          trackColor={{ false: '#d1d5db', true: '#10b981' }}
+          trackColor={{false: '#d1d5db', true: '#10b981'}}
           thumbColor="#fff"
         />
       </View>
@@ -246,8 +266,7 @@ export default function PaymentForm({ onSubmit, loading, error }: PaymentFormPro
       <TouchableOpacity
         style={[styles.button, loading && styles.buttonDisabled]}
         onPress={handleSubmit}
-        disabled={loading}
-      >
+        disabled={loading}>
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (

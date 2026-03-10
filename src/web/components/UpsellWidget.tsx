@@ -20,7 +20,12 @@ interface UpsellSuggestion {
 }
 
 interface UpsellWidgetProps {
-  onAddItem: (item: { itemId: number; name: string; price: number; discount?: number }) => void;
+  onAddItem: (item: {
+    itemId: number;
+    name: string;
+    price: number;
+    discount?: number;
+  }) => void;
   className?: string;
 }
 
@@ -40,11 +45,11 @@ export function UpsellWidget({ onAddItem, className = "" }: UpsellWidgetProps) {
       setLoading(true);
       try {
         const request = {
-          cartItems: items.map(item => ({
+          cartItems: items.map((item) => ({
             menuItemId: item.menuItemId,
             name: item.name,
             quantity: item.quantity,
-            unitPrice: item.price
+            unitPrice: item.price,
           })),
           cartSubtotal: subtotal,
           // customerLoyaltyTier and session info would come from auth context
@@ -52,7 +57,7 @@ export function UpsellWidget({ onAddItem, className = "" }: UpsellWidgetProps) {
 
         const response = await apiClient("/MarketingRules/evaluate", {
           method: "POST",
-          body: JSON.stringify(request)
+          body: JSON.stringify(request),
         });
 
         setSuggestions(response || []);
@@ -76,8 +81,8 @@ export function UpsellWidget({ onAddItem, className = "" }: UpsellWidgetProps) {
       await apiClient("/MarketingRules/accept", {
         method: "POST",
         body: JSON.stringify({
-          ruleId: suggestion.ruleId
-        })
+          ruleId: suggestion.ruleId,
+        }),
       });
 
       // Add to cart via callback
@@ -85,17 +90,21 @@ export function UpsellWidget({ onAddItem, className = "" }: UpsellWidgetProps) {
         itemId: suggestion.suggestItemId,
         name: suggestion.suggestItemName,
         price: suggestion.discountedPrice || suggestion.suggestItemPrice,
-        discount: suggestion.discountPercent
+        discount: suggestion.discountPercent,
       });
 
       // Mark as accepted
-      setAccepted(prev => new Set(prev).add(suggestion.ruleId));
+      setAccepted((prev) => new Set(prev).add(suggestion.ruleId));
     } catch (error) {
       console.error("Failed to accept upsell:", error);
     }
   };
 
-  if (loading || suggestions.length === 0 || accepted.size === suggestions.length) {
+  if (
+    loading ||
+    suggestions.length === 0 ||
+    accepted.size === suggestions.length
+  ) {
     return null;
   }
 
@@ -108,7 +117,7 @@ export function UpsellWidget({ onAddItem, className = "" }: UpsellWidgetProps) {
 
       <div className="space-y-3">
         {suggestions
-          .filter(s => !accepted.has(s.ruleId))
+          .filter((s) => !accepted.has(s.ruleId))
           .map((suggestion) => (
             <div
               key={suggestion.ruleId}
@@ -172,13 +181,19 @@ export function UpsellWidget({ onAddItem, className = "" }: UpsellWidgetProps) {
 }
 
 // Simple inline suggestion component for cart page
-export function InlineUpsell({ onAddItem }: { onAddItem: (itemId: number, price: number) => void }) {
+export function InlineUpsell({
+  onAddItem,
+}: {
+  onAddItem: (itemId: number, price: number) => void;
+}) {
   const { items } = useCart();
   const [suggestion, setSuggestion] = useState<UpsellSuggestion | null>(null);
 
   useEffect(() => {
     // Only show for specific triggers (e.g., burger)
-    const hasBurger = items.some(i => i.name.toLowerCase().includes("burger"));
+    const hasBurger = items.some((i) =>
+      i.name.toLowerCase().includes("burger"),
+    );
     if (hasBurger) {
       // This would be API-driven in production
       setSuggestion({
@@ -190,7 +205,7 @@ export function InlineUpsell({ onAddItem }: { onAddItem: (itemId: number, price:
         suggestItemPrice: 3.99,
         discountPercent: 10,
         discountedPrice: 3.59,
-        discountMessage: "Save 10%!"
+        discountMessage: "Save 10%!",
       });
     } else {
       setSuggestion(null);
@@ -203,14 +218,25 @@ export function InlineUpsell({ onAddItem }: { onAddItem: (itemId: number, price:
     <div className="bg-[rgba(212,175,55,0.08)] border border-[rgba(212,175,55,0.2)] rounded-lg p-4 mt-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="font-semibold text-[#1A1A2E] text-sm">{suggestion.suggestItemName}</p>
+          <p className="font-semibold text-[#1A1A2E] text-sm">
+            {suggestion.suggestItemName}
+          </p>
           <p className="text-xs text-[#71717A]">{suggestion.message}</p>
-          <p className="text-xs text-green-600 font-semibold">{suggestion.discountMessage}</p>
+          <p className="text-xs text-green-600 font-semibold">
+            {suggestion.discountMessage}
+          </p>
         </div>
         <div className="text-right">
-          <p className="text-[#D4AF37] font-bold">${suggestion.discountedPrice?.toFixed(2)}</p>
+          <p className="text-[#D4AF37] font-bold">
+            ${suggestion.discountedPrice?.toFixed(2)}
+          </p>
           <button
-            onClick={() => onAddItem(suggestion.suggestItemId, suggestion.discountedPrice || suggestion.suggestItemPrice)}
+            onClick={() =>
+              onAddItem(
+                suggestion.suggestItemId,
+                suggestion.discountedPrice || suggestion.suggestItemPrice,
+              )
+            }
             className="text-xs text-[#1E5AA8] hover:text-[#D4AF37] font-semibold mt-1"
           >
             + Add to order

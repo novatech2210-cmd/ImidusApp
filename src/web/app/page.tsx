@@ -4,17 +4,19 @@ import { useAuth } from "@/context/AuthContext";
 import { BannerCarousel } from "@/components/BannerCarousel";
 import { MarketingAPI, getBannersForSegment } from "@/lib/banner-config";
 import {
-    ArrowRightIcon,
-    ShieldCheckIcon,
-    SparklesIcon,
-    TrophyIcon,
+  ArrowRightIcon,
+  ShieldCheckIcon,
+  SparklesIcon,
+  TrophyIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function HomePage() {
   const { user } = useAuth();
-  const [banners, setBanners] = useState(getBannersForSegment(user?.loyaltyTier ?? null, !user));
+  const [banners, setBanners] = useState(
+    getBannersForSegment(user?.loyaltyTier ?? null, !user),
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch targeted banners based on customer segment
@@ -25,7 +27,7 @@ export default function HomePage() {
         // Use customer segment targeting - single source of truth
         const targetedBanners = await MarketingAPI.getBanners(
           user?.loyaltyTier,
-          !user // Treat non-logged in users as "new" customers
+          !user, // Treat non-logged in users as "new" customers
         );
         setBanners(targetedBanners);
       } catch (error) {
@@ -45,11 +47,11 @@ export default function HomePage() {
       {/* Banner Carousel - Customer Segment Targeted */}
       <div className="w-full max-w-6xl mb-12">
         {isLoading ? (
-          <div 
+          <div
             className="w-full rounded-2xl animate-pulse"
-            style={{ 
+            style={{
               minHeight: "400px",
-              background: "linear-gradient(135deg, #1E5AA8 0%, #174785 100%)"
+              background: "linear-gradient(135deg, #1E5AA8 0%, #174785 100%)",
             }}
           />
         ) : (

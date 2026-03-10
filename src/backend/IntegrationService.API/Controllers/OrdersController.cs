@@ -20,7 +20,7 @@ namespace IntegrationService.API.Controllers
         private readonly ILogger<OrdersController> _logger;
 
         public OrdersController(
-            IOrderProcessingService orderService, 
+            IOrderProcessingService orderService,
             IPosRepository posRepository,
             ILogger<OrdersController> logger)
         {
@@ -252,7 +252,7 @@ namespace IntegrationService.API.Controllers
                     {
                         customer = await _posRepo.GetCustomerByIdAsync(order.CustomerID.Value);
                     }
-                    
+
                     orderDtos.Add(new RecentOrderDto
                     {
                         SalesId = order.ID,

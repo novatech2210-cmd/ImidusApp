@@ -1,6 +1,7 @@
 # Step 2: Repository SQL Queries Update
 
 ## 🎯 Goal
+
 Rewrite all SQL queries in the repository layer to use correct table/column names from the INI_Restaurant database (source of truth).
 
 **File:** `backend/IntegrationService.Infrastructure/Data/PosRepository.cs`
@@ -12,6 +13,7 @@ Rewrite all SQL queries in the repository layer to use correct table/column name
 ## 🔴 CRITICAL CHANGES
 
 ### Table Name Mapping
+
 ```
 Tickets      → tblSales
 TicketItems  → tblSalesDetail
@@ -24,6 +26,7 @@ Customers    → tblCustomer
 ```
 
 ### Key Column Changes
+
 ```
 TicketID     → ID (in tblSales)
 TicketItemID → ID (in tblSalesDetail)
@@ -614,6 +617,7 @@ namespace IntegrationService.Infrastructure.Data
 ## ✅ Key Changes Summary
 
 ### 1. Menu Items Query
+
 ```sql
 -- BEFORE
 SELECT * FROM MenuItems WHERE IsActive = 1
@@ -624,6 +628,7 @@ WHERE Status = 1 AND OnlineItem = 1
 ```
 
 ### 2. Item Pricing (CRITICAL)
+
 ```sql
 -- BEFORE
 SELECT ItemID, ItemName, BasePrice FROM MenuItems
@@ -641,6 +646,7 @@ WHERE a.ItemID = @ItemId
 ```
 
 ### 3. Insert Order
+
 ```sql
 -- BEFORE
 INSERT INTO Tickets (TicketID, CreatedDate, TotalAmount, Status)
@@ -657,6 +663,7 @@ INSERT INTO dbo.tblSales (
 ```
 
 ### 4. Insert Line Item
+
 ```sql
 -- BEFORE
 INSERT INTO TicketItems (TicketID, MenuItemId, Quantity, Price)
@@ -679,12 +686,14 @@ INSERT INTO dbo.tblSalesDetail (
 ## 🧪 Testing
 
 ### 1. Test Database Connection
+
 ```bash
 cd /home/kali/Desktop/TOAST/backend
 dotnet test --filter "Category=Database"
 ```
 
 ### 2. Test Menu Retrieval
+
 ```sql
 -- Run this in SQL Server Management Studio to verify query works
 SELECT
@@ -702,6 +711,7 @@ ORDER BY i.CategoryID, i.IName, s.DisplayOrder
 ```
 
 ### 3. Test Order Creation
+
 ```csharp
 // Integration test
 [Fact]
@@ -736,20 +746,26 @@ public async Task CanCreateOrderInRealDatabase()
 ## ⚠️ Common Errors
 
 ### "Invalid object name 'Tickets'"
+
 **Solution:** You have a query still using the old table name. Search for it:
+
 ```bash
 grep -r "FROM Tickets" .
 grep -r "INSERT INTO Tickets" .
 ```
 
 ### "Invalid column name 'TicketID'"
+
 **Solution:** Update to use `ID`:
+
 ```bash
 grep -r "TicketID" . | grep -v ".git"
 ```
 
 ### "Cannot insert NULL into column 'SizeID'"
+
 **Solution:** Ensure all item inserts include SizeID:
+
 ```csharp
 // WRONG
 new PosTicketItem { ItemID = 101, Quantity = 1 }

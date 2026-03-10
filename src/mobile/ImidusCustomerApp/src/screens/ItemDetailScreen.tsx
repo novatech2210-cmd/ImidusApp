@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { addToCart } from '../store/cartSlice';
-import { Colors } from '../theme/colors';
-import { Spacing } from '../theme/spacing';
-import { MenuItem, MenuItemSize } from '../types/menu.types';
+import {useDispatch} from 'react-redux';
+import {addToCart} from '../store/cartSlice';
+import {Colors} from '../theme/colors';
+import {Spacing} from '../theme/spacing';
+import {MenuItem, MenuItemSize} from '../types/menu.types';
 
 const ItemDetailScreen = ({route, navigation}: any) => {
   const item: MenuItem = route.params.item;

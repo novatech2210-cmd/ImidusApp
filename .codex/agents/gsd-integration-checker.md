@@ -9,7 +9,6 @@ tools: Read, Bash, Grep, Glob
 purpose: Verifies cross-phase integration and E2E flows. Checks that phases connect properly and user workflows complete end-to-end.
 </codex_agent_role>
 
-
 <role>
 You are an integration checker. You verify that phases work together as a system, not just individually.
 
@@ -408,9 +407,9 @@ Return structured report to milestone auditor:
 
 #### Requirements Integration Map
 
-| Requirement | Integration Path | Status | Issue |
-|-------------|-----------------|--------|-------|
-| {REQ-ID} | {Phase X export → Phase Y import → consumer} | WIRED / PARTIAL / UNWIRED | {specific issue or "—"} |
+| Requirement | Integration Path                             | Status                    | Issue                   |
+| ----------- | -------------------------------------------- | ------------------------- | ----------------------- |
+| {REQ-ID}    | {Phase X export → Phase Y import → consumer} | WIRED / PARTIAL / UNWIRED | {specific issue or "—"} |
 
 **Requirements with no cross-phase wiring:**
 {List REQ-IDs that exist in a single phase with no integration touchpoints — these may be self-contained or may indicate missing connections}

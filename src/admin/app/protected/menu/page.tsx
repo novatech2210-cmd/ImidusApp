@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useMenuOverrides, useUpdateMenuOverride } from '@/lib/hooks';
-import MainLayout from '@/components/Navigation/MainLayout';
-import DataTable from '@/components/Tables/DataTable';
-import Modal from '@/components/Dialogs/Modal';
-import Spinner from '@/components/Loading/Spinner';
-import { AlertCircle, CheckCircle, ToggleLeft, DollarSign } from 'lucide-react';
-import { formatCurrency } from '@/lib/utils';
+import { useState } from "react";
+import { useMenuOverrides, useUpdateMenuOverride } from "@/lib/hooks";
+import MainLayout from "@/components/Navigation/MainLayout";
+import DataTable from "@/components/Tables/DataTable";
+import Modal from "@/components/Dialogs/Modal";
+import Spinner from "@/components/Loading/Spinner";
+import { AlertCircle, CheckCircle, ToggleLeft, DollarSign } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 export default function MenuPage() {
   const { data: overrides, isLoading, error } = useMenuOverrides();
@@ -37,14 +37,14 @@ export default function MenuPage() {
           setEditModal(false);
           setSelectedItem(null);
         },
-      }
+      },
     );
   };
 
   const handleToggleAvailability = (item: any) => {
     updateOverride.mutate(
       { itemId: item.itemId, data: { isAvailable: !item.isAvailable } },
-      {}
+      {},
     );
   };
 
@@ -55,7 +55,9 @@ export default function MenuPage() {
       <div className="p-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900">Menu Management</h1>
-          <p className="text-gray-600">Enable/disable items and manage overlay pricing</p>
+          <p className="text-gray-600">
+            Enable/disable items and manage overlay pricing
+          </p>
         </div>
 
         {error && (
@@ -69,7 +71,9 @@ export default function MenuPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="card">
             <p className="text-sm text-gray-600 mb-1">Total Items</p>
-            <p className="text-3xl font-bold text-gray-900">{overrides?.length || 0}</p>
+            <p className="text-3xl font-bold text-gray-900">
+              {overrides?.length || 0}
+            </p>
           </div>
           <div className="card">
             <p className="text-sm text-gray-600 mb-1">Available</p>
@@ -107,16 +111,16 @@ export default function MenuPage() {
                 {overrides?.map((item: any) => (
                   <tr key={item.itemId}>
                     <td className="font-medium">{item.itemName}</td>
-                    <td>{item.category || '—'}</td>
+                    <td>{item.category || "—"}</td>
                     <td>{formatCurrency(item.displayPrice)}</td>
-                    <td>{item.stock || '—'}</td>
+                    <td>{item.stock || "—"}</td>
                     <td>
                       <span
                         className={`badge ${
-                          item.isAvailable ? 'badge-success' : 'badge-danger'
+                          item.isAvailable ? "badge-success" : "badge-danger"
                         }`}
                       >
-                        {item.isAvailable ? '✓ Available' : '✗ Disabled'}
+                        {item.isAvailable ? "✓ Available" : "✗ Disabled"}
                       </span>
                     </td>
                     <td className="space-x-2">
@@ -143,7 +147,12 @@ export default function MenuPage() {
 
         {/* Edit Modal */}
         {editModal && selectedItem && (
-          <Modal isOpen={editModal} title={`Edit: ${selectedItem.itemName}`} size="md" onClose={() => setEditModal(false)}>
+          <Modal
+            isOpen={editModal}
+            title={`Edit: ${selectedItem.itemName}`}
+            size="md"
+            onClose={() => setEditModal(false)}
+          >
             <div className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Edit: {selectedItem.itemName}
@@ -185,7 +194,10 @@ export default function MenuPage() {
                       type="checkbox"
                       checked={formData.isAvailable}
                       onChange={(e) =>
-                        setFormData({ ...formData, isAvailable: e.target.checked })
+                        setFormData({
+                          ...formData,
+                          isAvailable: e.target.checked,
+                        })
                       }
                       className="sr-only peer"
                     />
@@ -207,7 +219,7 @@ export default function MenuPage() {
                   disabled={updateOverride.isPending}
                   className="btn btn-primary flex-1"
                 >
-                  {updateOverride.isPending ? 'Saving...' : 'Save Changes'}
+                  {updateOverride.isPending ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </div>

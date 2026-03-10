@@ -123,8 +123,8 @@ namespace IntegrationService.API.BackgroundServices
                 };
 
                 var salesId = await posRepository.CreateOpenOrderAsync(
-                    ticket, 
-                    transaction, 
+                    ticket,
+                    transaction,
                     $"{order.CustomerFirstName} {order.CustomerLastName}".Trim()
                 );
 

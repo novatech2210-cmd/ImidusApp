@@ -2,7 +2,7 @@
 
 **Date:** March 6, 2026  
 **Status:** Planning Phase  
-**Value:** $1,000  
+**Value:** $1,000
 
 ---
 
@@ -15,6 +15,7 @@ M4 delivers a comprehensive admin portal for restaurant merchants to manage orde
 ## 🏗️ Architecture Overview
 
 ### Technology Stack
+
 - **Frontend:** Next.js 14 (TypeScript + React Server Components)
 - **Backend:** .NET 8 (already 80% implemented via AdminPortalService)
 - **Database - Ground Truth:** INI_Restaurant (SQL Server 2005 Express)
@@ -23,6 +24,7 @@ M4 delivers a comprehensive admin portal for restaurant merchants to manage orde
 - **Notifications:** Firebase FCM
 
 ### SSOT Compliance Model
+
 ```
 POS Orders          ← READ ONLY (ground truth)
     ↓
@@ -38,6 +40,7 @@ Admin Portal UI     ← Display & analytics
 ### 1. Order Management Dashboard (40% backend ready)
 
 **Endpoints Already Implemented:**
+
 - `GET /api/admin/dashboard/summary` - KPIs (total revenue, orders, customers)
 - `GET /api/admin/dashboard/sales-chart` - Sales trends (day/week/month grouping)
 - `GET /api/admin/dashboard/popular-items` - Top items by quantity
@@ -45,16 +48,19 @@ Admin Portal UI     ← Display & analytics
 - `POST /api/admin/orders/{salesId}/refund` - Process refund with audit trail
 
 **Database Tables:**
+
 - Read: `tblSales`, `tblSalesDetail`, `tblPayment`
 - Write: `tblActivityLog` (refund reason, admin user)
 
 **Missing Implementation:**
+
 - ❌ Filter/search order queue by order number, customer, status
 - ❌ Order cancellation with inventory reversal
 - ❌ Void/adjust items in completed orders
 - ❌ Print receipt generation
 
 **UI Components Needed:**
+
 ```
 OrderDashboard/
   ├── DashboardSummary (KPI cards: Revenue, Orders, AOV)
@@ -68,6 +74,7 @@ OrderDashboard/
 ```
 
 **API Enhancements:**
+
 ```csharp
 POST /api/admin/orders/{salesId}/cancel
   → Reverses stock in tblAvailableSize
@@ -84,16 +91,19 @@ GET /api/admin/orders/queue?status=open&searchTerm=ORD001
 ### 2. Customer CRM with RFM Segmentation (10% backend ready)
 
 **Endpoints Already Implemented:**
+
 - `GET /api/admin/customers/segments` - RFM segments (High-Value, At-Risk, Loyal, etc.)
 - `GET /api/admin/customers/{customerId}/history` - Order history + metrics
 
 **Missing Implementation:**
+
 - ❌ RFM calculation queries (Recency, Frequency, Monetary)
 - ❌ Customer search/filtering by segment
 - ❌ Bulk customer actions (email export, targeted campaigns)
 - ❌ Loyalty points balance visibility
 
 **Database Schema:**
+
 ```sql
 -- NEW: Customer overlay table for CRM data
 CREATE TABLE tblCustomerProfile (
@@ -113,13 +123,13 @@ CREATE TABLE tblCustomerProfile (
 
 -- Calculated on demand via view
 CREATE VIEW vwCustomerRFM AS
-SELECT 
+SELECT
     c.ID,
     c.FName, c.LName, c.Phone, c.Email,
     DATEDIFF(day, MAX(s.SaleDateTime), GETDATE()) as RecencyDays,
     COUNT(DISTINCT s.ID) as Frequency,
     SUM(s.SubTotal + s.GSTAmt + s.PSTAmt + s.PST2Amt - s.DSCAmt) as Monetary,
-    CASE 
+    CASE
         WHEN SUM(...) > 500 AND DATEDIFF(day, MAX(...), GETDATE()) < 30 THEN 'VIP'
         WHEN SUM(...) > 250 THEN 'Loyal'
         WHEN DATEDIFF(day, MAX(...), GETDATE()) > 90 THEN 'At-Risk'
@@ -131,6 +141,7 @@ GROUP BY c.ID, ...
 ```
 
 **UI Components:**
+
 ```
 CustomerSegmentation/
   ├── SegmentationChart (donut: VIP%, Regular%, At-Risk%)
@@ -148,6 +159,7 @@ CustomerSegmentation/
 ```
 
 **RFM Algorithm:**
+
 ```
 Recency: Days since last purchase (0-30=5pts, 31-60=4pts, ...)
 Frequency: Orders in last 12 months (1=1pt, 5+=5pts)
@@ -160,11 +172,13 @@ Segment = weighted score (R×40% + F×30% + M×30%)
 ### 3. Push Notification Campaign Builder (20% backend ready)
 
 **Endpoints Already Implemented:**
+
 - `GET /api/admin/campaigns` - List campaigns
 - `POST /api/admin/campaigns` - Create campaign
 - `POST /api/admin/campaigns/{campaignId}/send` - Send campaign
 
 **Missing Implementation:**
+
 - ❌ Audience targeting SQL builder (Spend > $X, Frequency > N, Recency < 60)
 - ❌ Campaign scheduling (send now vs. scheduled)
 - ❌ A/B testing (variant messages)
@@ -172,6 +186,7 @@ Segment = weighted score (R×40% + F×30% + M×30%)
 - ❌ Template management (transactional + marketing)
 
 **Database Schema:**
+
 ```sql
 CREATE TABLE tblPushCampaign (
     ID INT PRIMARY KEY IDENTITY,
@@ -202,6 +217,7 @@ CREATE TABLE tblCampaignRecipient (
 ```
 
 **UI Components:**
+
 ```
 CampaignBuilder/
   ├── CampaignList (draft, scheduled, sent)
@@ -233,6 +249,7 @@ CampaignBuilder/
 ```
 
 **Audience Targeting SQL:**
+
 ```sql
 -- Dynamic audience calculation
 DECLARE @minSpend DECIMAL = 50.00
@@ -246,7 +263,7 @@ WHERE EXISTS (
     SELECT 1 FROM tblSales s
     WHERE s.CustomerID = c.ID
     GROUP BY s.CustomerID
-    HAVING 
+    HAVING
         SUM(s.SubTotal) >= @minSpend
         AND COUNT(*) >= @minFrequency
         AND DATEDIFF(day, MAX(s.SaleDateTime), GETDATE()) <= @maxRecencyDays
@@ -258,12 +275,14 @@ WHERE EXISTS (
 ### 4. Menu Management Overlay (15% backend ready)
 
 **Endpoints Already Implemented:**
+
 - `GET /api/admin/menu/overrides` - List menu overrides
 - `PUT /api/admin/menu/overrides/{itemId}` - Update override
 
 **Constraint:** No POS schema changes. This is a read-only + overlay approach.
 
 **Missing Implementation:**
+
 - ❌ Real-time inventory visibility (OnHandQty from tblAvailableSize)
 - ❌ Enable/disable items (overlay flag, not POS change)
 - ❌ Price override (display alternative price without changing POS)
@@ -271,6 +290,7 @@ WHERE EXISTS (
 - ❌ Stock alert thresholds
 
 **Database Schema:**
+
 ```sql
 CREATE TABLE tblMenuOverlay (
     ID INT PRIMARY KEY IDENTITY,
@@ -297,6 +317,7 @@ ORDER BY i.CategoryID, i.PrintOrder
 ```
 
 **UI Components:**
+
 ```
 MenuManagement/
   ├── CategoryList (from tblCategory)
@@ -319,6 +340,7 @@ MenuManagement/
 ```
 
 **Real-time Stock Updates:**
+
 ```csharp
 // New endpoint: Get current inventory
 GET /api/Menu/inventory
@@ -343,17 +365,20 @@ Response:
 ### 5. Birthday Reward Automation (50% backend ready)
 
 **Existing Implementation:**
+
 - `BirthdayRewardBackgroundService` - Daily background task
 - `BirthdayRewardService` - Core logic
 - `tblCustomerProfile` overlay table for tracking
 
 **Missing Implementation:**
+
 - ❌ Birthday reward UI to configure rules
 - ❌ Manual birthday reward trigger (admin can send to specific customer)
 - ❌ Birthday message template management
 - ❌ Opt-in/opt-out tracking
 
 **Database Schema:**
+
 ```sql
 CREATE TABLE tblBirthdayRewardConfig (
     ID INT PRIMARY KEY IDENTITY,
@@ -380,6 +405,7 @@ CREATE TABLE tblBirthdayRewardRecipient (
 ```
 
 **UI Components:**
+
 ```
 BirthdayRewards/
   ├── RewardConfigList
@@ -400,6 +426,7 @@ BirthdayRewards/
 ```
 
 **Background Service Improvements:**
+
 ```csharp
 // Already implemented: runs daily at midnight
 // Check for birthdays in next 2 days
@@ -416,11 +443,13 @@ BirthdayRewards/
 **Status:** ⏳ BLOCKED - Awaiting client API documentation
 
 **Requirements:**
+
 - Client must provide: Verifone/Ingenico bridge API documentation
 - Client must provide: Test credentials + sandbox environment
 - Client must provide: POS posting rules (how bridge results integrate)
 
 **Placeholder UI Structure:**
+
 ```
 TerminalBridge/
   ├── BridgeStatus (connected/disconnected)
@@ -439,6 +468,7 @@ TerminalBridge/
 ```
 
 **Blocked Dependencies:**
+
 - [ ] Bridge API documentation from client
 - [ ] Test credentials and sandbox access
 - [ ] POS posting integration rules (TransType, tender mapping)
@@ -449,6 +479,7 @@ TerminalBridge/
 ### 7. Security & Authorization
 
 **Authentication:**
+
 ```csharp
 // JWT token stored in secure cookie (httpOnly)
 // Roles: Admin, Manager, Cashier, Viewer
@@ -461,6 +492,7 @@ POST /api/auth/admin-login
 ```
 
 **Authorization Matrix:**
+
 ```
 Feature                 Admin  Manager  Cashier  Viewer
 ─────────────────────────────────────────────────────
@@ -473,6 +505,7 @@ Access Activity Logs    ✓
 ```
 
 **Database:**
+
 ```sql
 CREATE TABLE tblAdminUser (
     ID INT PRIMARY KEY IDENTITY,
@@ -492,17 +525,20 @@ CREATE TABLE tblAdminUser (
 ### 8. Activity Logging (30% backend ready)
 
 **Implemented:**
+
 - `IActivityLogRepository` - data access
 - `POST /api/admin/logs` - retrieve logs
 - Logging for: refunds, campaigns sent, menu changes
 
 **Missing Implementation:**
+
 - ❌ IP whitelisting rules
 - ❌ Concurrent session limits (prevent multiple admins from same account)
 - ❌ Log retention policies (purge after 90 days)
 - ❌ Export logs to CSV
 
 **Database:**
+
 ```sql
 CREATE TABLE tblActivityLog (
     ID INT PRIMARY KEY IDENTITY,
@@ -524,6 +560,7 @@ CREATE TABLE tblActivityLog (
 ```
 
 **UI Components:**
+
 ```
 ActivityLogs/
   ├── FilterBar
@@ -785,7 +822,7 @@ CREATE TABLE tblIPWhitelist (
 
 -- Views for RFM calculation
 CREATE VIEW vwCustomerRFM AS
-SELECT 
+SELECT
     c.ID,
     c.FName,
     c.LName,
@@ -794,7 +831,7 @@ SELECT
     DATEDIFF(day, ISNULL(MAX(s.SaleDateTime), c.CreateDate), GETDATE()) AS RecencyDays,
     COUNT(DISTINCT s.ID) AS Frequency,
     ISNULL(SUM(s.SubTotal + s.GSTAmt + s.PSTAmt + s.PST2Amt - s.DSCAmt), 0) AS Monetary,
-    CASE 
+    CASE
         WHEN ISNULL(SUM(s.SubTotal), 0) > 500 AND DATEDIFF(day, MAX(s.SaleDateTime), GETDATE()) < 30 THEN 'VIP'
         WHEN ISNULL(SUM(s.SubTotal), 0) > 200 THEN 'Loyal'
         WHEN DATEDIFF(day, MAX(s.SaleDateTime), GETDATE()) > 90 THEN 'At-Risk'
@@ -811,35 +848,35 @@ GROUP BY c.ID, c.FName, c.LName, c.Phone, c.Email, c.CreateDate;
 
 ## 🔌 API Endpoints Summary
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/admin/dashboard/summary` | KPI dashboard | Manager+ |
-| GET | `/api/admin/dashboard/sales-chart` | Sales trends | Manager+ |
-| GET | `/api/admin/dashboard/popular-items` | Top items | Manager+ |
-| GET | `/api/admin/orders/queue` | Order queue | Cashier+ |
-| POST | `/api/admin/orders/{id}/refund` | Process refund | Manager+ |
-| GET | `/api/admin/customers/segments` | RFM segments | Manager+ |
-| GET | `/api/admin/customers/{id}/history` | Customer profile | Manager+ |
-| GET | `/api/admin/campaigns` | List campaigns | Manager+ |
-| POST | `/api/admin/campaigns` | Create campaign | Manager+ |
-| POST | `/api/admin/campaigns/{id}/send` | Send campaign | Manager+ |
-| GET | `/api/admin/menu/overrides` | Menu overlay | Manager+ |
-| PUT | `/api/admin/menu/overrides/{id}` | Update override | Manager+ |
-| GET | `/api/admin/logs` | Activity logs | Admin |
-| POST | `/api/auth/admin-login` | Admin login | Public |
+| Method | Endpoint                             | Description      | Auth     |
+| ------ | ------------------------------------ | ---------------- | -------- |
+| GET    | `/api/admin/dashboard/summary`       | KPI dashboard    | Manager+ |
+| GET    | `/api/admin/dashboard/sales-chart`   | Sales trends     | Manager+ |
+| GET    | `/api/admin/dashboard/popular-items` | Top items        | Manager+ |
+| GET    | `/api/admin/orders/queue`            | Order queue      | Cashier+ |
+| POST   | `/api/admin/orders/{id}/refund`      | Process refund   | Manager+ |
+| GET    | `/api/admin/customers/segments`      | RFM segments     | Manager+ |
+| GET    | `/api/admin/customers/{id}/history`  | Customer profile | Manager+ |
+| GET    | `/api/admin/campaigns`               | List campaigns   | Manager+ |
+| POST   | `/api/admin/campaigns`               | Create campaign  | Manager+ |
+| POST   | `/api/admin/campaigns/{id}/send`     | Send campaign    | Manager+ |
+| GET    | `/api/admin/menu/overrides`          | Menu overlay     | Manager+ |
+| PUT    | `/api/admin/menu/overrides/{id}`     | Update override  | Manager+ |
+| GET    | `/api/admin/logs`                    | Activity logs    | Admin    |
+| POST   | `/api/auth/admin-login`              | Admin login      | Public   |
 
 ---
 
 ## 📅 Implementation Timeline
 
-| Phase | Features | Duration | Notes |
-|-------|----------|----------|-------|
-| **Phase 1** | Dashboard + Order Queue + UI Scaffold | 2 weeks | Frontend + connect to backend |
-| **Phase 2** | Customer CRM + RFM | 1 week | RFM calculation + segmentation UI |
-| **Phase 3** | Campaign Builder + Notification | 1.5 weeks | Audience targeting + scheduling |
-| **Phase 4** | Menu Overlay + Birthday Rewards | 1 week | Inventory sync + reward triggers |
-| **Phase 5** | Security (Auth, Logs, IP Whitelist) | 1 week | JWT, role-based access, audit trail |
-| **Phase 6** | Testing + Deployment | 1 week | E2E tests, staging, prod deploy |
+| Phase       | Features                              | Duration  | Notes                               |
+| ----------- | ------------------------------------- | --------- | ----------------------------------- |
+| **Phase 1** | Dashboard + Order Queue + UI Scaffold | 2 weeks   | Frontend + connect to backend       |
+| **Phase 2** | Customer CRM + RFM                    | 1 week    | RFM calculation + segmentation UI   |
+| **Phase 3** | Campaign Builder + Notification       | 1.5 weeks | Audience targeting + scheduling     |
+| **Phase 4** | Menu Overlay + Birthday Rewards       | 1 week    | Inventory sync + reward triggers    |
+| **Phase 5** | Security (Auth, Logs, IP Whitelist)   | 1 week    | JWT, role-based access, audit trail |
+| **Phase 6** | Testing + Deployment                  | 1 week    | E2E tests, staging, prod deploy     |
 
 **Total: ~8 weeks**
 

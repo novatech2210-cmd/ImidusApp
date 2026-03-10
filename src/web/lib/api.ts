@@ -19,7 +19,8 @@ export async function apiClient(path: string, options: RequestInit = {}) {
 
   // Add idempotency key for register requests
   if (path.includes("/auth/register")) {
-    headers["Idempotency-Key"] = `reg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    headers["Idempotency-Key"] =
+      `reg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
   const url = `${API_BASE}${path}`;
@@ -120,7 +121,10 @@ export const OrderAPI = {
       headers: { "X-Idempotency-Key": crypto.randomUUID() },
     }),
 
-  completePayment: (salesId: number, data: CompletePaymentRequest): Promise<OrderCompletionResult> =>
+  completePayment: (
+    salesId: number,
+    data: CompletePaymentRequest,
+  ): Promise<OrderCompletionResult> =>
     apiClient(`/Orders/${salesId}/complete-payment`, {
       method: "POST",
       body: JSON.stringify(data),
@@ -162,13 +166,16 @@ export interface RegisterRequest {
 }
 
 export const AuthAPI = {
-  login: (data: LoginRequest) => 
+  login: (data: LoginRequest) =>
     apiClient("/Auth/login", { method: "POST", body: JSON.stringify(data) }),
   register: (data: RegisterRequest) =>
     apiClient("/Auth/register", { method: "POST", body: JSON.stringify(data) }),
   getCurrentUser: () => apiClient("/Auth/me"),
   refreshToken: (refreshToken: string) =>
-    apiClient("/Auth/refresh", { method: "POST", body: JSON.stringify({ refreshToken }) }),
+    apiClient("/Auth/refresh", {
+      method: "POST",
+      body: JSON.stringify({ refreshToken }),
+    }),
 };
 
 export const CustomerAPI = {
@@ -247,28 +254,33 @@ export const ScheduledOrderAPI = {
       method: "POST",
       body: JSON.stringify(data),
     }),
-  
+
   getByCustomer: (customerId: number): Promise<ScheduledOrder[]> =>
     apiClient(`/ScheduledOrders/customer/${customerId}`),
-  
+
   cancel: (orderId: number, reason?: string) =>
     apiClient(`/ScheduledOrders/${orderId}/cancel`, {
       method: "POST",
       body: JSON.stringify(reason || "Customer requested"),
     }),
-  
-  getTimeSlots: (date: string, leadTimeMinutes?: number): Promise<{ availableSlots: TimeSlot[] }> =>
-    apiClient(`/ScheduledOrders/timeslots?date=${date}&leadTimeMinutes=${leadTimeMinutes || 30}`),
+
+  getTimeSlots: (
+    date: string,
+    leadTimeMinutes?: number,
+  ): Promise<{ availableSlots: TimeSlot[] }> =>
+    apiClient(
+      `/ScheduledOrders/timeslots?date=${date}&leadTimeMinutes=${leadTimeMinutes || 30}`,
+    ),
 };
 
 // ── Menu API ───────────────────────────────────────────────────────────
 
 export const MenuAPI = {
   getCategories: (): Promise<Category[]> => apiClient("/Menu/categories"),
-  getItemsByCategory: (categoryId: number): Promise<MenuItem[]> => 
+  getItemsByCategory: (categoryId: number): Promise<MenuItem[]> =>
     apiClient(`/Menu/items/${categoryId}`),
   // Stub functions for merchant dashboard (Milestone 4)
-  getAnalyticsSummary: (): Promise<any> => 
+  getAnalyticsSummary: (): Promise<any> =>
     Promise.resolve({ totalSales: 0, totalOrders: 0, averageOrderValue: 0 }),
   getTopProducts: (): Promise<any[]> => Promise.resolve([]),
   getSalesTrend: (): Promise<any[]> => Promise.resolve([]),
@@ -303,10 +315,10 @@ export interface SyncStatsResponse {
 
 export const SyncAPI = {
   getStatus: (): Promise<SyncStatusResponse> => apiClient("/Sync/status"),
-  healthCheck: (): Promise<{ status: string; timestamp: string }> => 
+  healthCheck: (): Promise<{ status: string; timestamp: string }> =>
     apiClient("/Sync/health"),
   getStats: (): Promise<SyncStatsResponse> => apiClient("/Sync/stats"),
-  forceCheck: (): Promise<SyncStatusResponse> => 
+  forceCheck: (): Promise<SyncStatusResponse> =>
     apiClient("/Sync/check", { method: "POST" }),
 };
 
@@ -379,42 +391,69 @@ export interface MenuOverride {
 
 export const AdminAPI = {
   // Dashboard
-  getDashboardSummary: (startDate?: string, endDate?: string): Promise<DashboardSummary> =>
-    apiClient(`/Admin/dashboard/summary?startDate=${startDate || ''}&endDate=${endDate || ''}`),
-  getSalesChart: (startDate: string, endDate: string, groupBy = 'day'): Promise<SalesChartPoint[]> =>
-    apiClient(`/Admin/dashboard/sales-chart?startDate=${startDate}&endDate=${endDate}&groupBy=${groupBy}`),
-  getPopularItems: (startDate?: string, endDate?: string, limit = 10): Promise<PopularItem[]> =>
+  getDashboardSummary: (
+    startDate?: string,
+    endDate?: string,
+  ): Promise<DashboardSummary> =>
+    apiClient(
+      `/Admin/dashboard/summary?startDate=${startDate || ""}&endDate=${endDate || ""}`,
+    ),
+  getSalesChart: (
+    startDate: string,
+    endDate: string,
+    groupBy = "day",
+  ): Promise<SalesChartPoint[]> =>
+    apiClient(
+      `/Admin/dashboard/sales-chart?startDate=${startDate}&endDate=${endDate}&groupBy=${groupBy}`,
+    ),
+  getPopularItems: (
+    startDate?: string,
+    endDate?: string,
+    limit = 10,
+  ): Promise<PopularItem[]> =>
     apiClient(`/Admin/dashboard/popular-items?limit=${limit}`),
-  
+
   // Order Queue
   getOrderQueue: (status?: string, limit = 50): Promise<OrderQueueItem[]> =>
-    apiClient(`/Admin/orders/queue?status=${status || ''}&limit=${limit}`),
-  processRefund: (salesId: number, amount: number, reason?: string): Promise<any> =>
+    apiClient(`/Admin/orders/queue?status=${status || ""}&limit=${limit}`),
+  processRefund: (
+    salesId: number,
+    amount: number,
+    reason?: string,
+  ): Promise<any> =>
     apiClient(`/Admin/orders/${salesId}/refund`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ amount, reason }),
     }),
-  
+
   // Customers (RFM)
   getCustomerSegments: (): Promise<CustomerSegment[]> =>
-    apiClient('/Admin/customers/segments'),
+    apiClient("/Admin/customers/segments"),
   getCustomerHistory: (customerId: number): Promise<any[]> =>
     apiClient(`/Admin/customers/${customerId}/history`),
-  
+
   // Campaigns
-  getCampaigns: (): Promise<Campaign[]> =>
-    apiClient('/Admin/campaigns'),
+  getCampaigns: (): Promise<Campaign[]> => apiClient("/Admin/campaigns"),
   createCampaign: (data: Partial<Campaign>): Promise<Campaign> =>
-    apiClient('/Admin/campaigns', { method: 'POST', body: JSON.stringify(data) }),
+    apiClient("/Admin/campaigns", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
   sendCampaign: (campaignId: number): Promise<any> =>
-    apiClient(`/Admin/campaigns/${campaignId}/send`, { method: 'POST' }),
-  
+    apiClient(`/Admin/campaigns/${campaignId}/send`, { method: "POST" }),
+
   // Menu Overrides
   getMenuOverrides: (): Promise<MenuOverride[]> =>
-    apiClient('/Admin/menu/overrides'),
-  updateMenuOverride: (itemId: number, data: Partial<MenuOverride>): Promise<MenuOverride> =>
-    apiClient(`/Admin/menu/overrides/${itemId}`, { method: 'PUT', body: JSON.stringify(data) }),
-  
+    apiClient("/Admin/menu/overrides"),
+  updateMenuOverride: (
+    itemId: number,
+    data: Partial<MenuOverride>,
+  ): Promise<MenuOverride> =>
+    apiClient(`/Admin/menu/overrides/${itemId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
   // Activity Logs
   getActivityLogs: (limit = 100): Promise<any[]> =>
     apiClient(`/Admin/logs?limit=${limit}`),

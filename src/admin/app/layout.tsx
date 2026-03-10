@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
-import type { Metadata } from 'next';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import '../styles/globals.css';
+import React from "react";
+import type { Metadata } from "next";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import "../styles/globals.css";
 
 // Create a client
 const queryClient = new QueryClient({

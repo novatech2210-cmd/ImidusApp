@@ -1,9 +1,11 @@
 # Step 4: API Contract Updates
 
 ## 🎯 Goal
+
 Update API controllers and DTOs to support size-based pricing and new POS schema.
 
 **Files:**
+
 - `backend/IntegrationService.API/Controllers/MenuController.cs`
 - `backend/IntegrationService.API/Controllers/OrdersController.cs`
 - `backend/IntegrationService.API/DTOs/MenuDTOs.cs`
@@ -16,10 +18,12 @@ Update API controllers and DTOs to support size-based pricing and new POS schema
 ## 🔴 CRITICAL API CHANGES
 
 ### Menu Endpoint
+
 **OLD:** Returns items with single price
 **NEW:** Returns items with multiple sizes and prices
 
 ### Order Creation Endpoint
+
 **OLD:** Accepts `menuItemId` and `quantity`
 **NEW:** Requires `menuItemId`, `sizeId`, and `quantity`
 
@@ -501,6 +505,7 @@ curl -X GET "https://localhost:5001/api/menu" -H "accept: application/json"
 ```
 
 **Expected response:**
+
 ```json
 {
   "items": [
@@ -551,6 +556,7 @@ curl -X POST "https://localhost:5001/api/orders" \
 ```
 
 **Expected response:**
+
 ```json
 {
   "success": true,
@@ -569,6 +575,7 @@ curl -X POST "https://localhost:5001/api/orders" \
 ### Menu Response Structure Changed
 
 **OLD:**
+
 ```json
 {
   "itemId": 101,
@@ -578,6 +585,7 @@ curl -X POST "https://localhost:5001/api/orders" \
 ```
 
 **NEW:**
+
 ```json
 {
   "itemId": 101,
@@ -592,21 +600,21 @@ curl -X POST "https://localhost:5001/api/orders" \
 ### Order Request Changed
 
 **OLD:**
+
 ```json
 {
-  "items": [
-    { "menuItemId": 101, "quantity": 1 }
-  ]
+  "items": [{ "menuItemId": 101, "quantity": 1 }]
 }
 ```
 
 **NEW:**
+
 ```json
 {
   "items": [
     {
       "menuItemId": 101,
-      "sizeId": 1,      // ← NOW REQUIRED
+      "sizeId": 1, // ← NOW REQUIRED
       "quantity": 1,
       "unitPrice": 10.99
     }

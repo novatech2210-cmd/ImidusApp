@@ -13,6 +13,7 @@ allowed-tools:
   - WebFetch
   - mcp__context7__*
 ---
+
 <objective>
 Create executable phase prompts (PLAN.md files) for a roadmap phase with integrated research and verification.
 
@@ -32,6 +33,7 @@ Phase number: $ARGUMENTS (optional — auto-detects next unplanned phase if omit
 **Source of Truth:** INI_Restaurant database (MS SQL Server 2005 Express) — all schema validation, business logic, and data integrity rules must reference this database. No schema changes permitted.
 
 **Flags:**
+
 - `--research` — Force re-research even if RESEARCH.md exists
 - `--skip-research` — Skip research, go straight to planning
 - `--gaps` — Gap closure mode (reads VERIFICATION.md, skips research)

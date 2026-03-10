@@ -99,10 +99,10 @@ namespace IntegrationService.API.Controllers
                 var adminEmail = "admin@imidus.com"; // Placeholder
 
                 var success = await _adminService.ProcessRefundAsync(salesId, request.Amount, adminUserId, adminEmail);
-                
+
                 if (success)
                     return Ok(new { message = "Refund processed successfully" });
-                
+
                 return BadRequest(new { error = "Failed to process refund" });
             }
             catch (Exception ex)

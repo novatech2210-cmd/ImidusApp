@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import React from 'react';
-import DataTable, { Column } from '@/components/Tables/DataTable';
-import { SkeletonTable } from '@/components/Loading/Skeleton';
-import { BarChart3 } from 'lucide-react';
+import React from "react";
+import DataTable, { Column } from "@/components/Tables/DataTable";
+import { SkeletonTable } from "@/components/Loading/Skeleton";
+import { BarChart3 } from "lucide-react";
 
 interface Campaign {
   id: number;
   name: string;
-  type: 'email' | 'sms' | 'push';
-  status: 'draft' | 'scheduled' | 'sent' | 'paused';
+  type: "email" | "sms" | "push";
+  status: "draft" | "scheduled" | "sent" | "paused";
   targetAudience: number;
   sent: number;
   opened?: number;
@@ -35,64 +35,68 @@ export default function CampaignList({
 }: CampaignListProps) {
   const getTypeColor = (type: string) => {
     const colors: Record<string, string> = {
-      email: 'bg-blue-100 text-blue-800',
-      sms: 'bg-green-100 text-green-800',
-      push: 'bg-purple-100 text-purple-800',
+      email: "bg-blue-100 text-blue-800",
+      sms: "bg-green-100 text-green-800",
+      push: "bg-purple-100 text-purple-800",
     };
-    return colors[type] || 'bg-gray-100 text-gray-800';
+    return colors[type] || "bg-gray-100 text-gray-800";
   };
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      draft: 'bg-gray-100 text-gray-800',
-      scheduled: 'bg-blue-100 text-blue-800',
-      sent: 'bg-green-100 text-green-800',
-      paused: 'bg-yellow-100 text-yellow-800',
+      draft: "bg-gray-100 text-gray-800",
+      scheduled: "bg-blue-100 text-blue-800",
+      sent: "bg-green-100 text-green-800",
+      paused: "bg-yellow-100 text-yellow-800",
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || "bg-gray-100 text-gray-800";
   };
 
   const columns: Column<Campaign>[] = [
     {
-      key: 'name',
-      label: 'Campaign Name',
+      key: "name",
+      label: "Campaign Name",
       sortable: true,
     },
     {
-      key: 'type',
-      label: 'Type',
+      key: "type",
+      label: "Type",
       sortable: true,
       render: (value) => (
-        <span className={`px-2 py-1 text-xs font-medium rounded ${getTypeColor(value)}`}>
+        <span
+          className={`px-2 py-1 text-xs font-medium rounded ${getTypeColor(value)}`}
+        >
           {value.toUpperCase()}
         </span>
       ),
     },
     {
-      key: 'status',
-      label: 'Status',
+      key: "status",
+      label: "Status",
       sortable: true,
       render: (value) => (
-        <span className={`px-2 py-1 text-xs font-medium rounded ${getStatusColor(value)}`}>
+        <span
+          className={`px-2 py-1 text-xs font-medium rounded ${getStatusColor(value)}`}
+        >
           {value.charAt(0).toUpperCase() + value.slice(1)}
         </span>
       ),
     },
     {
-      key: 'targetAudience',
-      label: 'Target',
+      key: "targetAudience",
+      label: "Target",
       sortable: true,
       render: (value) => value.toLocaleString(),
     },
     {
-      key: 'sent',
-      label: 'Sent',
+      key: "sent",
+      label: "Sent",
       sortable: true,
       render: (value) => value.toLocaleString(),
     },
     {
-      key: 'createdAt',
-      label: 'Created',
+      key: "createdAt",
+      label: "Created",
       render: (value) => new Date(value).toLocaleDateString(),
     },
   ];

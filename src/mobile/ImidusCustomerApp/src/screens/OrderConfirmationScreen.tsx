@@ -6,8 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 
 type RootStackParamList = {
   Menu: undefined;
@@ -30,7 +30,10 @@ type RootStackParamList = {
   };
 };
 
-type OrderConfirmationScreenRouteProp = RouteProp<RootStackParamList, 'OrderConfirmation'>;
+type OrderConfirmationScreenRouteProp = RouteProp<
+  RootStackParamList,
+  'OrderConfirmation'
+>;
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 /**
@@ -60,7 +63,7 @@ export default function OrderConfirmationScreen() {
   const handleDone = () => {
     navigation.reset({
       index: 0,
-      routes: [{ name: 'Menu' }],
+      routes: [{name: 'Menu'}],
     });
   };
 
@@ -125,7 +128,9 @@ export default function OrderConfirmationScreen() {
             </View>
             <View style={[styles.totalRow, styles.grandTotalRow]}>
               <Text style={styles.grandTotalLabel}>Total</Text>
-              <Text style={styles.grandTotalValue}>${orderTotal.toFixed(2)}</Text>
+              <Text style={styles.grandTotalValue}>
+                ${orderTotal.toFixed(2)}
+              </Text>
             </View>
           </View>
 
@@ -153,7 +158,8 @@ export default function OrderConfirmationScreen() {
         <View style={styles.infoCard}>
           <Text style={styles.infoTitle}>What's Next?</Text>
           <Text style={styles.infoText}>
-            Your order is being prepared. You'll receive a notification when it's ready for pickup.
+            Your order is being prepared. You'll receive a notification when
+            it's ready for pickup.
           </Text>
         </View>
 
@@ -209,7 +215,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,

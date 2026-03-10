@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -12,7 +12,7 @@ import {
   Gift,
   FileText,
   Settings,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface NavItem {
   href: string;
@@ -21,14 +21,38 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { href: '/protected/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-  { href: '/protected/orders', label: 'Orders', icon: <ShoppingCart size={20} /> },
-  { href: '/protected/customers', label: 'Customers', icon: <Users size={20} /> },
-  { href: '/protected/campaigns', label: 'Campaigns', icon: <Mail size={20} /> },
-  { href: '/protected/menu', label: 'Menu', icon: <UtensilsCrossed size={20} /> },
-  { href: '/protected/rewards', label: 'Rewards', icon: <Gift size={20} /> },
-  { href: '/protected/logs', label: 'Logs', icon: <FileText size={20} /> },
-  { href: '/protected/settings', label: 'Settings', icon: <Settings size={20} /> },
+  {
+    href: "/protected/dashboard",
+    label: "Dashboard",
+    icon: <LayoutDashboard size={20} />,
+  },
+  {
+    href: "/protected/orders",
+    label: "Orders",
+    icon: <ShoppingCart size={20} />,
+  },
+  {
+    href: "/protected/customers",
+    label: "Customers",
+    icon: <Users size={20} />,
+  },
+  {
+    href: "/protected/campaigns",
+    label: "Campaigns",
+    icon: <Mail size={20} />,
+  },
+  {
+    href: "/protected/menu",
+    label: "Menu",
+    icon: <UtensilsCrossed size={20} />,
+  },
+  { href: "/protected/rewards", label: "Rewards", icon: <Gift size={20} /> },
+  { href: "/protected/logs", label: "Logs", icon: <FileText size={20} /> },
+  {
+    href: "/protected/settings",
+    label: "Settings",
+    icon: <Settings size={20} />,
+  },
 ];
 
 export default function Sidebar() {
@@ -63,8 +87,8 @@ export default function Sidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                 active
-                  ? 'bg-orange-500 text-white'
-                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                  ? "bg-orange-500 text-white"
+                  : "text-gray-300 hover:bg-gray-800 hover:text-white"
               }`}
             >
               {item.icon}

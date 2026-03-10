@@ -4,24 +4,24 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/mobile/ImidusCustomerApp/**'
-      - '.github/workflows/ios-build.yml'
+      - "src/mobile/ImidusCustomerApp/**"
+      - ".github/workflows/ios-build.yml"
   workflow_dispatch:
     inputs:
       upload_to_testflight:
-        description: 'Upload to TestFlight'
+        description: "Upload to TestFlight"
         required: true
         default: true
         type: boolean
       upload_to_s3:
-        description: 'Upload IPA to S3'
+        description: "Upload IPA to S3"
         required: false
         default: false
         type: boolean
 
 env:
   WORKING_DIR: src/mobile/ImidusCustomerApp
-  NODE_VERSION: '18'
+  NODE_VERSION: "18"
   S3_BUCKET: inirestaurant
   S3_PREFIX: novatech
 
@@ -55,7 +55,7 @@ jobs:
       - name: Setup Ruby for Fastlane
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2'
+          ruby-version: "3.2"
           bundler-cache: true
 
       - name: Install Fastlane

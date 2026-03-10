@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ENV } from '../config/environment';
+import {ENV} from '../config/environment';
 import authService from '../services/authService';
 
 const apiClient = axios.create({
@@ -12,22 +12,22 @@ const apiClient = axios.create({
 
 // Request interceptor - attach JWT token to all requests
 apiClient.interceptors.request.use(
-  async (config) => {
+  async config => {
     const token = await authService.getStoredToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor - handle 401 errors (token expired/invalid)
 apiClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  response => response,
+  async error => {
     const originalRequest = error.config;
 
     // If 401 and not already retried, try to refresh token
@@ -49,7 +49,7 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 // Log API URL in development

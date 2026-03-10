@@ -21,6 +21,7 @@ Before starting, gather:
 **Status:** ✅ Your account exists
 
 Just log in:
+
 1. Go to https://appstoreconnect.apple.com
 2. Click "Sign In"
 3. Enter: `novatech2210@gmail.com`
@@ -39,14 +40,14 @@ Just log in:
 3. Select **"iOS"**
 4. Fill in these fields:
 
-   | Field | Value |
-   |-------|-------|
-   | Platform | iOS |
-   | Name | `Imidus Customer App` |
-   | Primary Language | English |
-   | Bundle ID | `com.imidus.customerapp` |
-   | SKU | `IMIDUS-CUSTOMER-001` |
-   | User Access | Select "Yes" |
+   | Field            | Value                    |
+   | ---------------- | ------------------------ |
+   | Platform         | iOS                      |
+   | Name             | `Imidus Customer App`    |
+   | Primary Language | English                  |
+   | Bundle ID        | `com.imidus.customerapp` |
+   | SKU              | `IMIDUS-CUSTOMER-001`    |
+   | User Access      | Select "Yes"             |
 
 5. Click **"Create"**
 
@@ -114,6 +115,7 @@ Just log in:
 **Get Device UDID:**
 
 For each iPhone:
+
 1. Connect to a Mac
 2. Open **Xcode**
 3. Menu: **Window** → **Devices and Simulators**
@@ -231,6 +233,7 @@ For each iPhone:
 **Important:** Replace `REPLACE_WITH_TEAM_ID` with your 10-digit Apple Team ID
 
 **Where to find your Team ID:**
+
 1. App Store Connect → **Agreements, Tax & Banking** → **Team Information**
 2. Copy the "Team ID" (10 characters)
 
@@ -394,16 +397,16 @@ xcrun altool --upload-app \
 
 ## 🆘 Troubleshooting
 
-| Problem | Solution |
-|---------|----------|
-| "Privacy Policy URL not valid" | Verify URL is HTTPS (not HTTP). Test URL in browser. |
-| "Certificate not trusted" | Re-download `.cer` from App Store Connect, double-click to reinstall. |
-| "Bundle ID doesn't match" | Verify Xcode project Bundle ID is exactly `com.imidus.customerapp` |
-| "ExportOptions.plist error" | Check Team ID is correct (10 digits). Verify XML syntax is valid. |
-| "Build fails to archive" | Check all CocoaPods installed: `pod install` in `ios/` folder. |
-| "IPA upload fails" | Try Transporter app instead of command line. Verify IPA file exists. |
+| Problem                               | Solution                                                                 |
+| ------------------------------------- | ------------------------------------------------------------------------ |
+| "Privacy Policy URL not valid"        | Verify URL is HTTPS (not HTTP). Test URL in browser.                     |
+| "Certificate not trusted"             | Re-download `.cer` from App Store Connect, double-click to reinstall.    |
+| "Bundle ID doesn't match"             | Verify Xcode project Bundle ID is exactly `com.imidus.customerapp`       |
+| "ExportOptions.plist error"           | Check Team ID is correct (10 digits). Verify XML syntax is valid.        |
+| "Build fails to archive"              | Check all CocoaPods installed: `pod install` in `ios/` folder.           |
+| "IPA upload fails"                    | Try Transporter app instead of command line. Verify IPA file exists.     |
 | "Build still processing after 1 hour" | Rare. Contact Apple Support. Usually indicates compliance review needed. |
-| "Testers can't install app" | Verify their device UDID is registered in Provisioning Profile. |
+| "Testers can't install app"           | Verify their device UDID is registered in Provisioning Profile.          |
 
 ---
 
@@ -415,6 +418,7 @@ Email: novatech2210@gmail.com
 Response time: 24 hours
 
 Include:
+
 - Screenshot of error message
 - Step number where you got stuck
 - Build log output (if applicable)
@@ -426,6 +430,7 @@ Include:
 Once "Ready for Testing" appears in TestFlight and testers have installed the app, your iOS app is live for testing!
 
 From here:
+
 - Testers run test scenarios
 - You collect feedback
 - You fix bugs and deploy new builds
@@ -433,6 +438,5 @@ From here:
 
 ---
 
-*Total setup time: 2-3 hours*  
-*Future build uploads: 30 minutes*
-
+_Total setup time: 2-3 hours_  
+_Future build uploads: 30 minutes_

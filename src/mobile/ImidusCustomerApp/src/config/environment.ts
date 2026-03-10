@@ -10,11 +10,12 @@
 // For iOS simulator, localhost works directly
 // For physical devices, use your machine's local IP or production URL
 
-const DEV_API_URL = 'http://10.0.0.26:5004/api';  // Physical device - your computer's IP
-const PROD_API_URL = 'http://10.0.0.26:5004/api';  // Same for now
+const DEV_API_URL = 'http://10.0.0.26:5004/api'; // Physical device - your computer's IP
+const PROD_API_URL = 'http://10.0.0.26:5004/api'; // Same for now
 
 // Authorize.net Accept.js Public Client Key for tokenization
-const AUTH_NET_PUBLIC_KEY = '7t8S6K3E3VV3qry33ZEWqQWqLq9xs4UmeNn268gFmZ6mdWWvz22zjHbaQH9Qmsrg';
+const AUTH_NET_PUBLIC_KEY =
+  '7t8S6K3E3VV3qry33ZEWqQWqLq9xs4UmeNn268gFmZ6mdWWvz22zjHbaQH9Qmsrg';
 
 export const ENV = {
   API_BASE_URL: __DEV__ ? DEV_API_URL : PROD_API_URL,

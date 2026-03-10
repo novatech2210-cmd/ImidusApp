@@ -8,10 +8,15 @@
 
 import React from 'react';
 import {
-  View, Text, Image, TouchableOpacity, StyleSheet,
-  Platform, StatusBar,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+  StatusBar,
 } from 'react-native';
-import { Colors, Spacing, Shadow, Images } from '@/theme';
+import {Colors, Spacing, Shadow, Images} from '@/theme';
 
 interface ImidusHeaderProps {
   title?: string;
@@ -20,7 +25,8 @@ interface ImidusHeaderProps {
   transparent?: boolean;
 }
 
-const STATUSBAR_HEIGHT = Platform.OS === 'android' ? StatusBar.currentHeight ?? 24 : 0;
+const STATUSBAR_HEIGHT =
+  Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) : 0;
 const HEADER_HEIGHT = 56;
 
 export default function ImidusHeader({
@@ -37,19 +43,32 @@ export default function ImidusHeader({
         {/* Left — back arrow or logo */}
         <View style={styles.left}>
           {onBack ? (
-            <TouchableOpacity onPress={onBack} style={styles.backBtn} hitSlop={{ top:8,bottom:8,left:8,right:8 }}>
+            <TouchableOpacity
+              onPress={onBack}
+              style={styles.backBtn}
+              hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
               <Text style={styles.backArrow}>‹</Text>
             </TouchableOpacity>
           ) : (
-            <Image source={Images.logoTriangle} style={styles.brandMark} resizeMode="contain" />
+            <Image
+              source={Images.logoTriangle}
+              style={styles.brandMark}
+              resizeMode="contain"
+            />
           )}
         </View>
 
         {/* Centre — screen title */}
         {title ? (
-          <Text style={styles.title} numberOfLines={1}>{title}</Text>
+          <Text style={styles.title} numberOfLines={1}>
+            {title}
+          </Text>
         ) : (
-          <Image source={Images.logoCompact} style={styles.logoCompact} resizeMode="contain" />
+          <Image
+            source={Images.logoCompact}
+            style={styles.logoCompact}
+            resizeMode="contain"
+          />
         )}
 
         {/* Right — slot for icons (cart, profile, etc.) */}

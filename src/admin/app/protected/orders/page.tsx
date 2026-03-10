@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
-import MainLayout from '@/components/Navigation/MainLayout';
-import OrderQueue from '@/components/Orders/OrderQueue';
-import OrderDetailModal from '@/components/Orders/OrderDetailModal';
-import RefundDialog from '@/components/Orders/RefundDialog';
-import CancelOrderDialog from '@/components/Orders/CancelOrderDialog';
-import { useOrderQueue, useOrderDetail } from '@/lib/hooks';
-import Spinner from '@/components/Loading/Spinner';
-import { Filter, RotateCcw } from 'lucide-react';
+import React, { useState, useMemo } from "react";
+import MainLayout from "@/components/Navigation/MainLayout";
+import OrderQueue from "@/components/Orders/OrderQueue";
+import OrderDetailModal from "@/components/Orders/OrderDetailModal";
+import RefundDialog from "@/components/Orders/RefundDialog";
+import CancelOrderDialog from "@/components/Orders/CancelOrderDialog";
+import { useOrderQueue, useOrderDetail } from "@/lib/hooks";
+import Spinner from "@/components/Loading/Spinner";
+import { Filter, RotateCcw } from "lucide-react";
 
 interface Order {
   id: number;
@@ -17,14 +17,14 @@ interface Order {
   customerPhone?: string;
   items: any[];
   total: number;
-  status: 'pending' | 'completed' | 'cancelled' | 'refunded';
-  paymentStatus: 'paid' | 'pending' | 'failed' | 'refunded';
+  status: "pending" | "completed" | "cancelled" | "refunded";
+  paymentStatus: "paid" | "pending" | "failed" | "refunded";
   createdAt: string;
 }
 
 export default function OrdersPage() {
-  const [statusFilter, setStatusFilter] = useState<string>('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showDetail, setShowDetail] = useState(false);
   const [showRefund, setShowRefund] = useState(false);
@@ -32,11 +32,11 @@ export default function OrdersPage() {
 
   const { data: orders = [], isPending: isLoadingQueue } = useOrderQueue(
     statusFilter || undefined,
-    searchTerm || undefined
+    searchTerm || undefined,
   );
 
   const { data: orderDetail, isPending: isLoadingDetail } = useOrderDetail(
-    selectedOrder?.id ?? 0
+    selectedOrder?.id ?? 0,
   );
 
   const ordersData = useMemo(() => {
@@ -118,8 +118,8 @@ export default function OrdersPage() {
             <div className="flex items-end">
               <button
                 onClick={() => {
-                  setStatusFilter('');
-                  setSearchTerm('');
+                  setStatusFilter("");
+                  setSearchTerm("");
                 }}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
@@ -165,24 +165,25 @@ export default function OrdersPage() {
             >
               Close
             </button>
-            {orderDetail.status !== 'completed' && orderDetail.status !== 'cancelled' && (
-              <>
-                <button
-                  onClick={handleCancel}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-                >
-                  Cancel Order
-                </button>
-                {orderDetail.paymentStatus === 'paid' && (
+            {orderDetail.status !== "completed" &&
+              orderDetail.status !== "cancelled" && (
+                <>
                   <button
-                    onClick={handleRefund}
-                    className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                    onClick={handleCancel}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                   >
-                    Refund
+                    Cancel Order
                   </button>
-                )}
-              </>
-            )}
+                  {orderDetail.paymentStatus === "paid" && (
+                    <button
+                      onClick={handleRefund}
+                      className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                    >
+                      Refund
+                    </button>
+                  )}
+                </>
+              )}
           </div>
         </div>
       )}

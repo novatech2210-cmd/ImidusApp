@@ -82,7 +82,8 @@ export default function RegisterPage() {
             style={{
               width: 56,
               height: 56,
-              background: "linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue))",
+              background:
+                "linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue))",
               borderRadius: 14,
               display: "flex",
               alignItems: "center",
@@ -98,7 +99,13 @@ export default function RegisterPage() {
           <h1 style={{ fontSize: 24, fontWeight: 800, margin: "0 0 6px" }}>
             Create Account
           </h1>
-          <p style={{ color: "var(--color-text-muted)", fontSize: 14, margin: 0 }}>
+          <p
+            style={{
+              color: "var(--color-text-muted)",
+              fontSize: 14,
+              margin: 0,
+            }}
+          >
             Join INI Rewards and earn points on every order
           </p>
         </div>
@@ -183,7 +190,10 @@ export default function RegisterPage() {
           }}
         >
           Already have an account?{" "}
-          <Link href="/login" style={{ color: "var(--color-brand-blue)", fontWeight: 600 }}>
+          <Link
+            href="/login"
+            style={{ color: "var(--color-brand-blue)", fontWeight: 600 }}
+          >
             Sign In
           </Link>
         </div>

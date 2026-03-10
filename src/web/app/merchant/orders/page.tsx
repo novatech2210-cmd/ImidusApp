@@ -2,12 +2,12 @@
 
 import { apiClient, OrderAPI } from "@/lib/api";
 import {
-    CheckCircleIcon,
-    ClockIcon,
-    ExclamationCircleIcon,
-    MagnifyingGlassIcon,
-    ReceiptRefundIcon,
-    ShoppingBagIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  ExclamationCircleIcon,
+  MagnifyingGlassIcon,
+  ReceiptRefundIcon,
+  ShoppingBagIcon,
 } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 
@@ -78,7 +78,7 @@ export default function OrderManagementPage() {
       filtered = filtered.filter(
         (order) =>
           order.dailyOrderNumber.toString().includes(searchQuery) ||
-          order.customerName?.toLowerCase().includes(searchQuery.toLowerCase())
+          order.customerName?.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
@@ -330,13 +330,17 @@ export default function OrderManagementPage() {
                   <label className="text-xs text-gray-500 uppercase font-bold">
                     Customer
                   </label>
-                  <p className="text-white">{selectedOrder.customerName || "Guest"}</p>
+                  <p className="text-white">
+                    {selectedOrder.customerName || "Guest"}
+                  </p>
                 </div>
                 <div>
                   <label className="text-xs text-gray-500 uppercase font-bold">
                     Status
                   </label>
-                  <div className="mt-1">{getStatusBadge(selectedOrder.transType)}</div>
+                  <div className="mt-1">
+                    {getStatusBadge(selectedOrder.transType)}
+                  </div>
                 </div>
                 <div>
                   <label className="text-xs text-gray-500 uppercase font-bold">
@@ -350,7 +354,9 @@ export default function OrderManagementPage() {
                   <label className="text-xs text-gray-500 uppercase font-bold">
                     Order Time
                   </label>
-                  <p className="text-white">{formatDate(selectedOrder.saleDateTime)}</p>
+                  <p className="text-white">
+                    {formatDate(selectedOrder.saleDateTime)}
+                  </p>
                 </div>
               </div>
 

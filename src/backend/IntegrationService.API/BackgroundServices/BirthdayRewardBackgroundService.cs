@@ -44,7 +44,7 @@ public class BirthdayRewardBackgroundService : BackgroundService
                 var now = DateTime.Now;
                 var nextRunTime = now.Date.AddDays(1);
                 var delay = nextRunTime - now;
-                
+
                 await Task.Delay(delay, stoppingToken);
             }
             catch (Exception ex)

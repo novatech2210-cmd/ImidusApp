@@ -1,31 +1,38 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useActivityLogs } from '@/lib/hooks';
-import MainLayout from '@/components/Navigation/MainLayout';
-import Spinner from '@/components/Loading/Spinner';
-import { formatDateTime } from '@/lib/utils';
-import { AlertCircle, CheckCircle, Trash2, RotateCcw } from 'lucide-react';
+import { useState } from "react";
+import { useActivityLogs } from "@/lib/hooks";
+import MainLayout from "@/components/Navigation/MainLayout";
+import Spinner from "@/components/Loading/Spinner";
+import { formatDateTime } from "@/lib/utils";
+import { AlertCircle, CheckCircle, Trash2, RotateCcw } from "lucide-react";
 
 export default function LogsPage() {
   const { data: logs, isLoading } = useActivityLogs();
-  const [filterAction, setFilterAction] = useState('');
+  const [filterAction, setFilterAction] = useState("");
 
-  const filteredLogs = logs?.filter((log: any) =>
-    filterAction ? log.action === filterAction : true
-  ) || [];
+  const filteredLogs =
+    logs?.filter((log: any) =>
+      filterAction ? log.action === filterAction : true,
+    ) || [];
 
-  const actions = ['RefundProcessed', 'CampaignSent', 'MenuOverride', 'CustomerEdited', 'BirthdayReward'];
+  const actions = [
+    "RefundProcessed",
+    "CampaignSent",
+    "MenuOverride",
+    "CustomerEdited",
+    "BirthdayReward",
+  ];
 
   const getActionColor = (action: string) => {
     const colors: Record<string, string> = {
-      RefundProcessed: 'bg-orange-100 text-orange-800',
-      CampaignSent: 'bg-blue-100 text-blue-800',
-      MenuOverride: 'bg-purple-100 text-purple-800',
-      CustomerEdited: 'bg-green-100 text-green-800',
-      BirthdayReward: 'bg-pink-100 text-pink-800',
+      RefundProcessed: "bg-orange-100 text-orange-800",
+      CampaignSent: "bg-blue-100 text-blue-800",
+      MenuOverride: "bg-purple-100 text-purple-800",
+      CustomerEdited: "bg-green-100 text-green-800",
+      BirthdayReward: "bg-pink-100 text-pink-800",
     };
-    return colors[action] || 'bg-gray-100 text-gray-800';
+    return colors[action] || "bg-gray-100 text-gray-800";
   };
 
   if (isLoading) return <Spinner fullScreen />;
@@ -35,7 +42,9 @@ export default function LogsPage() {
       <div className="p-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900">Activity Logs</h1>
-          <p className="text-gray-600">Track all admin actions and system events</p>
+          <p className="text-gray-600">
+            Track all admin actions and system events
+          </p>
         </div>
 
         {/* Filters */}
@@ -75,7 +84,9 @@ export default function LogsPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="card">
             <p className="text-sm text-gray-600 mb-1">Total Logs</p>
-            <p className="text-3xl font-bold text-gray-900">{logs?.length || 0}</p>
+            <p className="text-3xl font-bold text-gray-900">
+              {logs?.length || 0}
+            </p>
           </div>
           <div className="card">
             <p className="text-sm text-gray-600 mb-1">Today</p>
@@ -117,7 +128,9 @@ export default function LogsPage() {
                 {filteredLogs.length > 0 ? (
                   filteredLogs.map((log: any) => (
                     <tr key={log.id}>
-                      <td className="text-sm">{formatDateTime(log.timestamp)}</td>
+                      <td className="text-sm">
+                        {formatDateTime(log.timestamp)}
+                      </td>
                       <td>
                         <span className="font-medium">{log.adminUser}</span>
                       </td>
@@ -126,8 +139,12 @@ export default function LogsPage() {
                           {log.action}
                         </span>
                       </td>
-                      <td className="text-sm text-gray-600">{log.description}</td>
-                      <td className="text-xs text-gray-500 font-mono">{log.ipAddress}</td>
+                      <td className="text-sm text-gray-600">
+                        {log.description}
+                      </td>
+                      <td className="text-xs text-gray-500 font-mono">
+                        {log.ipAddress}
+                      </td>
                     </tr>
                   ))
                 ) : (
@@ -145,7 +162,8 @@ export default function LogsPage() {
         {/* Retention Notice */}
         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-sm text-blue-900">
-            Logs are retained for 90 days. For long-term audit requirements, please export logs regularly.
+            Logs are retained for 90 days. For long-term audit requirements,
+            please export logs regularly.
           </p>
         </div>
       </div>

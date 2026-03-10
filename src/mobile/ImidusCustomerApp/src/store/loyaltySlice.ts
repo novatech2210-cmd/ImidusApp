@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import apiClient from '../api/apiClient';
 
 interface LoyaltyTransaction {
@@ -28,39 +28,41 @@ const initialState: LoyaltyState = {
 // Async thunk for customer lookup
 export const fetchCustomerLoyalty = createAsyncThunk(
   'loyalty/fetchCustomer',
-  async ({ phone, email }: { phone?: string; email?: string }) => {
+  async ({phone, email}: {phone?: string; email?: string}) => {
     const params = new URLSearchParams();
     if (phone) params.append('phone', phone);
     if (email) params.append('email', email);
 
     const response = await apiClient.get(`/api/customers/lookup?${params}`);
     return response.data; // { customerId, fullName, phone, email, earnedPoints }
-  }
+  },
 );
 
 // Async thunk for transaction history
 export const fetchLoyaltyHistory = createAsyncThunk(
   'loyalty/fetchHistory',
   async (customerId: number) => {
-    const response = await apiClient.get(`/api/customers/${customerId}/loyalty-history`);
+    const response = await apiClient.get(
+      `/api/customers/${customerId}/loyalty-history`,
+    );
     return response.data; // LoyaltyTransaction[]
-  }
+  },
 );
 
 const loyaltySlice = createSlice({
   name: 'loyalty',
   initialState,
   reducers: {
-    clearLoyalty: (state) => {
+    clearLoyalty: state => {
       state.customerId = null;
       state.balance = 0;
       state.transactions = [];
       state.error = null;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     // fetchCustomerLoyalty
-    builder.addCase(fetchCustomerLoyalty.pending, (state) => {
+    builder.addCase(fetchCustomerLoyalty.pending, state => {
       state.loading = true;
       state.error = null;
     });
@@ -75,7 +77,7 @@ const loyaltySlice = createSlice({
     });
 
     // fetchLoyaltyHistory
-    builder.addCase(fetchLoyaltyHistory.pending, (state) => {
+    builder.addCase(fetchLoyaltyHistory.pending, state => {
       state.loading = true;
     });
     builder.addCase(fetchLoyaltyHistory.fulfilled, (state, action) => {
@@ -84,10 +86,11 @@ const loyaltySlice = createSlice({
     });
     builder.addCase(fetchLoyaltyHistory.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.error.message || 'Failed to load transaction history';
+      state.error =
+        action.error.message || 'Failed to load transaction history';
     });
   },
 });
 
-export const { clearLoyalty } = loyaltySlice.actions;
+export const {clearLoyalty} = loyaltySlice.actions;
 export default loyaltySlice.reducer;

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MenuItem, MenuItemSize } from '../types/menu.types';
-import { Colors } from '../theme/colors';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {MenuItem, MenuItemSize} from '../types/menu.types';
+import {Colors} from '../theme/colors';
 
 interface Props {
   item: MenuItem;

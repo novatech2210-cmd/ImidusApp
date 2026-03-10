@@ -1,32 +1,32 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {
-    ActivityIndicator,
-    FlatList,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  FlatList,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../store';
-import { logout } from '../store/authSlice';
-import { fetchCustomerLoyalty, fetchLoyaltyHistory } from '../store/loyaltySlice';
-import { Colors } from '../theme/colors';
-import { Spacing } from '../theme/spacing';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState, AppDispatch} from '../store';
+import {logout} from '../store/authSlice';
+import {fetchCustomerLoyalty, fetchLoyaltyHistory} from '../store/loyaltySlice';
+import {Colors} from '../theme/colors';
+import {Spacing} from '../theme/spacing';
 
 const ProfileScreen = ({navigation}: any) => {
   const user = useSelector((state: RootState) => state.auth.user);
-  const { customerId, balance, transactions, loading } = useSelector(
-    (state: RootState) => state.loyalty
+  const {customerId, balance, transactions, loading} = useSelector(
+    (state: RootState) => state.loyalty,
   );
   const dispatch = useDispatch<AppDispatch>();
 
   // Fetch loyalty data when screen loads (per user decision)
   useEffect(() => {
     if (user?.phone || user?.email) {
-      dispatch(fetchCustomerLoyalty({ phone: user.phone, email: user.email }));
+      dispatch(fetchCustomerLoyalty({phone: user.phone, email: user.email}));
     }
   }, [dispatch, user?.phone, user?.email]);
 
@@ -66,7 +66,11 @@ const ProfileScreen = ({navigation}: any) => {
         <View style={styles.loyaltyCard}>
           <Text style={styles.loyaltyLabel}>Loyalty Points Balance</Text>
           {loading && !balance ? (
-            <ActivityIndicator size="large" color={Colors.primary} style={styles.loader} />
+            <ActivityIndicator
+              size="large"
+              color={Colors.primary}
+              style={styles.loader}
+            />
           ) : (
             <>
               <Text style={styles.loyaltyValue}>{balance}</Text>
@@ -81,11 +85,13 @@ const ProfileScreen = ({navigation}: any) => {
             <Text style={styles.sectionTitle}>Recent Activity</Text>
             <FlatList
               data={transactions}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
+              keyExtractor={item => item.id.toString()}
+              renderItem={({item}) => (
                 <View style={styles.transactionRow}>
                   <View style={styles.transactionLeft}>
-                    <Text style={styles.transactionDesc}>{item.description}</Text>
+                    <Text style={styles.transactionDesc}>
+                      {item.description}
+                    </Text>
                     <Text style={styles.transactionDate}>
                       {new Date(item.date).toLocaleDateString()}
                     </Text>
@@ -93,9 +99,10 @@ const ProfileScreen = ({navigation}: any) => {
                   <Text
                     style={[
                       styles.transactionPoints,
-                      item.type === 'earn' ? styles.earnPoints : styles.redeemPoints,
-                    ]}
-                  >
+                      item.type === 'earn'
+                        ? styles.earnPoints
+                        : styles.redeemPoints,
+                    ]}>
                     {item.type === 'earn' ? '+' : '-'}
                     {item.points} pts
                   </Text>

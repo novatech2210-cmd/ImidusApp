@@ -1,8 +1,16 @@
-'use client';
+"use client";
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode } from "react";
 
-export type FieldType = 'text' | 'email' | 'password' | 'number' | 'textarea' | 'select' | 'checkbox' | 'date';
+export type FieldType =
+  | "text"
+  | "email"
+  | "password"
+  | "number"
+  | "textarea"
+  | "select"
+  | "checkbox"
+  | "date";
 
 export interface FormField {
   name: string;
@@ -34,7 +42,7 @@ export default function FormBuilder({
   errors,
   onChange,
   onSubmit,
-  submitLabel = 'Submit',
+  submitLabel = "Submit",
   isLoading = false,
   children,
 }: FormBuilderProps) {
@@ -42,25 +50,25 @@ export default function FormBuilder({
     const commonProps = {
       id: field.name,
       name: field.name,
-      value: values[field.name] ?? field.defaultValue ?? '',
-      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+      value: values[field.name] ?? field.defaultValue ?? "",
+      onChange: (
+        e: React.ChangeEvent<
+          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >,
+      ) => {
         onChange(field.name, e.target.value);
       },
       disabled: isLoading || field.disabled,
-      className: `w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed ${field.className || ''}`,
+      className: `w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed ${field.className || ""}`,
     };
 
     switch (field.type) {
-      case 'textarea':
+      case "textarea":
         return (
-          <textarea
-            {...commonProps}
-            placeholder={field.placeholder}
-            rows={4}
-          />
+          <textarea {...commonProps} placeholder={field.placeholder} rows={4} />
         );
 
-      case 'select':
+      case "select":
         return (
           <select {...commonProps}>
             <option value="">Select {field.label}</option>
@@ -72,7 +80,7 @@ export default function FormBuilder({
           </select>
         );
 
-      case 'checkbox':
+      case "checkbox":
         return (
           <input
             type="checkbox"
@@ -83,13 +91,8 @@ export default function FormBuilder({
           />
         );
 
-      case 'date':
-        return (
-          <input
-            type="date"
-            {...commonProps}
-          />
-        );
+      case "date":
+        return <input type="date" {...commonProps} />;
 
       default:
         return (
@@ -105,18 +108,27 @@ export default function FormBuilder({
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       {fields.map((field) => (
-        <div key={field.name} className={field.type === 'checkbox' ? 'flex items-center gap-2' : ''}>
-          {field.type === 'checkbox' ? (
+        <div
+          key={field.name}
+          className={field.type === "checkbox" ? "flex items-center gap-2" : ""}
+        >
+          {field.type === "checkbox" ? (
             <>
               {renderField(field)}
-              <label htmlFor={field.name} className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor={field.name}
+                className="text-sm font-medium text-gray-700"
+              >
                 {field.label}
                 {field.required && <span className="text-red-500 ml-1">*</span>}
               </label>
             </>
           ) : (
             <>
-              <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={field.name}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 {field.label}
                 {field.required && <span className="text-red-500 ml-1">*</span>}
               </label>
@@ -136,7 +148,7 @@ export default function FormBuilder({
         disabled={isLoading}
         className="w-full bg-orange-500 text-white font-medium py-2 px-4 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isLoading ? 'Loading...' : submitLabel}
+        {isLoading ? "Loading..." : submitLabel}
       </button>
     </form>
   );

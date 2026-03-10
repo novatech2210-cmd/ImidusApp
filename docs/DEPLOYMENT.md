@@ -7,6 +7,7 @@ This document outlines the versioning strategy for the IMIDUS POS integration sy
 ### Semantic Versioning
 
 All platforms follow semantic versioning (MAJOR.MINOR.PATCH):
+
 - **MAJOR**: Breaking changes in API or database schema
 - **MINOR**: New features, backward compatible
 - **PATCH**: Bug fixes and patches
@@ -14,18 +15,21 @@ All platforms follow semantic versioning (MAJOR.MINOR.PATCH):
 ### Version Sources
 
 #### Backend (.NET)
+
 - Version extracted from: `.github/workflows/backend-build.yml`
 - Uses Git tag as source of truth: `v1.0.0`, `v1.1.0`, etc.
 - Version format: `v{MAJOR}.{MINOR}.{PATCH}`
 - Deployment artifact: MSI installer at `s3://inirestaurant/novatech/backend/{version}/ImidusIntegrationService.msi`
 
 #### Web (Next.js)
+
 - Version source: `src/web/package.json` (version field)
 - Follows package.json conventions
 - On release tags, uses Git tag as override
 - Deployment artifact: Hosted on production web server
 
 #### Mobile (React Native - iOS & Android)
+
 - Version source: `src/mobile/ImidusCustomerApp/package.json` (version field)
 - Both iOS and Android share same version
 - On release tags, uses Git tag as override
@@ -53,17 +57,19 @@ Each build creates a deployment manifest (`version.json`) at the S3 artifact loc
 ### Release Process
 
 1. **Update Versions**
+
    ```bash
    # Mobile
    cd src/mobile/ImidusCustomerApp
    npm version minor  # or patch/major
    cd ../..
-   
+
    # Backend (manual in .csproj if needed)
    # Web (manual in package.json)
    ```
 
 2. **Create Git Tag**
+
    ```bash
    git tag -a v1.0.1 -m "Release version 1.0.1"
    git push origin v1.0.1
@@ -143,30 +149,30 @@ When deploying, all three platforms should use matching version tags for coordin
 
 The following environment variables are set in CI/CD workflows:
 
-| Variable | Value | Purpose |
-|----------|-------|---------|
-| `S3_BUCKET` | `inirestaurant` | S3 bucket for artifacts |
-| `S3_PREFIX` | `novatech` | S3 prefix for project artifacts |
-| `AWS_REGION` | `us-east-1` | AWS region for S3 access |
+| Variable     | Value           | Purpose                         |
+| ------------ | --------------- | ------------------------------- |
+| `S3_BUCKET`  | `inirestaurant` | S3 bucket for artifacts         |
+| `S3_PREFIX`  | `novatech`      | S3 prefix for project artifacts |
+| `AWS_REGION` | `us-east-1`     | AWS region for S3 access        |
 
 ### GitHub Secrets Required
 
 To enable automated deployments, configure these secrets in the GitHub repository settings:
 
-| Secret | Purpose |
-|--------|---------|
-| `AWS_ACCESS_KEY_ID` | AWS IAM credentials for S3 upload |
-| `AWS_SECRET_ACCESS_KEY` | AWS IAM credentials for S3 upload |
-| `ANDROID_KEYSTORE_BASE64` | Encoded Android release keystore |
-| `KEYSTORE_PASSWORD` | Android keystore password |
-| `KEY_PASSWORD` | Android key password |
-| `KEY_ALIAS` | Android key alias |
-| `IOS_P12_CERTIFICATE_BASE64` | Encoded iOS signing certificate |
-| `IOS_P12_PASSWORD` | iOS certificate password |
-| `IOS_KEYCHAIN_PASSWORD` | iOS keychain password |
-| `IOS_PROVISIONING_PROFILE_BASE64` | Encoded iOS provisioning profile |
-| `APP_STORE_CONNECT_API_KEY_ID` | App Store Connect API key ID |
-| `APP_STORE_CONNECT_API_ISSUER_ID` | App Store Connect issuer ID |
+| Secret                             | Purpose                           |
+| ---------------------------------- | --------------------------------- |
+| `AWS_ACCESS_KEY_ID`                | AWS IAM credentials for S3 upload |
+| `AWS_SECRET_ACCESS_KEY`            | AWS IAM credentials for S3 upload |
+| `ANDROID_KEYSTORE_BASE64`          | Encoded Android release keystore  |
+| `KEYSTORE_PASSWORD`                | Android keystore password         |
+| `KEY_PASSWORD`                     | Android key password              |
+| `KEY_ALIAS`                        | Android key alias                 |
+| `IOS_P12_CERTIFICATE_BASE64`       | Encoded iOS signing certificate   |
+| `IOS_P12_PASSWORD`                 | iOS certificate password          |
+| `IOS_KEYCHAIN_PASSWORD`            | iOS keychain password             |
+| `IOS_PROVISIONING_PROFILE_BASE64`  | Encoded iOS provisioning profile  |
+| `APP_STORE_CONNECT_API_KEY_ID`     | App Store Connect API key ID      |
+| `APP_STORE_CONNECT_API_ISSUER_ID`  | App Store Connect issuer ID       |
 | `APP_STORE_CONNECT_API_KEY_BASE64` | Encoded App Store Connect API key |
 
 ### Rollback Procedure

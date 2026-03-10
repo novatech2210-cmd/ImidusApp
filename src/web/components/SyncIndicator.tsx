@@ -1,7 +1,12 @@
 "use client";
 
 import { useSyncStatus } from "@/context/SyncContext";
-import { ArrowPathIcon, CheckCircleIcon, ExclamationCircleIcon, WifiIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowPathIcon,
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  WifiIcon,
+} from "@heroicons/react/24/solid";
 
 export function SyncIndicator() {
   const { status, message, lastSyncTime, posLatency } = useSyncStatus();
@@ -49,7 +54,7 @@ export function SyncIndicator() {
     if (!lastSyncTime) return "Never";
     const now = new Date();
     const diff = now.getTime() - lastSyncTime.getTime();
-    
+
     if (diff < 60000) return "Just now";
     if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
     return `${Math.floor(diff / 3600000)}h ago`;
@@ -86,9 +91,7 @@ export function SyncIndicator() {
             <span>{formatLastSync()}</span>
           </div>
         </div>
-        <div className="sync-tooltip-footer">
-          Auto-sync every 30 seconds
-        </div>
+        <div className="sync-tooltip-footer">Auto-sync every 30 seconds</div>
       </div>
     </div>
   );

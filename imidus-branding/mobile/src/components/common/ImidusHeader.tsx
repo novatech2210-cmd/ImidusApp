@@ -6,12 +6,17 @@
  *   header: (props) => <ImidusHeader {...props} />
  */
 
-import React from 'react';
+import React from "react";
 import {
-  View, Text, Image, TouchableOpacity, StyleSheet,
-  Platform, StatusBar,
-} from 'react-native';
-import { Colors, Spacing, Shadow, Images } from '@/theme';
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+  StatusBar,
+} from "react-native";
+import { Colors, Spacing, Shadow, Images } from "@/theme";
 
 interface ImidusHeaderProps {
   title?: string;
@@ -20,7 +25,8 @@ interface ImidusHeaderProps {
   transparent?: boolean;
 }
 
-const STATUSBAR_HEIGHT = Platform.OS === 'android' ? StatusBar.currentHeight ?? 24 : 0;
+const STATUSBAR_HEIGHT =
+  Platform.OS === "android" ? (StatusBar.currentHeight ?? 24) : 0;
 const HEADER_HEIGHT = 56;
 
 export default function ImidusHeader({
@@ -37,19 +43,33 @@ export default function ImidusHeader({
         {/* Left — back arrow or logo */}
         <View style={styles.left}>
           {onBack ? (
-            <TouchableOpacity onPress={onBack} style={styles.backBtn} hitSlop={{ top:8,bottom:8,left:8,right:8 }}>
+            <TouchableOpacity
+              onPress={onBack}
+              style={styles.backBtn}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
               <Text style={styles.backArrow}>‹</Text>
             </TouchableOpacity>
           ) : (
-            <Image source={Images.logoTriangle} style={styles.brandMark} resizeMode="contain" />
+            <Image
+              source={Images.logoTriangle}
+              style={styles.brandMark}
+              resizeMode="contain"
+            />
           )}
         </View>
 
         {/* Centre — screen title */}
         {title ? (
-          <Text style={styles.title} numberOfLines={1}>{title}</Text>
+          <Text style={styles.title} numberOfLines={1}>
+            {title}
+          </Text>
         ) : (
-          <Image source={Images.logoCompact} style={styles.logoCompact} resizeMode="contain" />
+          <Image
+            source={Images.logoCompact}
+            style={styles.logoCompact}
+            resizeMode="contain"
+          />
         )}
 
         {/* Right — slot for icons (cart, profile, etc.) */}
@@ -71,23 +91,23 @@ const styles = StyleSheet.create({
     ...Shadow.md,
   },
   transparent: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   bar: {
     height: HEADER_HEIGHT,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: Spacing.md,
   },
   left: {
     width: 48,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
+    alignItems: "flex-start",
+    justifyContent: "center",
   },
   right: {
     width: 48,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
+    alignItems: "flex-end",
+    justifyContent: "center",
   },
   placeholder: {
     width: 32,
@@ -106,7 +126,7 @@ const styles = StyleSheet.create({
   backArrow: {
     fontSize: 32,
     color: Colors.brandGold,
-    fontWeight: '300',
+    fontWeight: "300",
     lineHeight: 36,
   },
 
@@ -114,9 +134,9 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     fontSize: 17,
-    fontWeight: '700',
+    fontWeight: "700",
     color: Colors.white,
-    textAlign: 'center',
+    textAlign: "center",
     letterSpacing: 0.3,
   },
 
@@ -124,7 +144,7 @@ const styles = StyleSheet.create({
   logoCompact: {
     flex: 1,
     height: 28,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
 
   // Gold accent line

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Modal from '@/components/Dialogs/Modal';
-import FormBuilder, { FormField } from '@/components/Forms/FormBuilder';
-import { useCancelOrder } from '@/lib/hooks';
+import React, { useState } from "react";
+import Modal from "@/components/Dialogs/Modal";
+import FormBuilder, { FormField } from "@/components/Forms/FormBuilder";
+import { useCancelOrder } from "@/lib/hooks";
 
 interface CancelOrderDialogProps {
   isOpen: boolean;
@@ -19,8 +19,8 @@ export default function CancelOrderDialog({
   onSuccess,
 }: CancelOrderDialogProps) {
   const [values, setValues] = useState<Record<string, any>>({
-    reason: '',
-    notes: '',
+    reason: "",
+    notes: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -28,30 +28,30 @@ export default function CancelOrderDialog({
 
   const fields: FormField[] = [
     {
-      name: 'reason',
-      label: 'Cancellation Reason',
-      type: 'select',
+      name: "reason",
+      label: "Cancellation Reason",
+      type: "select",
       required: true,
       options: [
-        { value: 'customer_request', label: 'Customer Request' },
-        { value: 'order_error', label: 'Order Error' },
-        { value: 'item_unavailable', label: 'Item Unavailable' },
-        { value: 'payment_failed', label: 'Payment Failed' },
-        { value: 'other', label: 'Other' },
+        { value: "customer_request", label: "Customer Request" },
+        { value: "order_error", label: "Order Error" },
+        { value: "item_unavailable", label: "Item Unavailable" },
+        { value: "payment_failed", label: "Payment Failed" },
+        { value: "other", label: "Other" },
       ],
     },
     {
-      name: 'notes',
-      label: 'Internal Notes',
-      type: 'textarea',
-      placeholder: 'Add any internal notes about this cancellation...',
+      name: "notes",
+      label: "Internal Notes",
+      type: "textarea",
+      placeholder: "Add any internal notes about this cancellation...",
     },
   ];
 
   const handleChange = (name: string, value: any) => {
     setValues((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -79,12 +79,12 @@ export default function CancelOrderDialog({
       },
       {
         onSuccess: () => {
-          setValues({ reason: '', notes: '' });
+          setValues({ reason: "", notes: "" });
           setErrors({});
           onClose();
           onSuccess?.();
         },
-      }
+      },
     );
   };
 
@@ -92,7 +92,8 @@ export default function CancelOrderDialog({
     <Modal isOpen={isOpen} onClose={onClose} title="Cancel Order" size="md">
       <div className="space-y-4 mb-4">
         <div className="bg-red-50 border border-red-200 text-red-800 p-3 rounded text-sm">
-          This action cannot be undone. The customer will be notified of the cancellation.
+          This action cannot be undone. The customer will be notified of the
+          cancellation.
         </div>
       </div>
 
@@ -102,7 +103,7 @@ export default function CancelOrderDialog({
         errors={errors}
         onChange={handleChange}
         onSubmit={handleSubmit}
-        submitLabel={isPending ? 'Cancelling...' : 'Confirm Cancellation'}
+        submitLabel={isPending ? "Cancelling..." : "Confirm Cancellation"}
         isLoading={isPending}
       />
     </Modal>

@@ -3,12 +3,15 @@
 ## Credentials Applied Successfully
 
 ### Backend (.NET API)
+
 **Files Updated:**
+
 - `src/backend/IntegrationService.API/appsettings.json`
 - `src/backend/IntegrationService.API/appsettings.Development.json`
 - `src/backend/IntegrationService.Tests/appsettings.json`
 
 **Configuration:**
+
 ```json
 {
   "AuthorizeNet": {
@@ -21,14 +24,18 @@
 ```
 
 ### Mobile App (React Native)
+
 **File Updated:**
+
 - `src/mobile/ImidusCustomerApp/src/config/environment.ts`
 - `src/mobile/ImidusCustomerApp/.env.example`
 
 **Public Client Key added for Accept.js tokenization**
 
 ### Web Platform (Next.js)
+
 **Files Updated:**
+
 - `src/web/.env`
 - `src/web/.env.example`
 
@@ -37,15 +44,18 @@
 ## What These Credentials Do
 
 ### API Login ID (9JQVwben66U7)
+
 - Used by backend to authenticate with Authorize.net API
 - Required for all server-side payment processing
 
 ### Transaction Key (7eqvzKDRR5Q38898)
+
 - Secret key used by backend to process transactions
 - **NEVER expose this in frontend code**
 - Stored only in backend appsettings
 
 ### Public Client Key (7t8S6K3E3VV3qry33ZEWqQWqLq9xs4UmeNn268gFmZ6mdWWvz22zjHbaQH9Qmsrg)
+
 - Used by frontend (mobile/web) with Accept.js
 - Tokenizes credit card data in browser/app
 - Safe to expose in frontend code
@@ -70,6 +80,7 @@ The credentials are configured for **SANDBOX** environment. Use these test card 
 ## Production Migration
 
 When ready for production:
+
 1. Obtain production credentials from Authorize.net
 2. Update all appsettings files
 3. Change environment from "Sandbox" to "Production"

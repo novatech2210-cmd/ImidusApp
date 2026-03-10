@@ -4,10 +4,10 @@
  * Path: src/components/layout/SiteHeader.tsx
  */
 
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import styles from './SiteHeader.module.css';
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import styles from "./SiteHeader.module.css";
 
 interface NavItem {
   label: string;
@@ -15,10 +15,10 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Menu',     href: '/menu' },
-  { label: 'Orders',   href: '/orders' },
-  { label: 'Loyalty',  href: '/loyalty' },
-  { label: 'About',    href: '/about' },
+  { label: "Menu", href: "/menu" },
+  { label: "Orders", href: "/orders" },
+  { label: "Loyalty", href: "/loyalty" },
+  { label: "About", href: "/about" },
 ];
 
 interface SiteHeaderProps {
@@ -39,12 +39,12 @@ export default function SiteHeader({
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 8);
-    window.addEventListener('scroll', handler, { passive: true });
-    return () => window.removeEventListener('scroll', handler);
+    window.addEventListener("scroll", handler, { passive: true });
+    return () => window.removeEventListener("scroll", handler);
   }, []);
 
   return (
-    <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
+    <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
       {/* Gold underline accent */}
       <div className={styles.goldLine} />
 
@@ -63,7 +63,7 @@ export default function SiteHeader({
 
         {/* ── Desktop nav ────────────────────────────────── */}
         <nav className={styles.desktopNav}>
-          {NAV_ITEMS.map(item => (
+          {NAV_ITEMS.map((item) => (
             <Link key={item.href} href={item.href} className={styles.navLink}>
               {item.label}
             </Link>
@@ -73,10 +73,16 @@ export default function SiteHeader({
         {/* ── Actions ────────────────────────────────────── */}
         <div className={styles.actions}>
           {/* Cart */}
-          <button className={styles.cartBtn} onClick={onCartClick} aria-label="Cart">
+          <button
+            className={styles.cartBtn}
+            onClick={onCartClick}
+            aria-label="Cart"
+          >
             <span className={styles.cartIcon}>🛒</span>
             {cartCount > 0 && (
-              <span className={styles.cartBadge}>{cartCount > 99 ? '99+' : cartCount}</span>
+              <span className={styles.cartBadge}>
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
             )}
           </button>
 
@@ -88,7 +94,10 @@ export default function SiteHeader({
               </span>
             </button>
           ) : (
-            <Link href="/login" className={`btn btn-ghost-dark ${styles.signInBtn}`}>
+            <Link
+              href="/login"
+              className={`btn btn-ghost-dark ${styles.signInBtn}`}
+            >
               Sign In
             </Link>
           )}
@@ -99,9 +108,9 @@ export default function SiteHeader({
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Menu"
           >
-            <span className={`${styles.bar} ${menuOpen ? styles.open : ''}`} />
-            <span className={`${styles.bar} ${menuOpen ? styles.open : ''}`} />
-            <span className={`${styles.bar} ${menuOpen ? styles.open : ''}`} />
+            <span className={`${styles.bar} ${menuOpen ? styles.open : ""}`} />
+            <span className={`${styles.bar} ${menuOpen ? styles.open : ""}`} />
+            <span className={`${styles.bar} ${menuOpen ? styles.open : ""}`} />
           </button>
         </div>
       </div>
@@ -109,7 +118,7 @@ export default function SiteHeader({
       {/* ── Mobile drawer ──────────────────────────────────── */}
       {menuOpen && (
         <div className={styles.mobileMenu}>
-          {NAV_ITEMS.map(item => (
+          {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -120,7 +129,11 @@ export default function SiteHeader({
             </Link>
           ))}
           {!customerName && (
-            <Link href="/login" className={styles.mobileSignIn} onClick={() => setMenuOpen(false)}>
+            <Link
+              href="/login"
+              className={styles.mobileSignIn}
+              onClick={() => setMenuOpen(false)}
+            >
               Sign In
             </Link>
           )}

@@ -10,6 +10,7 @@ Executed by a verification subagent spawned from execute-phase.md.
 A task "create chat component" can be marked complete when the component is a placeholder. The task was done — but the goal "working chat interface" was not achieved.
 
 Goal-backward verification:
+
 1. What must be TRUE for the goal to be achieved?
 2. What must EXIST for those truths to hold?
 3. What must be WIRED for those artifacts to function?
@@ -45,6 +46,7 @@ INIT=$(node ./.claude/get-shit-done/bin/gsd-tools.cjs init phase-op "${PHASE_ARG
 Extract from init JSON: `phase_dir`, `phase_number`, `phase_name`, `has_plans`, `plan_count`.
 
 Then load phase details and list plans/summaries:
+
 ```bash
 node ./.claude/get-shit-done/bin/gsd-tools.cjs roadmap get-phase "${phase_number}"
 grep -E "^| ${phase_number}" .planning/REQUIREMENTS.md 2>/dev/null
@@ -79,6 +81,7 @@ PHASE_DATA=$(node ./.claude/get-shit-done/bin/gsd-tools.cjs roadmap get-phase "$
 ```
 
 Parse the `success_criteria` array from the JSON output. If non-empty:
+
 1. Use each Success Criterion directly as a **truth** (they are already written as observable, testable behaviors)
 2. Derive **artifacts** (concrete file paths for each truth)
 3. Derive **key links** (critical wiring where stubs hide)
@@ -89,6 +92,7 @@ Success Criteria from ROADMAP.md are the contract — they override PLAN-level m
 **Option C: Derive from phase goal (fallback)**
 
 If no must_haves in frontmatter AND no Success Criteria in ROADMAP:
+
 1. State the goal from ROADMAP.md
 2. Derive **truths** (3-7 observable behaviors, each testable)
 3. Derive **artifacts** (concrete file paths for each truth)
@@ -107,6 +111,7 @@ grep -r "tblOrders\|tblOrderDetails\|tblPayments\|tblMisc" "$PHASE_DIR"/*-PLAN.m
 If database integration detected, add these mandatory truths:
 
 **Schema Alignment Truths:**
+
 - Truth: "All table references match INI_Restaurant.Bak schema exactly"
   - Artifacts: All .cs/.ts files with SQL queries
   - Verification: `grep -r "INSERT INTO\|UPDATE\|SELECT.*FROM" --include="*.cs" --include="*.ts" | compare to actual schema`
@@ -126,7 +131,7 @@ If database integration detected, add these mandatory truths:
 - Truth: "No schema modifications attempted"
   - Artifacts: All database interaction files
   - Verification: `grep -r "ALTER TABLE\|CREATE TABLE\|ADD COLUMN" --include="*.cs" --include="*.sql" (should be empty)`
-</step>
+    </step>
 
 <step name="verify_truths">
 For each observable truth, determine if the codebase enables it.
@@ -151,23 +156,27 @@ done
 Parse JSON result: `{ all_passed, passed, total, artifacts: [{path, exists, issues, passed}] }`
 
 **Artifact status from result:**
+
 - `exists=false` → MISSING
 - `issues` not empty → STUB (check issues for "Only N lines" or "Missing pattern")
 - `passed=true` → VERIFIED (Levels 1-2 pass)
 
 **Level 3 — Wired (manual check for artifacts that pass Levels 1-2):**
+
 ```bash
 grep -r "import.*$artifact_name" src/ --include="*.ts" --include="*.tsx"  # IMPORTED
 grep -r "$artifact_name" src/ --include="*.ts" --include="*.tsx" | grep -v "import"  # USED
 ```
+
 WIRED = imported AND used. ORPHANED = exists but not imported/used.
 
-| Exists | Substantive | Wired | Status |
-|--------|-------------|-------|--------|
-| ✓ | ✓ | ✓ | ✓ VERIFIED |
-| ✓ | ✓ | ✗ | ⚠️ ORPHANED |
-| ✓ | ✗ | - | ✗ STUB |
-| ✗ | - | - | ✗ MISSING |
+| Exists | Substantive | Wired | Status      |
+| ------ | ----------- | ----- | ----------- |
+| ✓      | ✓           | ✓     | ✓ VERIFIED  |
+| ✓      | ✓           | ✗     | ⚠️ ORPHANED |
+| ✓      | ✗           | -     | ✗ STUB      |
+| ✗      | -           | -     | ✗ MISSING   |
+
 </step>
 
 <step name="verify_wiring">
@@ -183,18 +192,19 @@ done
 Parse JSON result: `{ all_verified, verified, total, links: [{from, to, via, verified, detail}] }`
 
 **Link status from result:**
+
 - `verified=true` → WIRED
 - `verified=false` with "not found" → NOT_WIRED
 - `verified=false` with "Pattern not found" → PARTIAL
 
 **Fallback patterns (if key_links not in must_haves):**
 
-| Pattern | Check | Status |
-|---------|-------|--------|
-| Component → API | fetch/axios call to API path, response used (await/.then/setState) | WIRED / PARTIAL (call but unused response) / NOT_WIRED |
-| API → Database | Prisma/DB query on model, result returned via res.json() | WIRED / PARTIAL (query but not returned) / NOT_WIRED |
-| Form → Handler | onSubmit with real implementation (fetch/axios/mutate/dispatch), not console.log/empty | WIRED / STUB (log-only/empty) / NOT_WIRED |
-| State → Render | useState variable appears in JSX (`{stateVar}` or `{stateVar.property}`) | WIRED / NOT_WIRED |
+| Pattern         | Check                                                                                  | Status                                                 |
+| --------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Component → API | fetch/axios call to API path, response used (await/.then/setState)                     | WIRED / PARTIAL (call but unused response) / NOT_WIRED |
+| API → Database  | Prisma/DB query on model, result returned via res.json()                               | WIRED / PARTIAL (query but not returned) / NOT_WIRED   |
+| Form → Handler  | onSubmit with real implementation (fetch/axios/mutate/dispatch), not console.log/empty | WIRED / STUB (log-only/empty) / NOT_WIRED              |
+| State → Render  | useState variable appears in JSX (`{stateVar}` or `{stateVar.property}`)               | WIRED / NOT_WIRED                                      |
 
 Record status and evidence for each key link.
 </step>
@@ -211,26 +221,26 @@ For each requirement: parse description → identify supporting truths/artifacts
 <step name="scan_antipatterns">
 Extract files modified in this phase from SUMMARY.md, scan each:
 
-| Pattern | Search | Severity |
-|---------|--------|----------|
-| TODO/FIXME/XXX/HACK | `grep -n -E "TODO\|FIXME\|XXX\|HACK"` | ⚠️ Warning |
-| Placeholder content | `grep -n -iE "placeholder\|coming soon\|will be here"` | 🛑 Blocker |
-| Empty returns | `grep -n -E "return null\|return \{\}\|return \[\]\|=> \{\}"` | ⚠️ Warning |
-| Log-only functions | Functions containing only console.log | ⚠️ Warning |
+| Pattern             | Search                                                        | Severity   |
+| ------------------- | ------------------------------------------------------------- | ---------- |
+| TODO/FIXME/XXX/HACK | `grep -n -E "TODO\|FIXME\|XXX\|HACK"`                         | ⚠️ Warning |
+| Placeholder content | `grep -n -iE "placeholder\|coming soon\|will be here"`        | 🛑 Blocker |
+| Empty returns       | `grep -n -E "return null\|return \{\}\|return \[\]\|=> \{\}"` | ⚠️ Warning |
+| Log-only functions  | Functions containing only console.log                         | ⚠️ Warning |
 
 **Database Integration Anti-patterns:**
 
 For files containing database operations, scan for these critical issues:
 
-| Pattern | Search | Severity | Rationale |
-|---------|--------|----------|-----------|
-| Hardcoded tax rates | `grep -n -E "0\\.0[0-9]+.*tax\|tax.*=.*0\\.[0-9]"` | 🛑 Blocker | Must read from tblMisc.Tax1 |
-| Missing transactions | `grep -L "BEGIN TRANSACTION" files-with-INSERT` | 🛑 Blocker | Atomicity required for multi-table writes |
-| Schema modifications | `grep -n -E "ALTER TABLE\|CREATE TABLE\|ADD COLUMN\|DROP COLUMN"` | 🛑 Blocker | Schema changes not permitted |
-| Wrong CashierID | `grep -n -E "CashierID.*[^9][^9][0-9]\|CashierID.*[0-8][0-9][0-9]"` | 🛑 Blocker | Must use 998 (test) or 999 (production) |
-| Truncated table names | `grep -n -E "tblOrder[^sD]\|tblOrderDetail[^s]\|tblPayment[^s]"` | 🛑 Blocker | Table name typos break integration |
-| Missing required fields | Check INSERT statements against schema required columns | 🛑 Blocker | Violates NOT NULL constraints |
-| SQL injection risk | `grep -n -E "\\$\\{.*\\}\|string.*\\+.*\\+.*SELECT\|\\\".*\\\".*\\+.*WHERE"` | 🛑 Blocker | Security + stability risk |
+| Pattern                 | Search                                                                       | Severity   | Rationale                                 |
+| ----------------------- | ---------------------------------------------------------------------------- | ---------- | ----------------------------------------- |
+| Hardcoded tax rates     | `grep -n -E "0\\.0[0-9]+.*tax\|tax.*=.*0\\.[0-9]"`                           | 🛑 Blocker | Must read from tblMisc.Tax1               |
+| Missing transactions    | `grep -L "BEGIN TRANSACTION" files-with-INSERT`                              | 🛑 Blocker | Atomicity required for multi-table writes |
+| Schema modifications    | `grep -n -E "ALTER TABLE\|CREATE TABLE\|ADD COLUMN\|DROP COLUMN"`            | 🛑 Blocker | Schema changes not permitted              |
+| Wrong CashierID         | `grep -n -E "CashierID.*[^9][^9][0-9]\|CashierID.*[0-8][0-9][0-9]"`          | 🛑 Blocker | Must use 998 (test) or 999 (production)   |
+| Truncated table names   | `grep -n -E "tblOrder[^sD]\|tblOrderDetail[^s]\|tblPayment[^s]"`             | 🛑 Blocker | Table name typos break integration        |
+| Missing required fields | Check INSERT statements against schema required columns                      | 🛑 Blocker | Violates NOT NULL constraints             |
+| SQL injection risk      | `grep -n -E "\\$\\{.*\\}\|string.*\\+.*\\+.*SELECT\|\\\".*\\\".*\\+.*WHERE"` | 🛑 Blocker | Security + stability risk                 |
 
 **Verification method for schema alignment:**
 
@@ -302,7 +312,7 @@ If gaps_found:
 2. **Generate plan per cluster:** Objective, 2-3 tasks (files/action/verify each), re-verify step. Keep focused: single concern per plan.
 
 3. **Order by dependency:** Fix missing → fix stubs → fix wiring → verify.
-</step>
+   </step>
 
 <step name="create_report">
 ```bash
@@ -326,6 +336,7 @@ Orchestrator routes: `passed` → update_roadmap | `gaps_found` → create/execu
 </process>
 
 <success_criteria>
+
 - [ ] Must-haves established (from frontmatter or derived)
 - [ ] Database integration must-haves added if phase involves POS operations
 - [ ] All truths verified with status and evidence
@@ -345,4 +356,4 @@ Orchestrator routes: `passed` → update_roadmap | `gaps_found` → create/execu
 - [ ] Fix plans generated (if gaps_found)
 - [ ] VERIFICATION.md created with complete report
 - [ ] Results returned to orchestrator
-</success_criteria>
+      </success_criteria>

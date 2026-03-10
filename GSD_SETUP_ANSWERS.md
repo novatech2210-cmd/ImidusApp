@@ -97,7 +97,7 @@ CUSTOMERS:
 
 ONLINE (already in schema!):
 - tblOnlineOrders — Online order records
-- tblOnlineOrderDetail — Online order line items  
+- tblOnlineOrderDetail — Online order line items
 - tblOnlineOrderCompany — Online platform config (our app = new company entry)
 - tblSalesOfOnlineOrders — Links sales to online orders
 
@@ -214,7 +214,7 @@ PAYMENT:
 
 DEPLOYMENT (Milestone 5 — $1,200) ⏳ PENDING DOCS:
 - Self-installing Windows MSI for backend
-- CI pipelines for iOS/Android builds  
+- CI pipelines for iOS/Android builds
 - Scripted deployment for web apps
 - Upload all artifacts to AWS S3
 ```
@@ -415,7 +415,7 @@ BINDING TECHNICAL COMMITMENTS:
 
 ```
 A complete branding package exists at: imidus-branding.zip
-This includes drop-in theme files, logo assets, UI components, and backend constants 
+This includes drop-in theme files, logo assets, UI components, and backend constants
 for ALL platforms. GSD should enforce these brand tokens across every phase.
 
 BRAND IDENTITY:
