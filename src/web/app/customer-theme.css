@@ -1,0 +1,911 @@
+/*
+ * IMIDUSAPP — The Digital Growth Engine for Restaurants
+ * Enterprise-grade Customer Theme v2.0
+ * 
+ * Brand Positioning: "Seamless Ordering. Real-Time Sync. Unified Loyalty."
+ * Tagline: Order · Track · Earn
+ */
+
+.customer-layout {
+  /* ─────────────────────────────────────────────────────────────────────────────
+   * BRAND FOUNDATION (Tokens - Never Hardcode)
+   * ───────────────────────────────────────────────────────────────────────────── */
+  
+  /* Core Brand */
+  --imidus-blue: #1E5AA8;
+  --imidus-blue-dark: #174785;
+  --imidus-blue-gradient: linear-gradient(135deg, #1E5AA8 0%, #174785 100%);
+  
+  --imidus-gold: #D4AF37;
+  --imidus-gold-soft: rgba(212, 175, 55, 0.12);
+  --imidus-gold-glow: 0 2px 8px rgba(212, 175, 55, 0.25);
+  
+  --imidus-dark: #1A1A2E;
+  
+  /* ─────────────────────────────────────────────────────────────────────────────
+   * ELEVATION SYSTEM (Modern SaaS Layering)
+   * ───────────────────────────────────────────────────────────────────────────── */
+  
+  /* L0: App Background */
+  --elevation-0-bg: #F5F5F5;
+  --elevation-0-shadow: none;
+  
+  /* L1: Cards (Default) */
+  --elevation-1-bg: #FFFFFF;
+  --elevation-1-shadow: 0 2px 12px rgba(30, 90, 168, 0.08);
+  --elevation-1-shadow-hover: 0 4px 16px rgba(30, 90, 168, 0.12);
+  
+  /* L2: Elevated Cards / Modals */
+  --elevation-2-bg: #FFFFFF;
+  --elevation-2-shadow: 0 4px 24px rgba(30, 90, 168, 0.16);
+  
+  /* L3: Floating CTAs / Primary Actions */
+  --elevation-3-bg: var(--imidus-blue);
+  --elevation-3-shadow: 0 4px 20px rgba(30, 90, 168, 0.25);
+  --elevation-3-shadow-hover: 0 8px 30px rgba(30, 90, 168, 0.35);
+  
+  /* ─────────────────────────────────────────────────────────────────────────────
+   * SURFACE COLORS
+   * ───────────────────────────────────────────────────────────────────────────── */
+  --surface-app: var(--elevation-0-bg);
+  --surface-card: var(--elevation-1-bg);
+  --surface-modal: var(--elevation-2-bg);
+  --surface-gold-soft: rgba(253, 246, 227, 0.8);
+  --surface-blue-soft: rgba(214, 228, 247, 0.6);
+  
+  /* ─────────────────────────────────────────────────────────────────────────────
+   * TYPOGRAPHY SYSTEM
+   * ───────────────────────────────────────────────────────────────────────────── */
+  --font-primary: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Courier New', Courier, monospace;
+  --font-display: Georgia, 'Times New Roman', serif; /* For wordmark only */
+  
+  /* Heading Hierarchy */
+  --heading-weight: 700;
+  --heading-spacing: 0.3px;
+  --heading-color: var(--imidus-blue);
+  
+  /* ─────────────────────────────────────────────────────────────────────────────
+   * TEXT COLORS
+   * ───────────────────────────────────────────────────────────────────────────── */
+  --text-primary: #1A1A2E;
+  --text-secondary: #4A4A5A;
+  --text-tertiary: #71717A;
+  --text-white: #FFFFFF;
+  --text-gold: var(--imidus-gold);
+  
+  /* ─────────────────────────────────────────────────────────────────────────────
+   * STATUS COLORS (Modern Restaurant SaaS)
+   * ───────────────────────────────────────────────────────────────────────────── */
+  --status-confirmed-bg: rgba(46, 125, 50, 0.12);
+  --status-confirmed-text: #2E7D32;
+  --status-confirmed-icon: '✓';
+  
+  --status-pending-bg: rgba(230, 81, 0, 0.12);
+  --status-pending-text: #E65100;
+  --status-pending-icon: '◐';
+  
+  --status-preparing-bg: rgba(30, 90, 168, 0.12);
+  --status-preparing-text: var(--imidus-blue);
+  --status-preparing-icon: '◐';
+  
+  --status-ready-bg: rgba(212, 175, 55, 0.15);
+  --status-ready-text: var(--imidus-gold);
+  --status-ready-icon: '✓';
+  
+  --status-error-bg: rgba(198, 40, 40, 0.12);
+  --status-error-text: #C62828;
+  
+  /* ─────────────────────────────────────────────────────────────────────────────
+   * SPACING & RADIUS
+   * ───────────────────────────────────────────────────────────────────────────── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-full: 9999px;
+  
+  /* ─────────────────────────────────────────────────────────────────────────────
+   * ANIMATION CURVES
+   * ───────────────────────────────────────────────────────────────────────────── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  
+  /* ─────────────────────────────────────────────────────────────────────────────
+   * REAL-TIME INDICATORS
+   * ───────────────────────────────────────────────────────────────────────────── */
+  --sync-online: #2E7D32;
+  --sync-syncing: #E65100;
+  --sync-offline: #C62828;
+  
+  /* Apply Base */
+  font-family: var(--font-primary);
+  background-color: var(--surface-app);
+  color: var(--text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * CONTAINER LAYOUT (Optimized - Balanced 3-Column)
+ * ───────────────────────────────────────────────────────────────────────────── */
+.imidus-container {
+  display: grid;
+  grid-template-columns: 64px 1fr 280px;
+  min-height: 100vh;
+  background: var(--surface-app);
+  gap: 0;
+}
+
+@media (max-width: 1024px) {
+  .imidus-container {
+    grid-template-columns: 64px 1fr;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * HEADER (Enterprise SaaS Style - Compact)
+ * ───────────────────────────────────────────────────────────────────────────── */
+.imidus-header {
+  background: var(--imidus-blue-gradient);
+  color: var(--text-white);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--elevation-3-shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text-white);
+  font-family: var(--font-display);
+  line-height: 1;
+}
+
+.tagline {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-cta {
+  background: var(--imidus-gold);
+  color: var(--text-primary);
+  padding: 8px 20px;
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all var(--duration-fast) var(--ease-out);
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+.header-cta:hover {
+  background: #E5C04B;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+}
+
+/* Real-Time Sync Indicator */
+.sync-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(8px);
+}
+
+.sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  position: relative;
+}
+
+.sync-dot.online {
+  background: var(--sync-online);
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.3);
+  animation: pulse-dot 2s infinite;
+}
+
+.sync-dot.syncing {
+  background: var(--sync-syncing);
+  box-shadow: 0 0 0 2px rgba(230, 81, 0, 0.3);
+  animation: pulse-dot 1s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * REAL-TIME SYNC INDICATOR (Enhanced with API Polling)
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+.sync-indicator-container {
+  position: relative;
+}
+
+.sync-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(8px);
+  cursor: default;
+  transition: all 0.2s ease;
+}
+
+.sync-indicator:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Status dots */
+.sync-dot-online,
+.sync-dot-syncing,
+.sync-dot-offline,
+.sync-dot-error {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sync-dot-online {
+  background: var(--sync-online);
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.3);
+  animation: pulse-dot 2s infinite;
+}
+
+.sync-dot-syncing {
+  background: var(--sync-syncing);
+  box-shadow: 0 0 0 2px rgba(230, 81, 0, 0.3);
+  animation: pulse-dot 1s infinite;
+}
+
+.sync-dot-offline,
+.sync-dot-error {
+  background: var(--sync-offline);
+  box-shadow: 0 0 0 2px rgba(198, 40, 40, 0.3);
+}
+
+/* Tooltip */
+.sync-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  background: white;
+  border-radius: var(--radius-card);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 0.2s ease;
+  z-index: 1000;
+}
+
+.sync-indicator-container:hover .sync-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.sync-tooltip-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--divider-light);
+  margin-bottom: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sync-tooltip-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sync-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+}
+
+.sync-tooltip-row span:first-child {
+  color: var(--text-secondary);
+}
+
+.sync-tooltip-row span:last-child {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.sync-tooltip-footer {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--divider-light);
+  font-size: 0.625rem;
+  color: var(--text-dim);
+  text-align: center;
+  font-style: italic;
+}
+
+/* Status text colors */
+.text-green-400 { color: #4ade80; }
+.text-amber-400 { color: #fbbf24; }
+.text-red-400 { color: #f87171; }
+.text-gray-400 { color: #9ca3af; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * MAIN CONTENT AREA
+ * ───────────────────────────────────────────────────────────────────────────── */
+.imidus-main {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-app);
+  overflow-y: auto;
+}
+
+.content-area {
+  flex: 1;
+  padding: 24px;
+  background: var(--surface-app);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * TYPOGRAPHY MODERNIZATION
+ * ───────────────────────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--heading-weight);
+  letter-spacing: var(--heading-spacing);
+  color: var(--heading-color);
+  line-height: 1.25;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+
+/* Prices - Premium Gold Display */
+.price {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--imidus-gold);
+  font-size: 1.1em;
+  letter-spacing: -0.3px;
+}
+
+/* Loyalty Points - Hero Display */
+.loyalty-balance {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--imidus-gold);
+  text-shadow: var(--imidus-gold-glow);
+  letter-spacing: -1px;
+}
+
+/* Order Numbers - Monospaced */
+.order-number {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--imidus-blue);
+  font-size: 1.125rem;
+  letter-spacing: 0.5px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * BUTTONS (Enterprise-Grade)
+ * ───────────────────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out);
+  border: none;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Primary - Brand Blue (Elevated) */
+.btn-primary {
+  background: var(--imidus-blue);
+  color: var(--text-white);
+  box-shadow: var(--elevation-3-shadow);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--imidus-blue-dark);
+  box-shadow: var(--elevation-3-shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* CTA - Brand Gold (Luxury Accent) */
+.btn-gold {
+  background: var(--imidus-gold);
+  color: var(--imidus-dark);
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.25);
+  font-weight: 700;
+}
+
+.btn-gold:hover:not(:disabled) {
+  background: #C4A030;
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
+  transform: translateY(-2px);
+}
+
+/* Secondary - Ghost */
+.btn-secondary {
+  background: transparent;
+  color: var(--imidus-blue);
+  border: 2px solid var(--imidus-blue);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--surface-blue-soft);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * CARDS (Elevation System)
+ * ───────────────────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--elevation-1-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elevation-1-shadow);
+  overflow: hidden;
+  transition: all var(--duration-normal) var(--ease-out);
+  border: 1px solid transparent;
+}
+
+.card:hover {
+  box-shadow: var(--elevation-1-shadow-hover);
+  transform: translateY(-3px);
+  border-color: rgba(30, 90, 168, 0.15);
+}
+
+.card-elevated {
+  background: var(--elevation-2-bg);
+  box-shadow: var(--elevation-2-shadow);
+}
+
+.card-body {
+  padding: 24px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * PRODUCT TILES (Compact Restaurant Style)
+ * ───────────────────────────────────────────────────────────────────────────── */
+.product-card {
+  background: var(--elevation-1-bg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-1-shadow);
+  overflow: hidden;
+  transition: all var(--duration-normal) var(--ease-out);
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.product-card:hover {
+  box-shadow: var(--elevation-2-shadow);
+  transform: translateY(-2px);
+  border-color: rgba(30, 90, 168, 0.2);
+}
+
+.product-image {
+  height: 140px;
+  background: linear-gradient(135deg, var(--surface-blue-soft) 0%, var(--surface-gold-soft) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.03) 100%);
+}
+
+.product-info {
+  padding: 14px;
+}
+
+.product-name {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  letter-spacing: -0.2px;
+}
+
+.product-description {
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.product-price {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: var(--imidus-gold);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * ORDER STATUS BADGES (Modern SaaS)
+ * ───────────────────────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-confirmed {
+  background: var(--status-confirmed-bg);
+  color: var(--status-confirmed-text);
+}
+
+.badge-pending {
+  background: var(--status-pending-bg);
+  color: var(--status-pending-text);
+}
+
+.badge-preparing {
+  background: var(--status-preparing-bg);
+  color: var(--status-preparing-text);
+}
+
+.badge-ready {
+  background: var(--status-ready-bg);
+  color: var(--status-ready-text);
+}
+
+.badge-error {
+  background: var(--status-error-bg);
+  color: var(--status-error-text);
+}
+
+/* Badge for cart count */
+.cart-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-full);
+  background: var(--imidus-gold);
+  color: var(--imidus-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(212, 175, 55, 0.2);
+}
+
+/* Gold Badge for loyalty points or accents */
+.badge-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--imidus-gold-soft); /* Using the soft gold defined */
+  color: var(--imidus-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+/* Badge for cart count */
+.cart-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-full);
+  background: var(--imidus-gold);
+  color: var(--imidus-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(212, 175, 55, 0.2);
+}
+
+/* Gold Badge for loyalty points or accents */
+.badge-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--imidus-gold-soft); /* Using the soft gold defined */
+  color: var(--imidus-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * LOYALTY CARD (Premium Feel)
+ * ───────────────────────────────────────────────────────────────────────────── */
+.loyalty-card {
+  background: var(--surface-gold-soft);
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.loyalty-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * FORM INPUTS (Focus Ring)
+ * ───────────────────────────────────────────────────────────────────────────── */
+.input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1.5px solid #E0E0E0;
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  background: var(--elevation-1-bg);
+  transition: all var(--duration-fast) var(--ease-out);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--imidus-blue);
+  box-shadow: 0 0 0 4px rgba(30, 90, 168, 0.1);
+}
+
+.input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * CATEGORY SIDEBAR
+ * ───────────────────────────────────────────────────────────────────────────── */
+.category-sidebar {
+  background: var(--elevation-1-bg);
+  border-right: 1px solid rgba(30, 90, 168, 0.08);
+}
+
+.category-item {
+  padding: 16px 20px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+  border-left: 3px solid transparent;
+}
+
+.category-item:hover {
+  background: var(--surface-blue-soft);
+  color: var(--imidus-blue);
+}
+
+.category-item.active {
+  background: var(--imidus-gold-soft);
+  color: var(--imidus-blue);
+  border-left-color: var(--imidus-gold);
+  font-weight: 700;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * ORDER PANEL (Compact)
+ * ───────────────────────────────────────────────────────────────────────────── */
+.pos-order-panel {
+  background: var(--elevation-1-bg);
+  border-left: 1px solid rgba(30, 90, 168, 0.08);
+  box-shadow: var(--elevation-2-shadow);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * FLOATING CTA (Mobile)
+ * ───────────────────────────────────────────────────────────────────────────── */
+.floating-cta {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 200;
+  background: var(--imidus-blue);
+  color: var(--text-white);
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--elevation-3-shadow);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.floating-cta:hover {
+  transform: scale(1.05);
+  box-shadow: var(--elevation-3-shadow-hover);
+}
+
+.floating-cta .price {
+  font-size: 0.75rem;
+  color: var(--imidus-gold);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * LINKS
+ * ───────────────────────────────────────────────────────────────────────────── */
+a {
+  color: var(--imidus-blue);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out);
+  font-weight: 500;
+}
+
+a:hover {
+  color: var(--imidus-gold);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * SCROLLBAR (Brand Blue)
+ * ───────────────────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-app);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(30, 90, 168, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--imidus-gold);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * ANIMATIONS
+ * ───────────────────────────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * RESPONSIVE BREAKPOINTS
+ * ───────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .imidus-container {
+    grid-template-columns: 70px 1fr;
+  }
+  
+  .pos-order-panel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 360px;
+    transform: translateX(100%);
+    transition: transform var(--duration-normal) var(--ease-out);
+    z-index: 150;
+  }
+  
+  .pos-order-panel.open {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .imidus-header {
+    padding: 14px 20px;
+  }
+  
+  .logo-text {
+    font-size: 1.25rem;
+  }
+  
+  .content-area {
+    padding: 20px;
+  }
+  
+  .menu-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}

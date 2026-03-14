@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  WiX Installer for Imidus POS Integration Service
+  Creates a self-installing MSI for the .NET 8 backend API
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <Package Name="Imidus POS Integration Service"
+           Manufacturer="Novatech Build Team"
+           Version="$(env.PRODUCT_VERSION)"
+           UpgradeCode="12345678-1234-1234-1234-123456789012"
+           Scope="perMachine"
+           Compressed="yes">
+    
+    <MajorUpgrade DowngradeErrorMessage="A newer version is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- Features -->
+    <Feature Id="ProductFeature" Title="Imidus POS Integration Service" Level="1">
+      <ComponentGroupRef Id="BackendComponents" />
+      <ComponentGroupRef Id="ServiceComponents" />
+      <ComponentRef Id="StartMenuShortcuts" />
+      <ComponentRef Id="FirewallRule" />
+    </Feature>
+
+    <!-- Installation Directory -->
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="Imidus POS Integration">
+        <Directory Id="LOGFOLDER" Name="Logs" />
+      </Directory>
+    </StandardDirectory>
+
+    <!-- Program Menu -->
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="Imidus POS Integration">
+        <Component Id="StartMenuShortcuts" Guid="87654321-4321-4321-4321-210987654321">
+          <Shortcut Id="StartMenuShortcut"
+                    Name="Imidus POS Integration"
+                    Description="POS Integration Backend Service"
+                    Target="[INSTALLFOLDER]IntegrationService.API.exe"
+                    WorkingDirectory="INSTALLFOLDER"
+                    Icon="ApplicationIcon.exe" />
+          <Shortcut Id="UninstallProduct"
+                    Name="Uninstall Imidus POS Integration"
+                    Description="Uninstall the service"
+                    Target="[System64Folder]msiexec.exe"
+                    Arguments="/x [ProductCode]" />
+          <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
+          <RegistryValue Root="HKMU"
+                         Key="Software\Imidus\POSIntegration"
+                         Name="installed"
+                         Type="integer"
+                         Value="1"
+                         KeyPath="yes" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <!-- Backend Components -->
+    <ComponentGroup Id="BackendComponents" Directory="INSTALLFOLDER">
+      <!-- Main Application -->
+      <Component>
+        <File Id="MainExe" Source="publish\IntegrationService.API.exe" KeyPath="yes" />
+      </Component>
+      
+      <!-- Runtime Dependencies -->
+      <Component>
+        <File Id="RuntimeConfig" Source="publish\IntegrationService.API.runtimeconfig.json" />
+      </Component>
+      
+      <!-- DLLs will be harvested by heat.exe in real build -->
+      <Component>
+        <File Id="CoreDll" Source="publish\IntegrationService.Core.dll" />
+      </Component>
+      <Component>
+        <File Id="InfrastructureDll" Source="publish\IntegrationService.Infrastructure.dll" />
+      </Component>
+      
+      <!-- Configuration -->
+      <Component>
+        <File Id="AppSettings" Source="publish\appsettings.json" />
+      </Component>
+      <Component>
+        <File Id="AppSettingsProduction" Source="publish\appsettings.Production.json" />
+      </Component>
+      <Component>
+        <File Id="WebConfig" Source="publish\web.config" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- Windows Service Configuration -->
+    <ComponentGroup Id="ServiceComponents" Directory="INSTALLFOLDER">
+      <Component>
+        <ServiceInstall Id="POSIntegrationService"
+                        Name="ImidusPOSIntegration"
+                        DisplayName="Imidus POS Integration Service"
+                        Description="Online ordering integration service for INI POS"
+                        Start="auto"
+                        ErrorControl="normal"
+                        Type="ownProcess"
+                        Arguments="--urls http://localhost:5004"
+                        Account="LocalSystem">
+          <ServiceDependency Id="MSSQLSERVER" />
+        </ServiceInstall>
+        <ServiceControl Id="StartService"
+                        Name="ImidusPOSIntegration"
+                        Start="install"
+                        Stop="both"
+                        Remove="uninstall" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- Firewall Rule -->
+    <Component Id="FirewallRule" Guid="11111111-2222-3333-4444-555555555555" Directory="INSTALLFOLDER">
+      <FirewallException Id="APIPort"
+                         Name="Imidus POS Integration API"
+                         Port="5004"
+                         Protocol="tcp"
+                         Scope="any"
+                         Profile="all" />
+      <RegistryValue Root="HKMU"
+                     Key="Software\Imidus\POSIntegration"
+                     Name="firewall"
+                     Type="integer"
+                     Value="1"
+                     KeyPath="yes" />
+    </Component>
+
+    <!-- UI Configuration -->
+    <ui:WixUI Id="WixUI_InstallDir" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    
+    <!-- Custom UI Sequence -->
+    <InstallExecuteSequence>
+      <Custom Action="ConfigureService" Before="StartServices">
+        NOT Installed
+      </Custom>
+    </InstallExecuteSequence>
+
+    <!-- Properties -->
+    <Property Id="POSDATABASE" Value="Server=localhost;Database=INI_Restaurant;User Id=sa;Password=;" />
+    <Property Id="BACKENDDATABASE" Value="Server=localhost;Database=IntegrationService;User Id=sa;Password=;" />
+    
+    <!-- Custom Actions -->
+    <CustomAction Id="ConfigureService"
+                  Execute="deferred"
+                  Impersonate="no"
+                  ExeCommand="cmd /c echo Configuring service..."
+                  Return="ignore" />
+
+    <!-- Icon -->
+    <Icon Id="ApplicationIcon.exe" SourceFile="publish\IntegrationService.API.exe" />
+
+  </Package>
+</Wix>

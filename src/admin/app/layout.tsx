@@ -1,0 +1,39 @@
+'use client';
+
+import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import '../styles/globals.css';
+import AdminLayout from '@/components/layout/AdminLayout';
+
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    },
+  },
+});
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>IMIDUS - Admin Portal</title>
+        <meta name="description" content="Admin portal for IMIDUS Technologies" />
+      </head>
+      <body>
+        <QueryClientProvider client={queryClient}>
+          <AdminLayout>
+            {children}
+          </AdminLayout>
+        </QueryClientProvider>
+      </body>
+    </html>
+  );
+}

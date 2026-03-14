@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  
+  <Package Name="IMIDUS Integration Service"
+           Manufacturer="NovaTech"
+           Version="1.0.0"
+           UpgradeCode="4bccd585-40ea-4e59-bd3b-ffb559db270b">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version is installed." />
+
+    <!-- File layout -->
+    <StandardDirectory Id="ProgramFilesFolder">
+      <Directory Id="INSTALLFOLDER" Name="IMIDUS Integration Service" />
+    </StandardDirectory>
+
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="ServiceExecutable" Guid="*">
+        <File Id="API_EXE" Source="publish\IntegrationService.API.exe" KeyPath="yes" />
+        
+        <!-- Service installation -->
+        <ServiceInstall Id="ServiceInstaller"
+                        Type="ownProcess"
+                        Name="IntegrationService"
+                        DisplayName="IMIDUS POS Integration Service"
+                        Description="Bridge between modern apps and INI POS database"
+                        Start="auto"
+                        Account="LocalSystem"
+                        ErrorControl="normal" />
+        
+        <ServiceControl Id="StartService"
+                        Start="install"
+                        Stop="both"
+                        Remove="uninstall"
+                        Name="IntegrationService"
+                        Wait="yes" />
+      </Component>
+      
+      <!-- Copy all other files from the publish directory -->
+      <!-- In a real WiX project, you would use heat.exe or a glob to collect these -->
+      <Component Id="AppConfig" Guid="*">
+        <File Id="App_Settings" Source="publish\appsettings.json" />
+      </Component>
+    </ComponentGroup>
+
+    <Feature Id="MainFeature" Title="IMIDUS Service" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+    
+    <ui:WixUI Id="WixUI_Minimal" />
+
+  </Package>
+</Wix>

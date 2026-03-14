@@ -1,0 +1,13 @@
+{
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "rules": {
+    // IMIDUS Brand Token Enforcement
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "Literal[value=/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/]",
+        "message": "Raw hex colors not allowed. Use Tailwind brand classes (e.g., bg-brand-primary) or CSS variables."
+      }
+    ]
+  }
+}

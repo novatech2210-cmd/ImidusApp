@@ -1,0 +1,5 @@
+- [x] Update `src/web/lib/rule-engine.ts` to remove direct `pos-validation` import and use backend API (`/api/pos?action=validate`) for POS item validation reads.
+- [x] Update `src/web/lib/rule-validation.ts` to remove direct `pos-validation` imports and call backend API endpoints for `validate` and `validateMultiple`.
+- [x] Ensure changes preserve architecture constraints: INI_Restaurant remains SSOT, read allowed, no direct POS writes, no schema/code changes in POS app.
+- [ ] Run targeted checks for touched files (type/lint or equivalent) and capture results.
+- [ ] Verify API read-path behavior for success and failure scenarios in updated code paths.

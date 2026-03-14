@@ -1,2 +1,5 @@
+<<<<<<< HEAD
+# Imidus
+=======
 # ImidusApp
-Restuarant POS
+Restaurant POS

@@ -1,0 +1,1920 @@
+ Microsoft SQL Server finalsolutionSPAD iC:DESKTOP-DEMO SPAD
+ TPProDESKTOP-DEMO\SQLEXPRESSSFGI> PRIMARYSFIN
+ TPProC:\TopPos\Data\TPPro.mdfSFIN
+ TPPro_logC:\TopPos\Data\TPPro_1.ldfSPAD
+ Whttp://www.w3.org/2001/XMLSchema0 1anySimpleType0
+ 'duration0 'dateTime0
+ +gYearMonth0 )gMonthDay0 )hexBinary0 /base64Binary0 'NOTATION0 7normalizedString0 'language0 ;nonPositiveInteger0
+ 5negativeInteger0
+ ;nonNegativeInteger0 /unsignedLong0 -unsignedInt0 1unsignedShort0 /unsignedByte0 5positiveInteger0 'ENTITIES0 'NMTOKENS0 http://schemas.microsoft.com/sqlserver/2004/sqltypes0 _http://www.w3.org/XML/1998/namespace0 /xmlSpaceEnum0 1sqlDbTypeEnum0 AsqlCompareOptionsEnum0 AsqlCompareOptionsList0 'nvarchar0 )varbinary0 )timestamp0 7timestampNumeric0 'smallint0 'datetime0 1smalldatetime0 +smallmoney0 7uniqueidentifier0 'dbobject0
+ )sqlDbType0 -clrTypeName0 )maxLength0 'localeId0 9sqlCompareOptions0 =sqlCollationVersion0 )sqlSortId0 )precision0 =xmlSchemaCollection0 /sqlTypeAlias lumns0* Fsysserefs Hsysdbfiles0*< Lsysobjvalues0*" Hsysschobjs0*@ Hsysclsobjs0*, Fsysnsobjs Hsyscolpars0*3 Rsystypedsubobjs Jsysidxstats Fsysiscols Nsysrowsetrefs Fsysowners
+ Fsysftinds Fsysxprops
+ TPPro                                                                                                                                                                                                                                                      
+ Ivalidation0-X
+ Onext_fragment0-X
+ Ofragment_size0-X Sfragment_bitmap0-X [binary_message_body0- Epriority0- Qjqueuing_order _conversation_group_id0- [conversation_handle0- cmessage_sequence_number0- Imessage_id0-
+ Smessage_type_id0-
+ Iservice_id0-
+ [service_contract_id0- Ivalidation0-
+ Onext_fragment0-
+ Ofragment_size0- Sfragment_bitmap0- [binary_message_body0-
+ CSalesID0-
+ QDSCAmtEmployee0-
+ KDSCAmtType10-
+ KDSCAmtType20-
+ I@PaymentID0-
+ E@SalesID0- M@CardReceipt0- U@AuthorizationNo0- M@RecordTrans0-
+ E@SalesID0-
+ E@TableID0- M@SubTotalAmt0- C@DSCAmt0- C@GSTAmt0- C@PSTAmt0- E@PST2Amt0-? G@ServerID0-jx!w K@CategoryID0-jx!w C@Status0- M@FromTableID0- I@ToTableID0- W@MergePersonIndex0- C@ItemID0- E@Barcode0- M@SizeGroupID0- G@AllSizes0- Y@ActiveCompanyOnly0- M@CompanyName0-
+ O@CompanyColor0- W@ShowNameOnButton0- _@CommissionPercentage0- u@PrintWaitressCopyForPickupOrder0- y@PrintWaitressCopyForDeliveryOrder0- s@PromptToEnterOnlineOrderNumber0- K@Integrated0- U@IntegrationCode0-
+ Y@APITransactionKey0- i@CommissionCalculationType0- k@ItemInfoSyncAPIEndpointURL0-
+ e@SkipPrintingKitchenCopy0- e@NewOnlineOrderCompanyID<- ETabIndex<- MControlIndex<- EOpenItem<- ESideDish<- EItemName<- CCaption<-
+ EAlignTop<- GAlignLeft<-
+ EFontName<- EFontSize<- EFontBold<- IFontItalic<-
+ GFontColor<-
+ OImageFileName<- GScaleItem<- OTasteModifier<- INextItemID<- MNextItemName<- GGroupItem<- GItemImage<- WItemImageFileType<- CSoldOut<- QLayoutModeType0- ETabIndex0- MControlIndex0- CTableID0- CCaption0- EAlignTop0- GAlignLeft0-
+ llocpolicy
+ Igroupname
+ WA_Sys_00000005_000000400 I_WA_Sys_00000005_0000004A0 I_WA_Sys_00000006_0000001D0 I_WA_Sys_00000006_000000220 I_WA_Sys_00000006_000000290 I_WA_Sys_00000007_0000001D0 I_WA_Sys_00000007_000000360 I_WA_Sys_00000009_000000360 I_WA_Sys_0000000A_000000360 I_WA_Sys_0000000B_000000290 I_WA_Sys_0000000C_000000320 I_WA_Sys_0000000C_0000004C0 I_WA_Sys_0000000D_000000290 I_WA_Sys_0000000D_0000004C0 I_WA_Sys_0000000E_000000290 I_WA_Sys_0000000F_000000290 1PK_tblAccount0 =PK_tblAvailableItem0 +PK_tblBank0 ;PK_tblCashInDrawer0 3PK_tblCategory0 3PK_tblCustomer0 -PK_tblGroup0 +PK_tblItem0 +PK_tblMisc0 /PK_tblPayOut0 9PK_tblPeripherals0 9PK_tblPointReward0 /PK_tblPoints0 ;PK_tblPrepaidCards0 QPK_tblPrepaidCardUsageHistory0 9PK_tblReservation0 -PK_tblSales0 9PK_tblSalesDetail0 +PK_tblSize0 -PK_tblTable0 5PK_tblTimeStamp0 +PK_tblUser0 Aqueue_clustered_index0 Aqueue_secondary_index _WA_Sys_00000002_000000313_0000001B4_000000315_000000338_00000022E_00000029clstustncPK_tblAvailableItemPointRewardTable
+ ^psysserefs clust
+ 'datetime0 'nvarchar0 1smalldatetime0 'smallint0 +smallmoney0 -sql_variant0 )timestamp0 7uniqueidentifier0 )varbinary0 bigintchardecimalncharvarcharsmalldatetimeql_varianttextuniqueidentifier
+ 'datetime0 'nvarchar0 1smalldatetime0 'smallint0 +smallmoney0 -sql_variant0 )timestamp0 7uniqueidentifier0 )varbinary0 bigintchardecimalncharvarcharsmalldatetimeql_varianttextuniqueidentifier
+ D F NPKS U 
+ 3db_accessadmin0 9db_backupoperator0 1db_datareader0 1db_datawriter0 -db_ddladmin0 9db_denydatareader0 9db_denydatawriter0 'db_owner0 7db_securityadmin0 ;INFORMATION_SCHEMA0
+ db_accessadmindatareaderwriterenydatareaderownerguestpublicsys
+ 3db_accessadmin0 9db_backupoperator0 1db_datareader0 1db_datawriter0 -db_ddladmin0 9db_denydatareader0 9db_denydatawriter0 'db_owner0 7db_securityadmin0 ;INFORMATION_SCHEMA0
+ db_accessadmindatareaderwriterenydatareaderownerguestpublicsys
+ TPPro                                                                                                                           C:\TopPos\Data\TPPro.mdf                                                                                                                                                                                                                                            
+ TPPro_log                                                                                                                       C:\TopPos\Data\TPPro_1.ldf                                                                                                                                                                                                                                          
+ vhttp://schemas.microsoft.com/SQL/ServiceBroker/Error& ~http://schemas.microsoft.com/SQL/ServiceBroker/EndDialog& http://schemas.microsoft.com/SQL/Notifications/QueryNotification& http://schemas.microsoft.com/SQL/Notifications/EventNotification& http://schemas.microsoft.com/SQL/ServiceBroker/DialogTimer& http://schemas.microsoft.com/SQL/ServiceBroker/BrokerConfigurationNotice/MissingRoute& http://schemas.microsoft.com/SQL/ServiceBroker/BrokerConfigurationNotice/FailedRoute& http://schemas.microsoft.com/SQL/ServiceBroker/BrokerConfigurationNotice/MissingRemoteServiceBinding& http://schemas.microsoft.com/SQL/ServiceBroker/BrokerConfigurationNotice/FailedRemoteServiceBinding&
+ http://schemas.microsoft.com/SQL/ServiceBroker/ServiceEcho/Echo& http://schemas.microsoft.com/SQL/ServiceBroker/ServiceDiagnostic/Query& http://schemas.microsoft.com/SQL/ServiceBroker/ServiceDiagnostic/Status&
+ http://schemas.microsoft.com/SQL/ServiceBroker/ServiceDiagnostic/Description& http://schemas.microsoft.com/SQL/Notifications/PostQueryNotification& http://schemas.microsoft.com/SQL/Notifications/PostEventNotification& http://schemas.microsoft.com/SQL/ServiceBroker/BrokerConfigurationNotice& http://schemas.microsoft.com/SQL/ServiceBroker/ServiceEcho& http://schemas.microsoft.com/SQL/ServiceBroker/ServiceDiagnostic& http://schemas.microsoft.com/SQL/Notifications/QueryNotificationService& http://schemas.microsoft.com/SQL/Notifications/EventNotificationService& http://schemas.microsoft.com/SQL/ServiceBroker/ServiceBroker
+ ===GAutoCreatedLocalLOCAL
+ ,fragment_size6
+ ,fragment_size6<8
+ ,fragment_size6D *frombrkrinst6D  grantor6L &hdrpartlen6D $hdrseclen6 $hobtcolid6
+ *hobtcolumnid6
+  idmajor63  idmajor67  idmajor6a  idminor67  idminor6) "imageval6  indepid6J  indepid6K  indepid6J &indepsubid6K &indepsubid6A $initiator6I $initiator6I "inseskey6I &inseskeyid6L .internalstatus6"  intprop6,  intprop63  intprop66  intprop6u\ Gender6=~1 $GuestName6[y (GuestNumber6 $GroupName6%'W) GSTAmt6%'W) Guests6%'W)  GSTRate6bc
+ ,ImageFileName6 ,ImageFileName6 4HourlyChargedItem6 *FromDateTime6, ,ImageFilePath6 "HourFrom6
+ "HourRate6 $HourPrice6'B .IncludedTipAmt6D 2InsertedDateTime6, $GroupItem6 $GroupItem6 :GiftCardPaymentCount6 .GivenCreditAmt6 &GuestCount6 :GiftCardPaymentCount6 .GivenCreditAmt6 &GuestCount6P?CS
+ &Integrated6 0IntegrationCode6 "HashSalt6 &Integrated6 &GuestCount6i &Integrated6i
+ &GuestCount6 ,ImageFileName: ,ImageFileName: $GroupItem: ,ImageFileName: $GroupItem:5
+ ,ImageFileName:n
+ $GroupItem: ,ImageFileName6 $GroupItem: ,ImageFileName: $GroupItem: ,ImageFileName: $GroupItem:1 ,ImageFileName:j $GroupItem: ,ImageFileName: $GroupItem: ,ImageFileName:NB $GroupItem:
+ ,ImageFileName: $GroupItem: ,ImageFileName:2 $GroupItem:k ,ImageFileName: ,ImageFileName: $GroupItem:O ,ImageFileName: $GroupItem: ,ImageFileName:3 Height:l=p| ,ImageFileName:l=p| $GroupItem: ,ImageFileName: $GroupItem: ,ImageFileName:P $GroupItem: ,ImageFileName: $GroupItem: ,ImageFileName:4_ $GroupItem:m ,ImageFileName: $GroupItem: ,ImageFileName: $GroupItem:Q ,ImageFileName: $GroupItem:
+ Height GroupIt
+ lQueryNotificationErrorsQueue0,X fqueue_messages_19770580790, lEventNotificationErrorsQueue0, fqueue_messages_20090581930, XServiceBrokerQueue0,g hFK_tblCashInDrawer_tblUser0, jFK_tblCashInDrawer_tblUser10, `FK_tblItem_tblCategory0, bFK_tblPayOut_tblAccount0, hDF_tblTableLayout_AlignTop0,= jDF_tblTableLayout_AlignLeft0,v dDF_tblTableLayout_Height0, bDF_tblTableLayout_Width0,
+ hDF_tblTableLayout_FontName0, VtblDiscountDetail0, RtblDeletedItems0, hFK_tblDeletedItems_tblItem0," jFK_tblDeletedItems_tblSales0, XDF_tblItem_Alcohol0, |DF_tblSalesDetail_PricePerWeightUnit0,) tDF_tblSalesDetail_MeasuredWeight0,b DF_tblPendingOrders_PricePerWeightUnit0, xDF_tblPendingOrders_MeasuredWeight0, FK_tblSalesOfOnlineOrders_tblOnlineOrderCompany0, xFK_tblSalesOfOnlineOrders_tblSales0, DF_tblPrepaidCardChargeHistory_DiscountAmt0,8 xDF_tblOnlineOrders_DiscountPercent0,q `DF_tblOnlineOrders_Tip0, DF_tblOnlineOrderCompany_PrintWaitressCopyForDeliveryOrder0,- DF_tblOnlineOrderCompany_PromptToEnterOnlineOrderNumber0, tDF_tblOrderNumber_CalledDateTime0, DF_tblSalesOfOnlineOrders_OnlineOrderNumber<, Nsp_UpdateUser<, Nsp_InsertUser<,< Zsp_GetLastTransInfo<,u `sp_InsertKitchenOrders<, lsp_GetTransactionsByCustomer<,
+ dsp_InsertDayHourDiscount<, dsp_DeleteDayHourDiscount<, ^sp_GetDiscountSetting<,K `sp_UpdateAvailableSize<, Nsp_UpdateItem<,vN lsp_InsertSalesOfOnlineOrders<, pspr_SalesOfOnlineOrdersSummary<, spr_PaymentsSummaryExcludingOnlineOrders<,! Zspx_ExportMenuItems<,Z \spx_ExportMenuLayout<, ZtmpMenuLayoutExport0, FK_tblPrepaidCardChargeHistory_tblPrepaidCards0, FK_tblPrepaidCardUsageHistory_tblPrepaidCards<,0 FK_tblPurchaseItem_tblPurchaseItemCategory<,i FK_tblPurchaseOrderDetail_tblPurchaseItem0,[^bv dspr_GetSalesTransactions0, `sp_VoidCardTransaction0, Zsp_GetCardTransInfo0, bsp_VoidSalesTransaction0,? Tsp_GetOpenTables0,1T-v hsp_UpdateStoreLinkedServer0,jx!w Rsp_GetInventory0, xsp_CheckIfSameTimeChargeItemExists0, dsp_CheckDuplicateBarcode0, Hsp_GetSize0, lsp_VoidOrUndoVoidRewardPoint0,@n rspfd_GetCardTransactionCashiers0,y spfd_CheckIfTransactionsWithoutTipAdjustmentExist0, dsp_GetOnlineOrderCompany0, jsp_InsertOnlineOrderCompany<, ZtmpMenuLayoutBackup<,O ZtmpMenuLayoutExport<, ZtmpMenuLayoutBackup<, ZtmpMenuLayoutExport0, \tmpTableLayoutBackup Nsp_UpdateItem0,vN lsp_InsertSalesOfOnlineOrders0, pspr_SalesOfOnlineOrdersSummary ory_Discou2
+ BDF_tblPrepaidCards_Status& &PK_tblGroup& >spr_GetOrderTypeSummary& NDF_tblSalesCardDetail_TransType& BDF_tblTableLayout_TakeOut& 0sp_GetOpenTables& BDF_tblMenuLayout_AlignTop& 0syssingleobjrefs& Hsp_InsertPurchaseOrderedItem& FFK_tblPointsDetail_tblSales& 2sp_DeleteCardInfo& VDF_tblPendingOrders_DiscountPercent
+ tblMisc tblMisc GSTPercentageÂ ?GSTPercentage
+ http://schemas.microsoft.com/SQL/ServiceBroker/Error0' http://schemas.microsoft.com/SQL/ServiceBroker/EndDialog0' http://schemas.microsoft.com/SQL/Notifications/QueryNotification0' http://schemas.microsoft.com/SQL/Notifications/EventNotification0' http://schemas.microsoft.com/SQL/ServiceBroker/DialogTimer0' http://schemas.microsoft.com/SQL/ServiceBroker/BrokerConfigurationNotice/MissingRoute0' http://schemas.microsoft.com/SQL/ServiceBroker/BrokerConfigurationNotice/FailedRoute0' http://schemas.microsoft.com/SQL/ServiceBroker/BrokerConfigurationNotice/MissingRemoteServiceBinding0' http://schemas.microsoft.com/SQL/ServiceBroker/BrokerConfigurationNotice/FailedRemoteServiceBinding0'
+ http://schemas.microsoft.com/SQL/ServiceBroker/ServiceEcho/Echo0' http://schemas.microsoft.com/SQL/ServiceBroker/ServiceDiagnostic/Query0' http://schemas.microsoft.com/SQL/ServiceBroker/ServiceDiagnostic/Status0'
+ http://schemas.microsoft.com/SQL/ServiceBroker/ServiceDiagnostic/Description0' =DEFAULT0' http://schemas.microsoft.com/SQL/Notifications/PostQueryNotification0' http://schemas.microsoft.com/SQL/Notifications/PostEventNotification0' http://schemas.microsoft.com/SQL/ServiceBroker/BrokerConfigurationNotice0' http://schemas.microsoft.com/SQL/ServiceBroker/ServiceEcho0' http://schemas.microsoft.com/SQL/ServiceBroker/ServiceDiagnostic0' =DEFAULT0' http://schemas.microsoft.com/SQL/Notifications/QueryNotificationService0' http://schemas.microsoft.com/SQL/Notifications/EventNotificationService0' http://schemas.microsoft.com/SQL/ServiceBroker/ServiceBroker ;aaaaa 4444
+ ccccdR 6666 R
+ 6666xtypecccc ccccF 6666x
+ ,,,,APyyyy
+ eeeextype 0000
+ 9999S llll
+ Aremsvc0-E Ebrkrinst0-E Cmiraddr0-E Elifetime0-G
+ Iservice_id0-G
+ Astatus0-G
+ Erefcount0-H Ahandle0-H Adiagid0-H Ginitiator0-H Csendseq0-H Esendxact0-I Adiagid0-I Ginitiator0-I Ahandle0-I Arcvseq0-I
+ Crcvfrag0-I
+ Astatus0-I Elifetime0-I
+ Econtract0-I
+ Gconvgroup0-I Asysseq0-I
+ Genddlgseq0-I Kfirstoorder0-I Ilastoorder0-I
+ Mlastoorderfr0-I Edlgtimer0-I Gdlgopened0-I
+ Cprincid0-I Goutseskey0-I Koutseskeyid0-I
+ Ifarprincid0-I Einseskey0-I Iinseskeyid0-I Afarsvc0-I Kfarbrkrinst
+(convert(int,case when (([xtype] = 'S' or [xtype] = 'U')) then (objectproperty([id],'TableInsertTrigger')) else 0 end))
+ (convert(int,case when (([xtype] = 'S' or [xtype] = 'U')) then (objectproperty([id],'TableUpdateTrigger')) else 0 end))
+ 5(convert(int,0))
+(convert(int,(case when ([status] & 0x80000000 <> 0) then 2 else 0 end + case when ([replinfo] & 1 <> 0) then 32 else 0 end + case when ([replinfo] & 2 <> 0) then 64 else 0 end + case when ([replinfo] & 4 <> 0) then 256 else 0 end + case when ([xtype] = 'P' and ([status] & 2 <> 0)) then 16 else 0 end + case when ([xtype] = 'D' and ([parent_obj] <> 0)) then 2048 else 0 end + case when (([xtype] = 'S' or [xtype] = 'U')) then (case when ([status] & 0x20 <> 0) then 1 else 0 end + case when ([status] & 0x0400 <> 0) then 4 else 0 end + case when ([status] & 0x0800 <> 0) then 8 else 0 end + case when ([status] & 0x1000 <> 0) then 128 else 0 end + case when ([status] & 0x0100 <> 0) then 512 else 0 end + case when ([status] & 0x0200 <> 0) then 1024 else 0 end + case when ([status] & 0x2000 <> 0) then 2048 else 0 end + case when ([status] & 0x4000 <> 0) then 4096 else 0 end + case when ([status] & 0x10 <> 0) then 16384 else 0 end) else 0 end)))
+ ?(convert(smallint,0)) (case when ([rowcnt] > 2147483647) then 2147483647 else (convert(int,[rowcnt])) end)
+(convert(tinyint,(([bitpos] & 7) + case when ([typestat] & 1 = 0) then 8 else 0 end + case when (([typestat] & 2 <> 0 or (type_name([xtype]) = 'image' or type_name([xtype]) = 'text') and [colstat] & 0x1000 <> 0)) then 16 else 0 end + case when (((type_name([xtype]) = 'image' or type_name([xtype]) = 'text') and [colstat] & 0x2000 <> 0 or (type_name([xtype]) = 'timestamp' or (type_name([xtype]) = 'char' or type_name([xtype]) = 'binary')) and [typestat] & 1 = 0)) then 32 else 0 end + case when ([colstat] & 4 <> 0) then 64 else 0 end + case when ([colstat] & 1 <> 0) then 128 else 0 end)))
+ (convert(tinyint,xtypetotds([xtype],(1 - ([typestat] & 1))))) (convert(smallint,columnproperty([id],[name],'oldusertype'))) W(convert(varchar(255),[autoval]))
+(convert(smallint,case when ((type_name([xtype]) = 'ntext' or (type_name([xtype]) = 'image' or type_name([xtype]) = 'text'))) then null when (type_name([xtype]) = 'uniqueidentifier') then [xprec] else (odbcprec([xtype],[length],[xprec])) end))
+ O(odbcscale([xtype],[xscale]))
+ Cintprop0-, Ccreated0-, Emodified0-.
+ Aissuer0-. Ithumbprint0-. Eencrtype0-.
+ Astatus0-1
+ Alength0-2
+ Kcollationid0-2
+ Astatus0-2
+ Ccreated0-2 Emodified0-2
+ Cidmajor0-3
+ Alength0-3
+ Kcollationid0-3
+ Astatus0-3
+ Cintprop0-6
+ Astatus0-6
+ Cintprop0-6 Efillfact0-6 Etinyprop0-6
+ Gdataspace0-6
+ Arowset0-7
+ Cidmajor0-7
+ Cidminor0-7
+ Astatus0-7
+ Cintprop0-7 Gtinyprop10-7 Gtinyprop20-:
+ Astatus0-:
+ Cintprop0-: Ccreated0-: Emodified0-< Evalclass0-<
+ Esubobjid0-<
+ Avalnum0-< Eimageval0-@
+ (convert(int,case when (([xtype] = 'S' or [xtype] = 'U')) then (objectproperty([id],'TableInsertTrigger')) else 0 end))
+ Edepsubid0-J
+ Cindepid0-J
+ Iindepsubid0-J
+ Astatus0-K
+ Edepsubid0-K
+ Cindepid0-K
+ Iindepsubid0-K
+ Astatus0-L
+ Afileid0-L
+ Astatus0-L
+ Cmaxsize0-L
+ Agrowth0-L
+ Gcreatelsn0-L
+ Cdroplsn0-L Efiletype0-L
+ Gfilestate0-L Efileguid0-L
+ Qinternalstatus0-L
+ Kreadonlylsn0-L
+ Mreadwritelsn0-L
+ Sreadonlybaselsn0-L
+ Qfirstupdatelsn0-L
+ Olastupdatelsn0-L
+ Gbackuplsn0-L
+ Kdiffbaselsn0-L Mdiffbaseguid0-L Mdiffbasetime0-L
+ Qdiffbaseseclsn0-L
+ Mredostartlsn0-L
+ Oredotargetlsn0-L Eforkguid0-L
+ Cforklsn0-L Aforkvc0-L Wredostartforkguid0-N
+ Astatus0-Z
+ Auriord0-[
+ Anameid0-[ Esymspace0-[
+ Cnmscope0-[
+ Astatus0-[ Adefval0-\
+ Acompid0-\
+ Astatus0-\
+ Gplacingid0-]
+ Cordinal0-]
+ Eplacedid0-]
+ Astatus0-]
+ Eminoccur0-]
+ Emaxoccur0-] Adefval0-^
+ Ithumbprint0-^ Acrypto0-^
+ Astatus0-_
+ Ithumbprint0-_
+ Gbitlength0-_ Galgorithm0-_ Emodified0-_ Eencrtype0-_
+ Gscopetype0-`
+ Cscopeid0-`
+ Astatus0-` Ccreated0-` Emodified0-a
+ Cidmajor0-a
+ Astatus0-a
+ Cintprop0-X Astatus0-X Epriority0-X Qjqueuing_order _conversation_group_id0-X [conversation_handle0-X cmessage_sequence_number0-X Imessage_id0-X
+ Smessage_type_id0-X
+ Iservice_id0-X
+ [service_contract_id
+ Astatus0-X Epriority0-X Qjqueuing_order _conversation_group_id0-X [conversation_handle0-X cmessage_sequence_number0-X Imessage_id0-X
+ Smessage_type_id0-X
+ Iservice_id0-X
+ [service_contract_id _MS_UPDSTATS_TBL
+ E@SalesID<-
+ I@UnitPrice<- K@SideDishes<- G@ItemName<- G@SizeName<-
+ G@ApplyGST<- G@ApplyPST<-
+ G@KitchenB<- G@KitchenF<- M@PersonIndex<- Y@SeparateBillPrint<- K@ApplyNoDSC<- G@OpenItem<- I@ItemName2<- U@ExtraChargeItem<- I@ApplyPST2<- G@KitchenE<-
+ S@DSCAmtEmployee<-
+ M@DSCAmtType1<-
+ M@DSCAmtType2<- ]@DayHourDiscountRate<-
+ [@PricePerWeightUnit<- S@MeasuredWeight<- Q@DecimalPlaces<- U@DiscountPercent<- G@Kitchen5<- G@Kitchen6<-
+ E@SalesID0- KStationName0- SLastClosingTime0- QKitchenDisplay0-
+ E@SalesID<-
+ U@TotalPaidAmount<-
+ [@TotalPaidTipAmount<-
+ E@SalesID<- Q@BillPrintType<- M@FromTableID<- I@ToTableID<- W@MergePersonIndex<- S@LayoutModeType<- K@ShowOrders<- IMenuLayout0-q) S@LayoutModeType0- S@LayoutModeType0-G M@StationName0-G A@Value0-G c@CopyToAllOtherStations0- C@Opened0- E@TableID0- S@StationIDInUse0- M@DateEntered0- C@Gender0- E@Address0-
+ I@CardValue0-
+ E@Savings0- I@LastVisit0-
+ O@EarnedPoints0- O@CustomerNote0- Q@PointsManaged0-
+ M@CustomerNum0-
+ K@CustomerID0- O@ByCustomerID0-V9
+ E@SalesID0-,/g? AItemID0-,/g? INextItemID0-,/g? CItemQty0-,/g? EPhoneNum0-,/g? GItemLevel0-,/g?
+ AIName20-,
+ GApplyPST20-, CBarCode0-, EKitchenE0-, CAlcohol0-, WHourlyChargedItem0-, GScaleItem0-, IOnlineItem0-, SItemDescription0-, OImageFilePath0-, IRewardItem0-, GGroupItem0-, EKitchen50-, EKitchen60-, GItemImage0-, WItemImageFileType0-, GManageInv0-, INonAlcohol0- S@LayoutModeType O@FromDateTime0-h K@ToDateTime0- C@ByTime0->
+ K@CustomerID0->
+ E@SalesID0-> C@ItemID0-> C@SizeID0->
+ I@UnitPrice0->
+ M@DiscountAmt0-> U@StoreCreditMemo0-> Y@StoreCreditUserID0-w
+ Q@StoreCreditID<- ETabIndex<- MControlIndex<- EOpenItem<- ESideDish<- EItemName<- CCaption<-
+ EAlignTop<- GAlignLeft<-
+ EFontName<- EFontSize<- EFontBold<- IFontItalic<-
+ GFontColor<-
+ OImageFileName<- GScaleItem<- OTasteModifier<- INextItemID<- MNextItemName<- GGroupItem<- GItemImage<- WItemImageFileType<- CSoldOut<- QLayoutModeType<-M IMenuLayout youtModeType O@FromDateTime0-h K@ToDateTime0- C@ByTime0->
+ K@CustomerID0->
+ E@SalesID0-> C@ItemID0-> C@SizeID0->
+ I@UnitPrice0->
+ M@DiscountAmt0-> U@StoreCreditMemo0-> Y@StoreCreditUserID0-w
+ Q@StoreCreditID0- ETabIndex0- MControlIndex0- EOpenItem0- ESideDish0- EItemName0- CCaption0-
+ EAlignTop0- GAlignLeft0-
+ EFontName0- EFontSize0- EFontBold0- IFontItalic0-
+ GFontColor0-
+ OImageFileName0- GScaleItem0- OTasteModifier0- INextItemID0- MNextItemName0- GGroupItem0- GItemImage0- WItemImageFileType0- CSoldOut0- QLayoutModeType
+ W@PurchaseItemName<-
+ S@PurchaseItemID<- ETabIndex<- MControlIndex<- EOpenItem<- ESideDish<- EItemName<- CCaption<-
+ EAlignTop<- GAlignLeft<-
+ EFontName<- EFontSize<- EFontBold<- IFontItalic<-
+ GFontColor<-
+ OImageFileName<- GScaleItem<- OTasteModifier<- INextItemID<- MNextItemName<- GGroupItem<- GItemImage<- WItemImageFileType<- CSoldOut<- QLayoutModeType<-Rv O@FromDateTime<-Rv K@ToDateTime<-Rv C@ByTime<-Rv K@EmployeeID<-(l M@StationName<-(l S@KitchenDisplay<-(l O@NewStationID<- E@TableID<-
+ G@OrderNum<-
+ M@DailyOrdNum<- M@BillPrinted<- U@TotalAmtUpdated<-
+ G@TotalAmt<- ETabIndex<- MControlIndex<- EOpenItem<- ESideDish<- EItemName<- CCaption<-
+ EAlignTop<- GAlignLeft<-
+ EFontName<- EFontSize<- EFontBold<- IFontItalic<-
+ GFontColor<-
+ OImageFileName<- GScaleItem<- OTasteModifier<- INextItemID<- MNextItemName<- GGroupItem<- GItemImage<- WItemImageFileType<- CSoldOut<- QLayoutModeType<-
+ IMenuLayout0- O@FromDateTime0- K@ToDateTime0- C@ByTime0- K@EmployeeID0- I@StationID0- S@PartialClosing0-
+ _@OnlineOrderCompanyID0-
+ E@OrderID0- I@ItemIndex0- G@ItemType
+ E@Address0-
+ I@CardValue0-
+ E@Savings0- I@LastVisit0-
+ O@EarnedPoints0- O@CustomerNote0- M@CustomerNum0-
+ K@CustomerID0- O@ByCustomerID0-
+ E@SalesID0- ETabIndex0- MControlIndex0- EOpenItem0-
+ KNumOfGuests0-! AOpened0-! GTableName0-! IPickupTime0-!
+ EPhoneNum0-! MPickupPerson0-! CTakeOut0-! KBillPrinted0-! GAttention0-!
+ KDailyOrdNum0-! IBellNumber0-! ECallType<-
+ E@SalesID<-
+ I@UnitPrice<- K@SideDishes<- G@ItemName<- G@SizeName<-
+ G@ApplyGST<- G@ApplyPST<-
+ G@KitchenB<- G@KitchenF<- M@PersonIndex<- Y@SeparateBillPrint<- G@ApplyDSC<- G@OpenItem<- I@ItemName2<- U@ExtraChargeItem<- I@ApplyPST2<- G@KitchenE<- G@DailyDSC<- O@DailyDSCRate<-
+ S@DSCAmtEmployee<-
+ M@DSCAmtType1<-
+ M@DSCAmtType2<- E@HourDSC<- M@HourDSCRate0-! EDelivery0-! AOnline0-! AStayOn0-! IPickupDate0-!
+ ETotalAmt0-! [ApplySpecialPricing0-! YSpecialPricingRate0-! GStationID0-! QStationIDInUse0-! ]OnlineOrderCompanyID0-! eAccessPermissionRequired C@SizeID0-! ]AppliedUnitPriceType0-! WOnlineOrderNumber S@DateFormatType<- S@TimeFormatType<- E@GetDate<- E@GetTime<-x K@CategoryID0-! [BillPrintedDateTime C@ItemID0-3 C@SizeID0- Q@UnitPriceType0-
+ C@ItemID0-
+ C@SizeID0-
+ G@NewPrice K@ToDateTime0- K@EmployeeID0- O@FoodSubTotal0- O@FoodGSTTotal0- O@FoodPSTTotal0- U@AlcoholSubTotal0- U@AlcoholGSTTotal0- U@AlcoholPSTTotal0- O@FromDateTime0- K@ToDateTime0-
+ E@SalesID0- C@ItemID0- C@SizeID0-
+ I@UnitPrice0- C@Tastes0- K@SideDishes0- G@ItemName0- G@SizeName0-
+ G@ApplyGST0- G@ApplyPST0-
+ C@DSCAmt0-
+ G@KitchenB0- G@KitchenF0- M@PersonIndex0- Y@SeparateBillPrint0- G@ApplyDSC0- G@OpenItem0- I@ItemName20- U@ExtraChargeItem0- I@ApplyPST20- G@KitchenE0- G@DailyDSC0- O@DailyDSCRate0-
+ S@DSCAmtEmployee0-
+ M@DSCAmtType1
+ CBarcode0-}
+ CBalance0-}
+ ICustomerID
+ @ToDateTime
+ @ToDateTime
+ @EmployeeID
+ O@FromDateTime<-1 K@ToDateTime<-1 Q@ShowVoidTrans<-1 E@OrderBy<-j
+ I@PaymentID<-j
+ E@SalesID<- I@CashierID<-
+ W@DailyOrderNumber<- O@TakeOutOrder0-
+ YLoyaltyStampCardID0- SStampSequenceNo0- OStampedStatus0- SStampedDateTime<- K@CategoryID<-
+ M@StationName<-S IMenuLayout<-8 O@FromDateTime<-8 K@ToDateTime<-8 C@ByTime<-8 K@EmployeeID<- K@EmployeeID<- I@StationID<- ETabIndex<- MControlIndex<- EOpenItem<- ESideDish<- EItemName<- CCaption<-
+ EAlignTop<- GAlignLeft<-
+ EFontName<- EFontSize<- EFontBold<- IFontItalic<-
+ GFontColor<-
+ OImageFileName<- GScaleItem<- OTasteModifier<- INextItemID<- MNextItemName<- GGroupItem<- GItemImage<- WItemImageFileType<- CSoldOut<- QLayoutModeType0- W@PurchaseItemName0- c@PurchaseItemCategoryID0- S@CustomerTypeID0- U@CustomerGroupID0-
+ E@SalesID0-uz
+ K@CustomerID<-KpVU IMenuLayout
+ Esymspace0-[
+ Cnmscope0-[
+ Astatus0-[ Adefval0-\
+ Acompid0-\
+ Astatus0-\
+ Gplacingid0-]
+ Cordinal0-]
+ Eplacedid0-]
+ Astatus0-]
+ Eminoccur0-]
+ Emaxoccur0-] Adefval0-^
+ Ithumbprint0-^ Acrypto0-^
+ Astatus0-_
+ Ithumbprint0-_
+ Gbitlength0-_ Galgorithm0-_ Emodified0-_ Eencrtype0-_
+ Gscopetype0-`
+ Cscopeid0-`
+ Astatus0-` Ccreated0-` Emodified0-a
+ Cidmajor0-a
+ Astatus0-a
+ Cintprop<-P ETabIndex<-P MControlIndex<-P AItemID<-P EOpenItem<-P ESideDish<-P EItemName<-P CCaption<-P
+ EAlignTop<-P GAlignLeft<-P AHeight<-P
+ EFontName<-P EFontSize<-P EFontBold<-P IFontItalic<-P
+ GFontColor<-P
+ OImageFileName<-P GScaleItem<-P OTasteModifier<-P INextItemID<-P MNextItemName<-P GGroupItem<-P GItemImage<-P WItemImageFileType<-P CSoldOut<-P QLayoutModeType GGroupItem<-X GItemImage<-X WItemImageFileType<-X CSoldOut<-X QLayoutModeType
+ I@UnitPrice<- Q@UnitPriceType<- M@RefreshList<- [@CopyOtherUnitPrice<- Y@CopyUnitPriceType<- U@ApplyPercentage0-P ETabIndex0-P MControlIndex0-P AItemID0-P EOpenItem0-P ESideDish0-P EItemName0-P CCaption0-P
+ EAlignTop0-P GAlignLeft0-P AHeight0-P
+ EFontName0-P EFontSize0-P EFontBold0-P IFontItalic0-P
+ GFontColor0-P
+ OImageFileName0-P GScaleItem0-P OTasteModifier0-P INextItemID0-P MNextItemName0-P GGroupItem
+ 'preserve0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 'collapse0 ?-92233720368547758080 =92233720368547758070 --21474836480 +21474836470 ?184467440737095516150 +42949672950 'preserve0 'DateTime0
+ 'NVarChar0 1SmallDateTime0 'SmallInt0 +SmallMoney0 %Variantiant0 )Timestamp0 7UniqueIdentifier0 -UtcDateTime0 )VarBinary0 +IgnoreCase0 3IgnoreNonSpace0 3IgnoreKanaType0 -IgnoreWidth0 +BinarySort0 -BinarySort20 E9999-12-31T23:59:59.9970 E1753-01-01T00:00:00.0000 =2079-06-06T23:59:000 =1900-01-01T00:00:000 ?922337203685477.58070 A-922337203685477.58080 -214748.36470 /-214748.36480 )VarBinary0
+ Dstatus0.) Hmaxinrow0.)
+ Hpassword0. Fdfltsch 0.
+ Hmodified0.
+ Fcrstarte0.
+ Hcrerrors0. Hcrschver0.
+ Hcrtsnext0.1 Bclassa0.1
+ Rredotargetlsn00.L Hforkguid0.L
+ Dforkvc0.L Zredostartforkguid Hvalclass0.<
+ Hsubobjid0.<
+ Dvalnum0.< Himageval0."
+ Ebinary01h
+ Idatetime01j
+ Gdecimal01>
+ Gnumeric01
+ Invarchar01;
+ Ssmalldatetime014
+ Ismallint01z
+ Msmallmoney01b
+ Osql_variant01
+ Gsysname01#
+ Ktimestamp010
+ Gtinyint01$
+ Yuniqueidentifier01
+ Kvarbinary01
+ XDF_tblSales_Guests0,|F `DF_tblSales_CustomerID0,  jFK_tblUserLog_tblUserAction0,YC:8 fDF_tblUserLog_StationName0, hDF_tblPendingOrders_Status0,=
+ pDF_tblPendingOrdersTemp_Status0,v TtblCheckedOrders0,
+ DF_tblPendingOrdersTemp_DayHourDiscountRate0,ww \DF_tblItem_ScaleItem0, hDF_tblMenuLayout_ScaleItem0," fDF_tblSales_AlcoholDSCAmt0, ^DF_tblAdImages_Status0, nDF_tblPointsDetail_PointSaved0,Mm lDF_tblPointsDetail_PointUsed0, jDF_tblCustomer_EarnedPoints0, RtblOnlineOrders0,1 \tblOnlineOrderDetail<, FK_tblPrepaidCardChargeHistory_tblPrepaidCards<, `spr_SalesSummaryByHour<,Q0E8 ^spr_SalesSummaryByDay<, Zsp_DeleteMenuLayout<, nsp_RestoreLastSavedMenuLayout<, bspr_SalesSummaryByMonth<,5 hsp_ClearCalledOrderNumbers<,n
+ Nsp_GetPayment<,
+ dsp_GetPeripheralSettings<,'& jsp_InsertPeripheralSettings<,`J jsp_UpdatePeripheralSettings<, dsp_UpdateTableOpenStatus<, Psp_ResetTables<, Nsp_UpdateSale<,D \sp_InsertSalesDetail<, lsp_LinkTransactionToCustomer<, Vsp_InsertCustomer<,6@ Vsp_UpdateCustomer<,od bsp_GetSalesCustomerInfo<, hGetModifiersForOnlineOrder<, \spr_GetCustomerSales<,
+ lsp_GetPaymentDetailBySalesID<, nsp_ProcessPrintingMenusOnHold<, zsp_DeleteInvalidMenusOnHoldPrinting0, ZGetHourChargeStatus0, LGetMiscValue0, ZCleanupInvalidChars0,TtM: Vsp_InsertErrorLog0, Psp_GetErrorLog0, Tsp_ClearErrorLog0, `spr_SalesSummaryByHour0, `sp_InsertPendingOrders0, dsp_ResetDailyOrderNumber0, `sp_DeletePendingOrders0,*j ^sp_InsertDeletedItems0,c Nsp_InsertMisc0, Hsp_GetMisc0, dsp_GetPeripheralSettings0,U dsp_GetUnpaidTransactions0, Xsp_UpdateItemPrice0, Tsp_InsertAdImage0, Vsp_DeleteAdImages0,9 Psp_GetAdImages0,r \GetRewardPointsSaved0, lsp_LinkTransactionToCustomer0,+ \sp_UpdateReservation0,d
+ Tsp_DuplicateItem0, tspx_ExportItemListForPriceUpdate0, tspx_ImportItemListForPriceUpdate0, rspx_PriceUpdateRoundOffNewPrice0,H lsp_InsertPendingOrdersOnHold0, nsp_ProcessPrintingMenusOnHold nsertCustomer<,6@ Vsp_UpdateCustomer<,od bsp_GetSalesCustomerInfo<, hGetModifiersForOnlineOrder<, \spr_GetCustomerSales<,
+ lsp_GetPaymentDetailBySalesID<, nsp_ProcessPrintingMenusOnHold<, zsp_DeleteInvalidMenusOnHoldPrinting<, ZtmpMenuLayoutBackup<,EZ ZtmpMenuLayoutExport<,~~ ZtmpMenuLayoutBackup<, ZtmpMenuLayoutExport<, ZtmpMenuLayoutBackup
+ @DF_tblPrepaidCards_Status& XDF_tblPrepaidCardUsageHistory_UsedAmt& bDF_tblPrepaidCardUsageHistory_UsedDateTime& 8DF_tblSales_CashierID& :DF_tblSales_CustomerID& 2DF_tblSales_DSCAmt& 2DF_tblSales_GSTAmt* 4DF_tblSales_GSTRate& 2DF_tblSales_Guests&
+ HDF_tblSales_OriginalTransType* 4DF_tblSales_PreAuth& 2DF_tblSales_PSTAmt* 4DF_tblSales_PSTRate* 8DF_tblSales_PSTRate_1* 6DF_tblSales_SaleDate& 6DF_tblSales_SubTotal& >DF_tblSales_TakeOutOrder& 8DF_tblSales_TransType* 2DF_tblSales_TroutD& FDF_tblSalesCardDetail_Settle& XDF_tblPrepaidCardUsageHistory_Balance& <DF_tblPurchaseItem_Unit& @DF_tblPurchaseItem_Status&
+ LDF_tblPurchaseOrder_SenderEmail& HDF_tblReservation_PhoneNumber& 4DF_tblSales_TableID& :DF_tblReservation_Memo& XDF_tblReadyOrderNumber_KitchenOrderID& RDF_tblReadyOrderNumber_OrderNumber& HDF_tblReadyOrderNumber_Source* 8DF_tblSales_StationID* <DF_tblSales_CashTipPaid* 6DF_tblSales_VisaPaid* 2DF_tblSales_McPaid* 6DF_tblSales_AmexPaid& @DF_tblSales_AlcoholDSCAmt& BDF_tblSales_CustomerTypeID& DDF_tblSales_CustomerGroupID& 4DF_tblSales_PST2Amt* 6DF_tblSales_PST2Rate& DDF_tblSales_CreatedDateTime* 4DF_tblSales_GSTRate* 4DF_tblSales_PSTRate*
+ 6DF_tblSales_PST2Rate& FDF_tblSales_DailyOrderNumber& >DF_tblSales_SaleDateTime& 4DF_tblSales_GSTRate& 4DF_tblSales_PSTRate& 6DF_tblSales_PST2Rate BFK_tblSalesDetail_tblSales& @FK_tblSalesDetail_tblSize& <FK_tblTimeStamp_tblUser& 4FK_tblUser_tblGroup& 8FK_tblSubItem_tblItem& <DF_tblPurchaseItem_Unit& @DF_tblPurchaseItem_Status& bFK_tblPurchaseItem_tblPurchaseItemCategory&
+ LDF_tblPurchaseOrder_SenderEmail& bFK_tblPurchaseOrderDetail_tblPurchaseOrder& HDF_tblReservation_PhoneNumber& 4DF_tblSales_TableID& 8DF_tblTable_Attention& :DF_tblReservation_Memo& <DF_tblTableLayout_Level& BDF_tblTableLayout_TabIndex& JDF_tblTableLayout_ControlIndex& @DF_tblTableLayout_TableID& @DF_tblTableLayout_Caption& BDF_tblTableLayout_AlignTop& DDF_tblTableLayout_AlignLeft& >DF_tblTableLayout_Height& <DF_tblTableLayout_Width& BDF_tblTableLayout_FontName& DDF_tblTableLayout_FontSize1& BDF_tblTableLayout_FontBold& FDF_tblTableLayout_FontItalic& FDF_tblTableLayout_FontColor1& >DF_tblTableLayout_Color1& LDF_tblTableLayout_ImageFileName& @DF_tblTableLayout_TakeOut& <DF_tblTable_DailyOrdNum&
+ ,PK_tblConstants& XDF_tblReadyOrderNumber_KitchenOrderID& RDF_tblReadyOrderNumber_OrderNumber& HDF_tblReadyOrderNumber_Source& 6PK_tblDiscountDetail& VFK_tblInventoryChangeHistory_tblItem& VFK_tblInventoryChangeHistory_tblSize& VFK_tblInventoryChangeHistory_tblUser& 8DF_tblTable_BellIndex& 6DF_tblTable_CallType& DFK_tblPointsDetail_tblSales& BFK_tblDeletedItems_tblItem& DFK_tblDeletedItems_tblSales& BFK_tblDeletedItems_tblSize& @PK_tblCardReceiptTemplate& FFK_tblPayment_tblPaymentType& :FK_tblPayment_tblSales& (EncryptString& ,GetPaymentTotal& $GetTipTotal& .GetRGBColorValue& 0IsExtraChargeItem& (GetHourCharge& jFK_tblPrepaidCardChargeHistory_tblPrepaidCards& hFK_tblPrepaidCardUsageHistory_tblPrepaidCards& `FK_tblPurchaseOrderDetail_tblPurchaseItem& &PK_tblAction& DFK_tblUserLog_tblUserAction& @DF_tblUserLog_StationName& 4PK_tblCheckedOrders& 6DF_tblStation_Status* 8DF_tblSales_StationID& :FK_tblSales_tblStation& TDF_tblSelfCheckoutTableLayout_Level& ZDF_tblSelfCheckoutTableLayout_TabIndex& bDF_tblSelfCheckoutTableLayout_ControlIndex& XDF_tblSelfCheckoutTableLayout_TableID& XDF_tblSelfCheckoutTableLayout_Caption& ZDF_tblSelfCheckoutTableLayout_AlignTop* <DF_tblSales_CashTipPaid* 6DF_tblSales_VisaPaid* 2DF_tblSales_McPaid* 6DF_tblSales_AmexPaid
+ bitposint&
+ #nullbitleaf&
+ !nullbitint&
+ createlsn&L filetype&L
+ filestate&L fileguid&L )internalstatus&L #readonlylsn&L %readwritelsn&L +readonlybaselsn&L )firstupdatelsn&L 'lastupdatelsn&L backuplsn&L #diffbaselsn&L %diffbaseguid&L %diffbasetime&L )diffbaseseclsn&L %redostartlsn&L 'redotargetlsn&L forkguid&L /redostartforkguid&< valclass&< subobjid&< imageval&"
+ modified&@ modified&, modified&)
+ #collationid&) maxinrow&)
+ #collationid&3 fillfact&6 tinyprop&6 dataspace&6
+ tinyprop1&7 tinyprop2&A rowsetnum&A
+ crtsnext&1
+ modeldevD:\WINDOWS\TEMP\mkmastr_result\model.mdf0
+ modellogD:\WINDOWS\TEMP\mkmastr_result\modellog.ldf0 modeldevC:\Program Files\Microsoft SQL Server\MSSQL.1\MSSQL\DATA\model.mdf0
+ modellogC:\Program Files\Microsoft SQL Server\MSSQL.1\MSSQL\DATA\modellog.ldf< TPProC:\TopPos\Data\TPPro.mdf<
+ TPPro_logC:\TopPos\Data\TPPro_1.ldf0 TPProC:\TopPos\Data\TPPro.mdf0
+ TPPro_logC:\TopPos\Data\TPPro_1.ldf0
+ TPPro_logC:\TopPos\Data\TPPro_log.ldf0
+ TPPro_logC:\TopPos\Data\TPPro_1.ldf
+ 8PRIMARY0#2@ :db_owner0#2 Fdb_accessadmin0#2 Jdb_securityadmin0#2 @db_ddladmin0#2 Ldb_backupoperator0#2 Ddb_datareader0#2 Ddb_datawriter0#2 Ldb_denydatareader0#2 Ldb_denydatawriter0#2 NINFORMATION_SCHEMA<#8e Z##MS_DatabaseMasterKey##<#8 DEncryptionKey<#8e Z##MS_DatabaseMasterKey##<#8 DEncryptionKey<#8e Z##MS_DatabaseMasterKey##<#8 DEncryptionKey<#8e Z##MS_DatabaseMasterKey##<#8 DEncryptionKey<#8e Z##MS_DatabaseMasterKey##<#8 DEncryptionKey0#8 DEncryptionKey
+ 7Gdb_owner CSdb_accessadmin GWdb_securityadmin =Mdb_ddladmin IYdb_backupoperator AQdb_datareader AQdb_datawriter IYdb_denydatareader IYdb_denydatawriter 566@guest guest0 1228dbo dbo0 IINFORMATION_SCHEMA0 7Sdb_owner C_db_accessadmin Gcdb_securityadmin =Ydb_ddladmin Iedb_backupoperator A]db_datareader A]db_datawriter Iedb_denydatareader Iedb_denydatawriter AQfinalsolution9
+ EUU[finalsolution9
+ AQfinalsolution AQfinalsolutionZ
+ NPK_tblAccount0,> ZDF_tblAccount_Level0,w VDF_tblAccount_PID0,
+ \DF_tblAccount_Status0, PtblPeripherals0,
+ NPK_tblSubItem0,M
+ ^FK_tblSubItem_tblItem0,
+ \DF_tblItem_ApplyPST20, XDF_tblItem_BarCode0, fDF_tblConstants_TransType0,# ^DF_tblConstants_Field0,\
+ ^DF_tblConstants_Value0, jDF_tblConstants_Description0,
+ dDF_tmpMasterItemList_Bar0, hDF_tmpMasterItemList_Taste0,
+ lDF_tmpMasterItemList_Alcohol0,H
+ nDF_tmpMasterItemList_OpenItem0,s rDF_tblMenuLayout_LayoutModeType0, |DF_tblTable_AccessPermissionRequired0,
+ jDF_tblUser_AccessPermission0, bDF_tblSize_DisplayOrder0, FK_tblNonIntegratedOnlineSelfPaymentURL_tblSales0, ~DF_tblSalesOfOnlineOrders_DineInOrder0,L
+ DF_tblSalesOfOnlineOrders_ReservedTipAmt0, DF_tblSalesOfOnlineOrders_DeliveryChargeAmt<,
+ Zsp_GetPendingOrders<, `sp_UpdatePendingOrders<,"
+ `sp_GetAllPendingOrders<,[ jsp_UpdatePendingOrderStatus<, Tsp_GetHourCharge<, fsp_ReplaceTimeChargedItem<, jsp_UpdatePrepaidCardBalance<,1
+ bspr_GetCardTransactions<,\k
+ spr_SalesSummaryByItemInMinuteInterval<, spx_BackupAndRestoreTablesWithOrderForTableLayout<, sp_InsertOnlineOrderCompanyCommissionRule<,
+ sp_GetOnlineOrderCompanyCommissionRule0,A{] hsp_DeleteOrdersToBePrinted0,z Rsp_GetEmployees0,
+ Vsp_DeleteCardInfo0, bsp_InsertDiscountDetail0, \sp_GetTasteSelection0,P Rsp_GetSizeGroup0,
+ XGetCurrentDateTime0, psp_GetSalesIDsInBillPrintQueue0,
+ fsp_MinimizeNumberOfTables0,& lspcrm_SyncRewardPointsDetail0,_ Vsp_ResetInventory0,
+ \sp_MoveUnlinkedItems<, ZtmpMenuLayoutBackup<,5 ZtmpMenuLayoutExport<,n
+ ZtmpMenuLayoutBackup<, ZtmpMenuLayoutExport Zsp_GetAvailableSize0, dsp_RecordInventoryChange0, `sp_GetItemsForListView0,?} `sp_GetItemsForTreeView0,x lsp_GetInventoryChangeHistory<, Tsp_GetHourCharge<, fsp_ReplaceTimeChargedItem<, jsp_UpdatePrepaidCardBalance<,1
+ bspr_GetCardTransactions0,j jsp_CheckIfCardPaymentExists0, nsp_GetSummarizedPendingOrders0, Nsp_InsertMemo0, Nsp_UpdateMemo0,N Nsp_DeleteMemo<,\k
+ spr_SalesSummaryByItemInMinuteInterval<, spx_BackupAndRestoreTablesWithOrderForTableLayout<, sp_InsertOnlineOrderCompanyCommissionRule<,
+ sp_GetOnlineOrderCompanyCommissionRule0,@ sp_UpdateOnlineOrderCompanyCommissionPercentage0,y  sp_CheckIfScheduledPrintingStationExists0, \sp_DeleteSalesDetail0, lsp_UpdateSalesOfOnlineOrders0,$ bspx_GetEncodedHashedKey0, fDF_tblMenuLayout_TabIndex0,A{] hsp_DeleteOrdersToBePrin
+ .67GeneralCustomer00 6>?GeneralCustomer0< 55?Iyong70322555007032255500<
+ 99CMMThoil26724185392672418539No mayo< 77@IOtest123456789123456789pickup< 22<Fj123456789112345678910
+ 44>Hkim12345678901234567890
+ tblMisc tblMisc QuickDiscountDollar QuickDiscountDollar
+ Sbase_schema_ver0-
+ Ereplinfo0-
+ Iparent_obj0-
+ Cftcatid0-
+ Cgroupid0-
+ Ereserved0-
+ Growmodctr0- Greserved30- Greserved40- Cxmaxlen0- Cmaxirow0- QOrigFillFactor0- KStatVersion0-
+ Greserved20- EFirstIAM0- Glockflags0-
+ Epgmodctr0- Estatblob0-
+ Etypestat0- Gxusertype0-
+ Cxoffset0- Ereserved0-
+ Ccolstat0-
+ Ecdefault0-
+ Ecolorder0- Cautoval0-
+ Kcollationid0-
+ Elanguage0- Erowsetid0-
+ Krowsetcolid0-
+ Ghobtcolid0-
+ Ircmodified0- Kmaxinrowlen0- Erowsetid0- Gownertype0-
+ Cidmajor0-
+ Cidminor0-
+ Cnumpart0-
+ Cownerid0-
+ Cpgfirst0- Ipgfirstiam0-
+ Ipcreserved0-
+ Efilename0-
+ Mhobtcolumnid0-
+ Kcollationid0-
+ Ioffsetleaf0-
+ Goffsetint0-
+ Ibitposleaf0-
+ Gbitposint0-
+ Knullbitleaf0-
+ Inullbitint0-
+ Efillfact0- Imaxnullbit0-
+ Cmaxleaf0- Cminleaf0-
+  sendseq6H "sendxact6 4SeparateBillPrint6! "ServerID6X
+ 8service_contract_id6
+ 8service_contract_id6<8
+ 8service_contract_id6G &service_id6X &service_id6 &service_id6<8 &service_id6Y $ShortName6 &SideDishes6L "SizeName6 "SizeName6. (StationName6Y
+ (StationName6
+ .StartCashierID6bc $StartCash6bc ,StartDateTime6bc "SideDish6 "SideDish6 &SideDishes6 "SizeName6 &SideDishes6 "SizeName6 4SeparateBillPrint6 &SequenceNo6 (StationName6 ,StartDateTime6 (StationName6 "SizeName6v (StationName6 Status6%'W) $StationID6 $StationID6 $StationID6 ,SizeGroupName6 (SizeGroupID6 (StationName6 &SequenceNo6 (StationName6 &SideDishes6 "SizeName6 4SeparateBillPrint6 $StationID6gP .SoldItemsCount6 &SoldAmount6 .SoldItemsCount6 &SoldAmount6! 6SpecialPricingRate6! $StationID6P?CS &StampCount6 0StampSequenceNo6 ,StampedStatus6 0StampedDateTime6! .StationIDInUse6 &ShiftIndex6 2ShowNameOnButton6 "SizeName6
+ "SizeName6 $StationID6 &SequenceNo6j &SideDishes6j "SizeName6j 4SeparateBillPrint6j @SkipPrintingKitchenCopy6P\ (StationName6P\ "SideDish: "SideDish: "SideDish:  SoldOut:h% "SideDish:h% "SideDish:  SoldOut:L "SideDish:L "SideDish:  SoldOut:0G "SideDish:0G "SideDish: "SideDish: "SideDish: "SideDish:  SoldOut:j "SideDish:j "SideDish:  SoldOut:NB "SideDish:NB "SideDish:  SoldOut:2 "SideDish:2 6SpecialPricingRate: $StationID: "SideDish: "SideDish: 6SpecialPricingRate6 $StationID:l=p| "SideDish:l=p| "SideDish:  SoldOut:P "SideDish:P "SideDish:  SoldOut:4_ "SideDish:4_ "SideDish: "SideDish: "SideDish: "SideDish:  SoldOut:n
+ "SideDish:n
+ "SideDish6  SoldOut:LD "SideDish:LD  SoldOut6P\ (StationName6P\ "SideDish: "SideDish:  SoldOut:. "SideDish:. "SideDish: "SideDish:
+ Ccrstart0-
+ Ecrerrors0- Ecrschver0-
+ Ecrtsnext0- Cindepid0-
+ Epassword0- Cdfltsch0-
+ Ccreated0- Emodified0-
+ Cgrantee0-
+ Cgrantor0-
+ Cnsclass0-"
+ Astatus0-"
+ Apclass0-"
+ Cintprop0-"
+ Ccreated0-" Emodified0-)
+ Anumber0-)
+ Alength0-)
+ Kcollationid0-)
+ Astatus0-) Emaxinrow0-)
+ Aidtval0-,
+ Astatus0-,
+ Cintprop0-, Ccreated0-, Emodified0-1
+ Alength0-2
+ Kcollationid0-2
+ Astatus0-2
+ Ccreated0-2 Emodified0-2
+ Cidmajor0-3
+ Alength0-3
+ Kcollationid0-3
+ Astatus0-3
+ Cintprop0-6
+ Astatus0-6
+ Cintprop0-6 Efillfact0-6 Etinyprop0-6
+ Gdataspace0-6
+ Arowset0-7
+ Cidmajor0-7
+ Cidminor0-7
+ Astatus0-7
+ Cintprop0-7 Gtinyprop10-7 Gtinyprop20-< Evalclass0-<
+ Esubobjid0-<
+ Avalnum0-< Eimageval0-@
+ Cintprop0-@ Ccreated0-@ Emodified0-A
+ Cindexid0-A
+ Growsetnum0-A Erowsetid0-C
+ Aremsvc0-C
+ Astatus0-D Ifinitiator0-D Itobrkrinst0-D Cfromsvc0-D Mfrombrkrinst0-D Esvccontr0-D Gmsgseqnum0-D Cmsgtype0-D
+ Eunackmfn0-D
+ Astatus0-D Cenqtime0-D
+ Ersndtime0-D
+ Adlgerr0-D Ihdrpartlen0-D Ghdrseclen0-D Amsgenc0-D
+ Imsgbodylen0-D Efileguid0-L
+ Qinternalstatus0-L
+ Kreadonlylsn0-L
+ Mreadwritelsn0-L
+ Sreadonlybaselsn0-L
+ Qfirstupdatelsn0-L
+ Olastupdatelsn0-L
+ Gbackuplsn0-L
+ Kdiffbaselsn0-L Mdiffbaseguid0-L Mdiffbasetime0-L
+ Qdiffbaseseclsn0-L
+ Mredostartlsn0-L
+ Oredotargetlsn0-L Eforkguid0-L
+ Cforklsn0-L Aforkvc0-L Wredostartforkguid0-a
+ Cidmajor0-a
+ Astatus0-a
+ Cintprop0-N
+ Astatus0-Z
+ Auriord0-[
+ Anameid0-[ Esymspace0-[
+ Cnmscope0-[
+ Astatus0-[ Adefval0-\
+ Acompid0-\
+ Astatus0-\
+ Gplacingid0-]
+ Cordinal0-]
+ Eplacedid0-]
+ Astatus0-]
+ Eminoccur0-]
+ Emaxoccur0-] Adefval0-C
+ Aremsvc0-C
+ Astatus0-G
+ Iservice_id0-G
+ Astatus0-G
+ Erefcount0-E
+ Aremsvc0-E Ebrkrinst0-E Cmiraddr0-E Elifetime0-D Ifinitiator0-D Itobrkrinst0-D Cfromsvc0-D Mfrombrkrinst0-D Esvccontr0-D Gmsgseqnum0-D Cmsgtype0-D
+ Eunackmfn0-D
+ Astatus0-D Cenqtime0-D
+ GPK_tblPayOut0' CPK_tblUser0' a_WA_Sys_00000006_70DDC3D80', a_WA_Sys_00000003_656C112C0', a_WA_Sys_00000006_656C112C a_WA_Sys_0000000F_70A8B9AE0' a_WA_Sys_00000004_70A8B9AE0' a_WA_Sys_00000001_70A8B9AE0' a_WA_Sys_00000003_60A75C0F0' a_WA_Sys_00000002_5AEE82B90' a_WA_Sys_00000008_5AEE82B9 SPK_tblPointsDetail a_WA_Sys_00000005_70DDC3D80' a_WA_Sys_00000007_689D83920''B YPK_tblTipAmountInBill0'D MPK_tblSizeGroup0' SPK_tblBillPrintCue0', a_WA_Sys_0000000C_656C112C0', a_WA_Sys_0000001C_656C112C0', a_WA_Sys_00000021_656C112C0'R CPK_tblTare _PK_tblOnlineOrderCompany0' aPK_tblSalesOfOnlineOrders0' YPK_tblDayHourDiscount0' a_WA_Sys_00000002_5DF5D7ED0' a_WA_Sys_00000004_5DF5D7ED0' a_WA_Sys_00000007_5DF5D7ED0' a_WA_Sys_00000014_70A8B9AE0', a_WA_Sys_00000015_656C112C0' a_WA_Sys_00000001_6B1AC8E10' a_WA_Sys_00000001_60083D910' a_WA_Sys_00000002_689D83920' a_WA_Sys_00000003_689D83920', a_WA_Sys_00000010_656C112C0' a_WA_Sys_00000003_5DF5D7ED0' a_WA_Sys_0000000C_70DDC3D80''B a_WA_Sys_00000002_677F42270', a_WA_Sys_00000013_656C112C0',
+ a_WA_Sys_00000022_656C112C0' a_WA_Sys_0000000C_5AEE82B90' a_WA_Sys_00000008_75F77EB00' a_WA_Sys_00000003_5AEE82B90' a_WA_Sys_00000002_60A75C0F0' a_WA_Sys_00000008_689D83920' _idx_DeletedItems_SalesID0' a_WA_Sys_0000000B_70A8B9AE a_WA_Sys_00000002_6EEB59C50' a_WA_Sys_0000000A_6EEB59C50' idx_PrepaidCardUsageHistorySalesIDBarcode0' sidx_PrepaidCardUsageHistorySalesID0' a_WA_Sys_00000005_6EEB59C50' a_WA_Sys_0000000C_6EEB59C50' a_WA_Sys_0000000F_6EEB59C50' a_WA_Sys_0000000D_5DF5D7ED0', CPK_tblItem0' a_WA_Sys_00000002_74A4331B0' a_WA_Sys_00000007_5AEE82B90' a_WA_Sys_0000000B_5AEE82B90' gPK_tblInventoryChangeHistory gPK_tblInventoryChangeHistory<' gPK_tblInventoryChangeHistory<' gPK_tblInventoryChangeHistory<' gPK_tblInventoryChangeHistory<' gPK_tblInventoryChangeHistory<' gPK_tblInventoryChangeHistory<' gPK_tblInventoryChangeHistory0' gPK_tblInventoryChangeHistory
+ x_Deleted]
+ Tsysrowsetcolumns0, Hsysrowsets0, Nsysallocunits0, Fsysfiles10,
+ Psyshobtcolumns0, Dsyshobts0,
+ Fsysftinds0, Fsysserefs0, Fsysowners0, Dsysprivs0," Hsysschobjs0,) Hsyscolpars0,, Fsysnsobjs0,1 Fsysxprops0,2
+ Psysscalartypes0,3 Rsystypedsubobjs0,6 Jsysidxstats0,7 Fsysiscols0,< Lsysobjvalues0,@ Hsysclsobjs0,A Nsysrowsetrefs0,J Tsyssingleobjrefs0,K Rsysmultiobjrefs0,L Hsysdbfiles0,: Hsysbinobjs0,a Nsysbinsubobjs0,N Jsysguidrefs0,Z Fsysqnames0,[ Rsysxmlcomponent0,\ Jsysxmlfacet0,] Rsysxmlplacement0,C Psysremsvcbinds0,G Lsysconvgroup0,E @sysrts0,D Lsysxmitqueue0,H Fsysdesend0,I Dsysdercv0,^ Rsysobjkeycrypts0,. Dsyscerts0,_ Jsysasymkeys0,` Lsyssqlguides0, bPK_tblSalesCardDetail_10, rDF_tblSalesCardDetail_TransType<,h FK_tblPrepaidCardUsageHistory_tblSales0, bFK_tblSales_tblCustomer<,w! fDF_tblTableLayout_TakeOut<,#
+ rDF_tblPendingOrders_HourDSCRate<, lspfd_SaveCardReceiptTemplate<,2'4 jspfd_GetCardReceiptTemplate<,
+ bspws_InsertCustomerInfo<, fspws_GetBillPrintedTables<, Tsp_GetOpenTables<, \sp_GetFoodAlcoholAmt<, NGetHourCharge<, `spr_SalesSummaryByHour<,` xspfd_GetIncompleteCreditTransCount<, \sp_GetClockInOutInfo<,o dspws_InsertPendingOrders<,E nsp_DeletePurchaseItemCategory<, Lsp_MoveTable0, zDF_tblPendingOrders_DiscountPercent0,* JtblErrorLog<, ZDF_tblSales_PSTRate<,
+ \DF_tblSales_PST2Rate<, Zspws_GetOrderedItem<, Nsp_InsertItem<, jsp_InsertOnlineOrderCompany<, jsp_UpdateOnlineOrderCompany<,X ZtmpMenuLayoutBackup<, ZtmpMenuLayoutExport0,. pDF_tblTimeStartEnd_PersonIndex0,g DF_tblOnlineOrders_OnlineOrderCompanyID<,= jsp_GetAvailableTakeOutTable<, bGetDayHourDiscountPrice<, hspx_PriceUpdateGetItemList<," nspx_PriceUpdateUpdateNewPrice<, |FK_tblInventoryChangeHistory_tblItem<, |FK_tblInventoryChangeHistory_tblSize0, Tsp_UpdatePayment0, Nsp_InsertItem0,z ^spx_ExportTableLayout<,P ZtmpMenuLayoutBackup<, ZtmpMenuLayoutExport zspfd_UpdateBatchNumberAndItemNumber0, ^spfd_GetVXNParameters0, dspfd_UpdateVXNParameters0,O spfd_GetCreditDebitBatchAmountAndCount0, xspfd_GetIncompleteCreditTransCount0, \sp_GetClockInOutInfo0,
+ bspws_InsertCustom
+ tblCustomer tblCustomer General General
+ Yqueue_clustered_index0'X Yqueue_secondary_index0' Yqueue_clustered_index0' Yqueue_secondary_index0'<8 Yqueue_clustered_index0'<8 Yqueue_secondary_index0'u\ KPK_tblCustomer0'Y ]PK_tblSalesCardDetail_1<' WPK_tblDiscountDetail0' aPK_tblCardReceiptTemplate a_WA_Sys_00000003_7B863AD40'u\ a_WA_Sys_00000007_7B905C750' a_WA_Sys_00000004_7B863AD4<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum0'u\ Qidx_CustomerPhone0' QPK_tblCallHistory0' a_WA_Sys_00000004_7D246A83<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail<' WPK_tblDiscountDetail0' WPK_tblDiscountDetail0'u\ Midx_CustomerNum0'u\ a_WA_Sys_0000000F_7B905C75 Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum<'u\ Midx_CustomerNum BDF_tblPrepaidCards_Status& &PK_tblGroup& 4spr_PaymentSummary& NDF_tblSalesCardDetail_TransType& BDF_tblTableLayout_TakeOut& 0sp_GetPaidAmount& BDF_tblMenuLayout_AlignTop& 2sp_GetTableLayout& FFK_tblPointsDetail_tblSales& <sp_UpdateClockOutState& 8sp_DeleteIncludedTip& VDF_tblPendingOrders_DiscountPercent
+ a_WA_Sys_00000003_0000001B0': a_WA_Sys_00000002_0000003A0': a_WA_Sys_00000003_0000003A0':
+ a_WA_Sys_00000004_0000003A0' a_WA_Sys_00000002_000000070' a_WA_Sys_00000003_000000070'@ a_WA_Sys_00000002_000000400'7 a_WA_Sys_00000002_000000370'7 a_WA_Sys_00000004_000000370'7
+ a_WA_Sys_00000005_000000370'6 a_WA_Sys_00000002_000000360'" a_WA_Sys_00000006_000000220'" a_WA_Sys_00000008_000000220' a_WA_Sys_00000002_0000001D0' a_WA_Sys_00000003_0000001D0'
+ a_WA_Sys_00000004_0000001D0' a_WA_Sys_00000005_0000001D0' a_WA_Sys_00000006_0000001D0' a_WA_Sys_00000007_0000001D0'1 a_WA_Sys_00000002_000000310'1 a_WA_Sys_00000003_000000310'1
+ a_WA_Sys_00000004_000000310'"
+ a_WA_Sys_00000005_000000220'< a_WA_Sys_00000002_0000003C0'< a_WA_Sys_00000003_0000003C0'<
+ a_WA_Sys_00000004_0000003C0'3 a_WA_Sys_00000002_000000330'3 a_WA_Sys_00000005_000000330'6 a_WA_Sys_0000000A_000000360'6
+ a_WA_Sys_00000004_000000360'6 a_WA_Sys_00000009_000000360'2 a_WA_Sys_00000004_000000320'2 a_WA_Sys_0000000C_000000320'2
+ a_WA_Sys_0000000D_000000320', a_WA_Sys_00000002_0000002C0', a_WA_Sys_00000004_0000002C0'" a_WA_Sys_00000009_000000220') a_WA_Sys_00000002_000000290') a_WA_Sys_00000003_000000290')
+ a_WA_Sys_00000005_000000290') a_WA_Sys_00000006_000000290') a_WA_Sys_0000000D_000000290') a_WA_Sys_0000000E_000000290') a_WA_Sys_0000000F_000000290') a_WA_Sys_0000000B_000000290'6 a_WA_Sys_00000007_000000360'" a_WA_Sys_00000003_000000220' a_WA_Sys_00000002_000000190' a_WA_Sys_00000003_000000050' a_WA_Sys_00000004_000000050'< a_WA_Sys_00000005_0000003C0'7 a_WA_Sys_00000006_000000370'7 a_WA_Sys_00000007_000000370'" a_WA_Sys_0000000A_00000022 EPK_tblSales0'} SPK_tblPrepaidCards0' QPK_tblSalesDetail0' UPK_tblAvailableItem SPK_tblCashInDrawer0' MPK_tblTimeStamp0'1 a_WA_Sys_00000002_0
+ OwnerAdministrator0
+ tblMisc tblMisc AutoRefresh AutoRefresh
+ CREATE PROCEDURE [dbo].[sp_InsertItem]
+   @IName varchar(30), 
+   @CategoryID tinyint, 
+   @ApplyGST bit, 
+   @ApplyPST bit, 
+   @Status bit, 
+   @OpenItem bit, 
+   @KitchenB bit, 
+   @KitchenF bit, 
+   @Bar bit,
+   @SideDish bit, 
+   @Taste bit, 
+   @IName2 varchar(30), 
+   @ApplyPST2 bit, 
+   @BarCode varchar(15), 
+   @KitchenE bit, 
+   @Alcohol bit, 
+   @HourlyChargedItem bit, 
+   @ScaleItem bit, 
+   @OnlineItem bit, 
+   @ItemDescription varchar(2000), 
+   @ImageFilePath varchar(200),
+   @RewardItem bit,
+   @GroupItem bit,
+   @Kitchen5 bit,
+   @Kitchen6 bit,
+   @ItemImage image,
+   @ItemImageFileType varchar(5),
+   @ManageInv bit,
+   @NonAlcohol bit,
+   @StationName varchar(30),
+   @NewItemID smallint = 0 output
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   begin transaction insert_item
+   insert into tblItem (IName, CategoryID, ApplyGST, ApplyPST, [Status], OpenItem, KitchenB, KitchenF, Bar,
+                        SideDish, Taste, IName2, ApplyPST2, BarCode, KitchenE, Alcohol, HourlyChargedItem, 
+                        ScaleItem, OnlineItem, ItemDescription, ImageFilePath, RewardItem, GroupItem,
+                        Kitchen5, Kitchen6, ItemImage, ItemImageFileType, ManageInv, NonAlcohol)
+   values (@IName, @CategoryID, @ApplyGST, @ApplyPST, @Status, @OpenItem, @KitchenB, @KitchenF, @Bar,
+           @SideDish, @Taste, @IName2, @ApplyPST2, @BarCode, @KitchenE, @Alcohol, @HourlyChargedItem, 
+           @ScaleItem, @OnlineItem, @ItemDescription, @ImageFilePath, @RewardItem, @GroupItem,
+           @Kitchen5, @Kitchen6, @ItemImage, @ItemImageFileType, @ManageInv, @NonAlcohol)
+   if (@@error = 0) begin
+     commit transaction insert_item
+     set @NewItemID = scope_identity()
+     if (@StationName <> '') begin
+       if exists (select 1
+                  from tblAvailableSizeTemp
+                  where upper(StationName) = upper(@StationName)
+                    and ItemID = 0) begin
+         insert into tblAvailableSize (ItemID, SizeID, UnitPrice, OnHandQty, ApplyNoDSC, UnitPrice2, UnitPrice3)
+         select @NewItemID, SizeID, UnitPrice, 
+                0, /*OnHandQty*/
+                0, /*ApplyNoDSC*/ /*0 means that general discount will be applied for the new items*/
+                UnitPrice2, 
+                UnitPrice3
+         from tblAvailableSizeTemp
+         where upper(StationName) = upper(@StationName)
+           and ItemID = 0
+       end
+       else begin
+         insert into tblAvailableSize (ItemID, SizeID, UnitPrice, OnHandQty, ApplyNoDSC, UnitPrice2, UnitPrice3)
+         values (@NewItemID, 1, 0, 0, 0, 0, 0)
+       end
+     return 1
+   else begin
+     rollback transaction insert_item
+     set @NewItemID = 0 
+     return 0
+ CREATE PROCEDURE [dbo].[spx_ExportTableLayout]
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   --declare @script nvarchar(2000), @export_file_nm varchar(500), 
+   --        @file_creation_str varchar(1000), @bcp_parameter varchar(1000)
+   --set @export_file_nm = 'Table_Layout_Exported_' + convert(varchar, getdate(), 112) + '.txt'
+   if exists (select * 
+              from sys.objects 
+              where object_id = OBJECT_ID(N'[dbo].[tmpTableLayoutExport]')
+                and type in (N'U'))
+     drop table tmpTableLayoutExport
+   select cast(0 as tinyint) as ID, cast('' as varchar(1000)) as TableLayout
+   into tmpTableLayoutExport
+   truncate table tmpTableLayoutExport
+   insert into tmpTableLayoutExport (ID, TableLayout)
+   select 0, 
+          'Level' + char(9) +
+          'TabIndex' + char(9) +
+          'ControlIndex' + char(9) +
+          'TableID' + char(9) +
+          'Caption' + char(9) +
+          'AlignTop' + char(9) +
+          'AlignLeft' + char(9) +
+          'Height' + char(9) +
+          'Width' + char(9) +
+          'FontName' + char(9) +
+          'FontSize' + char(9) +
+          'FontBold' + char(9) +
+          'FontItalic' + char(9) +
+          'FontColor' + char(9) +
+          'Color' + char(9) +
+          'ImageFileName' + char(9) +
+          'TableImage' + char(9) +
+          'TableImageFileType' + char(9) +
+          'LayoutModeType' + char(9) +
+          'TableName' + char(9) +
+          'TakeOut' + char(9) +
+          'Delivery' + char(9) +
+          'Online' + char(9) +
+          'StayOn' + char(9) +
+          'ApplySpecialPricing' + char(9) +
+          'SpecialPricingRate' + char(9) +
+          'BellNumber' + char(9) +
+          'StationID' + char(9) +
+          'OnlineOrderCompanyID' + char(9) +
+          'AccessPermissionRequired' + char(9) +
+          'AppliedUnitPriceType'
+   insert into tmpTableLayoutExport (ID, TableLayout)
+   select 1,
+          convert(varchar, tl.[Level]) + char(9) +
+          convert(varchar, tl.TabIndex) + char(9) +
+          convert(varchar, tl.ControlIndex) + char(9) +
+          convert(varchar, tl.TableID) + char(9) +
+          isnull(tl.Caption, '') + char(9) +
+          convert(varchar, tl.AlignTop) + char(9) +
+          convert(varchar, tl.AlignLeft) + char(9) +
+          convert(varchar, tl.Height) + char(9) +
+          convert(varchar, tl.Width) + char(9) +
+          isnull(tl.FontName, '') + char(9) +
+          convert(varchar, tl.FontSize) + char(9) +
+          convert(varchar, tl.FontBold) + char(9) +
+          convert(varchar, tl.FontItalic) + char(9) +
+          convert(varchar, tl.FontColor) + char(9) +
+          convert(varchar, tl.Color) + char(9) +
+          isnull(tl.ImageFileName, '') + char(9) +
+          char(9) + --TableImage
+          isnull(tl.TableImageFileType, '') + char(9) +
+          convert(varchar, tl.LayoutModeType) + char(9) +
+          isnull(t.TableName, '') + char(9) +
+          convert(varchar, isnull(t.TakeOut, 0)) + char(9) +
+          convert(varchar, isnull(t.Delivery, 0)) + char(9) +
+          convert(varchar, isnull(t.[Online], 0)) + char(9) +
+          convert(varchar, isnull(t.StayOn, 0)) + char(9) +
+          convert(varchar, isnull(t.ApplySpecialPricing, 0)) + char(9) +
+          convert(varchar, isnull(t.SpecialPricingRate, 0)) + char(9) +
+          convert(varchar, isnull(t.BellNumber, 0)) + char(9) +
+          convert(varchar, isnull(t.StationID, 0)) + char(9) +
+          convert(varchar, isnull(t.OnlineOrderCompanyID, 0)) + char(9) +
+          convert(varchar, isnull(t.AccessPermissionRequired, 0)) + char(9) +
+          convert(varchar, isnull(t.AppliedUnitPriceType, 1))
+   from tblTableLayout tl
+     left join tblTable t on tl.TableID = t.ID
+   order by tl.LayoutModeType, tl.TabIndex, tl.Level, tl.ControlIndex
+   select *
+   from tmpTableLayoutExport
+   order by ID
+ --  set @script = 'select TableLayout ' +
+ --                'from TPPro.dbo.tmpTableLayoutExport ' +
+ --                'order by ID'
+ --  set @file_creation_str = 'echo '''' > C:\TopPos\Reports\TableLayout\' + @export_file_nm
+ --  set @bcp_parameter = 'bcp "' + @script + '" queryout "C:\TopPos\Reports\TableLayout\' + @export_file_nm + '" -c -T -x' 
+ --  exec master..xp_cmdshell @file_creation_str
+ --  exec master..xp_cmdshell @bcp_parameter
+   drop table tmpTableLayoutExport
+ @NewItemID = 0 
+     return 0
+         where upper(StationName) = upper(@StationName)
+           and ItemID = 0
+       end
+       else begin
+         insert into tblAvailableSize (ItemID, SizeID, UnitPrice, OnHandQty, ApplyNoDSC)
+         values (@NewItemID, 1, 0, 0, 0)
+       end
+     return 1
+   else begin
+     rollback transaction insert_item
+     set @NewItemID = 0 
+     return 0
+ SET NOCOUNT ON;
+   select TableName as OneElement
+   from tblTable 
+   where BillPrinted = 1
+ AMEXCashouponDebitMCVisa
+ %db_accessadmin& +db_backupoperator& #db_datareader& #db_datawriter& db_ddladmin& +db_denydatareader& +db_denydatawriter&@ )db_securityadmin& -INFORMATION_SCHEMA& #finalsolution
+ 3db_accessadmin0 9db_backupoperator0 1db_datareader0 1db_datawriter0 -db_ddladmin0 9db_denydatareader0 9db_denydatawriter0 'db_owner0 7db_securityadmin0 ;INFORMATION_SCHEMA0
+ db_accessadmindatareaderwriterenydatareaderownerguestPRIMARYsys
+ http://schemas.microsoft.com/SQL/Notifications/EventNotification0 http://schemas.microsoft.com/SQL/Notifications/PostEventNotification0 http://schemas.microsoft.com/SQL/Notifications/QueryNotification0 http://schemas.microsoft.com/SQL/ServiceBroker/BrokerConfigurationNotice0 http://schemas.microsoft.com/SQL/ServiceBroker/BrokerConfigurationNotice/FailedRoute0 http://schemas.microsoft.com/SQL/ServiceBroker/BrokerConfigurationNotice/MissingRoute0 http://schemas.microsoft.com/SQL/ServiceBroker/EndDialog0 http://schemas.microsoft.com/SQL/ServiceBroker/ServiceBroker0 http://schemas.microsoft.com/SQL/ServiceBroker/ServiceDiagnostic/Description0 http://schemas.microsoft.com/SQL/ServiceBroker/ServiceDiagnostic/Status0 http://schemas.microsoft.com/SQL/ServiceBroker/ServiceEcho/Echo
+DEFAULThttp://schemas.microsoft.com/SQL/Notifications/EventNotificationServicePostQueryNotificationQueryNotificationServiceServiceurationNotice/FailedRemoteServiceBindingrationNotice/MissingRemoteServiceBindingBroker/DialogTimerErrorServiceDiagnostic/QueryEcho
+ READUNCOMMITTED
+ sysprivssys sysprivs`W'
+ 7AutoCreatedLocal AutoCreatedLocal
+ 8DF_tblCustomer_Gender& 4DF_tblAccount_Level& 0DF_tblAccount_PID&
+ 6DF_tblAccount_Status& HDF_tblAvailableItem_UnitPrice& PDF_tblCashInDrawer_StartCashierID&
+ LDF_tblCashInDrawer_EndCashierID& FDF_tblCashInDrawer_StartCash& BDF_tblCashInDrawer_EndCash& NDF_tblCashInDrawer_StartDateTime& JDF_tblCashInDrawer_EndDateTime& @DF_tblCashInDrawer_Status& PDF_tblCashInDrawer_DiscrepancyAmt& 4DF_tblItem_ApplyGST& 4DF_tblItem_ApplyPST& 0DF_tblItem_Status& 4DF_tblItem_OpenItem& 4DF_tblItem_KitchenB& 4DF_tblItem_KitchenF&
+ *DF_tblItem_Bar& 4DF_tblItem_SideDish& .DF_tblItem_Taste& @DF_tblCategory_PrintOrder&
+ 6DF_tblItem_ApplyPST2& 2DF_tblItem_BarCode& 4DF_tblItem_KitchenE& BDF_tblMenuLayout_AlignLeft& @DF_tblConstants_TransType& 8DF_tblConstants_Field&
+ 8DF_tblConstants_Value& DDF_tblConstants_Description& <DF_tblConstants_IsError& DDF_tblDiscountDetail_DSCAmt& TDF_tblDiscountDetail_DSCAmtEmployee& NDF_tblDiscountDetail_DSCAmtType1& NDF_tblDiscountDetail_DSCAmtType2& HDF_tblAvailableSize_OnHandQty& VDF_tblInventoryChangeHistory_SalesID& dDF_tblInventoryChangeHistory_ChangeDateTime& 2DF_tblItem_Alcohol& :DF_Table_1_ReceiptType& FDF_tblItem_HourlyChargedItem& 6DF_tblItem_ScaleItem& HDF_tblKitchenOrders_StationID& 8DF_tblItem_OnlineItem& zIxS JDF_tblKitchenOrders_PickupTime& <DF_tblCredit_CustomerID& TDF_tblBillCollectHistory_CustomerID& JDF_tblDayHourDiscount_DayPrice& NDF_tblBillPrintQueue_PrinterName& RDF_tblBillPrintQueue_BillPrintType& 8DF_tblItem_RewardItem& VDF_tblKitchenOrders_InsertedDateTime& 6DF_tblItem_GroupItem& 4DF_tblItem_Kitchen5& 4DF_tblItem_Kitchen6& FDF_tblKitchenOrders_Kitchen5& FDF_tblKitchenOrders_Kitchen6& BDF_tblAdImages_AdImageName& 8DF_tblAdImages_Status& DDF_tblCustomer_EarnedPoints& FDF_tblMemo_BulletinBoardMemo& NDF_tblCashInDrawer_NonCashTipOut& 6DF_tblItem_ManageInv& FDF_rpt_sales_summary_StoreID& 8DF_tblItem_NonAlcohol& RDF_tblCustomerConsentChild_Consent& DDF_tblCashTip_CashTipAmount& >DF_tblCashTip_ShiftIndex& JDF_tblAvailableSize_ApplyNoDSC* Gtpb RDF_tblAvailableSizeTemp_ApplyNoDSC& JDF_tblAvailableSize_UnitPrice2& JDF_tblAvailableSize_UnitPrice3* RDF_tblAvailableSizeTemp_UnitPrice2* RDF_tblAvailableSizeTemp_UnitPrice3& `DF_rpt_online_order_sales_summary_StoreID& pDF_rpt_online_order_sales_summary_PaymentLocation& zDF_rpt_online_order_sales_summary_temp_PaymentLocation& 8DF_tblCategory_Status* (DecryptString* 4CleanupInvalidChars* @CheckIfLinkedServerExists* TConvertUnixTimeStampToLocalDateTime* NCheckIfAnyTimeChargedItemStopped* NCheckIfSplitTimeChargeItemExists* BCheckIfTimeChargingStopped* >DF_tblItem_HourDollarDSC& PDF_tblAvailableSizeTemp_UnitPrice& PDF_tblAvailableSizeTemp_OnHandQty& NDF_tblAvailableSizeTemp_ApplyQty& RDF_tblAvailableSizeTemp_ApplyNoDSC& RDF_tblAvailableSizeTemp_UnitPrice2& RDF_tblAvailableSizeTemp_UnitPrice3& XDF_tblCategory_TaxExemptionApplicable& FDF_tblCustomer_PointsManaged& RDF_tblAvailableSize_DiscountPeriod& XDF_tblAvailableSize_DiscountStartDate& TDF_tblAvailableSize_DiscountEndDate&
+ (DecryptString& 4CleanupInvalidChars& @CheckIfLinkedServerExists& TConvertUnixTimeStampToLocalDateTime&
+ NCheckIfAnyTimeChargedItemStopped& NCheckIfSplitTimeChargeItemExists& BCheckIfTimeChargingStopped cryptString& 4CleanupInvalidChars& @CheckIfLinkedServerExists& TConvertUnixTimeStampToLocalDateTime& NCheckIfAnyTimeChargedItemStopped& NCheckIfSplitTimeChargeItemExists& BCheckIfTimeChargingStopped* >DF_tblItem_HourDollarDSC& PDF_tblAvailableSizeTemp_UnitPrice& PDF_tblAvailableSizeTemp_OnHandQty yHourDiscount_DayPriceb
+ 8DF_tblCustomer_Gender& 4DF_tblAccount_Level& 0DF_tblAccount_PID&
+ 6DF_tblAccount_Status& HDF_tblAvailableItem_UnitPrice& PDF_tblCashInDrawer_StartCashierID&
+ LDF_tblCashInDrawer_EndCashierID& FDF_tblCashInDrawer_StartCash& BDF_tblCashInDrawer_EndCash& NDF_tblCashInDrawer_StartDateTime& JDF_tblCashInDrawer_EndDateTime& @DF_tblCashInDrawer_Status& PDF_tblCashInDrawer_DiscrepancyAmt& 4DF_tblItem_ApplyGST& 4DF_tblItem_ApplyPST& 0DF_tblItem_Status& 4DF_tblItem_OpenItem& 4DF_tblItem_KitchenB& 4DF_tblItem_KitchenF&
+ *DF_tblItem_Bar& 4DF_tblItem_SideDish& .DF_tblItem_Taste& @DF_tblCategory_PrintOrder&
+ 6DF_tblItem_ApplyPST2& 2DF_tblItem_BarCode& 4DF_tblItem_KitchenE& BDF_tblMenuLayout_AlignLeft& @DF_tblConstants_TransType& 8DF_tblConstants_Field&
+ 8DF_tblConstants_Value& DDF_tblConstants_Description& <DF_tblConstants_IsError& DDF_tblDiscountDetail_DSCAmt& TDF_tblDiscountDetail_DSCAmtEmployee& NDF_tblDiscountDetail_DSCAmtType1& NDF_tblDiscountDetail_DSCAmtType2& HDF_tblAvailableSize_OnHandQty& VDF_tblInventoryChangeHistory_SalesID& dDF_tblInventoryChangeHistory_ChangeDateTime& 2DF_tblItem_Alcohol& :DF_Table_1_ReceiptType& FDF_tblItem_HourlyChargedItem& 6DF_tblItem_ScaleItem& HDF_tblKitchenOrders_StationID& 8DF_tblItem_OnlineItem& zIxS JDF_tblKitchenOrders_PickupTime& <DF_tblCredit_CustomerID& TDF_tblBillCollectHistory_CustomerID& JDF_tblDayHourDiscount_DayPrice& NDF_tblBillPrintQueue_PrinterName& RDF_tblBillPrintQueue_BillPrintType& 8DF_tblItem_RewardItem& VDF_tblKitchenOrders_InsertedDateTime& 6DF_tblItem_GroupItem& 4DF_tblItem_Kitchen5& 4DF_tblItem_Kitchen6& FDF_tblKitchenOrders_Kitchen5& FDF_tblKitchenOrders_Kitchen6& BDF_tblAdImages_AdImageName& 8DF_tblAdImages_Status& DDF_tblCustomer_EarnedPoints& FDF_tblMemo_BulletinBoardMemo& NDF_tblCashInDrawer_NonCashTipOut& 6DF_tblItem_ManageInv& FDF_rpt_sales_summary_StoreID& 8DF_tblItem_NonAlcohol& RDF_tblCustomerConsentChild_Consent& DDF_tblCashTip_CashTipAmount& >DF_tblCashTip_ShiftIndex& JDF_tblAvailableSize_ApplyNoDSC* Gtpb RDF_tblAvailableSizeTemp_ApplyNoDSC& JDF_tblAvailableSize_UnitPrice2& JDF_tblAvailableSize_UnitPrice3* RDF_tblAvailableSizeTemp_UnitPrice2* RDF_tblAvailableSizeTemp_UnitPrice3& `DF_rpt_online_order_sales_summary_StoreID& pDF_rpt_online_order_sales_summary_PaymentLocation& zDF_rpt_online_order_sales_summary_temp_PaymentLocation& 8DF_tblCategory_Status* (DecryptString* 4CleanupInvalidChars* @CheckIfLinkedServerExists* TConvertUnixTimeStampToLocalDateTime* NCheckIfAnyTimeChargedItemStopped* NCheckIfSplitTimeChargeItemExists* BCheckIfTimeChargingStopped* >DF_tblItem_HourDollarDSC& PDF_tblAvailableSizeTemp_UnitPrice& PDF_tblAvailableSizeTemp_OnHandQty& NDF_tblAvailableSizeTemp_ApplyQty& RDF_tblAvailableSizeTemp_ApplyNoDSC& RDF_tblAvailableSizeTemp_UnitPrice2& RDF_tblAvailableSizeTemp_UnitPrice3& XDF_tblCategory_TaxExemptionApplicable& FDF_tblCustomer_PointsManaged& RDF_tblAvailableSize_DiscountPeriod& XDF_tblAvailableSize_DiscountStartDate& TDF_tblAvailableSize_DiscountEndDate&
+ (DecryptString& 4CleanupInvalidChars& @CheckIfLinkedServerExists& TConvertUnixTimeStampToLocalDateTime&
+ NCheckIfAnyTimeChargedItemStopped& NCheckIfSplitTimeChargeItemExists& BCheckIfTimeChargingStopped cryptString& 4CleanupInvalidChars& @CheckIfLinkedServerExists& TConvertUnixTimeStampToLocalDateTime& NCheckIfAnyTimeChargedItemStopped& NCheckIfSplitTimeChargeItemExists& BCheckIfTimeChargingStopped* >DF_tblItem_HourDollarDSC& PDF_tblAvailableSizeTemp_UnitPrice& PDF_tblAvailableSizeTemp_OnHandQty yHourDiscount_DayPriceb
+ *@AccessLevel6WF
+ *@AlcoholOnly6X 2@AlcoholSubTotal6X
+ 2@AlcoholGSTTotal6X 2@AlcoholPSTTotal6X 4@AlcoholPST2Total6< 8@AttachmentFilePath6 8@AttachmentFilePath6=c $@AlignTop6=c &@AlignLeft6=c :@ApplySpecialPricing6=c (@BellNumber6=c D@AccessPermissionRequired6=c <@AppliedUnitPriceType6Z 2@AuthorizationNo6Z
+ "@BatchNo6 $@AlignTop6 &@AlignLeft6 *@AmexPaidAmt6 0@AmexTipPaidAmt6 4@AmexPaymentCount6 2@AuthorizationNo6 "@Address6 4@AccessPermission6 "@Address6 4@AccessPermission6 (@AmexAmount6 (@AppliedQty6 (@BellNumber6 (@BellNumber6 0@BackupFilePath6DM (@ActionCode6
+ $@ApplyGST6 $@ApplyPST6 (@ApplyNoDSC6 &@ApplyPST26 .@AlcoholDSCAmt6 (@ApplyNoDSC6I "@Barcode6I :@ApplySpecialPricing (@ActiveOnly6 *@AlcoholOnly6 "@Barcode6 $@AllSizes6 $@ApplyDay6 ,@ApplyDayRate6 .@ApplyDayPrice6 &@ApplyHour6 .@ApplyHourRate6 0@ApplyHourPrice62 $@ApplyQty6k $@ApplyGST6k $@ApplyPST6k
+ &@ApplyPST26k "@BarCode6k "@Alcohol6 $@ApplyGST6 $@ApplyPST6
+ &@ApplyPST26 "@BarCode6 "@Alcohol6 0@BillCollectAmt
+ "@AmtUsed6 "@Barcode6 6@BulletinBoardMemo6n 6@BulletinBoardMemo6 &@AccountID6  @BankID66 &@AccountID66 4@BusinessCategory6 &@BeginWith6
+ "@Alcohol6 "@Alcohol6 *@ApplyItemID6 *@ApplySizeID6T "@Barcode6 "@Barcode6 2@AdImageFileName6 "@AdImage69 (@ActiveOnly "@Address6 (@ApplyNoDSC6s
+ $@ApplyGST6s $@ApplyPST6s (@ApplyNoDSC6s &@ApplyPST26 .@BillPrintType6 *@BillPrinted6
+ *@BillPrinted 6@BulletinBoardMemo6 $@BitValue 2@AuthorizationNo6ZQ &@ApplyTax16ZQ &@ApplyTax26ZQ &@ApplyTax36ZQ "@Alcohol6 (@ActiveOnly6 2@AuthorizationNo6 6@ActiveCompanyOnly6
+ 6@APITransactionKey6$ 6@APITransactionKey 2@ApplyPercentage6{
+ 4@BusinessHourFrom6C@ 0@BusinessHourTo ,@AppendResult6 2@ApplyValueToOne6 2@ApplyValueToTwo6 6@ApplyValueToThree6 4@ApplyValueToFour6 4@ApplyValueToFive6 2@ApplyValueToSix6 6@ApplyValueToSeven6 6@ApplyValueToEight6
+ 4@ApplyValueToNine6 4@ApplyValueToZero6H
+ $@ApplyGST6H $@ApplyPST6H (@ApplyNoDSC6H &@ApplyPST2 yValueToNine:( 4@ApplyValueToZero:a
+ $@ApplyGST:a $@ApplyPST:a (@ApplyNoDSC:a &@ApplyPST2
+ *@AccessLevel6WF
+ *@AlcoholOnly6X 2@AlcoholSubTotal6X
+ 2@AlcoholGSTTotal6X 2@AlcoholPSTTotal6X 4@AlcoholPST2Total6< 8@AttachmentFilePath6 8@AttachmentFilePath6=c $@AlignTop6=c &@AlignLeft6=c :@ApplySpecialPricing6=c (@BellNumber6=c D@AccessPermissionRequired6=c <@AppliedUnitPriceType6Z 2@AuthorizationNo6Z
+ "@BatchNo6 $@AlignTop6 &@AlignLeft6 *@AmexPaidAmt6 0@AmexTipPaidAmt6 4@AmexPaymentCount6 2@AuthorizationNo6 "@Address6 4@AccessPermission6 "@Address6 4@AccessPermission6 (@AmexAmount6 (@AppliedQty6 (@BellNumber6 (@BellNumber6 0@BackupFilePath6DM (@ActionCo
+ ,next_fragment6 ,next_fragment6<8 ,next_fragment6Z  nmscope6"  nsclass6"
+ &nullbitint6
+ (nullbitleaf6)  numpart6<
+ $offsetint6
+ &offsetleaf6! (NumOfGuests6 &NextItemID6 *NextItemName6bc ,NonCashTipOut6 6NonAlcoholSubTotal6 8NonAlcoholTax1Total6 8NonAlcoholTax2Total6 8NonAlcoholTax3Total6 "NetDebit6 $NetCredit6 $NetCoupon6 (NetDiscover6 (NetGiftCard6 .NetRewardPoint6 6NetChargeOnAccount6 &NetCashTip6 (NetDebitTip6 *NetCreditTip6 &NetVisaTip6 "NetMcTip6 &NetAmexTip6 *NetCouponTip6 .NetDiscoverTip6 $NetJcbTip6 .NetGiftCardTip6 <NetChargeOnAccountTip6 *NetCreditAmt6 (NoSaleCount6 6NonAlcoholSubTotal6 8NonAlcoholTax1Total6
+ 8NonAlcoholTax2Total6 8NonAlcoholTax3Total6 "NetDebit6 $NetCredit6 $NetCoupon6 (NetDiscover6 (NetGiftCard6 .NetRewardPoint6 6NetChargeOnAccount6 &NetCashTip6 (NetDebitTip6 *NetCreditTip6 &NetVisaTip6 "NetMcTip6 &NetAmexTip6 *NetCouponTip6 .NetDiscoverTip6 $NetJcbTip6 .NetGiftCardTip6 <NetChargeOnAccountTip6 *NetCreditAmt6 (NoSaleCount6, &NonAlcohol6 "OldPrice6
+ "NewPrice6P\ $OnHandQty6,/g? &NextItemID:j &NextItemID:j *NextItemName: &NextItemID: *NextItemName:NB &NextItemID:NB *NextItemName: &NextItemID: *NextItemName:2 &NextItemID:2 *NextItemName: &NextItemID: *NextItemName: &NextItemID: *NextItemName:l=p| &NextItemID:l=p| *NextItemName: &NextItemID: *NextItemName:P &NextItemID:P *NextItemName: &NextItemID: *NextItemName:4_ &NextItemID:4_ *NextItemName: &NextItemID: *NextItemName: &NextItemID: *NextItemName: &NextItemID: *NextItemName: &NextItemID: *NextItemName:n
+ &NextItemID:n
+ *NextItemName6 &NextItemID6 *NextItemName &NextItemID: *NextItemName: &NextItemID: *NextItemName:f' &NextItemID:f' *NextItemName: &NextItemID: *NextItemName:J &NextItemID:J *NextItemName: &NextItemID: *NextItemName:.IIh &NextItemID:.IIh *NextItemName: &NextItemID: *NextItemName: &NextItemID: *NextItemName: &NextItemID: *NextItemName: &NextItemID: *NextItemName:h &NextItemID:h *NextItemName: &NextItemID: *NextItemName:LD &NextItemID:LD *NextItemName6P\ $OnHandQty: &NextItemID: *NextItemName6,/g? &NextItemID: &NextItemID: *NextItemName:. &NextItemID:. *NextItemName: &NextItemID: *NextItemName: &NextItemID: *NextItemName: &NextItemID: *NextItemName: &NextItemID: *NextItemName:h% &NextItemID:h% *NextItemName: &NextItemID: *NextItemName:L &NextItemID:L *NextItemName: &NextItemID: *NextItemName:0G &NextItemID:0G *NextItemName: &NextItemID: *NextItemName: &NextItemID: *NextItemName: &NextItemID: *NextItemName: &NextItemID: *NextItemName:j &NextItemID:j *NextItemName<
+ .fragment_size6H :conversation_handle6 *@ToDateTime6b .@FromDateTime6 2@RecipientEmail6q *@CustomerID67 &StoreCode6 &PointUsed6 8AttachmentFilePath6 *DiscountAmt6 2@MeasuredWeight6` (@StationID6Wb| *@ByCustomer6 2@PartialClosing6 &OnHandQty6 2@DSCAmtEmployee6 6@SearchFieldIndex6*j
+ -@ActiveOnly0 '@Alcohol0 )@AlignTop0 )@ApplyGST0 -@ApplyNoDSC0 +@ApplyPST20 ?@ApplySpecialPricing0 7@AuthorizationNo0 '@BarCode0 ;@BulletinBoardMemo0 /@CardReceipt0 +@CashierID0 -@CategoryID0 A@CommissionPercentage0 9@CouponTipPaidAmt0 -@CustomerID0 /@CustomerNum0 ?@DayHourDiscountRate0 3@DecimalPlaces0 ?@DineInSelfOrderCode0 7@DiscountPercent0 /@DisplayType0 /@DSCAmtType20 -@EmployeeID0 7@ExtraChargeItem0 )@FontSize0 )@FromDate0 1@FromDateTime0 5@GivenCreditAmt0 ;@HourlyChargedItem0 5@IncludedTipAmt0 )@ItemName0 +@ItemName20 )@Kitchen20 )@Kitchen50 )@Kitchen60 5@KitchenDisplay0 )@KitchenF0 5@LayoutModeType0 9@LinkedServerName0 +@ManageInv0 5@MeasuredWeight0 5@MerchantNumber0 +@NewItemID0 -@NonAlcohol0 A@OnlineOrderCompanyID0 )@OpenItem0 '@OrderID0 5@PartialClosing0 3@PaymentTypeID0 /@PersonIndex0 =@PricePerWeightUnit0 '@PST2Amt0 E@PurchaseItemCategoryID0 7@ReserveDateTime0 -@RewardItem0 '@SalesID0 +@ScaleItem0 1@SearchString0 )@ServerID0 )@SizeName0 +@StationID0 /@StationName0 '@StoreID0 '@TableID0 '@TakeOut0 5@TimeFormatType0 1@ToCategoryID0 -@ToDateTime0 +@ToTableID0 +@UnitPrice0 3@UnitPriceType0 5AdImageFileType0 'AlignTop0 'ApplyGST0 +ApplyNoDSC0 )ApplyPST20 5AuthorizationNo0 =binary_message_body0 )CashierID0 -CompanyName0 /ControlIndex0 -CreditValue0 +CustomerID0 ?DailyDiscountAmtOnPC0 =DayHourDiscountRate0 1DecimalPlaces0 9DeliveryChargeAmt0 -DineInCount0 5DiscountPercent0 1DSCAmtGeneral0 -DSCAmtType20 'encrtype0 -farbrkrinst0 -firstoorder0 'FontName0 5fragment_bitmap0 )GuestName0 'HashSalt0 1ImageFileName0 'ItemName0
+ CREATE PROCEDURE [dbo].[spr_SalesSummaryByEmployee]
+   @FromDateTime datetime,
+   @ToDateTime datetime,
+   @ByTime bit,
+   @EmployeeID smallint
+ BEGIN
+   SET NOCOUNT ON;
+   set @FromDateTime = dbo.GetFromDateTime(@FromDateTime, @ByTime)
+   set @ToDateTime = dbo.GetToDateTime(@ToDateTime, @ByTime)
+   select U.ID, 
+          (U.FName + ' ' + U.LName) as Employee, 
+          isnull(U.TipOutPercentage, 0) as TipOutPercentage, 
+          count(S.ID) as TransCount,
+          sum(round(isnull(S.SubTotal - S.DSCAmt + S.GSTAmt + S.PSTAmt + S.PST2Amt,0),2)) as TotalAmt, 
+          sum(round(isnull(S.SubTotal - S.DSCAmt,0),2)) as SubTotalAmt, 
+          sum(round(isnull(S.DSCAmt,0),2)) as DSCAmt, 
+          sum(round(isnull(S.GSTAmt,0),2)) as GSTAmt, 
+          sum(round(isnull(S.PSTAmt,0),2)) as PSTAmt,
+          sum(round(isnull(S.PST2Amt,0),2)) as PST2Amt,
+          cast(0 as money) as CashPaidAmt,         
+          cast(0 as money) as DebitPaidAmt,
+          cast(0 as money) as VisaPaidAmt,
+          cast(0 as money) as McPaidAmt,
+          cast(0 as money) as AmexPaidAmt,
+          cast(0 as money) as CouponPaidAmt,
+          cast(0 as money) as DiscoverPaidAmt,
+          cast(0 as money) as JcbPaidAmt,
+          cast(0 as money) as GiftCardPaidAmt,
+          cast(0 as money) as RewardPointPaidAmt,
+          cast(0 as money) as ChargeOnAccountPaidAmt,
+          cast(0 as int) as CashPaymentCount, 
+          cast(0 as int) as DebitPaymentCount,
+          cast(0 as int) as VisaPaymentCount,
+          cast(0 as int) as McPaymentCount,
+          cast(0 as int) as AmexPaymentCount,
+          cast(0 as int) as CouponPaymentCount,
+          cast(0 as int) as DiscoverPaymentCount,
+          cast(0 as int) as JcbPaymentCount,
+          cast(0 as int) as GiftCardPaymentCount,
+          cast(0 as int) as RewardPointPaymentCount,
+          cast(0 as int) as ChargeOnAccountPaymentCount,
+          cast(0 as money) as CashTipPaidAmt,
+          cast(0 as money) as DebitTipPaidAmt,
+          cast(0 as money) as CreditTipPaidAmt,
+          cast(0 as money) as CouponTipPaidAmt,
+          cast(0 as money) as GiftCardTipPaidAmt,
+          cast(0 as money) as ChargeOnAccountTipPaidAmt,
+          cast(0 as money) as TotalTipPaidAmt,
+          cast(0 as money) as FoodTotal,
+          cast(0 as money) as NonAlcoholTotal,
+          cast(0 as money) as AlcoholTotal,
+          cast(0 as money) as DineInTotal,
+          cast(0 as int) as DineInCount,
+          cast(0 as money) as TakeOutTotal,
+          cast(0 as int) as TakeOutCount,
+          cast(0 as money) as DeliveryTotal,
+          cast(0 as int) as DeliveryCount,
+          cast(0 as money) as OnlineTotal,
+          cast(0 as int) as OnlineCount
+   into #tmp_employee_summary
+   from tblSales S
+     inner join tblUser U on S.CashierID = U.ID
+   where S.TransType in (0, 1)
+     and S.SaleDateTime >= @FromDateTime
+     and S.SaleDateTime <  @ToDateTime
+     and case when @EmployeeID = 0 then 1
+              else case when S.CashierID = @EmployeeID then 1 else 0 end
+         end = 1
+   group by U.ID, (U.FName + ' ' + U.LName), isnull(U.TipOutPercentage, 0) 
+   order by (U.FName + ' ' + U.LName)    
+   if exists (select *
+              from #tmp_employee_summary) begin
+     declare @ID int,
+             @CashPaidAmt money, @DebitPaidAmt money, @VisaPaidAmt money, @McPaidAmt money, @AmexPaidAmt money, 
+             @CouponPaidAmt money, @DiscoverPaidAmt money, @JcbPaidAmt money, @GiftCardPaidAmt money, @RewardPointPaidAmt money,
+             @ChargeOnAccountPaidAmt money, 
+             @CashTipPaidAmt money, @DebitTipPaidAmt money, @CreditTipPaidAmt money, 
+             @VisaTipPaidAmt money, @McTipPaidAmt money, @AmexTipPaidAmt money, 
+             @CouponTipPaidAmt money, @DiscoverTipPaidAmt money, @JcbTipPaidAmt money, 
+             @GiftCardTipPaidAmt money, @ChargeOnAccountTipPaidAmt money, @TotalTipPaidAmt money, 
+             @CashPaymentCount int, @DebitPaymentCount int, @VisaPaymentCount int, @McPaymentCount int, @AmexPaymentCount int, 
+             @CouponPaymentCount int, @DiscoverPaymentCount int, @JcbPaymentCount int, @GiftCardPaymentCount int, 
+             @RewardPointPaymentCount int, @ChargeOnAccountPaymentCount int,
+             @FoodSubTotal money, @FoodGSTTotal money, @FoodPSTTotal money, @FoodPST2Total money,
+             @NonAlcoholSubTotal money, @NonAlcoholGSTTotal money, @NonAlcoholPSTTotal money, @NonAlcoholPST2Total money,
+             @AlcoholSubTotal money, @AlcoholGSTTotal money, @AlcoholPSTTotal money, @AlcoholPST2Total money,
+             @DineInTotal money, @TakeOutTotal money, @DeliveryTotal money, @OnlineTotal money, 
+             @DineInCount int, @TakeOutCount int, @DeliveryCount int, @OnlineCount int
+     declare curs_employee cursor for
+       select ID
+       from #tmp_employee_summary
+       open curs_employee
+       fetch next from curs_employee into @ID
+       while (@@fetch_status = 0) begin
+         /* Payment Summary                                                                                   */
+         exec spr_PaymentSummary @FromDateTime, @ToDateTime, @ID,
+                                 @CashPaidAmt output, @DebitPaidAmt output, @VisaPaidAmt output, 
+                                 @McPaidAmt output, @AmexPaidAmt output, @CouponPaidAmt output,
+                                 @DiscoverPaidAmt output, @JcbPaidAmt output, @GiftCardPaidAmt output, 
+                                 @RewardPointPaidAmt output, @ChargeOnAccountPaidAmt output,
+                                 @CashTipPaidAmt output, @DebitTipPaidAmt output, @CreditTipPaidAmt output, 
+                                 @VisaTipPaidAmt output, @McTipPaidAmt output, @AmexTipPaidAmt output,
+                                 @CouponTipPaidAmt output, @DiscoverTipPaidAmt output, @JcbTipPaidAmt output, 
+                                 @GiftCardTipPaidAmt output, @ChargeOnAccountTipPaidAmt output,
+                                 @TotalTipPaidAmt output, @CashPaymentCount output, @DebitPaymentCount output, 
+                                 @VisaPaymentCount output, @McPaymentCount output, @AmexPaymentCount output, 
+                                 @CouponPaymentCount output, @DiscoverPaymentCount output, @JcbPaymentCount output, 
+                                 @GiftCardPaymentCount output, @RewardPointPaymentCount output, 
+                                 @ChargeOnAccountPaymentCount output
+         /* Food * Non-Alcohol * Alcohol Summary                                                              */
+         exec spr_GetFoodAlcoholSummary @FromDateTime, @ToDateTime, @ID,
+                                        @FoodSubTotal output, @FoodGSTTotal output, @FoodPSTTotal output, @FoodPST2Total output,
+                                        @NonAlcoholSubTotal output, @NonAlcoholGSTTotal output, @NonAlcoholPSTTotal output, @NonAlcoholPST2Total output,
+                                        @AlcoholSubTotal output, @AlcoholGSTTotal output, @AlcoholPSTTotal output, @AlcoholPST2Total output
+         /* Order Type Summary                                                                                */
+         exec spr_GetOrderTypeSummary @FromDateTime, @ToDateTime, @ID, 
+                                      @DineInTotal output, @DineInCount outpu
+ 'smalldatetime& !smallmoney& #sql_variant& timestamp& -uniqueidentifier& varbinary&
+ 'smalldatetime& !smallmoney& #sql_variant& timestamp& -uniqueidentifier& varbinary&
+ B_WA_Sys_00000002_0000004C6L B_WA_Sys_00000003_0000004C6 B_WA_Sys_00000003_0000001B6J B_WA_Sys_00000001_0000004A6J B_WA_Sys_00000003_0000004A6: B_WA_Sys_00000002_0000003A6: B_WA_Sys_00000003_0000003A6 B_WA_Sys_00000002_000000076 B_WA_Sys_00000003_000000076@ B_WA_Sys_00000002_0000004067 B_WA_Sys_00000002_0000003766 B_WA_Sys_00000002_000000366 B_WA_Sys_00000002_0000001D6 B_WA_Sys_00000003_0000001D B_WA_Sys_00000002_0000003161 B_WA_Sys_00000003_000000316< B_WA_Sys_00000002_0000003C6< B_WA_Sys_00000003_0000003C63 B_WA_Sys_00000002_000000336, B_WA_Sys_00000002_0000002C6) B_WA_Sys_00000002_000000296) B_WA_Sys_00000003_000000296" B_WA_Sys_00000003_000000226 B_WA_Sys_00000002_000000196 B_WA_Sys_00000003_000000056K B_WA_Sys_00000001_0000004B6K
+ B_WA_Sys_00000003_0000004B B_WA_Sys_00000002_0EA330E96 B_WA_Sys_00000001_4B7734FF6 B_WA_Sys_00000001_70A8B9AE6 B_WA_Sys_00000001_1273C1CD6! B_WA_Sys_00000002_07020F216! B_WA_Sys_00000003_07020F216 B_WA_Sys_00000002_1273C1CD6%'W) B_WA_Sys_00000002_295727256 B_WA_Sys_00000002_49C3F6B76 B_WA_Sys_00000002_5AEE82B96 B_WA_Sys_00000002_44FF419A B_WA_Sys_00000002_097467786xgt B_WA_Sys_00000003_097467786 B_WA_Sys_00000002_355DD6AE B_WA_Sys_00000002_01D345B0 B_WA_Sys_00000003_03317E3D
+ B_WA_Sys_00000003_0A9D95DB6 B_WA_Sys_00000002_5DF5D7ED6 B_WA_Sys_00000002_46E78A0C6 B_WA_Sys_00000001_182279826 B_WA_Sys_00000002_4B7734FF6 B_WA_Sys_00000001_6B1AC8E16 B_WA_Sys_00000001_60083D916 B_WA_Sys_00000002_318D45CA6 B_WA_Sys_00000002_689D83926 B_WA_Sys_00000002_5629CD9C6'B B_WA_Sys_00000002_677F42276v B_WA_Sys_00000002_3CFEF8766@ B_WA_Sys_00000001_49EEDF406^ B_WA_Sys_00000002_5748DA5E6 B_WA_Sys_00000001_546C6DB36gP B_WA_Sys_00000002_248850676 B_WA_Sys_00000002_5AE461186 B_WA_Sys_00000002_16CE62966 B_WA_Sys_00000002_0F8D33816
+ B_WA_Sys_00000002_0A9D95DB6[y B_WA_Sys_00000002_108B795B B_WA_Sys_00000002_1348B5CC6 B_WA_Sys_00000002_60A75C0F6c83 B_WA_Sys_00000001_02333863 B_WA_Sys_00000001_143CDA056 B_WA_Sys_00000001_49C3F6B76bc B_WA_Sys_00000002_4CA063626 B_WA_Sys_00000002_546C6DB36 B_WA_Sys_00000002_09DE7BCC B_WA_Sys_00000002_6EEB59C5
+ B_WA_Sys_00000002_5DABBF2A6j B_WA_Sys_00000001_1AB4CD6A6j B_WA_Sys_00000002_1AB4CD6A6 B_WA_Sys_00000002_74A4331B6gP B_WA_Sys_00000001_24885067 B_WA_Sys_00000003_09DE7BCC
+ B_WA_Sys_00000002_3EE740E86P\ B_WA_Sys_00000002_17F85C50
+ ys_00000002_6EEB59C5
+ B_WA_Sys_00000002_5DABBF2A B_WA_Sys_00000001_1AB4CD6A6j B_WA_Sys_00000002_1AB4CD6A6 B_WA_Sys_00000002_74A4331B6gP B_WA_Sys_00000001_24885067
+ &db_accessadmin&2 ,db_backupoperator&2 $db_datareader&2 $db_datawriter&2  db_ddladmin&2 ,db_denydatareader&2 ,db_denydatawriter&2 db_owner&2 *db_securityadmin&2 .INFORMATION_SCHEMA& :##MS_DatabaseMasterKey##*8 $EncryptionKey*8e :##MS_DatabaseMasterKey##*8 $EncryptionKey*8e :##MS_DatabaseMasterKey##*8 $EncryptionKey*8e :##MS_DatabaseMasterKey##*8 $EncryptionKey*8e :##MS_DatabaseMasterKey##*8 $EncryptionKey&8 $EncryptionKey
+ )AutoCreatedLocal
+ DF_tblSales_CreditPaidh CardType varchar varcharepN srCardTypevarchar
+ tinyint tinyinte0O DF_tblSales_TransType
+ DF_tblSales_TransType G@OriginalTransType
+ tinyint tinyint OriginalTransType DF_tblSales_OriginalTransType
+ ?DF_tblSales_OriginalTransType Guests ?tinyint
+ tinyint ?tinyint Guests ?tinyint DF_tblSales_Guests
+ ?DF_tblSales_Guestsc CustomerID CustomerID DF_tblSales_CustomerID
+ ((1))ysxDF_tblSales_CustomerIDh DebitTipPaid smallmoney
+ smallmoney smallmoney DebitTipPaidsmallmoney DF_tblSales_StationID
+ DF_tblSales_StationID CreditTipPaid smallmoney
+ smallmoney smallmoney CreditTipPaid ?smallmoney@ DF_tblSales_CreditTipPaid
+ DF_tblSales_CreditTipPaid DailyOrderNumber DailyOrderNumberint DF_tblSales_GSTRate
+ ?DF_tblSales_GSTRate ?GSTRate float
+ GSTRateG@float
+ @DF_tblPrepaidCards_Status& XDF_tblPrepaidCardUsageHistory_UsedAmt& bDF_tblPrepaidCardUsageHistory_UsedDateTime& 8DF_tblSales_CashierID& :DF_tblSales_CustomerID& 2DF_tblSales_DSCAmt& 2DF_tblSales_GSTAmt* 4DF_tblSales_GSTRate& 2DF_tblSales_Guests&
+ HDF_tblSales_OriginalTransType* 4DF_tblSales_PreAuth& 2DF_tblSales_PSTAmt* 4DF_tblSales_PSTRate* 8DF_tblSales_PSTRate_1* 6DF_tblSales_SaleDate& 6DF_tblSales_SubTotal& >DF_tblSales_TakeOutOrder& 8DF_tblSales_TransType* 2DF_tblSales_TroutD& FDF_tblSalesCardDetail_Settle& XDF_tblPrepaidCardUsageHistory_Balance& <DF_tblPurchaseItem_Unit& @DF_tblPurchaseItem_Status&
+ LDF_tblPurchaseOrder_SenderEmail& HDF_tblReservation_PhoneNumber& 4DF_tblSales_TableID& :DF_tblReservation_Memo& XDF_tblReadyOrderNumber_KitchenOrderID& RDF_tblReadyOrderNumber_OrderNumber& HDF_tblReadyOrderNumber_Source* 8DF_tblSales_StationID* <DF_tblSales_CashTipPaid* 6DF_tblSales_VisaPaid* 2DF_tblSales_McPaid* 6DF_tblSales_AmexPaid& @DF_tblSales_AlcoholDSCAmt& BDF_tblSales_CustomerTypeID& DDF_tblSales_CustomerGroupID& 4DF_tblSales_PST2Amt* 6DF_tblSales_PST2Rate& DDF_tblSales_CreatedDateTime* 4DF_tblSales_GSTRate* 4DF_tblSales_PSTRate*
+ 6DF_tblSales_PST2Rate& FDF_tblSales_DailyOrderNumber& >DF_tblSales_SaleDateTime& 4DF_tblSales_GSTRate& 4DF_tblSales_PSTRate& 6DF_tblSales_PST2Rate BFK_tblSalesDetail_tblSales& @FK_tblSalesDetail_tblSize& <FK_tblTimeStamp_tblUser& 4FK_tblUser_tblGroup& 8FK_tblSubItem_tblItem& <DF_tblPurchaseItem_Unit& @DF_tblPurchaseItem_Status& bFK_tblPurchaseItem_tblPurchaseItemCategory&
+ LDF_tblPurchaseOrder_SenderEmail& bFK_tblPurchaseOrderDetail_tblPurchaseOrder& HDF_tblReservation_PhoneNumber& 4DF_tblSales_TableID& 8DF_tblTable_Attention& :DF_tblReservation_Memo& <DF_tblTableLayout_Level& BDF_tblTableLayout_TabIndex& JDF_tblTableLayout_ControlIndex& @DF_tblTableLayout_TableID& @DF_tblTableLayout_Caption& BDF_tblTableLayout_AlignTop& DDF_tblTableLayout_AlignLeft& >DF_tblTableLayout_Height& <DF_tblTableLayout_Width& BDF_tblTableLayout_FontName& DDF_tblTableLayout_FontSize1& BDF_tblTableLayout_FontBold& FDF_tblTableLayout_FontItalic& FDF_tblTableLayout_FontColor1& >DF_tblTableLayout_Color1& LDF_tblTableLayout_ImageFileName& @DF_tblTableLayout_TakeOut& <DF_tblTable_DailyOrdNum&
+ ,PK_tblConstants& XDF_tblReadyOrderNumber_KitchenOrderID& RDF_tblReadyOrderNumber_OrderNumber& HDF_tblReadyOrderNumber_Source& 6PK_tblDiscountDetail& VFK_tblInventoryChangeHistory_tblItem& VFK_tblInventoryChangeHistory_tblSize& VFK_tblInventoryChangeHistory_tblUser& 8DF_tblTable_BellIndex& 6DF_tblTable_CallType& DFK_tblPointsDetail_tblSales& BFK_tblDeletedItems_tblItem& DFK_tblDeletedItems_tblSales& BFK_tblDeletedItems_tblSize& @PK_tblCardReceiptTemplate& FFK_tblPayment_tblPaymentType& :FK_tblPayment_tblSales& (EncryptString& ,GetPaymentTotal& $GetTipTotal& .GetRGBColorValue& 0IsExtraChargeItem& (GetHourCharge& jFK_tblPrepaidCardChargeHistory_tblPrepaidCards& hFK_tblPrepaidCardUsageHistory_tblPrepaidCards& `FK_tblPurchaseOrderDetail_tblPurchaseItem& &PK_tblAction& DFK_tblUserLog_tblUserAction& @DF_tblUserLog_StationName& 4PK_tblCheckedOrders& 6DF_tblStation_Status* 8DF_tblSales_StationID& :FK_tblSales_tblStation& TDF_tblSelfCheckoutTableLayout_Level& ZDF_tblSelfCheckoutTableLayout_TabIndex& bDF_tblSelfCheckoutTableLayout_ControlIndex& XDF_tblSelfCheckoutTableLayout_TableID& XDF_tblSelfCheckoutTableLayout_Caption& ZDF_tblSelfCheckoutTableLayout_AlignTop* <DF_tblSales_CashTipPaid* 6DF_tblSales_VisaPaid* 2DF_tblSales_McPaid* 6DF_tblSales_AmexPaid
+ CREATE PROCEDURE [dbo].[spr_GetFoodAlcoholSummary]
+   @FromDateTime datetime,
+   @ToDateTime datetime,
+   @EmployeeID smallint,
+   @FoodSubTotal money = 0 output,
+   @FoodGSTTotal money = 0 output,
+   @FoodPSTTotal money = 0 output,
+   @FoodPST2Total money = 0 output,
+   @NonAlcoholSubTotal money = 0 output,
+   @NonAlcoholGSTTotal money = 0 output,
+   @NonAlcoholPSTTotal money = 0 output,
+   @NonAlcoholPST2Total money = 0 output,
+   @AlcoholSubTotal money = 0 output,
+   @AlcoholGSTTotal money = 0 output,
+   @AlcoholPSTTotal money = 0 output,
+   @AlcoholPST2Total money = 0 output
+ BEGIN
+   SET NOCOUNT ON;
+   if object_id('tempdb..#tmp_station') is null begin
+     /* Create reporting station list */
+     select cast(ID as smallint) as StationID
+     into #tmp_station 
+     from tblStation
+   declare @SubTotal money, @GSTTotal money, @PSTTotal money, @PST2Total money,
+           @NonAlcoholDSCAmt money, @GSTOnNonAlcoholDSCAmt money, @PSTOnNonAlcoholDSCAmt money, @PST2OnNonAlcoholDSCAmt money,
+           @NonAlcoholRefundSubTotal money, @NonAlcoholRefundGSTTotal money, @NonAlcoholRefundPSTTotal money, @NonAlcoholRefundPST2Total money,          
+           @AlcoholDSCAmt money, @GSTOnAlcoholDSCAmt money, @PSTOnAlcoholDSCAmt money, @PST2OnAlcoholDSCAmt money,
+           @AlcoholRefundSubTotal money, @AlcoholRefundGSTTotal money, @AlcoholRefundPSTTotal money, @AlcoholRefundPST2Total money
+   select @SubTotal = sum(s.SubTotal - s.DSCAmt),
+          @GSTTotal = sum(s.GSTAmt),
+          @PSTTotal = sum(s.PSTAmt),
+          @PST2Total = sum(s.PST2Amt),
+          @AlcoholDSCAmt = sum(s.AlcoholDSCAmt),
+          @GSTOnAlcoholDSCAmt = sum(round(s.AlcoholDSCAmt * s.GSTRate, 2)),
+          @PSTOnAlcoholDSCAmt = sum(round(s.AlcoholDSCAmt * s.PSTRate, 2)),
+          @PST2OnAlcoholDSCAmt = sum(round(s.AlcoholDSCAmt * s.PST2Rate, 2)) /* This may have to be like "case when i.ApplyPST2 = 1 then s.PST2Rate else 0 end" as well */
+   from tblSales s
+     inner join #tmp_station t on s.StationID = t.StationID
+   where s.TransType in (0, 1)
+     and s.SaleDateTime >= @FromDateTime
+     and s.SaleDateTime <  @ToDateTime
+     and case when @EmployeeID = 0 then 1 
+              else case when s.CashierID = @EmployeeID then 1 else 0 end
+         end = 1
+   select @NonAlcoholDSCAmt = sum(case when s.TransType = 0 then -1 else 1 end * sd.DiscountAmt),
+          @GSTOnNonAlcoholDSCAmt = sum(case when s.TransType = 0 then -1 else 1 end * round(sd.DiscountAmt * case when i.ApplyGST = 1 then s.GSTRate else 0 end, 2)),
+          @PSTOnNonAlcoholDSCAmt = sum(case when s.TransType = 0 then -1 else 1 end * round(sd.DiscountAmt * case when i.ApplyPST = 1 then s.PSTRate else 0 end, 2)),
+          @PST2OnNonAlcoholDSCAmt = sum(case when s.TransType = 0 then -1 else 1 end * round(sd.DiscountAmt * case when i.ApplyPST2 = 1 then s.PST2Rate else 0 end, 2))
+   from tblSales s
+     inner join #tmp_station t on s.StationID = t.StationID
+     inner join tblSalesDetail sd on sd.SalesID = s.ID
+     inner join tblItem i on sd.ItemID = i.ID
+   where s.TransType in (0, 1)
+     and s.SaleDateTime >= @FromDateTime
+     and s.SaleDateTime <  @ToDateTime
+     and case when @EmployeeID = 0 then 1 
+              else case when s.CashierID = @EmployeeID then 1 else 0 end
+         end = 1
+     and i.Alcohol = 0
+     and i.NonAlcohol = 1
+   select @AlcoholSubTotal = sum(round(sd.Qty * sd.UnitPrice, 2)),
+          @AlcoholGSTTotal = sum(round(sd.Qty * sd.UnitPrice * case when i.ApplyGST = 1 then s.GSTRate else 0 end, 2)),
+          @AlcoholPSTTotal = sum(round(sd.Qty * sd.UnitPrice * case when i.ApplyPST = 1 then s.PSTRate else 0 end, 2)),
+          @AlcoholPST2Total = sum(round(sd.Qty * sd.UnitPrice * case when i.ApplyPST2 = 1 then s.PST2Rate else 0 end, 2))
+   from tblSales s
+     inner join tblSalesDetail sd on sd.SalesID = s.ID
+     inner join tblItem i on sd.ItemID = i.ID
+     inner join #tmp_station t on s.StationID = t.StationID
+   where s.TransType = 1
+     and s.SaleDateTime >= @FromDateTime
+     and s.SaleDateTime <  @ToDateTime
+     and i.Alcohol = 1
+     and sd.Voided = 0
+     and case when @EmployeeID = 0 then 1 
+              else case when s.CashierID = @EmployeeID then 1 else 0 end
+         end = 1
+   select @NonAlcoholSubTotal = sum(round(sd.Qty * sd.UnitPrice, 2)),
+          @NonAlcoholGSTTotal = sum(round(sd.Qty * sd.UnitPrice * case when i.ApplyGST = 1 then s.GSTRate else 0 end, 2)),
+          @NonAlcoholPSTTotal = sum(round(sd.Qty * sd.UnitPrice * case when i.ApplyPST = 1 then s.PSTRate else 0 end, 2)),
+          @NonAlcoholPST2Total = sum(round(sd.Qty * sd.UnitPrice * case when i.ApplyPST2 = 1 then s.PST2Rate else 0 end, 2))
+   from tblSales s
+     inner join tblSalesDetail sd on sd.SalesID = s.ID
+     inner join tblItem i on sd.ItemID = i.ID
+     inner join #tmp_station t on s.StationID = t.StationID
+   where s.TransType = 1
+     and s.SaleDateTime >= @FromDateTime
+     and s.SaleDateTime <  @ToDateTime
+     and i.Alcohol = 0
+     and i.NonAlcohol = 1
+     and sd.Voided = 0
+     and case when @EmployeeID = 0 then 1 
+              else case when s.CashierID = @EmployeeID then 1 else 0 end
+         end = 1
+   select @AlcoholRefundSubTotal = sum(round(sd.Qty * sd.UnitPrice, 2)),
+          @AlcoholRefundGSTTotal = sum(round(sd.Qty * sd.UnitPrice * case when i.ApplyGST = 1 then s.GSTRate else 0 end, 2)),
+          @AlcoholRefundPSTTotal = sum(round(sd.Qty * sd.UnitPrice * case when i.ApplyPST = 1 then s.PSTRate else 0 end, 2)),
+          @AlcoholRefundPST2Total = sum(round(sd.Qty * sd.UnitPrice * case when i.ApplyPST2 = 1 then s.PST2Rate else 0 end, 2))
+   from tblSales s
+     inner join tblSalesDetail sd on sd.SalesID = s.ID
+     inner join tblItem i on sd.ItemID = i.ID
+     inner join #tmp_station t on s.StationID = t.StationID
+   where s.TransType = 0
+     and s.SaleDateTime >= @FromDateTime
+     and s.SaleDateTime <  @ToDateTime
+     and i.Alcohol = 1
+     and sd.Voided = 0
+     and case when @EmployeeID = 0 then 1 
+              else case when s.CashierID = @EmployeeID then 1 else 0 end
+         end = 1
+   select @NonAlcoholRefundSubTotal = sum(round(sd.Qty * sd.UnitPrice, 2)),
+          @NonAlcoholRefundGSTTotal = sum(round(sd.Qty * sd.UnitPrice * case when i.ApplyGST = 1 then s.GSTRate else 0 end, 2)),
+          @NonAlcoholRefundPSTTotal = sum(round(sd.Qty * sd.UnitPrice * case when i.ApplyPST = 1 then s.PSTRate else 0 end, 2)),
+          @NonAlcoholRefundPST2Total = sum(round(sd.Qty * sd.UnitPrice * case when i.ApplyPST2 = 1 then s.PST2Rate else 0 end, 2))
+   from tblSales s
+     inner join tblSalesDetail sd on sd.SalesID = s.ID
+     inner join tblItem i on sd.ItemID = i.ID
+     inner join #tmp_station t on s.StationID = t.StationID
+   where s.TransType = 0
+     and s.SaleDateTime >= @FromDateTime
+     and s.SaleDateTime <  @ToDateTime
+     and i.Alcohol = 0
+     and i.NonAlcohol = 1
+     and sd.Voided = 0
+     and case when @EmployeeID = 0 then 1 
+              else case when s.CashierID = @EmployeeID then 1 else 0 end
+         end = 1
+   set @AlcoholSubTotal = isnull(@AlcoholSubTotal, 0) - isnull(@AlcoholRefundSubTotal, 0)
+   set @AlcoholGSTTotal = isnull(@AlcoholGSTTotal, 0) - isnull(@AlcoholRefundGSTTotal, 0)
+   set @AlcoholPSTTotal = isnull(@AlcoholPSTTotal, 0) - isnull(@AlcoholRefundPSTTotal, 0)
+   set @AlcoholPST2Total = isnull(@AlcoholPST2Total, 0) - isnull(@AlcoholRefundPST2Total, 0)
+   set @NonAlcoholSubTotal = isnull(@NonAlcoholSubTotal, 0) - isnull(@NonAlcoholRefundSubTotal, 0)
+   set @NonAlcoholGSTTotal = isnull(@NonAlcoholGSTTotal, 0) - isnull(@NonAlcoholRefundGSTTotal, 0)
+   set @NonAlcoholPSTTotal = isnull(@NonAlcoholPSTTotal, 0) - isnull(@NonAlcoholRefundPSTTotal, 0)
+   set @NonAlcoholPST2Total = isnull(@NonAlcoholPST2Total, 0) - isnull(@NonAlcoholRefundPST2Total, 0)
+   if (isnull(@AlcoholSubTotal, 0) > 0)
+     set @AlcoholSubTotal = isnull(@AlcoholSubTotal, 0) - isnull(@AlcoholDSCAmt, 0)
+   if (isnull(@AlcoholGSTTotal, 0) > 0)
+     set @AlcoholGSTTotal = isnull(@AlcoholGSTT -16777208 8421631 CHEESE SUB -16777208 8421631 GENOA SALAMI SUB -16777208 8421631 CHICKEN BREAST SUB -16777208 8421631 SANDWICH EXTRA SANDWICH EXTRA -16777208 8454143 OPEN ITEM OPEN  ITEM -16777208 4210816 GROCERY GROCERY -16777208 65408 STEAK CHEESE STEAK CHEESE -16777208 -16777201 CHICKEN BREAST CHICKEN BREAST -16777208 -16777201 GYRO GYRO -16777208 -16777201 CHEESE BURGER CHEESE BURGER -16777208 -16777201 CHEESE BURGER SUB CHEESE BURGER SUB -16777208 -16777201 BEATBALL CHEESE BEATBALL CHEESE -16777208 -16777201 TUNA MELT TUNA MELT -16777208 -16777201 GRILLED CHEESE GRILLED CHEESE -16777208 -16777201 GRILLED CHEESE TURKEY GRILLED CHEESE TURKEY -16777208 -16777201 BBQ BEEF OR CHICKEN BBQ BEEF OR CHICKEN -16777208 -16777201 HOT DOG HOT DOG -16777208 -16777201 REUBEN BEEF OR TURKEY REUBEN BEEF OR TURKEY -16777208 -16777201 FANCYS DELIGHT FANCYS DELIGHT -16777208 -16777201 GRILLED CHEESE HAM BACON GRILLED CHEESE HAM BACON -16777208 -16777201 GRILLED CHEESE TOMATO AVOCADO GRILLED CHEESE TOMATO AVOCADO -16777208 -16777201 GROCERY GROCERY -16777208 65408 OPEN ITEM OPEN ITEM -16777208 4210816 SANDWICH EXTRA SANDWICH EXTRA -16777208 8454143 AVOCADO DELIGHT AVOCADO DELIGHT -16777208 -16777201 ITALIAN COLD CUT ITALIAN COLD CUT -16777208 -16777201 JEANS SPECIAL JEANS SPECIAL -16777208 -16777201 TURKEY DELUXE TURKEY DELUXE -16777208 -16777201 CHICKEN BREAST AVOCADO CHICKEN BREAST AVOCADO -16777208 -16777201 VEGGIE VEGGIE -16777208 -16777201 CHICKEN BREAST WRAP CHICKEN BREAST -16777208 -16777201 SPINACH WRAP SPINACH -16777208 -16777201 GARDEN VEGGIE WRAP GARDEN   VEGGIE -16777208 -16777201 SPECIALTY SANDWICHES -16777208 8421631 TUNA OR TURKEY WRAP TUNA OR TURKEY -16777208 -16777201 SANDWICHE WRAPS -16777208 16777088 OPEN ITEM OPEN  ITEM -16777208 4210816 GROCERY GROCERY -16777208 65408 SANDWICH EXTRA SANDWICH EXTRA -16777208 8454143 GREEK SALAD GREEK SALAD -16777208 -16777201 SPINACH STRAWBERRY SALAD SPINACH STRAWBERRY SALAD -16777208 -16777201 GRILLED CHICKEN BREAST SALAD GRILLED CHICKEN BREAST SALAD -16777208 -16777201 CAESAR SALAD & CHICKEN BREAST CAESAR SALAD && CHICKEN BREAST -16777208 -16777201 CAESAR SALAD CAESAR SALAD -16777208 -16777201 SOUP OF DAY SOUP OF DAY -16777208 -16777201 FRUIT SALAD FRUIT SALAD -16777208 -16777201 SIGNATURE SALAD SIGNATURE SALAD -16777208 -16777201 CHEF SALAD CHEF SALAD -16777208 -16777201 CHILI CHILI -16777208 -16777201 HALF SANDWICH & SOUP HALF SANDWICH&& SOUP -16777208 -16777201 HALF SANDWICH & CHILI HALF SANDWICH&& CHILI -16777208 -16777201 GREEN SALAD GREEN SALAD -16777208 -16777201 SOUP && CHILI -16777208 12615935 TACO SALAD TACO SALAD -16777208 -16777201 -16777208 8454016 OPEN ITEM OPEN  ITEM -16777208 4210816 SANDWICH EXTRA SANDWICH EXTRA -16777208 8454143 GROCERY GROCERY -16777208 65408 HAM CLUB HAM CLUB -16777208 -16777201 SUPREME CLUB SUPREME CLUB -16777208 -16777201 ROAST BEEF CLUB ROAST BEEF CLUB -16777208 -16777201 TURKEY CLUB TURKEY CLUB -16777208 -16777201 CHICKEN BREAST CLUB CHICKEN BREAST CLUB -16777208 -16777201 CLUB CORNER -16777208 16744448 SANDWICH EXTRA SANDWICH EXTRA -16777208 8454143 GROCERY GROCERY -16777208 65408 OPEN ITEM OPEN  ITEM -16777208 4210816
+ CRWWWg€ BREAKFAST EXTRABREAKFAST EXTRAArial 4>CCCS€ SANDWICHESArial 4<AAAQ€ PLATTERSArial€ OMELETSArial€ BAGELSArial 4BNNN^€ HOT SANDWICHESArial Narrow @LQQQa€ STEAK CHEESESTEAK CHEESEArial BPUUUe€ CHICKEN BREASTCHICKEN BREASTArial 8<AAAQ€ GYROGYROArial
+ ANSSSc€ CHEESE BURGERCHEESE BURGERArial€ CHEESE BURGER SUBCHEESE BURGER SUBArial CRWWWg€ BEATBALL CHEESEBEATBALL CHEESEArial
+€ TUNA MELTTUNA MELTArial BPUUUe€ GRILLED CHEESEGRILLED CHEESEArial I^cccs€ GRILLED CHEESE TURKEYGRILLED CHEESE TURKEYArial
+€ BBQ BEEF OR CHICKENBBQ BEEF OR CHICKENArial ;BGGGW€ HOT DOGHOT DOGArial I^cccs€ REUBEN BEEF OR TURKEYREUBEN BEEF OR TURKEYArial
+ BPUUUe€ FANCYS DELIGHTFANCYS DELIGHTArial Ldiiiy€ GRILLED CHEESE HAM BACONGRILLED CHEESE HAM BACONArial Qnsss GRILLED CHEESE TOMATO AVOCADOGRILLED CHEESE TOMATO AVOCADOArial BPUUUe€ SANDWICH EXTRASANDWICH EXTRAArial 4COOO_€ COLD SANDWICHESArial Narrow 4AFFFV€ CHICKEN SALADArial 4=BBBR€ EGG SALADArial 4>CCCS€ TUNA SALADArial 4AFFFV€ TURKEY BREASTArial 4>CCCS€ ROAST BEEFArial€ B.L.T.Arial 4?DDDT€ CORNED BEEFArial 4BGGGW€ CHICKEN BREASTArial
+ 4@EEEU€ GENOA SALAMIArial€ CHEESEArial
+ CKPPP`€ TUNA SALAD SANDSANDWICHArial
+ FNSSSc€ CHICKEN SALAD SANDSANDWICHArial
+ BJOOO_€ EGG SALAD SANDSANDWICHArial
+ FNSSSc€ TURKEY BREAST SANDSANDWICHArial
+ <DIIIY€ HAM SANDSANDWICHArial
+ CKPPP`€ ROAST BEEF SANDSANDWICHArial
+ DLQQQa€ CORNED BEEF SANDSANDWICHArial
+€ B.L.T. SANDSANDWICHArial
+€ CHEESE SANDSANDWICHArial
+ EMRRRb€ GENOA SALAMI SANDSANDWICHArial
+ GOTTTd€ CHICKEN BREAST SANDSANDWICHArial BEJJJZ€ TUNA SALAD SUBSUBArial EHMMM]€ CHICKEN SALAD SUBSUBArial ADIIIY€ EGG SALAD SUBSUBArial EHMMM]€ TURKEY BREAST SUBSUBArial€ HAM SUBSUBArial BEJJJZ€ ROAST BEEF SUBSUBArial CFKKK[€ CORNED BEEF SUBSUBArial >AFFFV€ B.L.T. SUBSUBArial >AFFFV€ CHEESE SUBSUBArial DGLLL\€ GENOA SALAMI SUBSUBArial FINNN^€ CHICKEN BREAST SUBSUBArial BPUUUe€ SANDWICH EXTRASANDWICH EXTRAArial 4MYYYi€ SPECIAL SANDWICHES & WARPArial Narrow CRWWWg€ AVOCADO DELIGHTAVOCADO DELIGHTArial 4HMMM]€ SPECIALTY SANDWICHESArial 4CHHHX€ SANDWICHE WRAPSArial DTYYYi€ ITALIAN COLD CUTITALIAN COLD CUTArial ANSSSc€ JEANS SPECIALJEANS SPECIALArial ANSSSc€ TURKEY DELUXETURKEY DELUXEArial J`eeeu€ CHICKEN BREAST AVOCADOCHICKEN BREAST AVOCADOArial
+ ?JOOUe€ CORNED BEEFCORNED BEEFArialBREADS =FKKQa€ CRAB CAKECRAB CAKEArialBREADS ANSSYi€ DOUBLE BURGERDOUBLE BURGERArialBREADS
+ =FKKQa€ EX CHEESEEX CHEESEArialBREADS Jaffl|€ GRILLED BACON & CHEESEGRILLED BACON && CHEESEArialBREADS BPUU[k€ GRILLED CHEESEGRILLED CHEESEArialBREADS
+ CRWW]m€ GRILLED CHICKENGRILLED CHICKENArialBREADS BPUU[k€ GRILLED HAM CHGRILLED HAM CHArialBREADS @MRRXh€ HAM & CHEESEHAM && CHEESEArialBREADS =FKKQa€ HAMBURGERHAMBURGERArialBREADS =FKKQa€ PORK CHOPPORK CHOPArialBREADS€ REUBENREUBENArialBREADS >HMMSc€ ROAST BEEFROAST BEEFArialBREADS 8<AAGW€ TUNATUNAArialBREADS ANSSYi€ TURKEY BREASTTURKEY BREASTArialBREADS 4CHHHX€ 1/2 8 inch SubsArial€ 1/2 CB1/2 CBArial€ 1/2 CH ST1/2 CH STArial€ 1/2 CHICKEN SALAD1/2 CHICKEN SALADArial ANSSSc€ 1/2 CHOP FISH1/2 CHOP FISHArial <DIIIY€ 1/2 FISH1/2 FISHArial DUZZZj€ 1/2 HAM & CHEESE1/2 HAM && CHEESEArial€ 1/2 HB1/2 HBArial <DIIIY€ 1/2 I-CC1/2 I-CCArial DTYYYi€ 1/2 MEATBALL SUB1/2 MEATBALL SUBArial
+ BPUUUe€ 1/2 MUSH CH ST1/2 MUSH CH STArial DTYYYi€ 1/2 PEPPER CH ST1/2 PEPPER CH STArial€ 1/2 ST1/2 STArial
+ @LQQQa€ 1/2 SUKIYAKI1/2 SUKIYAKIArial <DIIIY€ 1/2 TUNA1/2 TUNAArial€ 1/2 TURKEY BREAST1/2 TURKEY BREASTArial I_dddt€ 1/2 SUB COMBO & WINGS1/2 SUB COMBO && WINGSArial€ EXTRA STEAKEXTRA STEAKArial @LQQQa€ MEATBALL SUBMEATBALL SUBArial€ CRISPY CHICKEN SUBCRISPY CHICKEN SUBArial @LQQQa€ EXTRA BURGEREXTRA BURGERArial€ EXTRA MEATEXTRA MEATArial <DIIIY€ 1/2 A-CC1/2 A-CCArial DTYYYi€ 1/2 SHRIMP CH ST1/2 SHRIMP CH STArial
+ ).31AdminAdminHYOwnerer0
+ )-31ParkHAJILL0
+ ),12LeeYoung0
+ )-33GiriRubina<
+ )031SupportWBSortWBS<
+ ,040710ParkHAJI<
+ ,/40613LeeYoung<
+ ,060725GiriRubina<
+ ,170309JoshiRoshni<
+ ,371002AcharyaSima<
+ ,167896changhyang<
+ ,040716yoonsung<
+ ,489613ChitturiSuma<
+ ,081234jeonjennifer<
+ ,041212yoonlena
+ hanttblGroup
+ Description
+ a_WA_Sys_00000005_000000400'A a_WA_Sys_00000001_0000004A0'J a_WA_Sys_00000003_0000004A0'K a_WA_Sys_0000000C_0000004C0'L a_WA_Sys_0000000D_0000004C0'L
+ a_WA_Sys_00000002_0000004C0'L a_WA_Sys_00000003_0000004C0'N
+ a_WA_Sys_00000005_0000004A0'K a_WA_Sys_00000001_0000004B0'K a_WA_Sys_00000005_0000004B0'=~1 a_WA_Sys_00000004_03317E3D0'K
+ a_WA_Sys_00000003_0000004B0'! a_WA_Sys_0000000C_07020F210' QPK_tblPaymentType0'! a_WA_Sys_00000002_07020F210'! a_WA_Sys_00000003_07020F210' a_WA_Sys_00000002_01D345B0 a_WA_Sys_00000003_03317E3D0' CPK_tblSize0' a_WA_Sys_00000005_0519C6AF0'c83 a_WA_Sys_00000001_02333863 a_WA_Sys_00000004_06ADD4BD<'! EPK_tblTable CPK_tblMisc0'=~1 Gidx_MiscCode<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable0'=~1 CPK_tblMisc0'! EPK_tblTable EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc<'! EPK_tblTable<'=~1 CPK_tblMisc0'! EPK_tblTable CPK_tblMisc tblMisc
+ Club Sandwiches0 Breakfast Sandwiches0 Breakfast Platters0 Cake / Bread0 Sandwiches0 1/2 8 inch Subs0
+ Wrap / Side Order0 Chitterling & Hog Maw0
+ Fried Chicken0 Chicken Tender0 Condiment0 Special Combo0
+ Club Sandwiches< Breakfast Sandwiches< Breakfast Platters< Cake / Bread< Sandwiches< 1/2 8 inch Subs<
+ Wrap / Side Order< Chitterling & Hog Maw<
+ Fried Chicken< Chicken Tender< Condiment< Special Combo< BREAKFAST0 HOT SANDWICHES0 COLD SANDWICHES0 SPECIALTY SANDWICHES< SANDWICH WRAPS0 BEVERAGES0 CLUB CORNER0
+ SOUP & CHILI0 SPECIALTY SANDWICHES & WRAP
+ COFFEE OF THE DAY -16777208 8421631 -16777208 8421631 HOT CHOCOLATE -16777208 8421631 ICED COFFEE -16777208 16777088 -16777208 16777088 SOFT DRINK -16777208 16777088 COFFEE SMALL SMALL -16777208 -16777201 COFFEE MEDIUM MEDIUM -16777208 -16777201 COFFEE LARGE LARGE -16777208 -16777201 HOT TEA SMALL SMALL -16777208 -16777201 HOT TEA MEDIUM MEDIUM -16777208 -16777201 HOT TEA LARGE LARGE -16777208 -16777201 HOT CHOCOLETE SMALL SMALL -16777208 -16777201 HOT CHOCOLETE MEDIUM MEDIUM -16777208 -16777201 HOT CHOCOLETE LARGE LARGE -16777208 -16777201 ICED COFFEE SMALL SMALL -16777208 -16777201 ICED COFFEE MEDIUM MEDIUM -16777208 -16777201 ICED COFFEE LARGE LARGE -16777208 -16777201 ICED TEA SMALL SMALL -16777208 -16777201 ICED TEA MEDIUM MEDIUM -16777208 -16777201 ICED TEA LARGE LARGE -16777208 -16777201 SOFT DRINK SMALL SMALL -16777208 -16777201 SOFT DRINK MEDIUM MEDIUM -16777208 -16777201 SOFT DRINK LARGE LARGE -16777208 -16777201 BREAKFAST EXTRA (TG) Arial Narrow 8388608 -16777201 SANDWICH EXTRA (TG) Arial Narrow 8388608 -16777201 CHEESE CHEESE -16777208 -16777201 HASH BROWN HASH BROWN -16777208 -16777201 MEAT MEAT -16777208 -16777201 ON BAGEL ON BAGEL -16777208 -16777201 -16777208 -16777201 LETTUCE TOMATO LETTUCE TOMATO -16777208 -16777201 ON CROISSANT ON CROISSANT -16777208 -16777201 SANDWICH EXTRA CHEESE -16777208 -16777201 SANDWICH EXTRA MEAT -16777208 -16777201 SANDWICH EXTRA AVOCADO -16777208 -16777201 SANDWICH EXTRA BACON -16777208 -16777201 SANDWICH EXTRA VEGETABLE -16777208 -16777201
+ 4=BBBR€ EGG SALADArial 4>CCCS€ TUNA SALADArial 4AFFFV€ TURKEY BREASTArial
+ ABRCDMDBBFEDHDCTLGAPMOBOLTCPARRTSBQBVTQBV
+ $000202020 $0070A0D10 $008080400 $00ADBD840 $00B3FFFF0 $00CFE1EB0 000001000020000300000 01/01/2008 12:00:000 02/04/20240 4426 Edmondson Ave,0 7000002007530100 Baltimore MD 212290 C:\Program Files\Active-Charge\0 C:\Program Files\TOD 012005\TOD 012005.exe0 C:\TopPos\DB_Backup\0 C:\TopPos\Images\Ad\0 C:\TopPos\Images\back.bmp0 C:\TopPos\OnlineOrders\0 C:\TopPos\Reports\0 clGrayText0 Delivery Charge0 Kimmy's Restaurant & Carry Out0 Suggested Gratitude0 T.410-566-44000 yyyy-mm-dd $0000EAEA.01/01/2008 12:00:00103055clBlackFalseTax3rue
+ CREATE PROCEDURE [dbo].[sp_CheckIfClockedInTimeExceeded]
+   @TimeStampID int
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   declare @ClockedInTimeExceeded bit
+   if exists (select *
+              from tblTimeStamp
+              where ID = @TimeStampID
+                and [State] = 0
+                and datediff(n, DateTimeIn, getdate()) > 1200)
+     set @ClockedInTimeExceeded = 1
+     set @ClockedInTimeExceeded = 0
+   select @ClockedInTimeExceeded as ClockedInTimeExceeded
+ END0
+ CREATE PROCEDURE [dbo].[sp_UpdateTableInfo6]
+   @OrderNum int,
+   @BillPrinted bit
+   --@Updated bit = 0 output
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   begin try
+     begin transaction update_table_info6
+     update tblTable
+     set BillPrinted = case when isnull(@BillPrinted, 0) = 0 then 0 else 1 end,
+         BillPrintedDateTime = case when isnull(@BillPrinted, 0) = 0 then null else getdate() end /* Once @BillPrinted is passed as 1 (meaning printed), it should not be passed as back to 0 */
+     where OrderNum = @OrderNum
+     commit transaction update_table_info6
+     --set @Updated = 1
+     return 1
+   end try
+   begin catch
+     rollback transaction update_table_info6
+     --set @Updated = 0
+     return 0
+   end catch
+ END0
+ CREATE PROCEDURE [dbo].[spws_GetItemsToSyncDayHourDiscountPriceToOnline]
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   /* This option should be turned on. otherwise, it will apply % discount one more time when the online order is processed. */
+   update tblMisc
+   set Value = 'True'
+   where Code = 'NWHDT' /*Do Not Apply Weekday/Happy Hour Discount On Take-Out Orders*/
+   declare @OnlineOrderCompanyID smallint, @EndpointURL varchar(1000), @APITransKey varchar(500), 
+           @AppliedUnitPriceType tinyint, @ItemID smallint, @SizeID smallint
+   select @OnlineOrderCompanyID = ID
+   from tblOnlineOrderCompany
+   where [Integrated] = 1
+     and IntegrationCode = 'CODEFUSION'
+   select @EndpointURL = ItemInfoSyncAPIEndpointURL,
+          @APITransKey = APITransactionKey        
+   from tblOnlineOrderCompany
+   where ID = @OnlineOrderCompanyID
+   select top 1 @AppliedUnitPriceType = t.AppliedUnitPriceType
+   from (select AppliedUnitPriceType, count(AppliedUnitPriceType) as TableCount
+         from tblTable
+         where OnlineOrderCompanyID = @OnlineOrderCompanyID
+         group by AppliedUnitPriceType) t
+   order by t.TableCount desc
+   select @EndpointURL as EndpointURL, @APITransKey as APITransKey, a.ItemID, a.SizeID,
+          case when (isnull(a.ApplyNoDSC, 0) = 1) then 
+                 isnull(case @AppliedUnitPriceType when 1 then a.UnitPrice
+                                                   when 2 then a.UnitPrice2
+                                                   when 3 then a.UnitPrice3 
+                         end, 0)
+               else 
+                 dbo.GetDayHourDiscountPrice(a.ItemID, a.SizeID, case @AppliedUnitPriceType when 1 then a.UnitPrice
+                                                                                            when 2 then a.UnitPrice2
+                                                                                            when 3 then a.UnitPrice3 
+                                                                 end) 
+          end as UnitPrice,
+          dbo.GetDayHourDiscountRate(a.ItemID, a.SizeID) as DayHourDiscountRate,
+          cast(0 as smallmoney) as DayHourDiscountRateAppliedUnitPrice
+   into #tmpItemsToSyncDayHourDiscountPriceToOnline
+   from tblAvailableSize a
+     inner join tblItem i on a.ItemID = i.ID
+   where a.ApplyNoDSC = 0
+     and (
+           exists (select *
+                   from tblDayHourDiscount d
+                   where d.ItemID = a.ItemID
+                     and d.SizeID = a.SizeID
+                     and (isnull(d.ApplyDay, 0) = 1
+                         isnull(d.ApplyHour, 0) = 1))
+           i.OnlineItem = 1
+     and case when (isnull(a.ApplyNoDSC, 0) = 1) then 
+                isnull(case @AppliedUnitPriceType when 1 then a.UnitPrice
+                                                  when 2 then a.UnitPrice2
+                                                  when 3 then a.UnitPrice3 
+                       end, 0)
+              else 
+                dbo.GetDayHourDiscountPrice(a.ItemID, a.SizeID, case @AppliedUnitPriceType when 1 then a.UnitPrice
+                                                                                           when 2 then a.UnitPrice2
+                                                                                           when 3 then a.UnitPrice3 
+                                                                end) 
+         end > 0
+   update t
+   set t.DayHourDiscountRateAppliedUnitPrice = t.UnitPrice - round(t.UnitPrice * (t.DayHourDiscountRate / 100.0), 2)
+   from #tmpItemsToSyncDayHourDiscountPriceToOnline t
+   where t.DayHourDiscountRate > 0
+   select *
+   from #tmpItemsToSyncDayHourDiscountPriceToOnline
+   drop table #tmpItemsToSyncDayHourDiscountPriceToOnline
+   end catch
+                     case when ApplyPST2 = 1 then PST2Rate else 0 end))) as SalesAmount,
+            case when @TotalSalesQty = 0 then 0
+                 else round(sum(SalesQty) * 1.0 / @TotalSalesQty * 100, 2)
+            end as SalesQtyPercentage,
+            case when @TotalSalesAmount = 0 then 0
+                 else round(round(sum(SalesAmount + (SalesAmount * (case when ApplyGST = 1 then GSTRate else 0 end +
+                                                                    case when ApplyPST = 1 then PSTRate else 0 end +
+                                                                    case when ApplyPST2 = 1 then PST2Rate else 0 end))), 2) * 1.0 / @TotalSalesAmount * 100, 2) 
+            end as SalesAmountPercentage
+     from #tmpSummaryBySoldItemCount
+     group by CatName, IName
+     order by CatName, SalesAmount desc
+   else begin
+     select @TotalSalesQty = sum(SalesQty),
+            @TotalSalesAmount = round(sum(SalesAmount), 2)
+     from #tmpSummaryBySoldItemCount
+     select CatName, IName, sum(SalesQty) as SalesQty, sum(SalesAmount) as SalesAmount,
+            case when @TotalSalesQty = 0 then 0
+                 else round(sum(SalesQty) * 1.0 / @TotalSalesQty * 100, 2)
+            end as SalesQtyPercentage,
+            case when @TotalSalesAmount = 0 then 0
+                 else round(round(sum(SalesAmount), 2) * 1.0 / @TotalSalesAmount * 100, 2) 
+            end as SalesAmountPercentage
+     from #tmpSummaryBySoldItemCount
+     group by CatName, IName
+     order by CatName, SalesAmount desc
+   drop table #tmpSummaryBySoldItemCount
+ END0
+ CREATE PROCEDURE [dbo].[sp_GetSurchargeItemInfo]
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   select isnull(i.ID, 0) as SurchargeID, 
+          isnull(a.UnitPrice, 0) as SurchargeAmt, 
+          ltrim(rtrim(i.IName)) as SurchargeName
+   from tblItem i, tblAvailableSize a
+   where a.ItemID = i.ID
+     and a.SizeID = 1
+     and upper(ltrim(rtrim(i.IName))) = 'SURCHARGE'
+ erName, BillPrintType)
+     values (@StationName, @SalesID, @PrinterName, @BillPrintType)
+     return cast(1 as bit)
+   end try
+   begin catch
+     return cast(0 as bit)
+   end catch
+ CREATE PROCEDURE [dbo].[sp_InsertUpdateRewardPointsDetail]
+   @SalesID int,
+   @CustomerID int,
+   @PointUsed int,
+   @PointSaved int
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   if (@CustomerID > 1) begin
+     declare @ManageRewardPointsForManagedCustomersOnly bit
+     set @ManageRewardPointsForManagedCustomersOnly = convert(bit, dbo.GetMiscValue('ORPMC'))
+     if exists (select *
+                from tblPointsDetail
+                where SalesID = @SalesID) begin
+       update tblCustomer
+       set EarnedPoints = EarnedPoints - @PointUsed
+       where ID = @CustomerID
+         and case when @ManageRewardPointsForManagedCustomersOnly = 1 then 
+                    case when PointsManaged = 1 then 1 else 0 end
+                  else 1
+             end = 1
+       update tblPointsDetail
+       set PointUsed = PointUsed + @PointUsed --,
+           --PointSaved = PointSaved + @PointSaved
+       where SalesID = @SalesID
+     else begin
+       update tblCustomer
+       set EarnedPoints = EarnedPoints - @PointUsed + @PointSaved
+       where ID = @CustomerID
+         and case when @ManageRewardPointsForManagedCustomersOnly = 1 then 
+                    case when PointsManaged = 1 then 1 else 0 end
+                  else 1
+             end = 1
+       insert into tblPointsDetail (SalesID, PointUsed, PointSaved)
+       values (@SalesID, @PointUsed, @PointSaved)
+ CREATE PROCEDURE [dbo].[spx_GetImportedItems]
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   if not exists (select * 
+                  from sys.objects 
+                  where object_id = OBJECT_ID(N'[dbo].[tmpItemImport]')
+                    and type in (N'U')) begin
+     create table [dbo].[tmpItemImport](
+       [CategoryName] [varchar](30) NULL,
+       [ItemName] [varchar](30) NULL,
+       [ItemName2] [varchar](30) NULL,
+       [UnitPrice] [varchar](10) NULL,
+       [Tax1] [varchar](1) NULL,
+       [Tax2] [varchar](1) NULL,
+       [Tax3] [varchar](1) NULL,
+       [Back] [varchar](1) NULL,
+       [Front] [varchar](1) NULL,
+       [Front2] [varchar](1) NULL,
+       [Bar] [varchar](1) NULL,
+       [Taste] [varchar](1) NULL,
+       [Alcohol] [varchar](1) NULL,
+       [Open] [varchar](1) NULL
+   select t.CategoryName, t.ItemName, t.ItemName2, 
+           isnull(convert(smallmoney, t.UnitPrice), 0) as UnitPrice, 
+           t.Tax1, t.Tax2, t.Tax3, t.Back, t.Front, t.Front2, t.Bar, t.Taste, t.Alcohol, t.[Open],
+           convert(bit, case when isnull(i.ID, 0) > 0 then 1 else 0 end) as ItemExists
+   from tmpItemImport t 
+         left join tblCategory c on upper(ltrim(rtrim(c.CatName))) = upper(ltrim(rtrim(t.CategoryName)))
+         left join tblItem i on upper(ltrim(rtrim(i.IName))) = upper(ltrim(rtrim(t.ItemName)))
+                            and i.CategoryID = isnull(c.ID, 0)    
+ END0
+ CREATE PROCEDURE [dbo].[spx_InsertImportedItems]
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   insert into tblCategory (CatName, PrintOrder, CategoryImageFilePath)
+   select distinct t.CategoryName, 0, null
+   from tmpItemImport t
+   where not exists (select *
+                     from tblCategory c
+                     where upper(ltrim(rtrim(c.CatName))) = upper(ltrim(rtrim(t.CategoryName))))
+   declare @CategoryName varchar(30), @CategoryID tinyint, @ItemName varchar(30), @ItemName2 varchar(30),
+           @UnitPrice smallmoney, @Tax1 bit, @Tax2 bit, @Tax3 bit, @Back bit, @Front bit, @Front2 bit, @Bar bit,
+           @Taste bit, @Alcohol bit, @Open bit, @ItemID smallint
+   declare curs_item cursor for
+     select isnull(c.ID, 1), /*t.CategoryName,*/ t.ItemName, t.ItemName2, 
+            isnull(convert(smallmoney, t.UnitPrice), 0), 
+            case when t.Tax1     = 'Y' then 1 else 0 end,
+            case when t.Tax2     = 'Y' then 1 else 0 end,
+            case when t.Tax3     = 'Y' then 1 else 0 end,
+            case when t.Back     = 'Y' then 1 else 0 end,
+            case when t.Front    = 'Y' then 1 else 0 end,
+            case when t.Front2   = 'Y' then 1 else 0 end,
+            case when t.Bar      = 'Y' then 1 else 0 end,
+            case when t.Taste    = 'Y' then 1 else 0 end,
+            case when t.Alcohol  = 'Y' then 1 else 0 end,
+            case when t.[Open]   = 'Y' then 1 else 0 end
+     from tmpItemImport t 
+       left join tblCategory c on upper(ltrim(rtrim(c.CatName))) = upper(ltrim(rtrim(t.CategoryName)))
+     where not exists (select *
+                       from tblItem i
+                       where upper(ltrim(rtrim(i.IName))) = upper(ltrim(rtrim(t.ItemName)))
+                         and i.CategoryID = isnull(c.ID, 1))
+     open curs_item
+     fetch next from curs_item into @CategoryID, @ItemName, @ItemName2, @UnitPrice, @Tax1, @Tax2, @Tax3, 
+                                    @Back, @Front, @Front2, @Bar, @Taste, @Alcohol, @Open
+     while (@@fetch_status = 0) begin
+       set @ItemID = 0
+       exec sp_CopyAvailableSizeForEdit @ItemID, 'SYSTEM'
+       if (@Taste = 0) or ((@Taste = 1) and (@UnitPrice > 0)) begin
+         exec sp_UpdateAvailableSize @ItemID, 1, @UnitPrice, 0, 0, 0, 1, 'SYSTEM'
+       end
+       exec sp_InsertItem @ItemName, @CategoryID, @Tax1, @Tax2, 1, @Open, @Back, @Front, @Bar, 0, @Taste, 
+                          @ItemName2, @Tax3, '', @Front2, @Alcohol, 0, 0, 0, null, null, 0, 0, 0, 0, null, null, 1, 0, 'SYSTEM', @ItemID output
+       exec sp_DeleteAvailableSize 0, 0, 'SYSTEM'
+       fetch next from curs_item into @CategoryID, @ItemName, @ItemName2, @UnitPrice, @Tax1, @Tax2, @Tax3, 
+                                      @Back, @Front, @Front2, @Bar, @Taste, @Alcohol, @Open
+     close curs_item
+   deallocate curs_item  
+ END0
+ CREATE PROCEDURE [dbo].[sp_GetUnlinkedItems]
+   @LayoutModeType tinyint,
+   @TasteGroupItem bit,
+   @TasteItemID smallint
+ BEGIN
+   SET NOCOUNT ON;
+   if (@TasteGroupItem = 1) begin
+     select s.ID, i.CategoryID, s.SizeName as ItemName, cast(case when ml.ItemID is null then 0 else 1 end as bit) as LinkedStatus
+     from tblItem i
+       inner join tblAvailableSize a on a.ItemID = i.ID
+       inner join tblSize s on a.SizeID = s.ID
+       left join (select *
+                  from tblMenuLayout
+                  where LayoutModeType = @LayoutModeType
+                    and [Level] = 3
+                    and Taste = 1
+                    and ItemID = @TasteItemID) ml on ml.ItemID = i.ID
+                                                 and ml.NextItemID = a.SizeID
+     where i.ID = @TasteItemID
+       and ml.ItemID is null
+     order by s.SizeName
+   else begin
+     select i.ID, i.CategoryID, case when isnull(i.IName2, '') <> '' then i.IName + ' (' + i.IName2 + ')' else i.IName end as ItemName,
+            cast(case when ml.ItemID is null then 0 else 1 end as bit) as LinkedStatus
+     from tblItem i
+       left join (select ItemID
+                  from tblMenuLayout
+                  where LayoutModeType = @LayoutModeType
+                  group by ItemID) ml on ml.ItemID = i.ID
+     where i.[Status] = 1
+       and ml.ItemID is null
+     order by i.ID desc
+ 3db_accessadmin0 9db_backupoperator0 1db_datareader0 1db_datawriter0 -db_ddladmin0 9db_denydatareader0 9db_denydatawriter0 'db_owner0 7db_securityadmin0 ;INFORMATION_SCHEMA0
+ db_accessadmindatareaderwriterenydatareaderownerguestPRIMARYsys
+ CREATE PROCEDURE [dbo].[sp_GetHistoryOrderDetailBySalesID]
+   @SalesID int
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   select cast(0 as bit) as OldItemExists, sd.ItemID, sd.SizeID, sd.Qty, 
+          case when (isnull(a.ApplyNoDSC, 0) = 1) then 
+                 case when i.OpenItem = 1 then sd.UnitPrice
+                      else isnull(a.UnitPrice, 0)
+                 end
+               else
+                 case when i.OpenItem = 1 then 
+                        dbo.GetDayHourDiscountPrice(a.ItemID, a.SizeID, sd.UnitPrice) 
+                      else
+                        dbo.GetDayHourDiscountPrice(a.ItemID, a.SizeID, a.UnitPrice)
+                 end
+          end as UnitPrice,
+          isnull(sd.Tastes, '') as Tastes, '' as SideDishes, 0 as DSCAmt, 
+          0 as PersonIndex, cast(0 as bit) as SeparateBillPrint, isnull(a.ApplyNoDSC, 0) as ApplyNoDSC,
+          cast(case when i.Taste = 1 then 1 else 0 end as bit) as ExtraChargeItem,
+          0 as DSCAmtEmployee, 0 as DSCAmtType1, 0 as DSCAmtType2, 
+          case when (isnull(a.ApplyNoDSC, 0) = 1) then 0 
+               else dbo.GetDayHourDiscountRate(a.ItemID, a.SizeID) 
+          end as DayHourDiscountRate,
+          round(0, 2) as PricePerWeightUnit, 0 as MeasuredWeight, 0 as DecimalPlaces, 
+          round(0, 3) as DiscountPercent,
+          case when sd.ItemName <> '' then sd.ItemName else i.IName end as IName, 
+          case when sd.ItemName2 <> '' then sd.ItemName2 else i.IName2 end as IName2,
+          case when sd.SizeID > 1 then 
+                 case when sd.SizeName <> '' then sd.SizeName else isnull(s.SizeName, '') end
+               else '' 
+          end as SizeName,
+          i.ID, i.CategoryID, i.ApplyGST, i.ApplyPST, i.Status, i.OpenItem, i.KitchenB, i.KitchenF, i.Bar, i.SideDish,
+          i.Taste, i.ApplyPST2, i.BarCode, i.KitchenE, i.Alcohol, i.HourlyChargedItem, i.ScaleItem, i.OnlineItem,
+          i.ItemDescription, i.ImageFilePath, i.RewardItem, i.GroupItem, i.Kitchen5, i.Kitchen6, i.ItemImage,
+          i.ItemImageFileType, i.ManageInv,i.NonAlcohol
+   into #tmp_history_order_detail
+   from tblSalesDetail sd
+     inner join tblItem i on sd.ItemID = i.ID
+     inner join tblSize s on sd.SizeID = s.ID
+     left join tblAvailableSize a on a.ItemID = i.ID
+                                 and a.SizeID = s.ID
+   where sd.SalesID = @SalesID
+   order by sd.SequenceNo
+   if exists (select *
+              from #tmp_history_order_detail t
+              where not exists (select *
+                                from tblMenuLayout ml
+                                where ml.LayoutModeType = 1
+                                  and ml.ItemID = t.ItemID)) begin
+     update #tmp_history_order_detail
+     set OldItemExists = 1
+   select *
+   from #tmp_history_order_detail
+ CREATE PROCEDURE [dbo].[spr_GetSalesTransactionsWithDetail]
+   @FromDateTime datetime,
+   @ToDateTime datetime
+ BEGIN
+   SET NOCOUNT ON;
+   if exists (select *
+              from sys.objects
+              where object_id = OBJECT_ID(N'[dbo].[tmp_transactions]') 
+                and [type] in (N'U')) 
+     drop table tmp_transactions
+   CREATE TABLE [dbo].[tmp_transactions](
+     [ID] [int] NOT NULL,
+     [CashierID] [smallint] NOT NULL,
+     [SaleDateTime] [datetime] NOT NULL,
+     [SubTotalAmt] [money] NOT NULL,
+     [DSCAmt] [money] NOT NULL,
+     [GSTAmt] [money] NOT NULL,
+     [PSTAmt] [money] NOT NULL,
+     [PST2Amt] [money] NOT NULL,
+     [TotalAmt] [money] NULL,
+     [CashPaidAmt] [money] NULL,
+     [DebitPaidAmt] [money] NULL,
+     [VisaPaidAmt] [money] NULL,
+     [McPaidAmt] [money] NULL,
+     [AmexPaidAmt] [money] NULL,
+     [CouponPaidAmt] [money] NULL,
+     [DiscoverPaidAmt] [money] NULL,
+     [JcbPaidAmt] [money] NULL,
+     [GiftCardPaidAmt] [money] NULL,
+     [RewardPointPaidAmt] [money] NULL,
+     [ChargeOnAccountPaidAmt] [money] NULL,
+     [CashTipPaidAmt] [money] NULL,
+     [DebitTipPaidAmt] [money] NULL,
+     [CreditTipPaidAmt] [money] NULL,
+     [CouponTipPaidAmt] [money] NULL,
+     [GiftCardTipPaidAmt] [money] NULL,
+     [ChargeOnAccountTipPaidAmt] [money] NULL,
+     [TotalTipPaidAmt] [money] NULL,
+     [TransType] [varchar](9) NOT NULL,
+     [OriginalTransType] [tinyint] NOT NULL,
+     [DailyOrderNumber] [int] NOT NULL,
+     [TableName] [varchar](50) NOT NULL,
+     [Cashier] [varchar](61) NULL,
+     [Customer] [varchar](100) NULL,
+     [CustomerNum] [varchar](20) NOT NULL,
+     [CustomerPhone] [varchar](20) NULL,
+     [PaymentCount] [tinyint] NULL,
+     [StationName] [varchar](30) NOT NULL,
+     [CreatedDateTime] [datetime] NOT NULL,
+     [OnlineOrderNumber] [varchar](20) NOT NULL,
+     [OnlineOrderCustomerName] [varchar](100) NOT NULL,
+     [OnlineOrderCompanyName] [varchar](50) NOT NULL,
+     [CustomerID] [int] NOT NULL,
+     [TakeOutCustomerPhone] [varchar](20) NOT NULL,
+     [IsTakeOutOrder] [bit] NOT NULL,
+     [IsOnlineOrder] [bit] NOT NULL,
+     [IsDeliveryOrder] [bit] NOT NULL,
+     [DiscrepancyExists] [bit] NOT NULL,
+     [OrderType] [varchar](20) NOT NULL
+   ) ON [PRIMARY]
+   insert into tmp_transactions
+   exec spr_GetSalesTransactions @FromDateTime, @ToDateTime, 1, '', 0
+   select t.*,
+          --case when t.IsTakeOutOrder = 0 then 'DineIn'
+          --     else 
+          --       case when t.IsOnlineOrder = 1 then 'Online'
+          --            when t.IsDeliveryOrder = 1 then 'Delivery'
+          --            else 'TakeOut'
+          --       end
+          --end as OrderType,
+          sd.ItemName, sd.ItemName2, case when sd.SizeID > 1 then sd.SizeName else '' end as SizeName, 
+          sd.Qty, sd.UnitPrice, isnull(sd.Tastes, '') as Tastes, 
+          row_number() over(partition by t.ID order by sd.SequenceNo) as SalesDetailItemOrder 
+   into #tmp_transactions_with_detail
+   from tmp_transactions t
+     inner join tblSalesDetail sd on sd.SalesID = t.ID
+   --order by t.ID, sd.SequenceNo, sd.ItemName, SizeName
+   update t
+   set t.SaleDateTime = '',
+       t.SubTotalAmt = 0,
+       t.DSCAmt = 0,
+       t.GSTAmt = 0,
+       t.PSTAmt = 0,
+       t.PST2Amt = 0,
+       t.TotalAmt = 0,
+       t.CashPaidAmt = 0,
+       t.DebitPaidAmt = 0,
+       t.VisaPaidAmt = 0,
+       t.McPaidAmt = 0,
+       t.AmexPaidAmt = 0,
+       t.CouponPaidAmt = 0,
+       t.DiscoverPaidAmt = 0,
+       t.JcbPaidAmt = 0,
+       t.GiftCardPaidAmt = 0,
+       t.RewardPointPaidAmt = 0,
+       t.ChargeOnAccountPaidAmt = 0,
+       t.CashTipPaidAmt = 0,
+       t.DebitTipPaidAmt = 0,
+       t.CreditTipPaidAmt = 0,
+       t.CouponTipPaidAmt = 0,
+       t.GiftCardTipPaidAmt = 0,
+       t.ChargeOnAccountTipPaidAmt = 0,
+       t.TotalTipPaidAmt = 0,
+       t.TransType = '',
+       t.DailyOrderNumber = 0,
+       t.TableName = '',
+       t.Cashier = '',
+       t.Customer = '',
+       t.CustomerNum = '',
+       t.CustomerPhone = '',
+       t.StationName = '',
+       t.CreatedDateTime = '',
+       t.OnlineOrderNumber = '',
+       t.OnlineOrderCustomerName = '',
+       t.OnlineOrderCompanyName = '',
+       t.TakeOutCustomerPhone = '',
+       t.OrderType = ''
+   from #tmp_transactions_with_detail t
+   where t.SalesDetailItemOrder > 1
+   select *
+   from #tmp_transactions_with_detail
+   order by ID, SalesDetailItemOrder
+   drop table tmp_transactions
+   drop table #tmp_transactions_with_detail
+ END0
+ CREATE PROCEDURE [dbo].[spx_InsertNewItemToInsertList]
+   @CategoryID tinyint,
+   @ItemName varchar(30),
+   @ItemName2 varchar(30),
+   @UnitPrice smallmoney,
+   @Tax1 bit,
+   @Tax2 bit,
+   @Tax3 bit,
+   @Back bit,
+   @Front bit,
+   @Front2 bit,
+   @Bar bit,
+   @Taste bit,
+   @Alcohol bit,
+   @OpenItem bit
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   insert into tmpItemListToInsert (CategoryID, ItemName, ItemName2, UnitPrice, Tax1, Tax2, Tax3, 
+                                    Back, Front, Front2, Bar, Taste, Alcohol, OpenItem)
+   values (@CategoryID, @ItemName, @ItemName2, @UnitPrice, @Tax1, @Tax2, @Tax3, 
+           @Back, @Front, @Front2, @Bar, @Taste, @Alcohol, @OpenItem)
+ CREATE PROCEDURE [dbo].[sp_InsertUpdateNonIntegratedOnlineSelfPaymentURL]
+   @SalesID int,
+   @PersonIndex tinyint,
+   @SelfPaymentURL varchar(4000)
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   if not exists (select *
+                  from tblNonIntegratedOnlineSelfPaymentURL
+                  where SalesID = @SalesID
+                    and PersonIndex = @PersonIndex) begin
+     insert into tblNonIntegratedOnlineSelfPaymentURL (SalesID, PersonIndex, SelfPaymentURL)
+     values (@SalesID, @PersonIndex, @SelfPaymentURL)
+   else begin
+     update tblNonIntegratedOnlineSelfPaymentURL
+     set SelfPaymentURL = @SelfPaymentURL
+     where SalesID = @SalesID
+       and PersonIndex = @PersonIndex
+ CREATE PROCEDURE [dbo].[sp_GetMiscByCode]
+   @Code varchar(5)
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   select dbo.GetMiscValue(@Code)
+ END0
+ CREATE FUNCTION [dbo].[CheckIfTimeChargingStopped]
+   @SalesID int,
+   @ItemID smallint,
+   @PersonIndex tinyint 
+ RETURNS bit
+ BEGIN
+   declare @Stopped bit
+   if not exists (select *
+                  from tblPendingOrders po
+                    inner join tblTimeStartEnd t on po.SalesID = t.SalesID
+                                                and po.ItemID = t.ItemID
+                                                and po.PersonIndex = t.PersonIndex
+                  where po.SalesID = @SalesID
+                    and case when @ItemID > 0 then
+                               case when po.ItemID = @ItemID then 1 else 0 end
+                             else 
+                        end = 1
+                    and po.PersonIndex = @PersonIndex
+                    and t.Stopped = 0)
+     set @Stopped = 1
+     set @Stopped = 0
+   return @Stopped
+                                 count(ID) as TransCount, 
+                                       isnull(round(sum(SubTotal - DSCAmt + GSTAmt + PSTAmt),2),0) as TotalAmt
+                                from tblSales
+                                where TransType in (0, 1)
+                                  and SaleDateTime >= @FromDateTime
+                                  and SaleDateTime <  @ToDateTime
+                                group by datepart(dw, SaleDateTime)) s
+          on t.WeekDayIndex = s.WeekDayIndex
+     order by t.WeekDayIndex
+   else begin
+     select t.WeekDayIndex,
+            t.WeekDayName, 
+            isnull(s.TransCount, 0) as TransCount, 
+            isnull(s.TotalAmt, 0) as TotalAmt
+     from #tmp_day t left join (select datepart(dw, SaleDateTime) as WeekDayIndex, 
+                                       count(ID) as TransCount, 
+                                       isnull(round(sum(SubTotal - DSCAmt + GSTAmt + PSTAmt),2),0) as TotalAmt
+                                from tblSales
+                                where TransType in (0, 1)
+                                  and SaleDateTime >= @FromDateTime
+                                  and SaleDateTime <  @ToDateTime
+                                  and CashierID = @EmployeeID
+                                group by datepart(dw, SaleDateTime)) s
+          on t.WeekDayIndex = s.WeekDayIndex
+     order by t.WeekDayIndex
+   drop table #tmp_day
+ CREATE PROCEDURE [dbo].[sp_GetPrepaidCardCustomers]
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   select c.FName, c.LName, c.Phone, pc.Balance, c.CustomerNum
+   from tblPrepaidCards pc, tblCustomer c
+   where pc.CustomerID = c.ID
+     and c.ID > 1
+   order by c.FName
+ CREATE PROCEDURE [dbo].[spsc_GetTableLayout] 
+   @Level tinyint 
+ BEGIN
+   SET NOCOUNT ON;
+   select t1.*, isnull(t2.TableName, '') as TableName
+   from tblSelfCheckoutTableLayout t1 left join tblTable t2 on t1.TableID = t2.ID 
+   where [Level] = @Level
+   order by t1.TabIndex, t1.ControlIndex
+ END0
+ CREATE FUNCTION [dbo].[GetTipTotal]
+   @SalesID int,
+   @PaymentTypeID tinyint
+ RETURNS money
+ BEGIN
+   declare @TotalAmount money
+   if (@PaymentTypeID in (1, 2, 6, 9, 11)) begin
+     select @TotalAmount = sum(isnull(TipAmount, 0))
+     from tblPayment
+     where SalesID = @SalesID
+       and PaymentTypeID = @PaymentTypeID
+       and Voided = 0
+   else if (@PaymentTypeID in (3, 4, 5, 7, 8)) begin
+     select @TotalAmount = sum(isnull(TipAmount, 0))
+     from tblPayment
+     where SalesID = @SalesID
+       and PaymentTypeID in (3, 4, 5, 7, 8)
+       and Voided = 0
+   else begin
+     select @TotalAmount = sum(isnull(TipAmount, 0))
+     from tblPayment
+     where SalesID = @SalesID
+       and Voided = 0
+   return isnull(@TotalAmount, 0)
+ END0
+ CREATE PROCEDURE [dbo].[spx_InsertNewItemToInsertList]
+   @CategoryID tinyint,
+   @ItemName varchar(30),
+   @ItemName2 varchar(30),
+   @UnitPrice smallmoney,
+   @Tax1 bit,
+   @Tax2 bit,
+   @Tax3 bit,
+   @Back bit,
+   @Front bit,
+   @Front2 bit,
+   @Bar bit,
+   @Taste bit,
+   @Alcohol bit,
+   @OpenItem bit
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   insert into tmpItemListToInsert (CategoryID, ItemName, ItemName2, UnitPrice, Tax1, Tax2, Tax3, 
+                                    Back, Front, Front2, Bar, Taste, Alcohol, OpenItem)
+   values (@CategoryID, @ItemName, @ItemName2, @UnitPrice, @Tax1, @Tax2, @Tax3, 
+           @Back, @Front, @Front2, @Bar, @Taste, @Alcohol, @OpenItem)
+ CREATE PROCEDURE [dbo].[sp_InsertUpdateNonIntegratedOnlineSelfPaymentURL]
+   @SalesID int,
+   @PersonIndex tinyint,
+   @SelfPaymentURL varchar(4000)
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   if not exists (select *
+                  from tblNonIntegratedOnlineSelfPaymentURL
+                  where SalesID = @SalesID
+                    and PersonIndex = @PersonIndex) begin
+     insert into tblNonIntegratedOnlineSelfPaymentURL (SalesID, PersonIndex, SelfPaymentURL)
+     values (@SalesID, @PersonIndex, @SelfPaymentURL)
+   else begin
+     update tblNonIntegratedOnlineSelfPaymentURL
+     set SelfPaymentURL = @SelfPaymentURL
+     where SalesID = @SalesID
+       and PersonIndex = @PersonIndex
+ CREATE PROCEDURE [dbo].[sp_GetMiscByCode]
+   @Code varchar(5)
+ BEGIN
+ -- SET NOCOUNT ON added to prevent extra result sets from
+ -- interfering with SELECT statements.
+ SET NOCOUNT ON;
+   select dbo.GetMiscValue(@Code)
+ $PK_tblGroup& "PK_tblItem& 0PK_tblOrderNumber& &PK_tblPayOut& 0PK_tblPeripherals& 0PK_tblPointReward& &PK_tblPoints& 2PK_tblPrepaidCards& 0PK_tblReservation& $PK_tblSales& <PK_tblSalesCardDetail_1& (PK_tblSubItem& $PK_tblTable& ,PK_tblTimeStamp& "PK_tblUser& FQueryNotificationErrorsQueue& 2ServiceBrokerQueue& BPK_tblPurchaseItemCategory& 2PK_tblPurchaseItem& 4PK_tblPurchaseOrder& 0PK_tblPaymentType& 4PK_tblKitchenOrders& :PK_tblReadyOrderNumber& 4PK_tblOrderPrintCue& 2PK_tblPointsDetail& (PK_tblPayment& 2PK_tblTimeStartEnd& (PK_tblUserLog& (PK_tblStation& $PK_tblStore& 8PK_tblTipAmountInBill& ,PK_tblSizeGroup& FPK_tblPreAuthorizedCardTrans& 0rpt_sales_summary& :rpt_sales_summary_temp& :PK_tblLoyaltyStampCard& 0PK_tblStoreCredit& "PK_tblTare& >PK_tblOnlineOrderCompany& @PK_tblSalesOfOnlineOrders& "PK_tblSize& FPK_tblInventoryChangeHistory&
+ \PK_tblNonIntegratedOnlineSelfPaymentURL& Jrpt_online_order_sales_summary& Trpt_online_order_sales_summary_temp& @PK_tblKitchenDisplayItems& 2PK_tblOnlineOrders* :sp_CopyDiscountSetting* Psp_CheckIfPendingOrdersTableEmpty*
+ 0sp_DeleteAdImages* Dsp_CopyAvailableSizeForEdit* Hsp_AssignStationNumberToTable* Fsp_ApplyStoreCreditToPayment* Bsp_DeactivateUnlinkedItems* ^sp_CheckIfScheduledPrintingStationExists* Fsp_CreateDineInSelfOrderCode* Fsp_DeleteDineInSelfOrderCode* Bsp_CheckIfAnyPaymentExists* Lsp_CheckIfLastReservationExists& "PK_tblMisc& .sp_ClearErrorLog& Bsp_ClearCalledOrderNumbers& :sp_BringUpHistoryOrder&
+ 0sp_DeleteCardInfo& Bsp_AssignBellNumberToTable&
+ Fsp_CheckIfPointsDetailExists& 0sp_BackupDatabase& 0sp_DeleteCategory& Dsp_CheckIfClockOutIsAllowed& Hsp_CheckIfTimeChargingStopped& 4sp_CheckIfClockedIn& .sp_ClearDatabase& :sp_DeleteCheckedOrders& Lsp_CheckIfClockedInTimeExceeded& Dsp_CheckIfUnpaidTablesExist& <sp_AddStoreLinkedServer& Rsp_CheckIfSameTimeChargeItemExists& >sp_CheckDuplicateBarcode& :sp_DeleteAvailableSize& >sp_DeleteDayHourDiscount& Dsp_CheckIfCardPaymentExists& Vsp_AssignUnlinkedOrdersToEmptyTables& :sp_CopyDiscountSetting& Psp_CheckIfPendingOrdersTableEmpty& 0sp_DeleteAdImages& Dsp_CopyAvailableSizeForEdit&
+ Hsp_AssignStationNumberToTable& Fsp_ApplyStoreCreditToPayment& Bsp_DeactivateUnlinkedItems& ^sp_CheckIfScheduledPrintingStationExists& Fsp_CreateDineInSelfOrderCode& Fsp_DeleteDineInSelfOrderCode& Bsp_CheckIfAnyPaymentExists& Lsp_CheckIfLastReservationExists& 0RenderXMLToString& Bsp_CheckIfOrderIsSeparated Dsp_CheckIfCardPaymentExists* Vsp_AssignUnlinkedOrdersToEmptyTables* :sp_CopyDiscountSetting* Psp_CheckIfPendingOrdersTableEmpty*
+ 0sp_DeleteAdImages* Dsp_CopyAvailableSizeForEdit* Hsp_AssignStationNumberToTable* Fsp_ApplyStoreCreditToPayment* Bsp_DeactivateUnlinkedItems* ^sp_CheckIfScheduledPrintingStationExists* Fsp_CreateDineInSelfOrderCode* Fsp_DeleteDineInSelfOrderCode* Bsp_CheckIfAnyPaymentExists* Lsp_CheckIfLastReservationExists& "PK_tblMisc& .sp_ClearErrorLog& Bsp_ClearCalledOrderNumbers& :sp_BringUpHistoryOrder&
+ 0sp_DeleteCardInfo& Bsp_AssignBellNumberToTable&
+ Fsp_CheckIfPointsDetailExists& 0sp_BackupDatabase& 0sp_DeleteCategory& Dsp_CheckIfClockOutIsAllowed& Hsp_CheckIfTimeChargingStopped& 4sp_CheckIfClockedIn& .sp_ClearDatabase& :sp_DeleteCheckedOrders& Lsp_CheckIfClockedInTimeExceeded& Dsp_CheckIfUnpaidTablesExist& <sp_AddStoreLinkedServer& Rsp_CheckIfSameTimeChargeItemExists& >sp_CheckDuplicateBarcode& :sp_DeleteAvailableSize& >sp_DeleteDayHourDiscount& Dsp_CheckIfCardPaymentExists kedItems
+ DF_tblPrepaidCardUsageHistory_UsedDateTime0, ~DF_tblPrepaidCardUsageHistory_UsedAmt0, ~DF_tblPrepaidCardUsageHistory_Balance0,, BtblItem0,e5`f HPK_tblItem0, ZDF_tblItem_ApplyGST0, ZDF_tblItem_ApplyPST0, VDF_tblItem_Status0,I ZDF_tblItem_OpenItem0, ZDF_tblItem_KitchenB0,. xDF_tblPendingOrders_DSCAmtEmployee0,
+ tDF_tblPendingOrdersTemp_KitchenE0,
+ DF_tblPendingOrdersTemp_DSCAmtEmployee0,
+ zDF_tblPendingOrdersTemp_DSCAmtType10, ;
+ zDF_tblPendingOrdersTemp_DSCAmtType20,Y_
+ nDF_tblAvailableSize_OnHandQty0, ftblInventoryChangeHistory0, |DF_tblInventoryChangeHistory_SalesID0,C pDF_tblMenuLayout_TasteModifier0,| vDF_tblMenuLayout_NextControlIndex0, nDF_tblMenuLayout_NextItemName0, XDF_tblTable_StayOn0,'B XtblTipAmountInBill0,`fsh ^PK_tblTipAmountInBill0, vDF_tblTipAmountInBill_PersonIndex0, |DF_tblTipAmountInBill_IncludedTipAmt0, nFK_tblStoreCredit_tblCustomer0, hFK_tblStoreCredit_tblSales0, fFK_tblStoreCredit_tblUser0,R BtblTare0, HPK_tblTare0, ^DF_tblTare_TareWeight0, `DF_tblTare_DefaultTare0,6\>h xDF_tblCustomerConsentChild_Consent0,o hDF_tblTable_StationIDInUse0, jDF_tblSales_CreatedDateTime0, HtblCashTip0,H
+ hDF_tblSalesDetail_ItemName0,uAga Zsp_GetPurchaseOrder0, `sp_InsertPurchaseOrder0, Vspr_PayoutSummary0,  \spr_GetPayoutSummary0,Y Jsp_GetTable0, \sp_DeleteTableLayout0, psp_RestoreLastSavedTableLayout0, Vsp_GetTableLayout0,=c \sp_InsertTableLayout0,v hsp_UpdateTableLinkedStatus0, bsp_UpdateUnlinkedTables0, `sp_DeleteKitchenOrders0, fsp_GetDeletedOrderNumbers0, hsp_GetDeletedKitchenOrders0,/ hIsStoreClosedAfterMidnight0,h RGetFromDateTime0, NGetToDateTime0, fCheckIfLinkedServerExists0, Psp_InsertStore0,L} Psp_UpdateStore0, Jsp_GetStore0,ZQ bsp_UpdateItemProperties0, \sp_GetItemByItemName0, \spfd_GetBatchSummary0, Zspfd_GetCardPayment0,> \sp_InsertStoreCredit0,w Xsp_VoidStoreCredit0, `sp_GetStoreCreditTotal0, bsp_GetStoreCreditDetail0,"s lsp_ApplyStoreCreditToPayment0,[ dsp_GetPayoutTransactions<,0G
+ ZtmpMenuLayoutBackup<,ik ZtmpMenuLayoutExport<,
+ ZtmpMenuLayoutBackup<,
+ ZtmpMenuLayoutExport<, ZtmpMenuLayoutBackup<,M ZtmpMenuLayoutExport<, ZtmpMenuLayoutBackup<, ZtmpMenuLayoutExport<, ZtmpMenuLayoutBackup<,1 ZtmpMenuLayoutExport<,j ZtmpMenuLayoutBackup \sp_InsertTableLayout0,v hsp_UpdateTableLinkedStat
+ CREATE PROCEDURE [dbo].[spr_DailySalesSummaryByType]
+   @FromDateTime datetime,
+   @ToDateTime datetime,
+   @ByTime bit,
+   @NoGroupByType bit = 0
+ BEGIN
+   SET NOCOUNT ON;
+   declare @HoursShifted smallint
+   set @FromDateTime = dbo.GetFromDateTime(@FromDateTime, @ByTime)
+   set @ToDateTime = dbo.GetToDateTime(@ToDateTime, @ByTime)
+   if (dbo.IsStoreClosedAfterMidnight() = 1)
+     set @HoursShifted = -6
+     set @HoursShifted = 0
+   select convert(smalldatetime, convert(varchar(8), dateadd(hh, @HoursShifted, SaleDateTime), 112)) as SaleDate,
+          case when @NoGroupByType = 0 then TransType else 1 /*Sale*/ end as TransType, 
+          isnull(count(TransType),0) as TransCount,
+          sum(round(isnull(SubTotal - DSCAmt,0),2)) as SubTotalAmt,
+          sum(round(isnull(DSCAmt,0),2)) as DSCAmt,
+          sum(round(isnull(GSTAmt,0),2)) as GSTAmt,
+          sum(round(isnull(PSTAmt,0),2)) as PSTAmt,
+          sum(round(isnull(PST2Amt,0),2)) as PST2Amt,
+          sum(round(isnull(SubTotal - DSCAmt + GSTAmt + PSTAmt + PST2Amt,0),2)) as TotalAmt,
+          sum(round(isnull(AlcoholDSCAmt,0),2)) as AlcoholDSCAmt,
+          sum(round(isnull(AlcoholDSCAmt,0) * GSTRate,2)) as GSTOnAlcoholDSCAmt,
+          sum(round(isnull(AlcoholDSCAmt,0) * PSTRate,2)) as PSTOnAlcoholDSCAmt,
+          sum(round(isnull(AlcoholDSCAmt,0) * PST2Rate,2)) as PST2OnAlcoholDSCAmt,
+          sum(round(isnull(dbo.GetPaymentTotal(ID,  1),0),2)) as CashPaidAmt,
+          sum(round(isnull(dbo.GetPaymentTotal(ID,  2),0),2)) as DebitPaidAmt,
+          sum(round(isnull(dbo.GetPaymentTotal(ID,  3),0),2)) as VisaPaidAmt,
+          sum(round(isnull(dbo.GetPaymentTotal(ID,  4),0),2)) as McPaidAmt,
+          sum(round(isnull(dbo.GetPaymentTotal(ID,  5),0),2)) as AmexPaidAmt,
+          sum(round(isnull(dbo.GetPaymentTotal(ID,  6),0),2)) as CouponPaidAmt,
+          sum(round(isnull(dbo.GetPaymentTotal(ID,  7),0),2)) as DiscoverPaidAmt,
+          sum(round(isnull(dbo.GetPaymentTotal(ID,  8),0),2)) as JcbPaidAmt,
+          sum(round(isnull(dbo.GetPaymentTotal(ID,255),0),2)) as TotalCreditPaidAmt,
+          cast(0 as smallmoney) as TotalOnlineCreditPaidAmt,
+          sum(round(isnull(dbo.GetPaymentTotal(ID,255),0),2)) as TotalInStoreCreditPaidAmt, /* copy TotalCreditPaidAmt as default value */
+          sum(round(isnull(dbo.GetPaymentTotal(ID,  9),0),2)) as GiftCardPaidAmt,
+          sum(round(isnull(dbo.GetPaymentTotal(ID, 10),0),2)) as RewardPointPaidAmt,
+          sum(round(isnull(dbo.GetPaymentTotal(ID, 11),0),2)) as ChargeOnAccountPaidAmt,
+          sum(round(isnull(dbo.GetTipTotal(ID,  1),0),2)) as CashTipPaidAmt,
+          sum(round(isnull(dbo.GetTipTotal(ID,  2),0),2)) as DebitTipPaidAmt,
+          sum(round(isnull(dbo.GetTipTotal(ID,  3),0),2)) as CreditTipPaidAmt,
+          cast(0 as smallmoney) as TotalOnlineCreditTipPaidAmt,
+          sum(round(isnull(dbo.GetTipTotal(ID,  3),0),2)) as TotalInStoreCreditTipPaidAmt, /* copy CreditTipPaidAmt as default value */
+          sum(round(isnull(dbo.GetTipTotal(ID,  6),0),2)) as CouponTipPaidAmt,
+          sum(round(isnull(dbo.GetTipTotal(ID,  9),0),2)) as GiftCardTipPaidAmt,
+          sum(round(isnull(dbo.GetTipTotal(ID, 11),0),2)) as ChargeOnAccountTipPaidAmt,
+          sum(round(isnull(dbo.GetTipTotal(ID,  0),0),2)) as TotalTipPaidAmt,
+          isnull(sum(Guests),0) as TransGuestCount,
+          cast(0 as smallmoney) as FoodSubTotal, 
+          cast(0 as smallmoney) as FoodGSTTotal, 
+          cast(0 as smallmoney) as FoodPSTTotal, 
+          cast(0 as smallmoney) as FoodPST2Total,
+          cast(0 as smallmoney) as NonAlcoholSubTotal,
+          cast(0 as smallmoney) as NonAlcoholGSTTotal,
+          cast(0 as smallmoney) as NonAlcoholPSTTotal,
+          cast(0 as smallmoney) as NonAlcoholPST2Total,
+          cast(0 as smallmoney) as AlcoholSubTotal,
+          cast(0 as smallmoney) as AlcoholGSTTotal,
+          cast(0 as smallmoney) as AlcoholPSTTotal,
+          cast(0 as smallmoney) as AlcoholPST2Total,
+          cast(0 as smallmoney) as DineInTotal,
+          cast(0 as smallmoney) as TakeOutTotal,
+          cast(0 as smallmoney) as DeliveryTotal,
+          cast(0 as smallmoney) as OnlineTotal,
+          cast(0 as smallint) as DineInCount,
+          cast(0 as smallint) as TakeOutCount,
+          cast(0 as smallint) as DeliveryCount,
+          cast(0 as smallint) as OnlineCount
+   into #tmp_daily_sales_summary1
+   from tblSales
+   where TransType in (0, 1)
+     and SaleDateTime >= @FromDateTime
+     and SaleDateTime <  @ToDateTime
+   group by convert(smalldatetime, convert(varchar(8), dateadd(hh, @HoursShifted, SaleDateTime), 112)), 
+            case when @NoGroupByType = 0 then TransType else 1 /*Sale*/ end
+   order by SaleDate, TransType
+   /* Get the payments for Non-Integrated online order company tables */
+   select convert(smalldatetime, convert(varchar(8), dateadd(hh, @HoursShifted, s.SaleDateTime), 112)) as SaleDate,
+          case when @NoGroupByType = 0 then s.TransType else 1 /*Sale*/ end as TransType, 
+          --p.PaymentTypeID, pt.PaymentType,
+          --count(p.PaymentTypeID) as PaymentCount,

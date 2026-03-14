@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+android/
+ios/
+build/
+
+# Nested web app (has its own ESLint config)
+web/
+
+# Test coverage
+coverage/
+__tests__/

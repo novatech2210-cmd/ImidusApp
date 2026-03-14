@@ -1,0 +1,55 @@
+# Recursively ignore dependencies and build outputs
+**/node_modules/
+**/.next/
+**/build/
+**/dist/
+**/out/
+
+# Mobile Artifacts
+*.apk
+*.ipa
+deliverables/
+delivery/
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.cache
+.vs/
+*.dll
+*.exe
+*.pdb
+
+# Environment files (DO NOT COMMIT SECRETS)
+.env
+.env.local
+.env.production
+*.keystore
+*.p12
+*.mobileprovision
+firebase-admin-key.json
+google-services.json
+GoogleService-Info.plist
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# GSD Planning (local-only)
+.planning/
+
+# Database backups (large binary files)
+src/backend/db/backups/*.bak
+src/backend/db/backups/*.BAK

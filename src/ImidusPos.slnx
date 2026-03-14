@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/backend/">
+    <Project Path="backend/IntegrationService.API/IntegrationService.API.csproj" />
+    <Project Path="backend/IntegrationService.Core/IntegrationService.Core.csproj" />
+    <Project Path="backend/IntegrationService.Infrastructure/IntegrationService.Infrastructure.csproj" />
+    <Project Path="backend/IntegrationService.Tests/IntegrationService.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,213 @@
+/*
+ * IMIDUS Technologies – SiteHeader CSS Module
+ * Path: src/components/layout/SiteHeader.module.css
+ */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background: var(--color-brand-blue);
+  transition: box-shadow 0.2s ease;
+}
+
+.header.scrolled {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Gold underline always visible */
+.goldLine {
+  height: 3px;
+  background: var(--color-brand-gold);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 64px;
+  gap: 2rem;
+}
+
+/* ── Logo ───────────────────────────────────────────────── */
+.logoLink {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.logo {
+  object-fit: contain;
+  filter: brightness(1);
+}
+
+/* ── Desktop nav ────────────────────────────────────────── */
+.desktopNav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.navLink {
+  padding: 0.375rem 0.875rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: all 0.15s ease;
+  position: relative;
+}
+.navLink:hover {
+  color: var(--color-brand-gold);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Active state — gold underline */
+.navLink[aria-current="page"] {
+  color: var(--color-brand-gold);
+}
+.navLink[aria-current="page"]::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0.875rem;
+  right: 0.875rem;
+  height: 2px;
+  background: var(--color-brand-gold);
+  border-radius: var(--radius-full);
+}
+
+/* ── Actions ────────────────────────────────────────────── */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Cart button */
+.cartBtn {
+  position: relative;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: var(--radius-full);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.cartBtn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+.cartIcon {
+  font-size: 1.125rem;
+}
+.cartBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--color-brand-gold);
+  color: var(--color-text-on-gold);
+  font-size: 0.625rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+/* Profile avatar */
+.profileBtn {
+  background: var(--color-brand-gold);
+  border: none;
+  border-radius: var(--radius-full);
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.profileBtn:hover {
+  opacity: 0.85;
+}
+.profileAvatar {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-text-on-gold);
+}
+
+/* Sign in button */
+.signInBtn {
+  font-size: 0.875rem !important;
+  padding: 0.375rem 1rem !important;
+}
+
+/* ── Hamburger (mobile) ─────────────────────────────────── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+.bar {
+  display: block;
+  height: 2px;
+  background: var(--color-white);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+/* ── Mobile menu drawer ─────────────────────────────────── */
+.mobileMenu {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-dark-bg);
+  padding: 0.5rem 0;
+}
+
+.mobileNavLink {
+  padding: 0.875rem 1.5rem;
+  color: var(--color-white);
+  font-size: 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: color 0.15s;
+}
+.mobileNavLink:hover {
+  color: var(--color-brand-gold);
+}
+
+.mobileSignIn {
+  padding: 0.875rem 1.5rem;
+  color: var(--color-brand-gold);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .desktopNav {
+    display: none;
+  }
+  .signInBtn {
+    display: none;
+  }
+  .hamburger {
+    display: flex;
+  }
+  .inner {
+    height: 56px;
+  }
+}

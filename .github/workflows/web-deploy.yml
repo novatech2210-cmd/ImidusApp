@@ -1,0 +1,98 @@
+name: Web Platform Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/web/**'
+      - '.github/workflows/web-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      deploy_target:
+        description: 'Deployment target'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  WEB_DIR: src/web
+  NODE_VERSION: '20'
+  S3_BUCKET: inirestaurant
+  S3_PREFIX: novatech
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy Web
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ env.WEB_DIR }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ env.WEB_DIR }}
+        run: npm ci
+
+      - name: Run linter
+        working-directory: ${{ env.WEB_DIR }}
+        run: npm run lint || true
+
+      - name: Build web platform
+        working-directory: ${{ env.WEB_DIR }}
+        env:
+          NEXT_PUBLIC_API_URL: ${{ github.event.inputs.deploy_target == 'production' && 'https://api.imidus.com/api' || 'https://staging-api.imidus.com/api' }}
+          NEXT_PUBLIC_AUTH_NET_PUBLIC_KEY: ${{ secrets.AUTH_NET_PUBLIC_KEY }}
+          NEXT_PUBLIC_AUTH_NET_ENVIRONMENT: ${{ github.event.inputs.deploy_target == 'production' && 'production' || 'sandbox' }}
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy to S3
+        run: |
+          TARGET=${{ github.event.inputs.deploy_target || 'staging' }}
+          aws s3 sync ${{ env.WEB_DIR }}/out/ \
+            s3://${{ env.S3_BUCKET }}/${{ env.S3_PREFIX }}/web/$TARGET/ \
+            --delete
+
+      - name: Invalidate CloudFront cache (production only)
+        if: ${{ github.event.inputs.deploy_target == 'production' }}
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+      - name: Create deployment manifest
+        run: |
+          TARGET=${{ github.event.inputs.deploy_target || 'staging' }}
+          cat > deployment.json <<EOF
+          {
+            "version": "${{ github.ref_name }}",
+            "commit": "${{ github.sha }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "target": "$TARGET",
+            "url": "https://s3.${{ env.S3_BUCKET }}.amazonaws.com/${{ env.S3_PREFIX }}/web/$TARGET/"
+          }
+          EOF
+          aws s3 cp deployment.json \
+            s3://${{ env.S3_BUCKET }}/${{ env.S3_PREFIX }}/web/$TARGET/deployment.json
+
+      - name: Notify success
+        run: |
+          TARGET=${{ github.event.inputs.deploy_target || 'staging' }}
+          echo "✅ Web platform deployed to $TARGET"
+          echo "URL: https://s3.${{ env.S3_BUCKET }}.amazonaws.com/${{ env.S3_PREFIX }}/web/$TARGET/"

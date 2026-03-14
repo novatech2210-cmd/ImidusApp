@@ -1,0 +1,37 @@
+name: MSI Build
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  msi:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Build and Publish
+        run: |
+          dotnet publish src/backend/IntegrationService.API/ -c Release -r win-x64 --self-contained true -o publish/
+
+      - name: Install WiX
+        run: dotnet tool install --global wix
+
+      - name: Build MSI
+        run: wix build installer/IntegrationService.wxs -o dist/IntegrationService-Setup.msi
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Upload to S3
+        run: aws s3 cp dist/IntegrationService-Setup.msi s3://inirestaurant/novatech/backend/IntegrationService-Setup.msi

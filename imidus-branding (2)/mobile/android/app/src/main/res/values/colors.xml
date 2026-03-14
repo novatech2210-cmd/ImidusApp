@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  IMIDUS Technologies – Android Brand Colours
+  Path: android/app/src/main/res/values/colors.xml
+-->
+<resources>
+    <!-- Brand -->
+    <color name="brandBlue">#1E5AA8</color>
+    <color name="brandGold">#D4AF37</color>
+    <color name="darkBg">#1A1A2E</color>
+
+    <!-- Splash screen background (used in styles.xml) -->
+    <color name="splashBackground">#1E5AA8</color>
+
+    <!-- Surfaces -->
+    <color name="white">#FFFFFF</color>
+    <color name="lightBlue">#D6E4F7</color>
+    <color name="lightGold">#FDF6E3</color>
+    <color name="lightGray">#F5F5F5</color>
+    <color name="midGray">#DDDDDD</color>
+
+    <!-- Text -->
+    <color name="textPrimary">#222222</color>
+    <color name="textMuted">#888888</color>
+
+    <!-- Status -->
+    <color name="statusError">#C62828</color>
+    <color name="statusSuccess">#2E7D32</color>
+    <color name="statusWarning">#E65100</color>
+
+    <!-- React Native default overrides -->
+    <color name="colorPrimary">#1E5AA8</color>
+    <color name="colorPrimaryDark">#1A1A2E</color>
+    <color name="colorAccent">#D4AF37</color>
+</resources>

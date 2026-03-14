@@ -1,0 +1,83 @@
+/* Card Component Styles */
+.card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+.card-body {
+  padding: var(--card-padding);
+}
+
+.card-title {
+  font-size: var(--text-h4);
+  font-weight: var(--text-h4-weight);
+  color: var(--neutral-900);
+  margin-bottom: var(--space-2);
+}
+
+.card-description {
+  font-size: var(--text-sm);
+  color: var(--neutral-600);
+  line-height: var(--leading-normal);
+  margin-bottom: var(--space-3);
+}
+
+/* Menu Item Card */
+.menu-card {
+  cursor: pointer;
+}
+
+.menu-card .image {
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  width: 100%;
+}
+
+.menu-card .price {
+  font-family: var(--font-mono);
+  font-size: var(--text-price);
+  font-weight: var(--text-price-weight);
+  color: var(--brand-gold);
+  margin-top: var(--space-3);
+}
+
+/* Loyalty Card */
+.loyalty-card {
+  background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-blue-dark) 100%);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  color: var(--white);
+  box-shadow: var(--shadow-xl);
+}
+
+.loyalty-card .points {
+  font-size: var(--text-display);
+  font-weight: 700;
+  color: var(--brand-gold);
+  font-family: var(--font-mono);
+}
+
+.loyalty-card .label {
+  font-size: var(--text-sm);
+  opacity: 0.9;
+}
+
+/* Order Summary Card */
+.order-card {
+  border: 2px solid var(--neutral-100);
+}
+
+.order-card .order-total {
+  font-size: var(--text-h3);
+  font-weight: 700;
+  color: var(--brand-gold);
+  font-family: var(--font-mono);
+}

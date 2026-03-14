@@ -1,0 +1,29 @@
+{
+  "status": "complete",
+  "project_type": "brownfield",
+  "current_section": "complete",
+  "current_question": 0,
+  "completed_sections": ["product", "tech_stack", "workflow", "tracks", "index"],
+  "answers": {
+    "project_name": "POS Integration Platform",
+    "project_description": "Full-stack platform integrating restaurant POS systems (Toast/TopTop) with mobile and web ordering applications",
+    "problem_statement": "Restaurant owners need seamless integration between legacy POS systems and modern online ordering platforms without expensive infrastructure upgrades",
+    "target_users": "Restaurant operators and development teams building multi-platform hospitality ordering systems",
+    "key_goals": [
+      "Enable real-time order synchronization between POS and online platforms",
+      "Support mobile (iOS/Android) and web ordering interfaces",
+      "Integrate payment processing via Authorize.net",
+      "Maintain data consistency with MS SQL Server 2005 POS database"
+    ]
+  },
+  "files_created": [
+    "conductor/index.md",
+    "conductor/product.md",
+    "conductor/tech-stack.md",
+    "conductor/workflow.md",
+    "conductor/tracks.md",
+    "conductor/setup_state.json"
+  ],
+  "started_at": "2026-03-10T00:00:00Z",
+  "last_updated": "2026-03-10T00:00:00Z"
+}

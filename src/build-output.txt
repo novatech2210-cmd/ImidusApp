@@ -1,0 +1,41 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  IntegrationService.Core -> /home/kali/Desktop/TOAST/src/backend/IntegrationService.Core/bin/Debug/net8.0/IntegrationService.Core.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.69
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  IntegrationService.Core -> /home/kali/Desktop/TOAST/src/backend/IntegrationService.Core/bin/Debug/net8.0/IntegrationService.Core.dll
+  IntegrationService.Infrastructure -> /home/kali/Desktop/TOAST/src/backend/IntegrationService.Infrastructure/bin/Debug/net8.0/IntegrationService.Infrastructure.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.80
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  IntegrationService.Core -> /home/kali/Desktop/TOAST/src/backend/IntegrationService.Core/bin/Debug/net8.0/IntegrationService.Core.dll
+  IntegrationService.Infrastructure -> /home/kali/Desktop/TOAST/src/backend/IntegrationService.Infrastructure/bin/Debug/net8.0/IntegrationService.Infrastructure.dll
+  IntegrationService.API -> /home/kali/Desktop/TOAST/src/backend/IntegrationService.API/bin/Debug/net8.0/IntegrationService.API.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.64
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  IntegrationService.Core -> /home/kali/Desktop/TOAST/src/backend/IntegrationService.Core/bin/Debug/net8.0/IntegrationService.Core.dll
+  IntegrationService.Infrastructure -> /home/kali/Desktop/TOAST/src/backend/IntegrationService.Infrastructure/bin/Debug/net8.0/IntegrationService.Infrastructure.dll
+  IntegrationService.Tests -> /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net8.0/IntegrationService.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.01

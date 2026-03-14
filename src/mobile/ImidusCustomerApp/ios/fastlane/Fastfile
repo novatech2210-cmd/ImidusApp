@@ -1,0 +1,355 @@
+# Fastfile for ImidusCustomerApp iOS automation
+# Documentation: https://docs.fastlane.tools
+
+default_platform(:ios)
+
+# App Configuration
+APP_NAME = "ImidusCustomerApp"
+APP_IDENTIFIER = "com.imidus.customer"
+WORKSPACE = "ImidusCustomerApp.xcworkspace"
+SCHEME = "ImidusCustomerApp"
+OUTPUT_DIRECTORY = "./build"
+
+platform :ios do
+
+  #########################
+  # Pre-build Setup
+  #########################
+
+  before_all do |lane|
+    ensure_git_status_clean unless lane == :test
+
+    # Setup environment
+    setup_ci if ENV['CI']
+
+    # Clear derived data
+    clear_derived_data
+  end
+
+  #########################
+  # Build Lanes
+  #########################
+
+  desc "Build Staging version"
+  lane :build_staging do
+    # Install dependencies
+    cocoapods(
+      repo_update: true,
+      clean_install: true
+    )
+
+    # Increment build number
+    increment_build_number(
+      build_number: latest_testflight_build_number + 1
+    )
+
+    # Build archive
+    build_app(
+      workspace: WORKSPACE,
+      scheme: SCHEME,
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: OUTPUT_DIRECTORY,
+      output_name: "#{APP_NAME}-Staging.ipa",
+      clean: true,
+      include_bitcode: false,
+      include_symbols: true,
+      export_options: {
+        method: "app-store",
+        provisioningProfiles: {
+          APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}"
+        }
+      }
+    )
+
+    UI.success("✅ Staging build completed successfully!")
+  end
+
+  desc "Build Production version"
+  lane :build_production do
+    # Ensure we're on the right branch
+    ensure_git_branch(branch: "main")
+
+    # Install dependencies
+    cocoapods(
+      repo_update: true,
+      clean_install: true
+    )
+
+    # Increment build number
+    increment_build_number(
+      build_number: latest_testflight_build_number + 1
+    )
+
+    # Build archive
+    build_app(
+      workspace: WORKSPACE,
+      scheme: SCHEME,
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: OUTPUT_DIRECTORY,
+      output_name: "#{APP_NAME}.ipa",
+      clean: true,
+      include_bitcode: false,
+      include_symbols: true,
+      export_options: {
+        method: "app-store",
+        signingStyle: "automatic",
+        teamID: ENV["FASTLANE_TEAM_ID"]
+      }
+    )
+
+    UI.success("✅ Production build completed successfully!")
+  end
+
+  desc "Export IPA from archive"
+  lane :export_ipa do
+    export_archive(
+      archive_path: lane_context[SharedValues::XCODEBUILD_ARCHIVE],
+      export_method: "app-store",
+      output_directory: OUTPUT_DIRECTORY,
+      export_options: {
+        method: "app-store",
+        provisioningProfiles: {
+          APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}"
+        }
+      }
+    )
+  end
+
+  #########################
+  # Code Signing
+  #########################
+
+  desc "Setup code signing with Match"
+  lane :setup_signing do
+    match(
+      type: "appstore",
+      app_identifier: APP_IDENTIFIER,
+      readonly: is_ci
+    )
+  end
+
+  desc "Generate new certificates"
+  lane :generate_certificates do
+    match(
+      type: "appstore",
+      app_identifier: APP_IDENTIFIER,
+      force_for_new_devices: true
+    )
+  end
+
+  desc "Sync certificates"
+  lane :sync_certificates do
+    match(
+      type: "appstore",
+      app_identifier: APP_IDENTIFIER,
+      readonly: true
+    )
+  end
+
+  #########################
+  # TestFlight Upload
+  #########################
+
+  desc "Upload to TestFlight"
+  lane :upload_testflight do
+    # Upload to TestFlight
+    upload_to_testflight(
+      app_identifier: APP_IDENTIFIER,
+      skip_waiting_for_build_processing: true,
+      skip_submission: true,
+      distribute_external: false,
+      notify_external_testers: false,
+      changelog: last_git_commit[:message],
+      groups: ["Internal Testers"],
+      demo_account_required: false,
+      beta_app_review_info: {
+        contact_email: "novatech2210@gmail.com",
+        contact_first_name: "Chris",
+        contact_last_name: "Novatech",
+        contact_phone: "+1234567890",
+        demo_account_name: "",
+        demo_account_password: "",
+        notes: "Internal testing build"
+      }
+    )
+
+    UI.success("✅ Successfully uploaded to TestFlight!")
+  end
+
+  desc "Submit to TestFlight for external testing"
+  lane :submit_testflight do
+    upload_to_testflight(
+      app_identifier: APP_IDENTIFIER,
+      skip_waiting_for_build_processing: false,
+      skip_submission: false,
+      distribute_external: true,
+      notify_external_testers: true,
+      changelog: "Bug fixes and performance improvements",
+      groups: ["External Testers"],
+      demo_account_required: false
+    )
+
+    UI.success("✅ Submitted to TestFlight external testing!")
+  end
+
+  #########################
+  # App Store Release
+  #########################
+
+  desc "Upload to App Store Connect"
+  lane :release do
+    # Ensure production environment
+    ensure_git_branch(branch: "main")
+    ensure_git_status_clean
+
+    # Build production version
+    build_production
+
+    # Upload to App Store Connect
+    deliver(
+      app_identifier: APP_IDENTIFIER,
+      skip_metadata: false,
+      skip_screenshots: false,
+      submit_for_review: false,
+      automatic_release: false,
+      precheck_include_in_app_purchases: false,
+      submission_information: {
+        add_id_info_uses_idfa: false,
+        export_compliance_uses_encryption: false
+      }
+    )
+
+    UI.success("✅ Successfully uploaded to App Store Connect!")
+  end
+
+  desc "Submit for App Store Review"
+  lane :submit_review do
+    deliver(
+      app_identifier: APP_IDENTIFIER,
+      skip_metadata: true,
+      skip_screenshots: true,
+      submit_for_review: true,
+      automatic_release: true,
+      submission_information: {
+        add_id_info_uses_idfa: false,
+        export_compliance_uses_encryption: false
+      }
+    )
+
+    UI.success("✅ Submitted for App Store review!")
+  end
+
+  #########################
+  # Testing
+  #########################
+
+  desc "Run unit tests"
+  lane :test do
+    run_tests(
+      workspace: WORKSPACE,
+      scheme: SCHEME,
+      device: "iPhone 15 Pro",
+      clean: true
+    )
+  end
+
+  desc "Run UI tests"
+  lane :ui_test do
+    run_tests(
+      workspace: WORKSPACE,
+      scheme: SCHEME,
+      device: "iPhone 15 Pro",
+      testplan: "UITests",
+      clean: true
+    )
+  end
+
+  #########################
+  # Utilities
+  #########################
+
+  desc "Bump version number"
+  lane :bump_version do |options|
+    bump_type = options[:bump_type] || "patch" # major, minor, patch
+
+    increment_version_number(
+      bump_type: bump_type
+    )
+
+    version = get_version_number
+    build = get_build_number
+
+    commit_version_bump(
+      message: "Bump version to #{version} (#{build})",
+      xcodeproj: "#{APP_NAME}.xcodeproj"
+    )
+
+    UI.success("✅ Version bumped to #{version} (#{build})")
+  end
+
+  desc "Clean build artifacts"
+  lane :clean do
+    clear_derived_data
+    sh("rm -rf ../build")
+    UI.success("✅ Cleaned build artifacts")
+  end
+
+  desc "Register new device"
+  lane :register_device do |options|
+    device_name = options[:name]
+    device_udid = options[:udid]
+
+    register_devices(
+      devices: {
+        device_name => device_udid
+      }
+    )
+
+    match(
+      type: "development",
+      force_for_new_devices: true
+    )
+
+    UI.success("✅ Registered device: #{device_name}")
+  end
+
+  desc "Download metadata from App Store Connect"
+  lane :download_metadata do
+    deliver(
+      app_identifier: APP_IDENTIFIER,
+      skip_binary_upload: true,
+      skip_screenshots: false
+    )
+
+    UI.success("✅ Metadata downloaded")
+  end
+
+  desc "Take screenshots"
+  lane :screenshots do
+    snapshot
+  end
+
+  #########################
+  # Error Handling
+  #########################
+
+  error do |lane, exception, options|
+    UI.error("❌ Error in lane #{lane}")
+    UI.error("Exception: #{exception.message}")
+
+    # Send notification (Slack, email, etc.)
+    # slack(
+    #   message: "iOS build failed: #{exception.message}",
+    #   success: false
+    # )
+  end
+
+  after_all do |lane|
+    # Cleanup
+    clean_build_artifacts unless lane == :test
+
+    UI.success("🎉 Lane #{lane} completed successfully!")
+  end
+end
