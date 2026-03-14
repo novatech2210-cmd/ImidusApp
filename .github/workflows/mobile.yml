@@ -62,7 +62,7 @@ jobs:
         run: npm test -- --coverage --watchAll=false
 
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: src/mobile/coverage/lcov.info
           flags: mobile

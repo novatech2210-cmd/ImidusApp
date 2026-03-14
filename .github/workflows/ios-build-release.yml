@@ -32,6 +32,7 @@ on:
 env:
   WORKING_DIR: src/mobile/ImidusCustomerApp
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  BUILD_NUMBER: "0"
 
 jobs:
   build-ios:
@@ -83,7 +84,7 @@ jobs:
           pod install --repo-update
 
       - name: Cache CocoaPods
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.WORKING_DIR }}/ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
@@ -189,7 +190,7 @@ jobs:
           echo "Download URL: $DOWNLOAD_URL" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload IPA Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: success()
         with:
           name: ImidusCustomerApp-iOS-${{ env.BUILD_NUMBER }}
@@ -197,7 +198,7 @@ jobs:
           retention-days: 30
 
       - name: Upload dSYM for Crash Reporting
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: success()
         with:
           name: ImidusCustomerApp-iOS-dSYM-${{ env.BUILD_NUMBER }}
