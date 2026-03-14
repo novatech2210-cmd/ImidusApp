@@ -6,31 +6,32 @@ on:
       - main
       - release/*
     paths:
-      - 'src/mobile/ImidusCustomerApp/**'
-      - '.github/workflows/ios-build-release.yml'
+      - "src/mobile/ImidusCustomerApp/**"
+      - ".github/workflows/ios-build-release.yml"
   pull_request:
     branches:
       - main
     paths:
-      - 'src/mobile/ImidusCustomerApp/**'
+      - "src/mobile/ImidusCustomerApp/**"
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Deployment environment'
+        description: "Deployment environment"
         required: true
-        default: 'staging'
+        default: "staging"
         type: choice
         options:
           - staging
           - production
       upload_to_testflight:
-        description: 'Upload to TestFlight'
+        description: "Upload to TestFlight"
         required: false
         type: boolean
         default: false
 
 env:
   WORKING_DIR: src/mobile/ImidusCustomerApp
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build-ios:
@@ -47,8 +48,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: "24"
+          cache: "pnpm"
           cache-dependency-path: ${{ env.WORKING_DIR }}/pnpm-lock.yaml
 
       - name: Install pnpm
@@ -61,7 +62,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2'
+          ruby-version: "3.2"
           bundler-cache: true
           working-directory: ${{ env.WORKING_DIR }}/ios
 
