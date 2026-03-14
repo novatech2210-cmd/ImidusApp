@@ -6,22 +6,34 @@ on:
   workflow_dispatch:
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  WORKING_DIR: src/mobile/ImidusCustomerApp
 
 jobs:
   android:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
+
+      - name: Cache Node modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            ${{ env.WORKING_DIR }}/node_modules
+          key: node-${{ hashFiles(format('{0}/package-lock.json', env.WORKING_DIR)) }}
+          restore-keys: node-
 
       - name: Install dependencies
         run: npm ci
-        working-directory: src/mobile/ImidusCustomerApp
+        working-directory: ${{ env.WORKING_DIR }}
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -29,12 +41,21 @@ jobs:
           distribution: "zulu"
           java-version: "17"
 
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-
+
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
       - name: Build Release APK
         run: ./gradlew assembleRelease
-        working-directory: src/mobile/ImidusCustomerApp/android
+        working-directory: ${{ env.WORKING_DIR }}/android
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -43,7 +64,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Upload to S3
+      - name: Upload APK to S3
         run: |
           aws s3 cp app/build/outputs/apk/release/app-release.apk s3://inirestaurant/novatech/mobile/android/ImidusCustomerApp.apk
-        working-directory: src/mobile/ImidusCustomerApp/android
+        working-directory: ${{ env.WORKING_DIR }}/android
