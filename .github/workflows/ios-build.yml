@@ -34,14 +34,8 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
-          bundler-cache: true
           working-directory: ${{ env.WORKING_DIR }}/ios
-
-      - name: Install Fastlane
-        working-directory: ${{ env.WORKING_DIR }}/ios
-        run: |
-          gem install bundler
-          bundle install
+          bundle-install: true
 
       - name: Install CocoaPods
         run: bundle exec pod install --repo-update
