@@ -35,7 +35,7 @@ jobs:
         with:
           ruby-version: "3.2"
           working-directory: ${{ env.WORKING_DIR }}/ios
-          bundle-install: true
+          bundler-cache: true
 
       - name: Install CocoaPods
         run: bundle exec pod install --repo-update
