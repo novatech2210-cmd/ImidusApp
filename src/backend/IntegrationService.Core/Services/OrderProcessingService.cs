@@ -269,7 +269,9 @@ namespace IntegrationService.Core.Services
                         PaymentTypeID = 0,  // Will be auto-mapped from CardType
                         PaidAmount = paymentRequest.Amount,
                         TipAmount = 0,  // Tip handled separately if needed
-                        AuthorizationNo = paymentResult.TransactionId,
+                        AuthorizationNo = paymentResult.TransactionId?.Length > 20 
+                            ? paymentResult.TransactionId.Substring(0, 20) 
+                            : paymentResult.TransactionId,
                         CardType = paymentResult.CardType,
                         Last4Digits = paymentResult.Last4Digits,
                         SequenceNo = 1,

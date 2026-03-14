@@ -206,7 +206,14 @@ builder.Services.AddScoped<ILoyaltyService, LoyaltyService>();
 builder.Services.AddScoped<IUpsellService, UpsellService>();
 builder.Services.AddScoped<BirthdayRewardService>();
 builder.Services.AddHostedService<BirthdayRewardBackgroundService>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddScoped<IPaymentService, MockPaymentService>();
+}
+else
+{
+    builder.Services.AddScoped<IPaymentService, PaymentService>();
+}
 builder.Services.AddScoped<INotificationService, FcmNotificationService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 

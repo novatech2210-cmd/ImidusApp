@@ -21,8 +21,8 @@ public class MockPaymentService : IPaymentService
         return Task.FromResult(new PaymentResult
         {
             Success = true,
-            TransactionId = "MOCK_TXN_" + Guid.NewGuid().ToString("N").Substring(0, 12).ToUpper(),
-            AuthorizationCode = "MOCK_AUTH_" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper(),
+            TransactionId = "MTX_" + Guid.NewGuid().ToString("N").Substring(0, 12).ToUpper(),
+            AuthorizationCode = "MA_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
             Last4Digits = "1234",
             CardType = "Visa"
         });
