@@ -7,7 +7,7 @@ on:
 
 env:
   WORKING_DIR: src/mobile/ImidusCustomerApp
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   ios:
@@ -18,13 +18,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "24"
+          node-version: "22"
+          cache: "pnpm"
+          cache-dependency-path: ${{ env.WORKING_DIR }}/pnpm-lock.yaml
 
-      - name: Install pnpm
-        run: npm install -g pnpm
+      - name: Debug Environment
+        run: |
+          node -v
+          npm -v
+          pnpm -v
+          ruby -v
+          echo "WORKING_DIR: ${{ env.WORKING_DIR }}"
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
