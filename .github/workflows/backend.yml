@@ -3,29 +3,44 @@ name: Backend CI/CD Pipeline
 on:
   push:
     branches: [main, develop]
+    tags:
+      - "v*"
     paths:
-      - 'src/backend/**'
-      - 'deployment/**'
-      - '.github/workflows/backend.yml'
+      - "src/backend/**"
+      - ".github/workflows/backend.yml"
   pull_request:
     branches: [main]
     paths:
-      - 'src/backend/**'
+      - "src/backend/**"
   workflow_dispatch:
     inputs:
-      environment:
-        description: 'Deployment environment'
+      build_msi:
+        description: "Build MSI installer"
         required: true
-        default: 'staging'
+        default: true
+        type: boolean
+      upload_to_s3:
+        description: "Upload artifacts to S3"
+        required: true
+        default: true
+        type: boolean
+      environment:
+        description: "Deployment environment"
+        required: true
+        default: staging
         type: choice
         options:
           - staging
           - production
 
 env:
-  DOTNET_VERSION: '9.0.x'
-  CONFIGURATION: 'Release'
-  AWS_REGION: 'us-east-1'
+  BACKEND_DIR: src/backend
+  DOTNET_VERSION: "9.0.x"
+  CONFIGURATION: "Release"
+  S3_BUCKET: inirestaurant
+  S3_PREFIX: novatech
+  AWS_REGION: us-east-1
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   # ============================================================================
@@ -33,10 +48,10 @@ jobs:
   # ============================================================================
   build-and-test:
     name: Build & Test Backend
-    runs-on: windows-latest
-    
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup .NET
@@ -44,28 +59,40 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Restore dependencies
-        run: dotnet restore src/backend/IntegrationService.API/IntegrationService.API.csproj
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-
 
-      - name: Build
-        run: dotnet build src/backend/IntegrationService.API/IntegrationService.API.csproj --configuration ${{ env.CONFIGURATION }} --no-restore
+      - name: Restore dependencies
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: dotnet restore
+
+      - name: Build API
+        working-directory: ${{ env.BACKEND_DIR }}/IntegrationService.API
+        run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
 
       - name: Run tests
-        run: dotnet test src/backend/IntegrationService.Tests/IntegrationService.Tests.csproj --configuration ${{ env.CONFIGURATION }} --no-build --verbosity normal
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: dotnet test --configuration ${{ env.CONFIGURATION }} --no-build --verbosity normal
 
-      - name: Publish
+      - name: Publish API
+        working-directory: ${{ env.BACKEND_DIR }}/IntegrationService.API
         run: |
-          dotnet publish src/backend/IntegrationService.API/IntegrationService.API.csproj \
-            --configuration ${{ env.CONFIGURATION }} \
+          dotnet publish --configuration ${{ env.CONFIGURATION }} \
             --output ./publish \
             --self-contained true \
-            -r win-x64
+            --runtime win-x64 \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true
 
-      - name: Upload build artifacts
+      - name: Upload API artifact
         uses: actions/upload-artifact@v4
         with:
-          name: backend-publish
-          path: ./publish
+          name: backend-api
+          path: ${{ env.BACKEND_DIR }}/IntegrationService.API/publish/
           retention-days: 30
 
   # ============================================================================
@@ -75,150 +102,102 @@ jobs:
     name: Build MSI Installer
     runs-on: windows-latest
     needs: build-and-test
-    
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') || github.event.inputs.build_msi != 'false' }}
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download build artifacts
+      - name: Download API artifact
         uses: actions/download-artifact@v4
         with:
-          name: backend-publish
-          path: ./publish
+          name: backend-api
+          path: ./api-publish
 
-      - name: Install WiX Toolset
+      - name: Setup WiX Toolset
         run: |
-          dotnet tool install --global wix --version 4.0.4
+          dotnet tool install --global wix
           wix extension add -g WixToolset.UI.wixext
 
-      - name: Build MSI
+      - name: Create MSI with WiX
+        working-directory: ./installer
         run: |
-          cd deployment/installer
-          wix build -o ../../dist/ImidusPOSIntegration-Setup.msi ImidusInstaller.wxs
-        env:
-          PRODUCT_VERSION: ${{ github.run_number }}
+          wix build -o ../artifacts/ImidusIntegrationService.msi \
+            -p:Configuration=Release \
+            -p:Platform=x64 \
+            -d:PublishDir=../api-publish
 
-      - name: Upload MSI
+      - name: Upload MSI artifact
         uses: actions/upload-artifact@v4
         with:
-          name: msi-installer
-          path: ./dist/ImidusPOSIntegration-Setup.msi
+          name: backend-msi
+          path: ./artifacts/*.msi
           retention-days: 90
 
+      - name: Create version info
+        run: |
+          echo "Version: ${{ github.ref_name }}" > ./version.txt
+          echo "Build Date: $(date)" >> ./version.txt
+          echo "Commit: ${{ github.sha }}" >> ./version.txt
+
+      - name: Upload version artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: version-info
+          path: ./version.txt
+
   # ============================================================================
-  # DEPLOY TO S3
+  # DEPLOY TO AWS S3
   # ============================================================================
-  deploy:
-    name: Deploy to S3
+  deploy-to-s3:
+    name: Deploy to AWS S3
     runs-on: ubuntu-latest
     needs: [build-and-test, build-msi]
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
-    
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: backend-publish
-          path: ./publish
+    if: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) || github.event.inputs.upload_to_s3 == 'true' }}
 
-      - name: Download MSI
+    steps:
+      - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          name: msi-installer
-          path: ./dist
+          path: ./artifacts
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Upload to S3
         run: |
-          # Create versioned release folder
-          VERSION=$(date +%Y%m%d)-${{ github.run_number }}
+          VERSION=${{ github.ref_name }}
+          if [[ $VERSION != v* ]]; then
+            VERSION=$(date +%Y%m%d)-${{ github.run_number }}
+          fi
           echo "Deploying version: $VERSION"
-          
-          # Upload MSI installer
-          aws s3 cp ./dist/ImidusPOSIntegration-Setup.msi \
-            s3://${{ secrets.AWS_S3_BUCKET }}/releases/backend/$VERSION/ImidusPOSIntegration-Setup.msi
-          
-          # Upload portable build
-          cd publish
-          zip -r ../ImidusPOSIntegration-Portable.zip .
-          aws s3 cp ../ImidusPOSIntegration-Portable.zip \
-            s3://${{ secrets.AWS_S3_BUCKET }}/releases/backend/$VERSION/ImidusPOSIntegration-Portable.zip
-          
-          # Update 'latest' symlink
-          echo "$VERSION" > ../latest.txt
-          aws s3 cp ../latest.txt s3://${{ secrets.AWS_S3_BUCKET }}/releases/backend/latest.txt
-          
-          echo "Deployment complete!"
-          echo "MSI: s3://${{ secrets.AWS_S3_BUCKET }}/releases/backend/$VERSION/ImidusPOSIntegration-Setup.msi"
-          echo "ZIP: s3://${{ secrets.AWS_S3_BUCKET }}/releases/backend/$VERSION/ImidusPOSIntegration-Portable.zip"
 
-      - name: Generate deployment report
-        run: |
-          cat > deployment-report.md <<EOF
-          # Backend Deployment Report
-          
-          **Version:** $(date +%Y%m%d)-${{ github.run_number }}
-          **Date:** $(date)
-          **Environment:** ${{ github.event.inputs.environment || 'staging' }}
-          **Commit:** ${{ github.sha }}
-          
-          ## Artifacts
-          
-          - **MSI Installer:** s3://${{ secrets.AWS_S3_BUCKET }}/releases/backend/$(date +%Y%m%d)-${{ github.run_number }}/ImidusPOSIntegration-Setup.msi
-          - **Portable ZIP:** s3://${{ secrets.AWS_S3_BUCKET }}/releases/backend/$(date +%Y%m%d)-${{ github.run_number }}/ImidusPOSIntegration-Portable.zip
-          
-          ## Installation
-          
-          ### Option 1: MSI Installer (Recommended)
-          Download and run the MSI installer on the Windows Server. It will:
-          - Install the backend service
-          - Configure Windows Service
-          - Set up firewall rules
-          - Create start menu shortcuts
-          
-          ### Option 2: Portable ZIP
-          Extract and run directly:
-          \`\`\`powershell
-          ./IntegrationService.API.exe
-          \`\`\`
-          
-          ## Configuration Required
-          
-          Update the following in \`appsettings.json\`:
-          - POS Database connection string
-          - Authorize.net credentials (production)
-          - Firebase credentials
-          - JWT secret
-          
-          EOF
-          
-          aws s3 cp deployment-report.md s3://${{ secrets.AWS_S3_BUCKET }}/releases/backend/$(date +%Y%m%d)-${{ github.run_number }}/README.md
+          # Upload API
+          aws s3 sync ./artifacts/backend-api/ \
+            s3://${{ env.S3_BUCKET }}/${{ env.S3_PREFIX }}/backend/$VERSION/api/ --delete
 
-  # ============================================================================
-  # NOTIFY
-  # ============================================================================
-  notify:
-    name: Notify Deployment
-    needs: deploy
-    if: always()
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Notify success
-        if: needs.deploy.result == 'success'
-        run: |
-          echo "✅ Backend deployment successful!"
-          echo "Version: $(date +%Y%m%d)-${{ github.run_number }}"
-          echo "S3 Bucket: s3://${{ secrets.AWS_S3_BUCKET }}/releases/backend/"
+          # Upload MSI if exists
+          if [ -d ./artifacts/backend-msi ]; then
+            aws s3 cp ./artifacts/backend-msi/*.msi \
+              s3://${{ env.S3_BUCKET }}/${{ env.S3_PREFIX }}/backend/$VERSION/
+          fi
 
-      - name: Notify failure
-        if: needs.deploy.result == 'failure'
+          # Upload version info
+          if [ -f ./artifacts/version-info/version.txt ]; then
+            aws s3 cp ./artifacts/version-info/version.txt \
+              s3://${{ env.S3_BUCKET }}/${{ env.S3_PREFIX }}/backend/$VERSION/version.txt
+          fi
+
+          # Update latest pointer
+          echo "$VERSION" > latest.txt
+          aws s3 cp latest.txt s3://${{ env.S3_BUCKET }}/${{ env.S3_PREFIX }}/backend/latest.txt
+
+      - name: Notify deployment
         run: |
-          echo "❌ Backend deployment failed"
-          exit 1
+          VERSION=${{ github.ref_name }}
+          echo "✅ Backend deployed successfully!"
+          echo "S3 Path: s3://${{ env.S3_BUCKET }}/${{ env.S3_PREFIX }}/backend/$VERSION/"

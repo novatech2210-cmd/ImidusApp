@@ -7,38 +7,64 @@ on:
 
 env:
   WORKING_DIR: src/mobile/ImidusCustomerApp
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   node-deps:
     runs-on: macos-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
+
+      - name: Cache pnpm modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            node_modules
+          key: pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: pnpm-
+
       - name: Install pnpm
         run: npm install -g pnpm
+
       - name: Install Node dependencies
         run: pnpm install --no-frozen-lockfile
         working-directory: ${{ env.WORKING_DIR }}
-      - name: Cache node_modules
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ env.WORKING_DIR }}/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles(format('{0}/pnpm-lock.yaml', env.WORKING_DIR)) }}
 
   cocoa-deps:
     runs-on: macos-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
           working-directory: ${{ env.WORKING_DIR }}/ios
           bundler-cache: true
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            Pods
+            ~/Library/Caches/CocoaPods
+          key: cocoapods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: cocoapods-
+
       - name: Install CocoaPods
         run: bundle exec pod install --repo-update
         working-directory: ${{ env.WORKING_DIR }}/ios
@@ -53,34 +79,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Setup Node.js (Environment)
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-
-      - name: Restore pnpm modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pnpm-store
-            ${{ env.WORKING_DIR }}/node_modules
-          key: pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-
-      - name: Setup Ruby (Environment)
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.2"
-          working-directory: ${{ env.WORKING_DIR }}/ios
-          bundler-cache: true
-
-      - name: Restore CocoaPods
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ env.WORKING_DIR }}/ios/Pods
-            ~/Library/Caches/CocoaPods
-          key: cocoapods-${{ hashFiles('**/Podfile.lock') }}
 
       - name: Import Apple Certificates
         working-directory: ${{ env.WORKING_DIR }}/ios

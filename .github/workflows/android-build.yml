@@ -27,8 +27,8 @@ jobs:
         with:
           path: |
             ~/.npm
-            ${{ env.WORKING_DIR }}/node_modules
-          key: node-${{ hashFiles(format('{0}/package-lock.json', env.WORKING_DIR)) }}
+            node_modules
+          key: node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: node-
 
       - name: Install dependencies
