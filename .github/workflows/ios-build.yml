@@ -42,46 +42,45 @@ jobs:
       - name: Install CocoaPods
         run: bundle exec pod install --repo-update
         working-directory: ${{ env.WORKING_DIR }}/ios
-      - name: Cache Pods
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ env.WORKING_DIR }}/ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles(format('{0}/ios/Podfile.lock', env.WORKING_DIR)) }}
 
   ios-build:
     needs: [node-deps, cocoa-deps]
     runs-on: macos-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Restore node_modules
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ env.WORKING_DIR }}/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles(format('{0}/pnpm-lock.yaml', env.WORKING_DIR)) }}
-          fail-on-cache-miss: true
-
-      - name: Restore Pods
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ env.WORKING_DIR }}/ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles(format('{0}/ios/Podfile.lock', env.WORKING_DIR)) }}
-          fail-on-cache-miss: true
-
-      - name: Setup Node.js (Environment only)
+      - name: Setup Node.js (Environment)
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
 
-      - name: Setup Ruby (Environment only)
+      - name: Restore pnpm modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            ${{ env.WORKING_DIR }}/node_modules
+          key: pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Setup Ruby (Environment)
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
           working-directory: ${{ env.WORKING_DIR }}/ios
           bundler-cache: true
+
+      - name: Restore CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.WORKING_DIR }}/ios/Pods
+            ~/Library/Caches/CocoaPods
+          key: cocoapods-${{ hashFiles('**/Podfile.lock') }}
 
       - name: Import Apple Certificates
         working-directory: ${{ env.WORKING_DIR }}/ios
