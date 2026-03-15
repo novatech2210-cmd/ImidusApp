@@ -1,0 +1,90 @@
+workflows:
+  ios-release:
+    name: iOS Release Build
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    working_directory: src/mobile/ImidusCustomerApp
+    
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
+    
+    environment:
+      node: 20
+      ruby: 3.2.2
+      vars:
+        BUNDLE_ID: "com.imidus.customer"
+        XCODE_WORKSPACE: "ImidusCustomerApp.xcworkspace"
+        XCODE_SCHEME: "ImidusCustomerApp"
+        # Add these in Codemagic UI as secure variables:
+        # IOS_BUILD_CERTIFICATE_BASE64
+        # IOS_CERTIFICATE_PASSWORD
+        # IOS_KEYCHAIN_PASSWORD
+        # IOS_PROVISIONING_PROFILE_BASE64
+        # FASTLANE_TEAM_ID
+        # AWS_ACCESS_KEY_ID
+        # AWS_SECRET_ACCESS_KEY
+    
+    scripts:
+      - name: Install dependencies
+        script: |
+          # Enable pnpm via corepack
+          corepack enable
+          corepack prepare pnpm@10.32.1 --activate
+          
+          # Install dependencies
+          pnpm install --frozen-lockfile
+          
+          # Verify react-native-svg is NOT present (we removed it)
+          echo "Checking dependencies..."
+          pnpm list | grep react-native-svg || echo "✅ react-native-svg not installed (expected)"
+      
+      - name: Setup Keychain and Import Certificates
+        script: |
+          KEYCHAIN_PATH=$HOME/Library/Keychains/app-signing.keychain-db
+          CERTIFICATE_PATH=$HOME/build_certificate.p12
+          PP_PATH="$HOME/Library/MobileDevice/Provisioning Profiles"
+
+          echo -n "$IOS_BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          mkdir -p "$PP_PATH"
+          echo -n "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode -o "$PP_PATH/profile.mobileprovision"
+
+          security create-keychain -p "$IOS_KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$IOS_KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security import $CERTIFICATE_PATH -P "$IOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+          security default-keychain -s $KEYCHAIN_PATH
+      
+      - name: Install CocoaPods
+        script: |
+          cd ios
+          bundle install
+          bundle exec pod install --repo-update
+      
+      - name: Build and Export IPA
+        script: |
+          cd ios
+          export CI=true
+          export GITHUB_RUN_NUMBER=$CM_BUILD_ID
+          bundle exec fastlane build_production
+      
+      - name: Upload to S3
+        script: |
+          aws s3 cp ios/build/ImidusCustomerApp.ipa \
+            s3://inirestaurant/novatech/mobile/ios/ImidusCustomerApp-$CM_TAG.ipa \
+            --metadata "build-id=$CM_BUILD_ID,commit=$CM_COMMIT"
+    
+    artifacts:
+      - src/mobile/ImidusCustomerApp/ios/build/*.ipa
+    
+    publishing:
+      email:
+        recipients:
+          - novatech2210@gmail.com
+        notify:
+          success: true
+          failure: true
