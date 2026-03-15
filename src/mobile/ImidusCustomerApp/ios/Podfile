@@ -1,16 +1,7 @@
-# Resolve react_native_pods.rb with node to allow for hoisting
-react_native_pods = Pod::Executable.execute_command('node', ['-p',
-  'try { console.log(require.resolve("react-native/scripts/react_native_pods.rb")); } catch (e) { console.log(""); }'
-]).strip
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-if react_native_pods.empty?
-  # Fallback to relative path if require.resolve fails (e.g. node_modules not yet populated in the expected way)
-  react_native_pods = File.join(__dir__, "..", "node_modules", "react-native", "scripts", "react_native_pods.rb")
-end
-
-require react_native_pods
-
-platform :ios, min_ios_version_supported
+platform :ios, '13.4'
 prepare_react_native_project!
 
 target 'ImidusCustomerApp' do
