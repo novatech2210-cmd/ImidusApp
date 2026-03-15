@@ -1,5 +1,3 @@
-cd ~/Desktop/TOAST
-
 # Create/update the workflow
 cat > .github/workflows/ios-build.yml << 'EOF'
 name: iOS Build
