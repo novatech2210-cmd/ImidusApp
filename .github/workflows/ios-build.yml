@@ -8,6 +8,11 @@ on:
 env:
   WORKING_DIR: src/mobile/ImidusCustomerApp
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  GIT_AUTHOR_NAME: novatech
+  GIT_AUTHOR_EMAIL: novatech2210@gmail.com
+  GIT_COMMITTER_NAME: novatech
+  GIT_COMMITTER_EMAIL: novatech2210@gmail.com
+  GPG_KEY_ID: 46D53BDC28352FF7
 
 jobs:
   node-deps:
@@ -18,6 +23,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Configure Git Identity
+        run: |
+          git config --global user.name "${{ env.GIT_AUTHOR_NAME }}"
+          git config --global user.email "${{ env.GIT_AUTHOR_EMAIL }}"
+          git config --global commit.gpgsign true
+          git config --global user.signingkey "${{ env.GPG_KEY_ID }}"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -34,10 +46,12 @@ jobs:
           restore-keys: pnpm-${{ runner.os }}-
 
       - name: Install pnpm
-        run: npm install -g pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: Install Node dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
         working-directory: ${{ env.WORKING_DIR }}
 
   cocoa-deps:
@@ -49,6 +63,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Configure Git Identity
+        run: |
+          git config --global user.name "${{ env.GIT_AUTHOR_NAME }}"
+          git config --global user.email "${{ env.GIT_AUTHOR_EMAIL }}"
+          git config --global commit.gpgsign true
+          git config --global user.signingkey "${{ env.GPG_KEY_ID }}"
 
       - name: Setup Node.js (for Pods resolution)
         uses: actions/setup-node@v4
@@ -64,10 +85,12 @@ jobs:
           key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: Install pnpm
-        run: npm install -g pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: Install Node dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: Setup Ruby
@@ -100,6 +123,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Configure Git Identity
+        run: |
+          git config --global user.name "${{ env.GIT_AUTHOR_NAME }}"
+          git config --global user.email "${{ env.GIT_AUTHOR_EMAIL }}"
+          git config --global commit.gpgsign true
+          git config --global user.signingkey "${{ env.GPG_KEY_ID }}"
 
       - name: Import Apple Certificates
         working-directory: ${{ env.WORKING_DIR }}/ios
