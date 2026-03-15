@@ -14,7 +14,7 @@ workflows:
     
     environment:
       node: 20
-      ruby: 3.2.2
+      # Use system Ruby which has CocoaPods pre-installed
       vars:
         BUNDLE_ID: "com.imidus.customer"
         XCODE_WORKSPACE: "ImidusCustomerApp.xcworkspace"
@@ -27,9 +27,12 @@ workflows:
           corepack enable
           corepack prepare pnpm@10.32.1 --activate
           pnpm install --frozen-lockfile
-          
-          echo "✅ Node dependencies installed"
-          pnpm list | grep react-native-svg || echo "✅ react-native-svg not present (expected)"
+      
+      - name: Verify Ruby and CocoaPods
+        script: |
+          ruby --version
+          which pod
+          pod --version
       
       - name: Setup Keychain and Import Certificates
         script: |
@@ -47,48 +50,27 @@ workflows:
           security import $CERTIFICATE_PATH -P "$IOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
           security default-keychain -s $KEYCHAIN_PATH
-          
-          echo "✅ Keychain and certificates configured"
       
-      - name: Install Ruby dependencies and CocoaPods
+      - name: Install Bundler dependencies
         script: |
           cd ios
-          
-          # Install bundler if not present
-          gem install bundler --no-document
-          
-          # Install gems (including CocoaPods) from Gemfile
           bundle install
-          
-          echo "✅ Ruby gems installed"
-          bundle exec pod --version
       
       - name: Install CocoaPods dependencies
         script: |
           cd ios
           bundle exec pod install --repo-update
-          
-          echo "✅ CocoaPods installation complete"
       
       - name: Build and Export IPA
         script: |
           cd ios
           export GITHUB_RUN_NUMBER=$CM_BUILD_ID
           bundle exec fastlane build_production
-          
-          echo "✅ IPA built successfully"
       
       - name: Upload to S3
         script: |
-          if [ -f ios/build/ImidusCustomerApp.ipa ]; then
-            aws s3 cp ios/build/ImidusCustomerApp.ipa \
-              s3://inirestaurant/novatech/mobile/ios/ImidusCustomerApp-$CM_TAG.ipa \
-              --metadata "build-id=$CM_BUILD_ID,commit=$CM_COMMIT"
-            echo "✅ IPA uploaded to S3"
-          else
-            echo "❌ IPA not found"
-            exit 1
-          fi
+          aws s3 cp ios/build/ImidusCustomerApp.ipa \
+            s3://inirestaurant/novatech/mobile/ios/ImidusCustomerApp-$CM_TAG.ipa
     
     artifacts:
       - ios/build/*.ipa
