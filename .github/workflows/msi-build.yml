@@ -1,67 +1,8 @@
 name: Build MSI
-
 on:
-  push:
-    tags:
-      - "v*"
   workflow_dispatch:
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-
 jobs:
-  msi:
+  build:
     runs-on: windows-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "9.0.x"
-
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.wixproj', '**/packages.config') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Publish backend (self-contained)
-        run: |
-          dotnet publish src/backend/IntegrationService.API/ \
-            -c Release \
-            -r win-x64 \
-            --self-contained true \
-            -o publish/
-
-      - name: Build MSI (recommended SDK style)
-        run: dotnet build installer/ -c Release
-
-      - name: Rename MSI to include version
-        shell: pwsh
-        run: |
-          $tag = "${{ github.ref_name }}"
-          $version = $tag -replace '^v',''
-          if (!(Test-Path dist)) { New-Item -ItemType Directory -Path dist }
-          Move-Item -Path installer/bin/Release/IntegrationService-Setup.msi `
-                    -Destination "dist/IntegrationService-Setup-$version.msi"
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Upload MSI to S3
-        run: |
-          aws s3 cp dist/*.msi s3://inirestaurant/novatech/backend/ --no-progress
+      - run: echo "MSI workflow - manual trigger only"
