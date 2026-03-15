@@ -1,0 +1,80 @@
+workflows:
+  ios-release:
+    name: iOS Release Build
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    working_directory: src/mobile/ImidusCustomerApp
+    
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
+    
+    environment:
+      node: 20
+      vars:
+        BUNDLE_ID: "com.imidus.customer"
+        XCODE_WORKSPACE: "ImidusCustomerApp.xcworkspace"
+        XCODE_SCHEME: "ImidusCustomerApp"
+        CI: "true"
+    
+    scripts:
+      - name: Install dependencies
+        script: |
+          corepack enable
+          corepack prepare pnpm@10.32.1 --activate
+          pnpm install --frozen-lockfile
+      
+      - name: Setup Keychain and Import Certificates
+        script: |
+          KEYCHAIN_PATH=$HOME/Library/Keychains/app-signing.keychain-db
+          CERTIFICATE_PATH=$HOME/build_certificate.p12
+          PP_PATH="$HOME/Library/MobileDevice/Provisioning Profiles"
+
+          echo -n "$IOS_BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          mkdir -p "$PP_PATH"
+          echo -n "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode -o "$PP_PATH/profile.mobileprovision"
+
+          security create-keychain -p "$IOS_KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$IOS_KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security import $CERTIFICATE_PATH -P "$IOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+          security default-keychain -s $KEYCHAIN_PATH
+      
+      - name: Install Bundler dependencies
+        script: |
+          cd ios
+          bundle install
+      
+      - name: Install CocoaPods dependencies
+        script: |
+          cd ios
+          # Try multiple pod locations
+          /opt/homebrew/bin/pod install --repo-update || \
+          /usr/local/bin/pod install --repo-update || \
+          pod install --repo-update
+      
+      - name: Build and Export IPA
+        script: |
+          cd ios
+          export GITHUB_RUN_NUMBER=$CM_BUILD_ID
+          bundle exec fastlane build_production
+      
+      - name: Upload to S3
+        script: |
+          aws s3 cp ios/build/ImidusCustomerApp.ipa \
+            s3://inirestaurant/novatech/mobile/ios/ImidusCustomerApp-$CM_TAG.ipa
+    
+    artifacts:
+      - ios/build/*.ipa
+    
+    publishing:
+      email:
+        recipients:
+          - novatech2210@gmail.com
+        notify:
+          success: true
+          failure: true
