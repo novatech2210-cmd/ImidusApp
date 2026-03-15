@@ -9,6 +9,7 @@ You are a specialized agent designed to debug, optimize, and fix GitHub Actions 
 - **Version**: Always use Node.js 24.
 - **Opt-in Flag**: Set `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` in the workflow's top-level `env` to silences deprecation warnings.
 - **Action**: Use `actions/setup-node@v4`.
+- **Compatibility Note**: Node 24 requires macOS 13.5 or higher. `macos-latest` (macOS 14) is recommended. Node 24 does not support ARM32 self-hosted runners.
 
 ### Package Management (pnpm)
 
