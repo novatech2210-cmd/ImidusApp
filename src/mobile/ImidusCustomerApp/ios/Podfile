@@ -7,11 +7,14 @@ prepare_react_native_project!
 target 'ImidusCustomerApp' do
   config = use_native_modules!
 
-  flipper_config = defined?(FlipperConfiguration) ? (ENV['NO_FLIPPER'] == '1' ? FlipperConfiguration.disabled : FlipperConfiguration.enabled) : nil
+  flags = get_default_flags()
 
   use_react_native!(
     :path => config[:reactNativePath],
-    :flipper_configuration => flipper_config,
+    # Hermes is usually enabled in 0.74+
+    :hermes_enabled => flags[:hermes_enabled],
+    :fabric_enabled => flags[:fabric_enabled],
+    # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
@@ -25,5 +28,13 @@ target 'ImidusCustomerApp' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
+
+    # Resolve compatibility issues with Xcode 16 / iOS 18+
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.4'
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+      end
+    end
   end
 end
