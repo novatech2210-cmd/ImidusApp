@@ -8,7 +8,6 @@ on:
 
 env:
   WORKING_DIR: src/mobile/ImidusCustomerApp
-  CACHE_VERSION: v2  # Increment this to bust cache
 
 jobs:
   build-ios:
@@ -24,25 +23,38 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"  # Use LTS instead of 24
+          node-version: "20"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10
 
-      # NO CACHING - Force fresh install every time until issue is resolved
-      - name: Install Node dependencies (fresh)
+      # Force fresh install - no cache
+      - name: Clean and install dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
+          echo "=== Cleaning old installations ==="
           rm -rf node_modules
+          
+          echo "=== Installing dependencies ==="
           pnpm install --frozen-lockfile
           
-          echo "=== Verify react-native-svg version ==="
-          grep "react-native-svg" package.json
+          echo "=== Verifying react-native-svg version ==="
+          grep '"react-native-svg"' package.json || echo "ERROR: react-native-svg not found"
           
-          echo "=== Verify react_native_pods.rb ==="
-          ls -la node_modules/react-native/scripts/react_native_pods.rb
+          echo "=== Verifying React Native installation ==="
+          if [ -f "node_modules/react-native/scripts/react_native_pods.rb" ]; then
+            echo "✅ react_native_pods.rb found"
+            ls -lh node_modules/react-native/scripts/react_native_pods.rb
+          else
+            echo "❌ react_native_pods.rb NOT FOUND"
+            exit 1
+          fi
+          
+          echo "=== Checking react-native-svg in node_modules ==="
+          ls -la node_modules/react-native-svg/package.json
+          grep '"version"' node_modules/react-native-svg/package.json
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -53,7 +65,11 @@ jobs:
 
       - name: Install CocoaPods dependencies
         working-directory: ${{ env.WORKING_DIR }}/ios
-        run: bundle exec pod install --repo-update
+        run: |
+          echo "=== Installing CocoaPods ==="
+          bundle exec pod install --repo-update --verbose
+          
+          echo "=== CocoaPods installation complete ==="
 
       - name: Import Apple Certificates
         working-directory: ${{ env.WORKING_DIR }}/ios
@@ -87,7 +103,10 @@ jobs:
         env:
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 180
           CI: true
-        run: bundle exec fastlane build_production
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          echo "=== Starting Fastlane build ==="
+          bundle exec fastlane build_production
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
@@ -95,6 +114,7 @@ jobs:
           name: ImidusCustomerApp-iOS-${{ github.ref_name }}
           path: ${{ env.WORKING_DIR }}/ios/build/ImidusCustomerApp.ipa
           retention-days: 7
+          compression-level: 0
 
       - name: Upload to S3
         working-directory: ${{ env.WORKING_DIR }}
@@ -103,9 +123,15 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
         run: |
-          aws s3 cp ios/build/ImidusCustomerApp.ipa \
-            s3://inirestaurant/novatech/mobile/ios/ImidusCustomerApp-${{ github.ref_name }}.ipa
+          FILENAME="ImidusCustomerApp-${{ github.ref_name }}.ipa"
+          S3_PATH="s3://inirestaurant/novatech/mobile/ios/$FILENAME"
+          
+          aws s3 cp ios/build/ImidusCustomerApp.ipa "$S3_PATH" \
+            --metadata "git-tag=${{ github.ref_name }},commit=${{ github.sha }}"
+          
+          echo "✅ IPA uploaded to S3"
 
       - name: Cleanup Keychain
         if: always()
-        run: security delete-keychain $RUNNER_TEMP/app-signing.keychain-db || true
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db || true
