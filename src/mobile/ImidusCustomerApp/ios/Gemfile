@@ -1,14 +1,8 @@
-# Gemfile for iOS Fastlane automation
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-ruby '>= 3.0.0'
+ruby '>= 3.2.0'
 
-# Fastlane for iOS automation
-gem "fastlane", "~> 2.219"
-
-# Plugins
-gem "fastlane-plugin-increment_build_number"
-gem "fastlane-plugin-versioning"
-
-# Additional tools
-gem "cocoapods", "~> 1.14"
+gem 'cocoapods', '~> 1.15'
+gem 'activesupport', '>= 6.1.7.3', '< 7.1.0'
+gem 'fastlane', '~> 2.225'
+gem 'rake', '~> 13.2.1'
