@@ -10,70 +10,50 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  node-deps:
+  build-ios:
     runs-on: macos-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    timeout-minutes: 60
+    
     steps:
+      # 1. Checkout
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # 2. Setup Node
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24"
 
-      - name: Cache pnpm modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pnpm-store
-            ${{ env.WORKING_DIR }}/node_modules
-          key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: pnpm-${{ runner.os }}-
-
+      # 3. Setup pnpm
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9
+          run_install: false
 
-      - name: Install Node dependencies
-        run: pnpm install --frozen-lockfile
-        working-directory: ${{ env.WORKING_DIR }}
+      # 4. Get pnpm store directory
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-  cocoa-deps:
-    needs: [node-deps]
-    runs-on: macos-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js (for Pods resolution)
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-
-      - name: Restore node_modules (required by Podfile)
+      # 5. Cache pnpm dependencies
+      - name: Setup pnpm cache
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.pnpm-store
-            ${{ env.WORKING_DIR }}/node_modules
-          key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
+      # 6. Install Node dependencies
       - name: Install Node dependencies
-        run: pnpm install --frozen-lockfile
         working-directory: ${{ env.WORKING_DIR }}
+        run: pnpm install --frozen-lockfile
 
+      # 7. Setup Ruby
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -81,30 +61,21 @@ jobs:
           working-directory: ${{ env.WORKING_DIR }}/ios
           bundler-cache: true
 
-      - name: Cache CocoaPods
+      # 8. Cache CocoaPods
+      - name: Cache Pods
         uses: actions/cache@v4
         with:
-          path: |
-            Pods
-            ~/Library/Caches/CocoaPods
-          key: cocoapods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: cocoapods-
+          path: ${{ env.WORKING_DIR }}/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
 
+      # 9. Install CocoaPods dependencies
       - name: Install CocoaPods
-        run: bundle exec pod install --repo-update
         working-directory: ${{ env.WORKING_DIR }}/ios
+        run: bundle exec pod install --repo-update
 
-  ios-build:
-    needs: [node-deps, cocoa-deps]
-    runs-on: macos-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
+      # 10. Import Apple Certificates
       - name: Import Apple Certificates
         working-directory: ${{ env.WORKING_DIR }}/ios
         env:
@@ -121,6 +92,7 @@ jobs:
           security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
 
+      # 11. Import Provisioning Profile
       - name: Import Provisioning Profile
         working-directory: ${{ env.WORKING_DIR }}/ios
         env:
@@ -130,12 +102,14 @@ jobs:
           mkdir -p "$PP_PATH"
           echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode -o "$PP_PATH/profile.mobileprovision"
 
+      # 12. Build Archive & Export IPA
       - name: Build Archive & Export IPA
-        run: bundle exec fastlane build_production
         working-directory: ${{ env.WORKING_DIR }}/ios
         env:
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120
+        run: bundle exec fastlane build_production
 
+      # 13. Upload Artifact
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -143,15 +117,18 @@ jobs:
           path: ${{ env.WORKING_DIR }}/ios/build/ImidusCustomerApp.ipa
           retention-days: 7
 
+      # 14. Upload to S3
       - name: Upload to S3
-        run: |
-          aws s3 cp ios/build/ImidusCustomerApp.ipa s3://inirestaurant/novatech/mobile/ios/ImidusCustomerApp.ipa
         working-directory: ${{ env.WORKING_DIR }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
+        run: |
+          aws s3 cp ios/build/ImidusCustomerApp.ipa \
+            s3://inirestaurant/novatech/mobile/ios/ImidusCustomerApp.ipa
 
+      # 15. Cleanup Keychain
       - name: Cleanup Keychain
         if: always()
         run: |
