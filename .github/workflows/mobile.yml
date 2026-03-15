@@ -42,13 +42,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure Git Identity
-        run: |
-          git config --global user.name "${{ env.GIT_AUTHOR_NAME }}"
-          git config --global user.email "${{ env.GIT_AUTHOR_EMAIL }}"
-          git config --global commit.gpgsign true
-          git config --global user.signingkey "${{ env.GPG_KEY_ID }}"
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -95,13 +88,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Configure Git Identity
-        run: |
-          git config --global user.name "${{ env.GIT_AUTHOR_NAME }}"
-          git config --global user.email "${{ env.GIT_AUTHOR_EMAIL }}"
-          git config --global commit.gpgsign true
-          git config --global user.signingkey "${{ env.GPG_KEY_ID }}"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -208,13 +194,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Configure Git Identity
-        run: |
-          git config --global user.name "${{ env.GIT_AUTHOR_NAME }}"
-          git config --global user.email "${{ env.GIT_AUTHOR_EMAIL }}"
-          git config --global commit.gpgsign true
-          git config --global user.signingkey "${{ env.GPG_KEY_ID }}"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

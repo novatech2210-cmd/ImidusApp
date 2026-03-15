@@ -7,8 +7,7 @@ prepare_react_native_project!
 target 'ImidusCustomerApp' do
   config = use_native_modules!
 
-  # Flipper is deprecated/removed in RN 0.74+
-  flipper_config = defined?(FlipperConfiguration) ? (ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled) : nil
+  flipper_config = defined?(FlipperConfiguration) ? (ENV['NO_FLIPPER'] == '1' ? FlipperConfiguration.disabled : FlipperConfiguration.enabled) : nil
 
   use_react_native!(
     :path => config[:reactNativePath],
