@@ -6,7 +6,7 @@ workflows:
     working_directory: src/mobile/ImidusCustomerApp
     environment:
       node: 20
-      ruby: 3.3
+      ruby: 3.2.2
       vars:
         BUNDLE_ID: "com.imidus.customer"
         XCODE_WORKSPACE: "ImidusCustomerApp.xcworkspace"
