@@ -14,7 +14,6 @@ workflows:
     
     environment:
       node: 20
-      # Use system Ruby which has CocoaPods pre-installed
       vars:
         BUNDLE_ID: "com.imidus.customer"
         XCODE_WORKSPACE: "ImidusCustomerApp.xcworkspace"
@@ -28,11 +27,19 @@ workflows:
           corepack prepare pnpm@10.32.1 --activate
           pnpm install --frozen-lockfile
       
-      - name: Verify Ruby and CocoaPods
+      - name: Verify environment
         script: |
+          echo "Ruby version:"
           ruby --version
-          which pod
-          pod --version
+          echo ""
+          echo "CocoaPods location:"
+          which pod || echo "pod not in PATH"
+          echo ""
+          echo "Checking rbenv shims:"
+          ls -la ~/.rbenv/shims/ | grep pod || echo "No pod in rbenv shims"
+          echo ""
+          echo "System pod:"
+          /usr/local/bin/pod --version || /opt/homebrew/bin/pod --version || echo "System pod not found"
       
       - name: Setup Keychain and Import Certificates
         script: |
@@ -59,7 +66,10 @@ workflows:
       - name: Install CocoaPods dependencies
         script: |
           cd ios
-          bundle exec pod install --repo-update
+          # Use system pod directly (not via bundle exec)
+          /opt/homebrew/bin/pod install --repo-update || \
+          /usr/local/bin/pod install --repo-update || \
+          pod install --repo-update
       
       - name: Build and Export IPA
         script: |
