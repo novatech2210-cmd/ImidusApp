@@ -22,6 +22,9 @@ prepare_react_native_project!
 #   dependencies: {
 #     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
 # ```
+target 'ImidusCustomerApp' do
+  config = use_native_modules!
+
   # Flipper is deprecated/removed in RN 0.74+
   flipper_config = defined?(FlipperConfiguration) ? (ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled) : nil
 
