@@ -7,11 +7,10 @@ workflows:
     environment:
       node: 20
       ruby: 3.3
-      pnpm: 10
       vars:
-        BUNDLE_ID: 'com.imidus.customer'
-        XCODE_WORKSPACE: 'ImidusCustomerApp.xcworkspace'
-        XCODE_SCHEME: 'ImidusCustomerApp'
+        BUNDLE_ID: "com.imidus.customer"
+        XCODE_WORKSPACE: "ImidusCustomerApp.xcworkspace"
+        XCODE_SCHEME: "ImidusCustomerApp"
         # The following variables should be added in the Codemagic UI (Variable Groups)
         # Marked as 'Secure' to hide their values.
         # IOS_BUILD_CERTIFICATE_BASE64: <base64_string>
@@ -22,6 +21,7 @@ workflows:
     scripts:
       - name: Install dependencies
         script: |
+          npm install -g pnpm
           pnpm install --frozen-lockfile
       - name: Setup Keychain and Import Certificates
         script: |
