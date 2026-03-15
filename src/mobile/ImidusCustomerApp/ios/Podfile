@@ -1,20 +1,16 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 platform :ios, '13.4'
 prepare_react_native_project!
 
 target 'ImidusCustomerApp' do
   config = use_native_modules!
-
   flags = get_default_flags()
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # Hermes is usually enabled in 0.74+
     :hermes_enabled => flags[:hermes_enabled],
     :fabric_enabled => flags[:fabric_enabled],
-    # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
@@ -29,10 +25,10 @@ target 'ImidusCustomerApp' do
       :mac_catalyst_enabled => false
     )
 
-    # Resolve compatibility issues with Xcode 16 / iOS 18+
     installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.4'
-        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+      target.build_configurations.each do |build_config|
+        build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.4'
       end
     end
+  end
+end
