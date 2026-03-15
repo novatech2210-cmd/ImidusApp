@@ -13,6 +13,9 @@ target 'ImidusCustomerApp' do
     :fabric_enabled => false,
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+  
+  # Manually add react-native-svg without codegen
+  pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
   target 'ImidusCustomerAppTests' do
     inherit! :complete
