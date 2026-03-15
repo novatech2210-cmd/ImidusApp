@@ -66,3 +66,7 @@ yarn-error.log
 /coverage
 pnpm-workspace.yaml
 pnpm-workspace.yaml
+bun.lock
+package-lock.json
+yarn.lock
+Gemfile.lock
