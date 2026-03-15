@@ -29,9 +29,9 @@ jobs:
         with:
           path: |
             ~/.pnpm-store
-            node_modules
-          key: pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: pnpm-
+            ${{ env.WORKING_DIR }}/node_modules
+          key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: pnpm-${{ runner.os }}-
 
       - name: Install pnpm
         run: npm install -g pnpm
@@ -61,7 +61,14 @@ jobs:
           path: |
             ~/.pnpm-store
             ${{ env.WORKING_DIR }}/node_modules
-          key: pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install Node dependencies
+        run: pnpm install --no-frozen-lockfile
+        working-directory: ${{ env.WORKING_DIR }}
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
