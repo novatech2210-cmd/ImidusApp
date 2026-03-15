@@ -28,6 +28,11 @@ target 'ImidusCustomerApp' do
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |build_config|
         build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.4'
+        
+        # Disable new architecture for RNSVG to avoid codegen issues
+        if target.name == 'RNSVG'
+          build_config.build_settings['RCT_NEW_ARCH_ENABLED'] = '0'
+        end
       end
     end
   end
