@@ -38,27 +38,26 @@ export default function LoginPage() {
       >
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div
+          <img
+            src="/brand/imidus-triangle-logo.png"
+            alt="IMIDUS Logo"
             style={{
-              width: 56,
-              height: 56,
-              background: "linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue))",
-              borderRadius: 14,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 24,
-              fontWeight: 900,
-              color: "var(--color-brand-gold)",
-              margin: "0 auto 16px",
+              width: 64,
+              height: 64,
+              objectFit: "contain",
+              margin: "0 auto 20px",
             }}
-          >
-            I
-          </div>
+          />
           <h1 style={{ fontSize: 24, fontWeight: 800, margin: "0 0 6px" }}>
             Welcome Back
           </h1>
-          <p style={{ color: "var(--color-text-muted)", fontSize: 14, margin: 0 }}>
+          <p
+            style={{
+              color: "var(--color-text-muted)",
+              fontSize: 14,
+              margin: 0,
+            }}
+          >
             Sign in to access your account and rewards
           </p>
         </div>
@@ -103,7 +102,14 @@ export default function LoginPage() {
             />
           </div>
           <div style={{ marginBottom: 8 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 6,
+              }}
+            >
               <label
                 style={{
                   fontSize: 13,
@@ -113,12 +119,12 @@ export default function LoginPage() {
               >
                 Password
               </label>
-              <Link 
-                href="/forgot-password" 
-                style={{ 
-                  fontSize: 12, 
+              <Link
+                href="/forgot-password"
+                style={{
+                  fontSize: 12,
                   color: "var(--color-brand-blue)",
-                  textDecoration: "none"
+                  textDecoration: "none",
                 }}
               >
                 Forgot Password?
@@ -153,7 +159,10 @@ export default function LoginPage() {
           }}
         >
           Don&apos;t have an account?{" "}
-          <Link href="/register" style={{ color: "var(--color-brand-blue)", fontWeight: 600 }}>
+          <Link
+            href="/register"
+            style={{ color: "var(--color-brand-blue)", fontWeight: 600 }}
+          >
             Create one
           </Link>
         </div>

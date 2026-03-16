@@ -1,7 +1,7 @@
 -- Add missing tables for INI POS integration
 -- tblOrderNumber and tblTable are required for online order processing
 
-USE TPPro;
+USE INI_Restaurant;
 GO
 
 -- =============================================================================

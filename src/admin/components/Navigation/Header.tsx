@@ -29,13 +29,20 @@ export default function Header({
   return (
     <header className="admin-header glass sticky top-0 z-40 bg-white/80 backdrop-blur-md">
       <div className="px-6 py-4 flex items-center justify-between h-[80px]">
-        <div className="flex flex-col">
-          <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
-            Administrator
-          </p>
-          <h2 className="text-sm font-extrabold text-[#0F172A] font-heading">
-            Welcome, {userName}
-          </h2>
+        <div className="flex items-center gap-3">
+          <img
+            src="/brand/imidus-triangle-logo.png"
+            alt="IMIDUS Logo"
+            style={{ width: 44, height: 44, objectFit: "contain" }}
+          />
+          <div className="flex flex-col">
+            <p className="text-[10px] font-black text-[#D4AF37] uppercase tracking-[0.2em]">
+              Admin Portal
+            </p>
+            <h2 className="text-sm font-extrabold text-[#1E5AA8] font-heading uppercase tracking-tighter">
+              Welcome, {userName}
+            </h2>
+          </div>
         </div>
 
         <div className="relative">

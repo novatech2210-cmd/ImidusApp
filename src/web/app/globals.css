@@ -1,3 +1,28 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap");
-
 @import "tailwindcss";
+
+@theme {
+  --color-brand-gold: #d4af37;
+  --color-brand-blue: #1e5aa8;
+  --color-brand-navy: #1a1a2e;
+
+  --font-inter: "Inter", ui-sans-serif, system-ui;
+  --font-outfit: "Outfit", ui-sans-serif, system-ui;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: var(--color-brand-navy);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--color-brand-navy);
+    --foreground: #ffffff;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-inter);
+}

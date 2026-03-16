@@ -11,36 +11,34 @@ export function Navbar() {
     <nav className="navbar">
       {/* Logo */}
       <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div
-          style={{
-            width: 38,
-            height: 38,
-            background: "linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue))",
-            borderRadius: 8,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 18,
-            fontWeight: 900,
-            color: "var(--color-brand-gold)",
-            fontFamily: "Inter, sans-serif",
-          }}
-        >
-          I
-        </div>
+        <img
+          src="/brand/imidus-triangle-logo.png"
+          alt="IMIDUS Logo"
+          style={{ width: 44, height: 44, objectFit: "contain" }}
+        />
         <div>
           <div
             style={{
-              fontSize: 15,
-              fontWeight: 700,
+              fontSize: 16,
+              fontWeight: 800,
               color: "var(--color-brand-blue)",
               lineHeight: 1,
+              letterSpacing: "-0.02em",
+              textTransform: "uppercase",
             }}
           >
-            INI Restaurant
+            Imidus App
           </div>
-          <div style={{ fontSize: 10, color: "var(--color-text-muted)", letterSpacing: 1 }}>
-            IMIDUS TECHNOLOGIES
+          <div
+            style={{
+              fontSize: 9,
+              color: "var(--color-brand-gold)",
+              fontWeight: 700,
+              letterSpacing: 1.5,
+              textTransform: "uppercase",
+            }}
+          >
+            Technologies | Inc
           </div>
         </div>
       </Link>
@@ -89,7 +87,11 @@ export function Navbar() {
             <span className="badge-gold">⭐ {user.earnedPoints} pts</span>
             <Link
               href="/profile"
-              style={{ fontSize: 14, fontWeight: 600, color: "var(--color-brand-blue)" }}
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: "var(--color-brand-blue)",
+              }}
             >
               {user.firstName}
             </Link>

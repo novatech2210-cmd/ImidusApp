@@ -4,14 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-brand-gold: #d4af37;
+  --color-brand-blue: #1e5aa8;
+  --color-brand-navy: #1a1a2e;
+  --color-white: #ffffff;
+}
+
 body {
-  font-family:
-    "Inter",
-    system-ui,
-    -apple-system,
-    sans-serif;
-  color: #1A202C; /* text-dark */
-  background-color: #F5F5F5; /* surface-app-bg */
+  font-family: "Outfit", "Inter", system-ui, sans-serif;
+  color: var(--color-brand-navy);
+  background-color: #f8f9fc;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
