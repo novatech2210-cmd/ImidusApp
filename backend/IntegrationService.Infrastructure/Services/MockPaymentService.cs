@@ -21,8 +21,8 @@ public class MockPaymentService : IPaymentService
         return Task.FromResult(new PaymentResult
         {
             Success = true,
-            TransactionId = "MOCK_TXN_" + Guid.NewGuid().ToString("N").Substring(0, 12).ToUpper(),
-            AuthorizationCode = "MOCK_AUTH_" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper(),
+            TransactionId = "MTX_" + Guid.NewGuid().ToString("N").Substring(0, 12).ToUpper(),
+            AuthorizationCode = "MA_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
             Last4Digits = "1234",
             CardType = "Visa"
         });
@@ -47,5 +47,16 @@ public class MockPaymentService : IPaymentService
             ProfileId = "MOCK_PROFILE_" + request.CustomerId,
             PaymentProfileId = "MOCK_PAYMENT_" + Guid.NewGuid().ToString("N").Substring(0, 8)
         });
+    }
+
+    public Task<bool> RefundTransactionAsync(string transactionId, decimal amount)
+    {
+        // Mock always succeeds unless transaction ID contains "FAIL_REFUND"
+        if (transactionId.Contains("FAIL_REFUND"))
+        {
+            return Task.FromResult(false);
+        }
+
+        return Task.FromResult(true);
     }
 }

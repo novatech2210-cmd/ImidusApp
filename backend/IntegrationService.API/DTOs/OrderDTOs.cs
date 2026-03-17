@@ -18,15 +18,12 @@ namespace IntegrationService.API.DTOs
         public string? CustomerPhone { get; set; }
         public string? CustomerName { get; set; }
 
-        // Payment info (from Authorize.net)
-        [Required]
-        public string PaymentAuthorizationNo { get; set; } = string.Empty;
+        // Payment info (from Authorize.net) - Optional for test orders
+        public string? PaymentAuthorizationNo { get; set; }
 
         public string? PaymentBatchNo { get; set; }
 
-        [Required]
-        [Range(1, 255)]
-        public byte PaymentTypeId { get; set; } = 3;  // Default: Visa
+        public byte? PaymentTypeId { get; set; }  // Default: Visa
 
         public decimal TipAmount { get; set; }
 

@@ -31,13 +31,8 @@ public class BirthdayRewardBackgroundService : BackgroundService
                 using (var scope = _serviceProvider.CreateScope())
                 {
                     var birthdayService = scope.ServiceProvider.GetRequiredService<BirthdayRewardService>();
-                    var candidates = await birthdayService.GetCustomersWithBirthdayTodayAsync();
-
-                    foreach (var customer in candidates)
-                    {
-                        await birthdayService.ApplyBirthdayPointsAsync(customer.ID);
-                        _logger.LogInformation("Awarded birthday points to PosCustomer ID: {id}", customer.ID);
-                    }
+                    await birthdayService.ProcessTodayBirthdaysAsync();
+                    _logger.LogInformation("Successfully processed today's birthday rewards.");
                 }
 
                 // Wait until midnight for the next run

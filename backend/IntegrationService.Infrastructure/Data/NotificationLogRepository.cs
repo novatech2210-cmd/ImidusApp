@@ -5,20 +5,22 @@ using Dapper;
 using IntegrationService.Core.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 
+using IntegrationService.Core.Interfaces;
+
 namespace IntegrationService.Infrastructure.Data;
 
 /// <summary>
 /// Repository for notification audit logs
 /// Tracks all notification attempts for monitoring and debugging
 /// </summary>
-public class NotificationLogRepository
+public class NotificationLogRepository : INotificationLogRepository
 {
     private readonly string _connectionString;
 
     public NotificationLogRepository(IConfiguration configuration)
     {
         _connectionString = configuration.GetConnectionString("BackendDatabase")
-            ?? throw new ArgumentNullException("BackendDatabase connection string not found");
+            ?? "Server=localhost;Database=IntegrationService;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;";
     }
 
     private IDbConnection CreateConnection()

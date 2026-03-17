@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using IntegrationService.Core.Domain.Entities;
+using IntegrationService.Core.Models.AdminPortal;
 
 namespace IntegrationService.Core.Interfaces
 {
@@ -31,7 +32,7 @@ namespace IntegrationService.Core.Interfaces
         Task<MenuItem?> GetMenuItemByIdAsync(int itemId);
         Task<IEnumerable<AvailableSize>> GetItemSizesAsync(int itemId);
         Task<IEnumerable<Category>> GetCategoriesAsync();
-        Task<Dictionary<int, int>> GetCategoryItemCountsAsync();
+        Task<Dictionary<byte, int>> GetCategoryItemCountsAsync();
         Task<IEnumerable<MenuItem>> GetMenuItemsByCategoryAsync(int categoryId);
         Task<int?> GetItemStockAsync(int itemId, int sizeId);
         Task<bool> IsItemInStockAsync(int itemId, int sizeId, decimal quantity);
@@ -48,6 +49,7 @@ namespace IntegrationService.Core.Interfaces
         Task<bool> UpdateSaleTransTypeAsync(int salesId, int transType, IDbTransaction? transaction = null);
         Task<bool> UpdateSaleTotalsAsync(int salesId, decimal subTotal, decimal gstAmt, decimal pstAmt, decimal pst2Amt, decimal dscAmt, IDbTransaction? transaction = null);
         Task<IEnumerable<PosTicket>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<PosTicket>> GetOrdersByCustomerIdAsync(int customerId, int limit = 50);
 
         // =============================================================================
         // PENDING ORDERS (tblPendingOrders) - Active items in kitchen
@@ -64,6 +66,7 @@ namespace IntegrationService.Core.Interfaces
 
         Task<IEnumerable<PosTicketItem>> GetSalesDetailItemsAsync(int salesId);
         Task InsertSalesDetailItemAsync(PosTicketItem item, IDbTransaction? transaction = null);
+        Task<IEnumerable<ItemSalesAggregation>> GetItemSalesAggregationAsync(DateTime startDate, DateTime endDate);
 
         // =============================================================================
         // PAYMENTS (tblPayment)
@@ -101,6 +104,7 @@ namespace IntegrationService.Core.Interfaces
         Task InsertPointsDetailAsync(PointsDetail detail, IDbTransaction? transaction = null);
         Task<IEnumerable<PointsDetail>> GetLoyaltyHistoryAsync(int customerId, int limit);
         Task<bool> RecordPointsTransactionAsync(int salesId, int customerId, int pointsUsed, int pointsSaved, IDbTransaction? transaction = null);
+        Task<IEnumerable<CustomerSegment>> GetCustomerSegmentsAsync();
 
         // =============================================================================
         // GIFT CARDS

@@ -1,3 +1,5 @@
 ---
-trigger: model_decision
----
+name: GitHub Actions
+description: Manage GitHub workflows
+tools:
+  - shell

@@ -176,7 +176,7 @@ namespace IntegrationService.Tests.Infrastructure
 
             // Delete today's record to start fresh
             await conn.ExecuteAsync(
-                "DELETE FROM tblOrderNumber WHERE OrderDate = @Today",
+                "DELETE FROM tblOrderNumber WHERE CAST(CalledDateTime AS DATE) = @Today",
                 new { Today = DateTime.Today });
         }
 
@@ -187,10 +187,10 @@ namespace IntegrationService.Tests.Infrastructure
 
             // Insert or update specific date's order number
             await conn.ExecuteAsync(@"
-                IF EXISTS (SELECT 1 FROM tblOrderNumber WHERE OrderDate = @Date)
-                    UPDATE tblOrderNumber SET OrderNumber = @OrderNumber WHERE OrderDate = @Date
+                IF EXISTS (SELECT 1 FROM tblOrderNumber WHERE CAST(CalledDateTime AS DATE) = @Date)
+                    UPDATE tblOrderNumber SET OrderNumber = @OrderNumber WHERE CAST(CalledDateTime AS DATE) = @Date
                 ELSE
-                    INSERT INTO tblOrderNumber (OrderDate, OrderNumber) VALUES (@Date, @OrderNumber)",
+                    INSERT INTO tblOrderNumber (CalledDateTime, OrderNumber) VALUES (@Date, @OrderNumber)",
                 new { Date = date, OrderNumber = orderNumber });
         }
 
@@ -199,8 +199,8 @@ namespace IntegrationService.Tests.Infrastructure
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
-            return await conn.QueryFirstOrDefaultAsync<int?>(
-                "SELECT OrderNumber FROM tblOrderNumber WHERE OrderDate = @Date",
+                return await conn.QueryFirstOrDefaultAsync<int?>(
+                "SELECT OrderNumber FROM tblOrderNumber WHERE CAST(CalledDateTime AS DATE) = @Date",
                 new { Date = date });
         }
 
@@ -213,7 +213,7 @@ namespace IntegrationService.Tests.Infrastructure
             {
                 using var conn = new SqlConnection(_connectionString);
                 conn.Open();
-                conn.Execute("DELETE FROM tblOrderNumber WHERE OrderDate = @Today", new { Today = DateTime.Today });
+                conn.Execute("DELETE FROM tblOrderNumber WHERE CAST(CalledDateTime AS DATE) = @Today", new { Today = DateTime.Today });
             }
             catch
             {

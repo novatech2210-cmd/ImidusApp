@@ -1,98 +1,91 @@
 using IntegrationService.Core.Interfaces;
-using Entities = IntegrationService.Core.Domain.Entities;
-using Models = IntegrationService.Core.Models;
+using IntegrationService.Core.Models;
+using Microsoft.Extensions.Logging;
 
-namespace IntegrationService.Infrastructure.Data
+namespace IntegrationService.Infrastructure.Data;
+
+public class MenuRepository : IMenuRepository
 {
-    /// <summary>
-    /// Menu repository that delegates to PosRepository and maps
-    /// Domain.Entities types to Models types for the service layer.
-    /// </summary>
-    public class MenuRepository : IMenuRepository
+    private readonly IPosRepository _posRepo;
+    private readonly ILogger<MenuRepository> _logger;
+
+    public MenuRepository(IPosRepository posRepo, ILogger<MenuRepository> logger)
     {
-        private readonly IPosRepository _posRepository;
+        _posRepo = posRepo;
+        _logger = logger;
+    }
 
-        public MenuRepository(IPosRepository posRepository)
+    public async Task<MenuItem?> GetItemByIdAsync(int itemId)
+    {
+        var entity = await _posRepo.GetMenuItemByIdAsync(itemId);
+        if (entity == null) return null;
+        
+        return MapToModel(entity);
+    }
+
+    public async Task<IEnumerable<MenuItem>> GetActiveMenuItemsAsync()
+    {
+        var entities = await _posRepo.GetActiveMenuItemsAsync();
+        return entities.Select(MapToModel);
+    }
+
+    public async Task<IEnumerable<AvailableSize>> GetItemSizesAsync(int itemId)
+    {
+        var entities = await _posRepo.GetItemSizesAsync(itemId);
+        return entities.Select(MapToAvailableSizeModel);
+    }
+
+    public async Task<int?> GetItemStockAsync(int itemId, int sizeId)
+    {
+        return await _posRepo.GetItemStockAsync(itemId, sizeId);
+    }
+
+    public async Task<bool> IsItemInStockAsync(int itemId, int sizeId, decimal quantity)
+    {
+        return await _posRepo.IsItemInStockAsync(itemId, sizeId, quantity);
+    }
+
+    public async Task<bool> DecreaseStockAsync(int itemId, int sizeId, decimal quantity)
+    {
+        return await _posRepo.DecreaseStockAsync(itemId, sizeId, quantity);
+    }
+
+    private static MenuItem MapToModel(Core.Domain.Entities.MenuItem entity)
+    {
+        return new MenuItem
         {
-            _posRepository = posRepository;
-        }
+            ItemID = entity.ItemID,
+            IName = entity.IName,
+            IName2 = entity.IName2,
+            ItemDescription = entity.ItemDescription,
+            ImageFilePath = entity.ImageFilePath,
+            ApplyGST = entity.ApplyGST,
+            ApplyPST = entity.ApplyPST,
+            ApplyPST2 = entity.ApplyPST2,
+            KitchenB = entity.KitchenB,
+            KitchenF = entity.KitchenF,
+            KitchenE = entity.KitchenE,
+            Kitchen5 = entity.Kitchen5,
+            Kitchen6 = entity.Kitchen6,
+            Bar = entity.Bar,
+            Alcohol = entity.Alcohol,
+            RewardItem = entity.RewardItem,
+            OnlineItem = entity.OnlineItem,
+            Status = entity.Status
+        };
+    }
 
-        public async Task<Models.MenuItem?> GetItemByIdAsync(int itemId)
+    private static AvailableSize MapToAvailableSizeModel(Core.Domain.Entities.AvailableSize entity)
+    {
+        return new AvailableSize
         {
-            var entity = await _posRepository.GetMenuItemByIdAsync(itemId);
-            return entity == null ? null : MapMenuItem(entity);
-        }
-
-        public async Task<IEnumerable<Models.MenuItem>> GetActiveMenuItemsAsync()
-        {
-            var entities = await _posRepository.GetActiveMenuItemsAsync();
-            return entities.Select(MapMenuItem);
-        }
-
-        public async Task<IEnumerable<Models.AvailableSize>> GetItemSizesAsync(int itemId)
-        {
-            var entities = await _posRepository.GetItemSizesAsync(itemId);
-            return entities.Select(MapAvailableSize);
-        }
-
-        public Task<int?> GetItemStockAsync(int itemId, int sizeId)
-        {
-            return _posRepository.GetItemStockAsync(itemId, sizeId);
-        }
-
-        public Task<bool> IsItemInStockAsync(int itemId, int sizeId, decimal quantity)
-        {
-            return _posRepository.IsItemInStockAsync(itemId, sizeId, quantity);
-        }
-
-        public Task<bool> DecreaseStockAsync(int itemId, int sizeId, decimal quantity)
-        {
-            return _posRepository.DecreaseStockAsync(itemId, sizeId, quantity);
-        }
-
-        // =========================================================================
-        // Mapping helpers: Domain.Entities -> Models
-        // =========================================================================
-
-        private static Models.MenuItem MapMenuItem(Entities.MenuItem e)
-        {
-            return new Models.MenuItem
-            {
-                ItemID = e.ItemID,
-                IName = e.IName,
-                IName2 = e.IName2,
-                ItemDescription = e.ItemDescription,
-                ImageFilePath = e.ImageFilePath,
-                ApplyGST = e.ApplyGST,
-                ApplyPST = e.ApplyPST,
-                ApplyPST2 = e.ApplyPST2,
-                KitchenB = e.KitchenB,
-                KitchenF = e.KitchenF,
-                KitchenE = e.KitchenE,
-                Kitchen5 = e.Kitchen5,
-                Kitchen6 = e.Kitchen6,
-                Bar = e.Bar,
-                Alcohol = e.Alcohol,
-                RewardItem = e.RewardItem,
-                OnlineItem = e.OnlineItem,
-                Status = e.Status,
-                AvailableSizes = e.AvailableSizes?.Select(MapAvailableSize).ToList()
-                                 ?? new List<Models.AvailableSize>()
-            };
-        }
-
-        private static Models.AvailableSize MapAvailableSize(Entities.AvailableSize e)
-        {
-            return new Models.AvailableSize
-            {
-                SizeID = e.SizeID,
-                SizeName = e.SizeName,
-                UnitPrice = e.UnitPrice,
-                UnitPrice2 = e.UnitPrice2,
-                UnitPrice3 = e.UnitPrice3,
-                OnHandQty = e.OnHandQty,
-                ApplyNoDSC = e.ApplyNoDSC
-            };
-        }
+            SizeID = entity.SizeID,
+            SizeName = entity.Size?.SizeName ?? string.Empty,
+            UnitPrice = entity.UnitPrice,
+            UnitPrice2 = entity.UnitPrice2,
+            UnitPrice3 = entity.UnitPrice3,
+            OnHandQty = entity.OnHandQty,
+            ApplyNoDSC = entity.ApplyNoDSC
+        };
     }
 }

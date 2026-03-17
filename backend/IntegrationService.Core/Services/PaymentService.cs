@@ -30,7 +30,7 @@ namespace IntegrationService.Core.Services
         /// <summary>
         /// Charge a credit card using an opaque payment token from mobile tokenization
         /// </summary>
-        public async Task<PaymentResult> ChargeCardAsync(PaymentRequest request)
+        public Task<PaymentResult> ChargeCardAsync(PaymentRequest request)
         {
             try
             {
@@ -107,14 +107,14 @@ namespace IntegrationService.Core.Services
                             txnResponse.transId,
                             txnResponse.authCode);
 
-                        return new PaymentResult
+                        return Task.FromResult(new PaymentResult
                         {
                             Success = true,
                             TransactionId = txnResponse.transId,
                             AuthorizationCode = txnResponse.authCode,
                             Last4Digits = txnResponse.accountNumber,
                             CardType = txnResponse.accountType
-                        };
+                        });
                     }
                     else
                     {
@@ -128,20 +128,20 @@ namespace IntegrationService.Core.Services
                             : txnResponse.responseCode;
 
                         _logger.LogWarning(
-                            "Payment declined - TransactionId: {TransactionId}, Status: Declined, ErrorCode: {ErrorCode}",
+                            "Payment declined - TransactionId: {TransactionId}, ResponseCode: {ResponseCode}, Message: {ErrorMessage}",
                             txnResponse.transId,
-                            errorCode);
+                            errorCode,
+                            errorMessage);
 
-                        return new PaymentResult
+                        return Task.FromResult(new PaymentResult
                         {
                             Success = false,
-                            TransactionId = txnResponse.transId,
                             ErrorMessage = errorMessage,
                             ErrorCode = errorCode
-                        };
+                        });
                     }
                 }
-                else
+                else if (response?.messages.resultCode == messageTypeEnum.Error)
                 {
                     // API-level error
                     var errorMessage = response?.messages.message?.Length > 0
@@ -157,23 +157,31 @@ namespace IntegrationService.Core.Services
                         errorCode,
                         errorMessage);
 
-                    return new PaymentResult
+                    return Task.FromResult(new PaymentResult
                     {
                         Success = false,
                         ErrorMessage = errorMessage,
                         ErrorCode = errorCode
-                    };
+                    });
                 }
+                
+                _logger.LogError("Payment failed with unknown error - Response is null or incomplete");
+                return Task.FromResult(new PaymentResult
+                {
+                    Success = false,
+                    ErrorMessage = "Unknown error occurred",
+                    ErrorCode = "UNKNOWN"
+                });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Exception during payment processing");
-                return new PaymentResult
+                return Task.FromResult(new PaymentResult
                 {
                     Success = false,
                     ErrorMessage = "Payment processing failed: " + ex.Message,
                     ErrorCode = "EXCEPTION"
-                };
+                });
             }
         }
 
@@ -265,6 +273,100 @@ namespace IntegrationService.Core.Services
                     throw new Exception($"Void failed: {errorMessage}");
                 }
             });
+        }
+
+        /// <summary>
+        /// Refund a settled transaction - use when void fails because transaction was already settled
+        /// Uses retry policy for transient network errors
+        /// </summary>
+        public async Task<bool> RefundTransactionAsync(string transactionId, decimal amount)
+        {
+            // Define retry policy: 3 retries with exponential backoff (2^attempt seconds)
+            var retryPolicy = Policy
+                .Handle<Exception>()
+                .WaitAndRetryAsync(
+                    retryCount: 3,
+                    sleepDurationProvider: attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)),
+                    onRetry: (exception, timeSpan, retryCount, context) =>
+                    {
+                        _logger.LogWarning(
+                            "Retry {RetryCount} for refund transaction {TransactionId} after {Delay}ms - Error: {Error}",
+                            retryCount,
+                            transactionId,
+                            timeSpan.TotalMilliseconds,
+                            exception.Message);
+                    });
+
+            try
+            {
+                return await retryPolicy.ExecuteAsync(async () =>
+                {
+                    // Set Authorize.net environment
+                    ApiOperationBase<ANetApiRequest, ANetApiResponse>.RunEnvironment =
+                        _settings.IsSandbox ? AuthorizeNet.Environment.SANDBOX : AuthorizeNet.Environment.PRODUCTION;
+
+                    // Create merchant authentication
+                    var merchantAuthentication = new merchantAuthenticationType
+                    {
+                        name = _settings.ApiLoginId,
+                        ItemElementName = ItemChoiceType.transactionKey,
+                        Item = _settings.TransactionKey
+                    };
+
+                    // Create refund transaction request
+                    // Note: For refunds, we need the original transaction ID and amount
+                    var transactionRequest = new transactionRequestType
+                    {
+                        transactionType = transactionTypeEnum.refundTransaction.ToString(),
+                        amount = amount,
+                        refTransId = transactionId
+                    };
+
+                    // Create API request
+                    var apiRequest = new createTransactionRequest
+                    {
+                        merchantAuthentication = merchantAuthentication,
+                        transactionRequest = transactionRequest
+                    };
+
+                    // Execute refund
+                    var controller = new createTransactionController(apiRequest);
+                    controller.Execute();
+
+                    var response = controller.GetApiResponse();
+
+                    // Check for successful refund
+                    if (response?.messages.resultCode == messageTypeEnum.Ok)
+                    {
+                        _logger.LogInformation(
+                            "Transaction refunded successfully - TransactionId: {TransactionId}, Amount: {Amount}",
+                            transactionId, amount);
+                        return true;
+                    }
+                    else
+                    {
+                        var errorMessage = response?.messages.message?.Length > 0
+                            ? response.messages.message[0].text
+                            : "Unknown error";
+
+                        _logger.LogError(
+                            "Failed to refund transaction {TransactionId} - Error: {ErrorMessage}",
+                            transactionId,
+                            errorMessage);
+
+                        // Throw to trigger retry
+                        throw new Exception($"Refund failed: {errorMessage}");
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                // Log critical after all retries exhausted
+                _logger.LogCritical(
+                    "Refund FAILED after all retries - MANUAL REFUND REQUIRED - TransactionId: {TransactionId}, Amount: {Amount}, Error: {Error}",
+                    transactionId, amount, ex.Message);
+                throw;
+            }
         }
 
         /// <summary>

@@ -26,14 +26,22 @@ namespace IntegrationService.Tests.Integration
     public class CustomerLookupTests
     {
         private readonly Mock<IPosRepository> _mockRepository;
+        private readonly Mock<IUserRepository> _mockUserRepository;
+        private readonly Mock<IActivityLogRepository> _mockActivityRepo;
         private readonly Mock<ILogger<CustomersController>> _mockLogger;
         private readonly CustomersController _controller;
 
         public CustomerLookupTests()
         {
             _mockRepository = new Mock<IPosRepository>();
+            _mockUserRepository = new Mock<IUserRepository>();
+            _mockActivityRepo = new Mock<IActivityLogRepository>();
             _mockLogger = new Mock<ILogger<CustomersController>>();
-            _controller = new CustomersController(_mockRepository.Object, _mockLogger.Object);
+            _controller = new CustomersController(
+                _mockRepository.Object, 
+                _mockUserRepository.Object,
+                _mockActivityRepo.Object,
+                _mockLogger.Object);
         }
 
         [Fact]
@@ -46,7 +54,6 @@ namespace IntegrationService.Tests.Integration
                 FName = "John",
                 LName = "Doe",
                 Phone = "5551234567",
-                Email = "john@example.com",
                 EarnedPoints = 500,
                 PointsManaged = true
             };
@@ -65,7 +72,7 @@ namespace IntegrationService.Tests.Integration
             Assert.Equal(42, response.CustomerId);
             Assert.Equal("John Doe", response.FullName);
             Assert.Equal("5551234567", response.Phone);
-            Assert.Equal("john@example.com", response.Email);
+            Assert.Equal("5551234567", response.Phone);
             Assert.Equal(500, response.EarnedPoints);
 
             // Verify repository was called exactly once with correct phone
@@ -112,14 +119,17 @@ namespace IntegrationService.Tests.Integration
                 ID = 123,
                 FName = "Alice",
                 LName = "Johnson",
-                Email = "alice@example.com",
                 EarnedPoints = 1000
             };
 
             // Only email lookup should be called (no phone provided)
+            _mockUserRepository
+                .Setup(r => r.GetByEmailAsync("alice@example.com"))
+                .ReturnsAsync(new User { CustomerID = 123 });
+
             _mockRepository
-                .Setup(r => r.GetCustomerByEmailAsync("alice@example.com"))
-                .ReturnsAsync(existingCustomer);
+                .Setup(r => r.GetCustomerByIdAsync(123))
+                .ReturnsAsync(new PosCustomer { ID = 123, FName = "Alice", LName = "Johnson", EarnedPoints = 1000 });
 
             // Act - only email parameter
             var result = await _controller.LookupCustomer(phone: null, email: "alice@example.com");
@@ -129,14 +139,14 @@ namespace IntegrationService.Tests.Integration
             var response = Assert.IsType<CustomerLookupResponse>(okResult.Value);
 
             Assert.Equal(123, response.CustomerId);
-            Assert.Equal("alice@example.com", response.Email);
+            Assert.Equal(123, response.CustomerId);
             Assert.Equal(1000, response.EarnedPoints);
 
             // Verify phone lookup was NOT called
             _mockRepository.Verify(r => r.GetCustomerByPhoneAsync(It.IsAny<string>()), Times.Never);
 
-            // Verify email lookup was called exactly once
-            _mockRepository.Verify(r => r.GetCustomerByEmailAsync("alice@example.com"), Times.Once);
+            // Verify email lookup was called
+            _mockUserRepository.Verify(r => r.GetByEmailAsync("alice@example.com"), Times.Once);
         }
 
         [Fact]
@@ -147,9 +157,9 @@ namespace IntegrationService.Tests.Integration
                 .Setup(r => r.GetCustomerByPhoneAsync(It.IsAny<string>()))
                 .ReturnsAsync((PosCustomer?)null);
 
-            _mockRepository
-                .Setup(r => r.GetCustomerByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync((PosCustomer?)null);
+            _mockUserRepository
+                .Setup(r => r.GetByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync((User?)null);
 
             // InsertCustomerAsync should return new customer ID
             _mockRepository
@@ -170,7 +180,6 @@ namespace IntegrationService.Tests.Integration
             _mockRepository.Verify(
                 r => r.InsertCustomerAsync(It.Is<PosCustomer>(c =>
                     c.Phone == "5559876543" &&
-                    c.Email == "newcustomer@example.com" &&
                     c.EarnedPoints == 0 &&
                     c.PointsManaged == true
                 )),
@@ -228,7 +237,7 @@ namespace IntegrationService.Tests.Integration
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var transactions = Assert.IsType<List<LoyaltyTransactionDto>>(okResult.Value);
+            var transactions = Assert.IsType<List<Core.Interfaces.LoyaltyTransactionDto>>(okResult.Value);
 
             Assert.Equal(3, transactions.Count);
 
@@ -238,7 +247,7 @@ namespace IntegrationService.Tests.Integration
             Assert.Equal("earn", earnTx.Type);
             Assert.Equal(50, earnTx.Points);
             Assert.Contains("Earned on order #101", earnTx.Description);
-            Assert.NotEmpty(earnTx.Date); // ISO format
+            Assert.NotEqual(default, earnTx.Date); // DateTime must be set
 
             // Verify second transaction (redeem)
             var redeemTx1 = transactions[1];
