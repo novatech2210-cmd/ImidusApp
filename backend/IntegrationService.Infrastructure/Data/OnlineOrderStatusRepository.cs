@@ -5,22 +5,20 @@ using Dapper;
 using IntegrationService.Core.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 
-using IntegrationService.Core.Interfaces;
-
 namespace IntegrationService.Infrastructure.Data;
 
 /// <summary>
 /// Repository for online order notification status tracking.
 /// Tracks which notifications have been sent for each order without modifying POS schema.
 /// </summary>
-public class OnlineOrderStatusRepository : IOnlineOrderStatusRepository
+public class OnlineOrderStatusRepository
 {
     private readonly string _connectionString;
 
     public OnlineOrderStatusRepository(IConfiguration configuration)
     {
         _connectionString = configuration.GetConnectionString("BackendDatabase")
-            ?? "Server=localhost;Database=IntegrationService;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;";
+            ?? throw new ArgumentNullException("BackendDatabase connection string not found");
     }
 
     private IDbConnection CreateConnection()

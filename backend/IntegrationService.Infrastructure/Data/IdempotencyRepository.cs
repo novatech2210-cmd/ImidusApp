@@ -20,7 +20,7 @@ namespace IntegrationService.Infrastructure.Data
         public IdempotencyRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("BackendDatabase")
-                ?? "Server=localhost;Database=IntegrationService;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;";
+                ?? throw new ArgumentNullException("BackendDatabase connection string not found");
         }
 
         private IDbConnection CreateConnection()

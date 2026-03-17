@@ -16,19 +16,11 @@ namespace IntegrationService.API.Controllers
     public class CustomersController : ControllerBase
     {
         private readonly IPosRepository _repository;
-        private readonly IUserRepository _userRepository;
-        private readonly IActivityLogRepository _activityRepo;
         private readonly ILogger<CustomersController> _logger;
 
-        public CustomersController(
-            IPosRepository repository, 
-            IUserRepository userRepository,
-            IActivityLogRepository activityRepo, 
-            ILogger<CustomersController> logger)
+        public CustomersController(IPosRepository repository, ILogger<CustomersController> logger)
         {
             _repository = repository;
-            _userRepository = userRepository;
-            _activityRepo = activityRepo;
             _logger = logger;
         }
 
@@ -63,15 +55,11 @@ namespace IntegrationService.API.Controllers
                     customer = await _repository.GetCustomerByPhoneAsync(cleanPhone);
                 }
 
-                // If no phone match and email provided, try email lookup via User overlay (fallback)
+                // If no phone match and email provided, try email lookup (fallback)
                 if (customer == null && !string.IsNullOrWhiteSpace(email))
                 {
-                    _logger.LogInformation("Looking up customer by email via overlay: {Email}", email);
-                    var user = await _userRepository.GetByEmailAsync(email);
-                    if (user != null && user.CustomerID > 0)
-                    {
-                        customer = await _repository.GetCustomerByIdAsync(user.CustomerID);
-                    }
+                    _logger.LogInformation("Looking up customer by email: {Email}", email);
+                    customer = await _repository.GetCustomerByEmailAsync(email);
                 }
 
                 // Auto-create new customer if not found
@@ -81,9 +69,8 @@ namespace IntegrationService.API.Controllers
 
                     var newCustomer = new PosCustomer
                     {
-                        FName = "Online",
-                        LName = "Customer",
-                        Phone = !string.IsNullOrWhiteSpace(phone) ? Regex.Replace(phone, @"\D", "") : "0000000000",
+                        Phone = !string.IsNullOrWhiteSpace(phone) ? Regex.Replace(phone, @"\D", "") : null,
+                        Email = !string.IsNullOrWhiteSpace(email) ? email : null,
                         EarnedPoints = 0,
                         PointsManaged = true
                     };
@@ -93,13 +80,7 @@ namespace IntegrationService.API.Controllers
                     customer = newCustomer;
 
                     _logger.LogInformation("Created new customer with ID: {CustomerId}", customerId);
-
-                    // If email was provided, we should ideally link it in the Users table here,
-                    // but that usually happens during registration/auth.
                 }
-
-                // Fetch birthday from overlay if exists
-                var birthday = await _activityRepo.GetCustomerBirthdayAsync(customer.ID);
 
                 // Return customer lookup response
                 var response = new CustomerLookupResponse
@@ -107,17 +88,15 @@ namespace IntegrationService.API.Controllers
                     CustomerId = customer.ID,
                     FullName = customer.FullName,
                     Phone = customer.Phone,
-                    Email = email, // Return the requested email as it's the identifier used
-                    EarnedPoints = customer.EarnedPoints,
-                    BirthMonth = birthday.Month ?? 0,
-                    BirthDay = birthday.Day ?? 0
+                    Email = customer.Email,
+                    EarnedPoints = customer.EarnedPoints
                 };
 
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
-                _logger.LogError(ex, "Error during customer lookup");
+                _logger.LogError(ex, "Database error during customer lookup");
                 return StatusCode(500, new { error = "An error occurred while looking up customer" });
             }
         }
@@ -152,13 +131,12 @@ namespace IntegrationService.API.Controllers
                 var pointsDetails = await _repository.GetLoyaltyHistoryAsync(customerId, limit);
 
                 // Transform to presentation model
-                var transactions = pointsDetails.Select(detail => new Core.Interfaces.LoyaltyTransactionDto
+                var transactions = pointsDetails.Select(detail => new LoyaltyTransactionDto
                 {
                     Id = detail.ID,
-                    Date = detail.TransactionDate,
+                    Date = detail.TransactionDate.ToString("o"), // ISO 8601 format
                     Type = detail.PointSaved > 0 ? "earn" : "redeem",
                     Points = detail.PointSaved > 0 ? detail.PointSaved : detail.PointUsed,
-                    OrderId = detail.SalesID,
                     Description = detail.PointSaved > 0
                         ? $"Earned on order #{detail.SalesID}"
                         : $"Redeemed on order #{detail.SalesID}"
@@ -172,37 +150,6 @@ namespace IntegrationService.API.Controllers
                 return StatusCode(500, new { error = "An error occurred while fetching loyalty history" });
             }
         }
-
-        /// <summary>
-        /// Update customer birthday in the overlay database.
-        /// </summary>
-        [HttpPost("{customerId}/birthday")]
-        public async Task<IActionResult> UpdateBirthday([FromRoute] int customerId, [FromBody] BirthdayUpdateRequest request)
-        {
-            if (customerId <= 0) return BadRequest(new { error = "Invalid customer ID" });
-            if (request.Month < 1 || request.Month > 12) return BadRequest(new { error = "Invalid month" });
-            if (request.Day < 1 || request.Day > 31) return BadRequest(new { error = "Invalid day" });
-
-            try
-            {
-                var success = await _activityRepo.UpdateCustomerBirthdayAsync(customerId, request.Month, request.Day);
-                if (success)
-                    return Ok(new { success = true, message = "Birthday updated successfully" });
-
-                return BadRequest(new { error = "Failed to update birthday" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating birthday for customer {CustomerId}", customerId);
-                return StatusCode(500, new { error = "An error occurred while updating birthday" });
-            }
-        }
-    }
-
-    public class BirthdayUpdateRequest
-    {
-        public int Month { get; set; }
-        public int Day { get; set; }
     }
 
     /// <summary>
@@ -215,9 +162,17 @@ namespace IntegrationService.API.Controllers
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public int EarnedPoints { get; set; }
-        public int? BirthMonth { get; set; }
-        public int? BirthDay { get; set; }
     }
 
-
+    /// <summary>
+    /// Loyalty transaction DTO for API response
+    /// </summary>
+    public class LoyaltyTransactionDto
+    {
+        public int Id { get; set; }
+        public string Date { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;  // "earn" or "redeem"
+        public int Points { get; set; }
+        public string Description { get; set; } = string.Empty;
+    }
 }

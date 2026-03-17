@@ -100,9 +100,9 @@ namespace IntegrationService.Core.Services
                     PSTRate = taxRates.PST,
                     PST2Rate = taxRates.PST2,
                     CustomerID = request.CustomerID ?? 1,
-                    CashierID = 999,  // Online cashier ID per project constants
-                    TableID = 201,  // Online/takeout orders use TableID 201
-                    StationID = 2,  // DESKTOP-DEMO (online orders)
+                    CashierID = 1,  // System user for online orders
+                    TableID = null,
+                    StationID = 1,
                     Guests = 1,
                     TakeOutOrder = request.IsTakeout,
                     DeliveryChargeAmt = request.DeliveryCharge,
@@ -269,9 +269,7 @@ namespace IntegrationService.Core.Services
                         PaymentTypeID = 0,  // Will be auto-mapped from CardType
                         PaidAmount = paymentRequest.Amount,
                         TipAmount = 0,  // Tip handled separately if needed
-                        AuthorizationNo = paymentResult.TransactionId?.Length > 20 
-                            ? paymentResult.TransactionId.Substring(0, 20) 
-                            : paymentResult.TransactionId,
+                        AuthorizationNo = paymentResult.TransactionId,
                         CardType = paymentResult.CardType,
                         Last4Digits = paymentResult.Last4Digits,
                         SequenceNo = 1,
@@ -643,17 +641,11 @@ namespace IntegrationService.Core.Services
 
                     // Defaults for online orders
                     DSCAmt = 0,
-                    DSCAmtEmployee = 0,
-                    DSCAmtType1 = 0,
-                    DSCAmtType2 = 0,
-                    DayHourDiscountRate = 0,
-                    PricePerWeightUnit = 0,
                     ApplyNoDSC = sizeData?.ApplyNoDSC ?? false,
                     PersonIndex = 1,
                     SeparateBillPrint = false,
                     OpenItem = menuItem?.OpenItem ?? false,
-                    ExtraChargeItem = false,
-                    Status = true
+                    ExtraChargeItem = false
                 };
 
                 await _posRepo.InsertPendingOrderItemAsync(pendingItem, transaction);

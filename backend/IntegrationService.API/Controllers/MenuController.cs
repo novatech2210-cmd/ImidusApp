@@ -203,7 +203,7 @@ namespace IntegrationService.API.Controllers
                         KitchenB = item.KitchenB,
                         KitchenF = item.KitchenF,
                         Bar = item.Bar,
-                        DisplayOrder = item.ItemID, // Use ItemID as fallback - PrintOrder doesn't exist in tblItem
+                        DisplayOrder = item.PrintOrder,
                         Sizes = sizesDTOs
                     });
                 }

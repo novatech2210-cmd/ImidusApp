@@ -5,13 +5,13 @@
 USE master;
 GO
 
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'INI_Restaurant')
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'TPPro')
 BEGIN
-    CREATE DATABASE INI_Restaurant;
+    CREATE DATABASE TPPro;
 END
 GO
 
-USE INI_Restaurant;
+USE TPPro;
 GO
 
 -- =============================================================================

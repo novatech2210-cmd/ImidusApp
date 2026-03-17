@@ -14,7 +14,7 @@ namespace IntegrationService.Infrastructure.Data
     /// Implements exponential backoff retry for deadlock handling
     ///
     /// ORDER NUMBER LIFECYCLE:
-    /// - Resets to 1 at midnight daily (new BusinessDate row)
+    /// - Resets to 1 at midnight daily (new OrderDate row)
     /// - Increments atomically per order
     /// - Retries up to 3 times on deadlock (SQL error 1205)
     /// - Exponential backoff: 10ms, 20ms, 40ms
@@ -50,24 +50,17 @@ namespace IntegrationService.Infrastructure.Data
 
                     // Atomic increment using UPDATE with OUTPUT
                     // If no row exists for today, INSERT with OrderNumber=1
-                    // Note: Uses CalledDateTime (existing POS column name) for compatibility
                     const string sql = @"
-                        DECLARE @Result TABLE (Num INT);
-
                         UPDATE tblOrderNumber
                         SET OrderNumber = OrderNumber + 1
-                        OUTPUT INSERTED.OrderNumber INTO @Result
-                        WHERE CAST(CalledDateTime AS DATE) = @Today
+                        OUTPUT INSERTED.OrderNumber
+                        WHERE OrderDate = @Today
 
-                        IF NOT EXISTS (SELECT 1 FROM @Result)
+                        IF @@ROWCOUNT = 0
                         BEGIN
-                            INSERT INTO tblOrderNumber (CalledDateTime, OrderNumber)
+                            INSERT INTO tblOrderNumber (OrderDate, OrderNumber)
                             VALUES (@Today, 1)
                             SELECT 1
-                        END
-                        ELSE
-                        BEGIN
-                            SELECT Num FROM @Result
                         END";
 
                     var result = await connection.QuerySingleAsync<int>(sql, new { Today = today });

@@ -15,13 +15,13 @@ public class FcmNotificationService : INotificationService
 {
     private readonly ILogger<FcmNotificationService> _logger;
     private readonly IDeviceTokenRepository _tokenRepository;
-    private readonly INotificationLogRepository _logRepository;
+    private readonly NotificationLogRepository _logRepository;
     private readonly IConfiguration _configuration;
 
     public FcmNotificationService(
         ILogger<FcmNotificationService> logger,
         IDeviceTokenRepository tokenRepository,
-        INotificationLogRepository logRepository,
+        NotificationLogRepository logRepository,
         IConfiguration configuration)
     {
         _logger = logger;
