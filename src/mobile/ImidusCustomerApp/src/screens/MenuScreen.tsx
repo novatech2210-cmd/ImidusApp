@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
     borderRadius: 20,
-    ...Shadow.goldButton,
+    ...Shadow.md,
   },
   cartCountText: {
     color: Colors.white,

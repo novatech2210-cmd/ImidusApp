@@ -7,6 +7,6 @@
  */
 
 export { Colors }       from './colors';
-export { TextStyles, FontFamily, FontSize, LineHeight } from './typography';
-export { Spacing, BorderRadius, Shadow, Layout }        from './spacing';
+export { TextStyles, FontFamilies } from './typography';
+export { Spacing, BorderRadius, Shadow, ShadowLevel, Layout } from './spacing';
 export { Images }       from './images';

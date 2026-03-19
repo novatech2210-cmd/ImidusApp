@@ -1,7 +1,10 @@
-namespace IntegrationService.Core.Interfaces;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-public interface INotificationService
+namespace IntegrationService.Core.Interfaces
 {
-    Task SendNotificationAsync(int customerId, string title, string body, Dictionary<string, string>? data = null);
-    Task SendBroadcastNotificationAsync(string title, string body, Dictionary<string, string>? data = null);
+    public interface INotificationService
+    {
+        Task SendNotificationAsync(int customerId, string title, string message, Dictionary<string, string>? data = null);
+    }
 }

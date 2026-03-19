@@ -4,7 +4,7 @@
  * Displays cart count with gold price badge inside.
  */
 
-import { BorderRadius, Colors, Shadow, Spacing } from '@/theme';
+import { BorderRadius, Colors, Shadow, ShadowLevel, Spacing } from '@/theme';
 import { useRef } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.full,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    ...Shadow.level3,
+    ...ShadowLevel.level3,
   },
   content: {
     flexDirection: 'row',

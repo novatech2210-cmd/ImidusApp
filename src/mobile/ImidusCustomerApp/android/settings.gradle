@@ -1,6 +1,17 @@
-pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
-plugins { id("com.facebook.react.settings") }
-rootProject.name = 'com.imidus.customer'
-apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
-include ':app'
-includeBuild('../node_modules/@react-native/gradle-plugin')
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+        maven {
+            url = uri("../node_modules/@react-native/gradle-plugin/maven")
+        }
+    }
+    includeBuild("../node_modules/@react-native/gradle-plugin")
+}
+
+rootProject.name = "ImidusCustomerApp"
+include(":app")
+
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle")
+applyNativeModulesSettingsGradle(settings)

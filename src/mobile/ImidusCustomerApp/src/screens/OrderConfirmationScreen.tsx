@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {Colors, Shadow, Spacing} from '../theme';
+import {Colors, Shadow, ShadowLevel, Spacing} from '../theme';
 
 type RootStackParamList = {
   Menu: undefined;
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: Spacing.lg,
     marginBottom: Spacing.base,
-    ...Shadow.level1,
+    ...ShadowLevel.level1,
   },
   orderNumberSection: {
     alignItems: 'center',
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    ...Shadow.level2,
+    ...ShadowLevel.level2,
   },
   doneButtonText: {
     color: Colors.white,

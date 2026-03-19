@@ -228,7 +228,7 @@ namespace IntegrationService.Tests.Integration
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var transactions = Assert.IsType<List<Core.Interfaces.LoyaltyTransactionDto>>(okResult.Value);
+            var transactions = Assert.IsType<List<LoyaltyTransactionDto>>(okResult.Value);
 
             Assert.Equal(3, transactions.Count);
 
@@ -238,7 +238,7 @@ namespace IntegrationService.Tests.Integration
             Assert.Equal("earn", earnTx.Type);
             Assert.Equal(50, earnTx.Points);
             Assert.Contains("Earned on order #101", earnTx.Description);
-            Assert.NotEqual(default, earnTx.Date); // DateTime must be set
+            Assert.NotEmpty(earnTx.Date); // ISO format
 
             // Verify second transaction (redeem)
             var redeemTx1 = transactions[1];

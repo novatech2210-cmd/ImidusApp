@@ -1,6 +1,5 @@
 import { TextStyle } from 'react-native';
-import { Colors } from './colors';
-import { Spacing } from './spacing'; // Assuming spacing.ts exists and defines Spacing
+import {Colors} from './colors';
 
 // Typography Modernization Rules from MASTER.md
 
@@ -9,6 +8,10 @@ export const FontFamilies = {
   display: 'Georgia', // For wordmark only
   mono: 'Courier New', // For order numbers, etc.
 };
+
+export type FontFamily = keyof typeof FontFamilies;
+export type FontSize = number;
+export type LineHeight = number;
 
 interface CustomTextStyles {
   wordmark: TextStyle;
@@ -113,7 +116,7 @@ export const TextStyles: CustomTextStyles = {
     fontSize: 18, // Base size, 1.1x scale applied in transform
     fontWeight: '700',
     color: Colors.brandGold,
-    transform: [{ scale: 1.1 }],
+    transform: [{scale: 1.1}],
   },
 
   // Loyalty Points (40px, Brand Gold, text shadow)
@@ -123,7 +126,7 @@ export const TextStyles: CustomTextStyles = {
     fontWeight: '700',
     color: Colors.brandGold,
     textShadowColor: 'rgba(212, 175, 55, 0.25)',
-    textShadowOffset: { width: 0, height: 2 },
+    textShadowOffset: {width: 0, height: 2},
     textShadowRadius: 8,
   },
 };

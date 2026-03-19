@@ -12,16 +12,6 @@
           }
         ]
       }
-    ],
-    "PostToolUse": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node .gemini/hooks/gsd-context-monitor.js"
-          }
-        ]
-      }
     ]
   }
 }

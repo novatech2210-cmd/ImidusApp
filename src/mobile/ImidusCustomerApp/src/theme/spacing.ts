@@ -52,6 +52,20 @@ export const Shadow = {
   },
 } as const;
 
+// Shadow level aliases for component elevation
+export const ShadowLevel = {
+  level1: Shadow.sm,
+  level2: Shadow.md,
+  level3: Shadow.lg,
+  elevation0: {
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+  },
+} as const;
+
 /** Common shared layout styles */
 export const Layout = StyleSheet.create({
   screen: {

@@ -1,7 +1,7 @@
 -- INI POS Seed Data for Testing
 -- Sample restaurant menu data
 
-USE INI_Restaurant;
+USE TPPro;
 GO
 
 -- =============================================================================

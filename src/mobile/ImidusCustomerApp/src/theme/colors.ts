@@ -55,6 +55,11 @@ export const Colors = {
   background: '#FFFFFF',
   border: '#DDDDDD', // midGray
   text: '#222222', // textPrimary
+  
+  // ── Legacy Aliases ────────────────────────────────────
+  gray: '#808080',
+  goldButton: '#D4AF37',
+  elevation0: 'transparent',
 } as const;
 
 export type ColorKey = keyof typeof Colors;

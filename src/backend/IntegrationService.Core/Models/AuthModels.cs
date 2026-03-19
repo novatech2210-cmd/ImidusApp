@@ -72,8 +72,6 @@ namespace IntegrationService.Core.Models
         public string Phone { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public int EarnedPoints { get; set; }
-        public int? BirthMonth { get; set; }
-        public int? BirthDay { get; set; }
     }
 
     /// <summary>

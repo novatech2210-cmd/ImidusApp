@@ -19,7 +19,7 @@ namespace IntegrationService.Core.Services
     /// 3. Process payment → Insert tblPayment
     /// 4. Complete order → Update TransType=1, move items to tblSalesDetail
     /// </summary>
-    public class OrderProcessingService : IOrderProcessingService
+    public class OrderProcessingService : IntegrationService.Core.Interfaces.IOrderProcessingService
     {
         private readonly IPosRepository _posRepo;
         private readonly IPaymentService _paymentService;
@@ -43,13 +43,13 @@ namespace IntegrationService.Core.Services
         /// This creates an OPEN order (TransType=2) with items in tblPendingOrders.
         /// Call CompleteOrderAsync after payment to finalize.
         /// </summary>
-        public async Task<Domain.Entities.OrderResult> CreateOrderAsync(CreateOrderRequest request, string idempotencyKey)
+        public async Task<IntegrationService.Core.Domain.Entities.OrderResult> CreateOrderAsync(IntegrationService.Core.Models.CreateOrderRequest request, string idempotencyKey)
         {
             _logger.LogInformation("Creating order with idempotency key: {IdempotencyKey}", idempotencyKey);
 
             if (request == null || !request.Items.Any())
             {
-                return new Domain.Entities.OrderResult
+                return new IntegrationService.Core.Domain.Entities.OrderResult
                 {
                     Success = false,
                     ErrorMessage = "Order must contain at least one item"
@@ -58,7 +58,7 @@ namespace IntegrationService.Core.Services
 
             if (request.Items.Any(i => i.SizeId <= 0))
             {
-                return new Domain.Entities.OrderResult
+                return new IntegrationService.Core.Domain.Entities.OrderResult
                 {
                     Success = false,
                     ErrorMessage = "All items must have a valid SizeID"
@@ -100,9 +100,9 @@ namespace IntegrationService.Core.Services
                     PSTRate = taxRates.PST,
                     PST2Rate = taxRates.PST2,
                     CustomerID = request.CustomerID ?? 1,
-                    CashierID = 999,  // Online cashier ID per project constants
-                    TableID = 201,  // Online/takeout orders use TableID 201
-                    StationID = 2,  // DESKTOP-DEMO (online orders)
+                    CashierID = 1,  // System user for online orders
+                    TableID = null,
+                    StationID = 1,
                     Guests = 1,
                     TakeOutOrder = request.IsTakeout,
                     DeliveryChargeAmt = request.DeliveryCharge,
@@ -150,7 +150,7 @@ namespace IntegrationService.Core.Services
 
                 _logger.LogInformation("Order {SalesId} created successfully", salesId);
 
-                return new Domain.Entities.OrderResult
+                return new IntegrationService.Core.Domain.Entities.OrderResult
                 {
                     Success = true,
                     SalesID = salesId,
@@ -164,7 +164,7 @@ namespace IntegrationService.Core.Services
                 transaction.Rollback();
                 _logger.LogWarning(ex, "Order creation failed due to insufficient stock");
 
-                return new Domain.Entities.OrderResult
+                return new IntegrationService.Core.Domain.Entities.OrderResult
                 {
                     Success = false,
                     ErrorMessage = ex.Message
@@ -175,7 +175,7 @@ namespace IntegrationService.Core.Services
                 transaction.Rollback();
                 _logger.LogError(ex, "Order creation failed");
 
-                return new Domain.Entities.OrderResult
+                return new IntegrationService.Core.Domain.Entities.OrderResult
                 {
                     Success = false,
                     ErrorMessage = "Failed to create order. Please try again."
@@ -187,17 +187,17 @@ namespace IntegrationService.Core.Services
         /// Process payment with Authorize.net, post to POS database, and complete order.
         /// Implements atomic transaction with automatic rollback and void on failure.
         /// </summary>
-        public async Task<Models.OrderCompletionResult> ProcessPaymentAndCompleteOrderAsync(
+        public async Task<IntegrationService.Core.Models.OrderCompletionResult> ProcessPaymentAndCompleteOrderAsync(
             int salesId,
-            Models.PaymentRequest paymentRequest,
-            IDbTransaction? outerTransaction = null)
+            IntegrationService.Core.Models.PaymentRequest paymentRequest,
+            System.Data.IDbTransaction? outerTransaction = null)
         {
             _logger.LogInformation(
                 "Starting payment processing for order {SalesId}, amount: ${Amount}",
                 salesId, paymentRequest.Amount);
 
             // Start transaction if not provided
-            IDbTransaction? transaction = outerTransaction;
+            System.Data.IDbTransaction? transaction = outerTransaction;
             bool shouldManageTransaction = outerTransaction == null;
 
             if (shouldManageTransaction)
@@ -209,7 +209,7 @@ namespace IntegrationService.Core.Services
             {
                 // Calculate points discount before charging (100 points = $1)
                 decimal pointsDiscount = 0m;
-                PaymentRequest requestToCharge = paymentRequest;
+                IntegrationService.Core.Models.PaymentRequest requestToCharge = paymentRequest;
 
                 if (paymentRequest.PointsToRedeem > 0)
                 {
@@ -223,7 +223,7 @@ namespace IntegrationService.Core.Services
                     if (finalAmount < 0) finalAmount = 0;
 
                     // Create adjusted request with discounted amount
-                    requestToCharge = new PaymentRequest
+                    requestToCharge = new IntegrationService.Core.Models.PaymentRequest
                     {
                         Token = paymentRequest.Token,
                         Amount = finalAmount,
@@ -248,7 +248,7 @@ namespace IntegrationService.Core.Services
                         transaction?.Rollback();
                     }
 
-                    return new Models.OrderCompletionResult
+                    return new IntegrationService.Core.Models.OrderCompletionResult
                     {
                         Success = false,
                         ErrorMessage = paymentResult.ErrorMessage ?? "Payment declined"
@@ -269,9 +269,7 @@ namespace IntegrationService.Core.Services
                         PaymentTypeID = 0,  // Will be auto-mapped from CardType
                         PaidAmount = paymentRequest.Amount,
                         TipAmount = 0,  // Tip handled separately if needed
-                        AuthorizationNo = paymentResult.TransactionId?.Length > 20 
-                            ? paymentResult.TransactionId.Substring(0, 20) 
-                            : paymentResult.TransactionId,
+                        AuthorizationNo = paymentResult.TransactionId,
                         CardType = paymentResult.CardType,
                         Last4Digits = paymentResult.Last4Digits,
                         SequenceNo = 1,
@@ -379,7 +377,7 @@ namespace IntegrationService.Core.Services
                         }
                     }
 
-                    return new Models.OrderCompletionResult
+                    return new IntegrationService.Core.Models.OrderCompletionResult
                     {
                         Success = true,
                         TransactionId = paymentResult.TransactionId,
@@ -425,7 +423,7 @@ namespace IntegrationService.Core.Services
                             paymentResult.TransactionId, salesId);
                     }
 
-                    return new Models.OrderCompletionResult
+                    return new IntegrationService.Core.Models.OrderCompletionResult
                     {
                         Success = false,
                         ErrorMessage = "Payment processing failed, charge voided. Please try again."
@@ -441,7 +439,7 @@ namespace IntegrationService.Core.Services
                     transaction?.Rollback();
                 }
 
-                return new OrderCompletionResult
+                return new IntegrationService.Core.Models.OrderCompletionResult
                 {
                     Success = false,
                     ErrorMessage = "Payment processing failed. Please try again."
@@ -509,7 +507,7 @@ namespace IntegrationService.Core.Services
         /// <summary>
         /// Get order details including items
         /// </summary>
-        public async Task<PosTicket?> GetOrderAsync(int salesId)
+        public async Task<Domain.Entities.PosTicket?> GetOrderAsync(int salesId)
         {
             var ticket = await _posRepo.GetTicketByIdAsync(salesId);
             if (ticket == null) return null;
@@ -547,13 +545,13 @@ namespace IntegrationService.Core.Services
             _logger.LogInformation("Order {SalesId} completed - items moved to sales detail", salesId);
         }
 
-        private async Task ValidateInventoryAsync(List<Domain.Entities.OrderItemRequest> items)
+        private async Task ValidateInventoryAsync(List<Models.OrderItemRequest> items)
         {
             foreach (var item in items)
             {
                 var stock = await _posRepo.GetItemStockAsync(item.MenuItemId, item.SizeId);
 
-                if (stock.HasValue && stock.Value < item.Quantity)
+                if (stock?.OnHandQty != null && stock.OnHandQty < item.Quantity)
                 {
                     var itemSizes = await _posRepo.GetItemSizesAsync(item.MenuItemId);
                     var size = itemSizes.FirstOrDefault(s => s.SizeID == item.SizeId);
@@ -565,7 +563,7 @@ namespace IntegrationService.Core.Services
         }
 
         private async Task<OrderTotals> CalculateOrderTotalsAsync(
-            List<Domain.Entities.OrderItemRequest> items,
+            List<Models.OrderItemRequest> items,
             TaxRates taxRates,
             List<Domain.Entities.MenuItem> menuItems)
         {
@@ -607,7 +605,7 @@ namespace IntegrationService.Core.Services
 
         private async Task InsertPendingOrderItemsAsync(
             int salesId,
-            List<Domain.Entities.OrderItemRequest> items,
+            List<Models.OrderItemRequest> items,
             List<Domain.Entities.MenuItem> menuItems,
             IDbTransaction transaction)
         {
@@ -643,24 +641,18 @@ namespace IntegrationService.Core.Services
 
                     // Defaults for online orders
                     DSCAmt = 0,
-                    DSCAmtEmployee = 0,
-                    DSCAmtType1 = 0,
-                    DSCAmtType2 = 0,
-                    DayHourDiscountRate = 0,
-                    PricePerWeightUnit = 0,
                     ApplyNoDSC = sizeData?.ApplyNoDSC ?? false,
                     PersonIndex = 1,
                     SeparateBillPrint = false,
                     OpenItem = menuItem?.OpenItem ?? false,
-                    ExtraChargeItem = false,
-                    Status = true
+                    ExtraChargeItem = false
                 };
 
                 await _posRepo.InsertPendingOrderItemAsync(pendingItem, transaction);
             }
         }
 
-        private async Task DecreaseInventoryAsync(List<Domain.Entities.OrderItemRequest> items, IDbTransaction transaction)
+        private async Task DecreaseInventoryAsync(List<Models.OrderItemRequest> items, IDbTransaction transaction)
         {
             foreach (var item in items)
             {
@@ -684,18 +676,18 @@ namespace IntegrationService.Core.Services
         private async Task RecordPaymentAsync(
             int salesId,
             decimal totalAmount,
-            CreateOrderRequest request,
+            Models.CreateOrderRequest request,
             IDbTransaction transaction)
         {
             var payment = new PosTender
             {
                 SalesID = salesId,
-                PaymentTypeID = request.PaymentTypeID,
+                PaymentTypeID = (byte)request.PaymentTypeID,
                 PaidAmount = totalAmount,
                 TipAmount = request.TipAmount,
                 Voided = false,
                 AuthorizationNo = request.PaymentAuthCode,
-                BatchNo = request.PaymentBatchNo,
+                BatchNo = request.PaymentBatchNo?.ToString(),
                 SequenceNo = 1,
                 StationName = "ONLINE"
             };

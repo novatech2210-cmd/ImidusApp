@@ -119,7 +119,6 @@ namespace IntegrationService.Core.Domain.Entities
         public decimal TotalTips => CashTipPaidAmt + CreditTipPaidAmt + DebitTipPaidAmt;
         public bool IsOpen => TransType == (int)TransactionType.OpenOrder;
         public bool IsCompleted => TransType == (int)TransactionType.CompletedSale;
-        public DateTime SalesDate { get => SaleDateTime; set => SaleDateTime = value; } // Alias for legacy queries
 
         // Navigation Properties
         public List<PosTicketItem> Items { get; set; } = new();
@@ -214,7 +213,7 @@ namespace IntegrationService.Core.Domain.Entities
         // Pricing & Quantity
         public decimal Qty { get; set; }
         public decimal UnitPrice { get; set; }
-        public decimal PricePerWeightUnit { get; set; }
+        public decimal? PricePerWeightUnit { get; set; }
 
         // Modifiers
         public string? Tastes { get; set; }
@@ -227,10 +226,10 @@ namespace IntegrationService.Core.Domain.Entities
 
         // Discounts
         public decimal DSCAmt { get; set; }
-        public decimal DSCAmtEmployee { get; set; }
-        public decimal DSCAmtType1 { get; set; }
-        public decimal DSCAmtType2 { get; set; }
-        public decimal DayHourDiscountRate { get; set; }
+        public decimal? DSCAmtEmployee { get; set; }
+        public decimal? DSCAmtType1 { get; set; }
+        public decimal? DSCAmtType2 { get; set; }
+        public decimal? DayHourDiscountRate { get; set; }
         public bool ApplyNoDSC { get; set; }
 
         // Kitchen Routing
@@ -246,9 +245,6 @@ namespace IntegrationService.Core.Domain.Entities
         // Special Flags
         public bool OpenItem { get; set; }
         public bool ExtraChargeItem { get; set; }
-
-        // Status (Active/Pending in kitchen)
-        public bool Status { get; set; } = true;
 
         // Calculated Property
         public decimal LineTotal => (Qty * UnitPrice) - DSCAmt;
@@ -360,8 +356,8 @@ namespace IntegrationService.Core.Domain.Entities
         // Inventory
         public bool ManageInv { get; set; }
 
-        // Display Order - Removed: PrintOrder does not exist in tblItem
-        // public int PrintOrder { get; set; }
+        // Display Order
+        public int PrintOrder { get; set; }
 
         // Navigation
         public Category? Category { get; set; }
@@ -394,7 +390,7 @@ namespace IntegrationService.Core.Domain.Entities
         public Size? Size { get; set; }
 
         // Helpers
-        public bool InStock => OnHandQty == null || OnHandQty >= 0;  // 0 means in stock for POS (not tracked)
+        public bool InStock => OnHandQty == null || OnHandQty > 0;
     }
 
     /// <summary>
@@ -460,11 +456,13 @@ namespace IntegrationService.Core.Domain.Entities
         public string? FName { get; set; }
         public string? LName { get; set; }
 
-        // Contact (NOTE: Email does not exist in POS tblCustomer - stored in IntegrationService overlay)
+        // Contact
         public string? Phone { get; set; }
-        // Email is stored in IntegrationService.User or CustomerAuth table
         public string? Email { get; set; }
         public string? Address { get; set; }
+
+        // Authentication (legacy plaintext, migrating to hashed)
+        public string? Password { get; set; }
 
         // Identifiers
         public string? CustomerNum { get; set; }
@@ -473,16 +471,9 @@ namespace IntegrationService.Core.Domain.Entities
         public int EarnedPoints { get; set; }
         public bool PointsManaged { get; set; }
 
-        // Demographics (Gender is bit in POS: 0=Female, 1=Male)
-        public bool? Gender { get; set; }
-        public DateTime? DateEntered { get; set; }
-        public DateTime? LastVisit { get; set; }
-
-        // POS specific fields
-        public decimal? CardValue { get; set; }
-        public decimal? Savings { get; set; }
-        public decimal? CreditBalance { get; set; }
-        public string? CustomerNote { get; set; }
+        // Demographics
+        public char? Gender { get; set; }
+        public DateTime? Birthday { get; set; }
 
         // Segmentation (for RFM analysis)
         public int? CustomerTypeID { get; set; }
@@ -618,34 +609,11 @@ namespace IntegrationService.Core.Domain.Entities
     }
 
     /// <summary>
-    /// Order creation request DTO
+    /// Inventory Stock details
     /// </summary>
-    public class CreateOrderRequest
+    public class ItemStock
     {
-        public int? CustomerID { get; set; }
-        public List<OrderItemRequest> Items { get; set; } = new();
-        public string? PaymentAuthCode { get; set; }
-        public string? PaymentBatchNo { get; set; }
-        public decimal TipAmount { get; set; }
-        public byte PaymentTypeID { get; set; } = (byte)PaymentType.Visa;
-        public bool IsTakeout { get; set; } = true;
-        public int? OnlineOrderCompanyID { get; set; }
-        public string? OnlineOrderNumber { get; set; }
-        public string? CustomerName { get; set; }
-        public decimal DeliveryCharge { get; set; }
-    }
-
-    /// <summary>
-    /// Order item request DTO
-    /// </summary>
-    public class OrderItemRequest
-    {
-        public int MenuItemId { get; set; }
-        public int SizeId { get; set; }
-        public decimal Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-        public string? Tastes { get; set; }
-        public string? SideDishes { get; set; }
+        public decimal? OnHandQty { get; set; } // Nullable decimal for quantity on hand
     }
 
     /// <summary>

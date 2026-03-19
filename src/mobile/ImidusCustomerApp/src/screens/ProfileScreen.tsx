@@ -13,7 +13,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../store';
 import {logoutUser} from '../store/authSlice';
 import {fetchCustomerLoyalty, fetchLoyaltyHistory} from '../store/loyaltySlice';
-import {Colors, Shadow, Spacing, TextStyles} from '../theme';
+import {Colors, Shadow, ShadowLevel, Spacing, TextStyles} from '../theme';
 
 const ProfileScreen = ({navigation}: any) => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
     borderWidth: 2,
     borderColor: Colors.brandGold,
-    ...Shadow.level2,
+    ...ShadowLevel.level2,
   },
   loyaltyLabel: {
     color: Colors.brandBlue,

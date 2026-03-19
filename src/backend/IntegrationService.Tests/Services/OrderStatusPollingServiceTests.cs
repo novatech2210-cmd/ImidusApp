@@ -2,7 +2,6 @@ using Xunit;
 using Moq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
 using IntegrationService.Infrastructure.Services;
 using IntegrationService.Infrastructure.Data;
 using IntegrationService.Core.Interfaces;
@@ -25,10 +24,10 @@ public class OrderStatusPollingServiceTests
     private readonly Mock<IServiceScope> _mockServiceScope;
     private readonly Mock<IServiceScopeFactory> _mockScopeFactory;
     private readonly Mock<IPosRepository> _mockPosRepo;
-    private readonly Mock<IOnlineOrderStatusRepository> _mockStatusRepo;
+    private readonly Mock<OnlineOrderStatusRepository> _mockStatusRepo;
     private readonly Mock<INotificationService> _mockNotificationService;
     private readonly Mock<IDeviceTokenRepository> _mockDeviceTokenRepo;
-    private readonly Mock<INotificationLogRepository> _mockNotificationLogRepo;
+    private readonly Mock<NotificationLogRepository> _mockNotificationLogRepo;
     private readonly Mock<ILogger<OrderStatusPollingService>> _mockLogger;
 
     public OrderStatusPollingServiceTests()
@@ -37,20 +36,19 @@ public class OrderStatusPollingServiceTests
         _mockServiceScope = new Mock<IServiceScope>();
         _mockScopeFactory = new Mock<IServiceScopeFactory>();
         _mockPosRepo = new Mock<IPosRepository>();
-        
-        _mockStatusRepo = new Mock<IOnlineOrderStatusRepository>();
+        _mockStatusRepo = new Mock<OnlineOrderStatusRepository>(MockBehavior.Strict, null);
         _mockNotificationService = new Mock<INotificationService>();
         _mockDeviceTokenRepo = new Mock<IDeviceTokenRepository>();
-        _mockNotificationLogRepo = new Mock<INotificationLogRepository>();
+        _mockNotificationLogRepo = new Mock<NotificationLogRepository>(MockBehavior.Strict, null);
         _mockLogger = new Mock<ILogger<OrderStatusPollingService>>();
 
         // Setup service provider to return mocked services
         _mockServiceScope.Setup(x => x.ServiceProvider).Returns(_mockServiceProvider.Object);
         _mockServiceProvider.Setup(x => x.GetService(typeof(IPosRepository))).Returns(_mockPosRepo.Object);
-        _mockServiceProvider.Setup(x => x.GetService(typeof(IOnlineOrderStatusRepository))).Returns(_mockStatusRepo.Object);
+        _mockServiceProvider.Setup(x => x.GetService(typeof(OnlineOrderStatusRepository))).Returns(_mockStatusRepo.Object);
         _mockServiceProvider.Setup(x => x.GetService(typeof(INotificationService))).Returns(_mockNotificationService.Object);
         _mockServiceProvider.Setup(x => x.GetService(typeof(IDeviceTokenRepository))).Returns(_mockDeviceTokenRepo.Object);
-        _mockServiceProvider.Setup(x => x.GetService(typeof(INotificationLogRepository))).Returns(_mockNotificationLogRepo.Object);
+        _mockServiceProvider.Setup(x => x.GetService(typeof(NotificationLogRepository))).Returns(_mockNotificationLogRepo.Object);
 
         // Setup CreateScope to return our mock scope
         var serviceCollection = new ServiceCollection();
@@ -61,8 +59,7 @@ public class OrderStatusPollingServiceTests
         serviceCollection.AddScoped(_ => _mockNotificationLogRepo.Object);
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
-        _mockServiceProvider.Setup(x => x.GetService(typeof(IServiceScopeFactory))).Returns(_mockScopeFactory.Object);
-        _mockScopeFactory.Setup(x => x.CreateScope()).Returns(_mockServiceScope.Object);
+        _mockServiceProvider.Setup(x => x.CreateScope()).Returns(serviceProvider.CreateScope());
     }
 
     [Fact]
