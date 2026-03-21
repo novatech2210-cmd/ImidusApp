@@ -13,7 +13,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../store';
 import {logoutUser} from '../store/authSlice';
 import {fetchCustomerLoyalty, fetchLoyaltyHistory} from '../store/loyaltySlice';
-import {Colors, Shadow, ShadowLevel, Spacing, TextStyles} from '../theme';
+import {Colors, Elevation, Spacing, TextStyles, TouchTarget, BorderRadius} from '../theme';
 
 const ProfileScreen = ({navigation}: any) => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -89,7 +89,7 @@ const ProfileScreen = ({navigation}: any) => {
             <Text style={styles.sectionTitle}>Recent Activity</Text>
             <FlatList
               data={transactions}
-              keyExtractor={item => item.id.toString()}
+              keyExtractor={(item, index) => item?.id?.toString() ?? `order-${index}`}
               renderItem={({item}) => (
                 <View style={styles.transactionRow}>
                   <View style={styles.transactionLeft}>
@@ -148,20 +148,22 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: Spacing.md,
-    backgroundColor: Colors.secondary,
+    backgroundColor: Colors.brandGold,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    ...Elevation.level3,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.primary,
+    ...TextStyles.headline,
+    color: Colors.dark,
   },
   backButtonText: {
-    color: Colors.primary,
-    fontSize: 16,
-    fontWeight: '600',
+    ...TextStyles.label,
+    color: Colors.dark,
+    minHeight: TouchTarget.minimum,
+    minWidth: TouchTarget.minimum,
+    textAlignVertical: 'center',
   },
   content: {
     padding: Spacing.lg,
@@ -185,31 +187,27 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   userName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.text,
+    ...TextStyles.headline,
+    color: Colors.slate900,
   },
   userEmail: {
-    fontSize: 16,
-    color: Colors.textSecondary,
+    ...TextStyles.body,
+    color: Colors.slate600,
     marginTop: Spacing.xs,
   },
   loyaltyCard: {
     backgroundColor: Colors.lightGold,
-    borderRadius: 16,
+    borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
     alignItems: 'center',
     marginBottom: Spacing.xl,
     borderWidth: 2,
     borderColor: Colors.brandGold,
-    ...ShadowLevel.level2,
+    ...Elevation.level2,
   },
   loyaltyLabel: {
+    ...TextStyles.label,
     color: Colors.brandBlue,
-    fontSize: 14,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
     marginBottom: Spacing.sm,
   },
   loyaltyVoice: {
@@ -232,10 +230,11 @@ const styles = StyleSheet.create({
     marginVertical: Spacing.lg,
   },
   historySection: {
-    backgroundColor: Colors.white,
-    borderRadius: 12,
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.xl,
+    ...Elevation.level1,
   },
   transactionRow: {
     flexDirection: 'row',
@@ -248,13 +247,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   transactionDesc: {
-    fontSize: 14,
-    color: Colors.text,
-    fontWeight: '500',
+    ...TextStyles.body,
+    color: Colors.slate900,
   },
   transactionDate: {
-    fontSize: 12,
-    color: Colors.textSecondary,
+    ...TextStyles.microLabel,
+    color: Colors.slate600,
     marginTop: 2,
   },
   transactionPoints: {
@@ -274,15 +272,15 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   section: {
-    backgroundColor: Colors.white,
-    borderRadius: 12,
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.xl,
+    ...Elevation.level1,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.text,
+    ...TextStyles.title,
+    color: Colors.slate900,
     marginBottom: Spacing.md,
     paddingHorizontal: Spacing.sm,
   },
@@ -290,11 +288,13 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: Colors.surfaceContainer,
+    minHeight: TouchTarget.minimum,
+    justifyContent: 'center',
   },
   menuItemText: {
-    fontSize: 16,
-    color: Colors.text,
+    ...TextStyles.body,
+    color: Colors.slate900,
   },
   logoutButton: {
     paddingVertical: Spacing.md,

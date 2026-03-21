@@ -25,7 +25,7 @@ import {
 } from '../services/menuService';
 import {RootState} from '../store';
 import {addToCart} from '../store/cartSlice';
-import {Colors, Shadow, Spacing} from '../theme';
+import {Colors, Shadow, Spacing, Elevation, TouchTarget, TextStyles} from '../theme';
 import {Category, MenuItem, MenuItemSize} from '../types/menu.types';
 
 interface MenuSection {
@@ -306,7 +306,7 @@ const MenuScreen = ({navigation}: any) => {
             ref={categoryListRef}
             data={categories}
             renderItem={renderCategory}
-            keyExtractor={item => item.categoryId.toString()}
+            keyExtractor={(item, index) => item?.categoryId?.toString() ?? `cat-${index}`}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.categoryList}
@@ -322,7 +322,7 @@ const MenuScreen = ({navigation}: any) => {
             sections={sections}
             renderItem={renderItem}
             renderSectionHeader={renderSectionHeader}
-            keyExtractor={item => item.itemId.toString()}
+            keyExtractor={(item, index) => item?.itemId?.toString() ?? `item-${index}`}
             contentContainerStyle={styles.itemList}
             stickySectionHeadersEnabled={false}
             onViewableItemsChanged={onViewableItemsChanged}
@@ -368,10 +368,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    ...TextStyles.headline,
     color: Colors.white,
-    letterSpacing: 0.5,
   },
   syncDot: {
     width: 8,
@@ -388,14 +386,15 @@ const styles = StyleSheet.create({
   cartCountButton: {
     backgroundColor: Colors.brandGold,
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
+    paddingVertical: Spacing.sm,
     borderRadius: 20,
-    ...Shadow.md,
+    minHeight: TouchTarget.minimum, // 44px touch target
+    justifyContent: 'center',
+    ...Elevation.level3, // High elevation for CTA
   },
   cartCountText: {
-    color: Colors.white,
-    fontWeight: 'bold',
-    fontSize: 14,
+    ...TextStyles.label,
+    color: Colors.textOnGold,
   },
   headerLink: {
     color: Colors.white,
@@ -417,6 +416,8 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.xs,
     alignItems: 'center',
     justifyContent: 'center',
+    minHeight: TouchTarget.minimum, // 44px touch target
+    minWidth: TouchTarget.minimum,
   },
   activeIndicator: {
     position: 'absolute',
@@ -428,13 +429,12 @@ const styles = StyleSheet.create({
     borderRadius: 1.5,
   },
   categoryText: {
-    color: Colors.textSecondary,
-    fontWeight: '600',
-    fontSize: 15,
+    ...TextStyles.label,
+    color: Colors.slate600,
   },
   selectedCategoryText: {
+    ...TextStyles.label,
     color: Colors.brandBlue,
-    fontWeight: '700',
   },
   sectionHeader: {
     paddingHorizontal: Spacing.md,
@@ -442,9 +442,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.text,
+    ...TextStyles.title,
+    color: Colors.slate900,
   },
   itemList: {
     paddingVertical: Spacing.sm,

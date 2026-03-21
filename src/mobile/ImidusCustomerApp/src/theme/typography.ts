@@ -14,6 +14,15 @@ export type FontSize = number;
 export type LineHeight = number;
 
 interface CustomTextStyles {
+  // Imperial Onyx Typography Scale
+  display: TextStyle;
+  headline: TextStyle;
+  title: TextStyle;
+  body: TextStyle;
+  label: TextStyle;
+  microLabel: TextStyle;
+
+  // Legacy IMIDUS styles
   wordmark: TextStyle;
   brandName: TextStyle;
   tagline: TextStyle;
@@ -26,10 +35,71 @@ interface CustomTextStyles {
   h6: TextStyle;
   price: TextStyle;
   loyaltyPoints: TextStyle;
-  // Add other common text styles as needed
 }
 
 export const TextStyles: CustomTextStyles = {
+  // ── Imperial Onyx Typography Scale ───────────────────────
+  // Display - Impact Numbers & Hero Headlines (48px / 900 / -2.4px)
+  display: {
+    fontFamily: FontFamilies.primary,
+    fontSize: 48,
+    fontWeight: '900',
+    letterSpacing: -2.4, // -0.05em
+    lineHeight: 52,
+    color: Colors.slate900,
+  },
+
+  // Headline - Section Titles (24px / 700 / -0.5px)
+  headline: {
+    fontFamily: FontFamilies.primary,
+    fontSize: 24,
+    fontWeight: '700',
+    letterSpacing: -0.5, // -0.02em
+    lineHeight: 32,
+    color: Colors.primary,
+  },
+
+  // Title - Card Headers (18px / 600 / -0.2px)
+  title: {
+    fontFamily: FontFamilies.primary,
+    fontSize: 18,
+    fontWeight: '600',
+    letterSpacing: -0.2, // -0.01em
+    lineHeight: 25,
+    color: Colors.slate900,
+  },
+
+  // Body - Readable Content (14px / 500 / 0 / 1.625 leading)
+  body: {
+    fontFamily: FontFamilies.primary,
+    fontSize: 14,
+    fontWeight: '500',
+    letterSpacing: 0,
+    lineHeight: 22.75, // 14px * 1.625
+    color: Colors.slate900,
+  },
+
+  // Label - Form Labels & Tags (12px / 600 / 1.2px / UPPERCASE)
+  label: {
+    fontFamily: FontFamilies.primary,
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 1.2, // 0.1em
+    textTransform: 'uppercase',
+    color: Colors.slate600,
+  },
+
+  // Micro-Label - The Imperial Onyx Signature (11px / 700 / 2.75px / UPPERCASE)
+  microLabel: {
+    fontFamily: FontFamilies.primary,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 2.75, // 0.25rem extreme tracking
+    textTransform: 'uppercase',
+    color: Colors.slate600,
+  },
+
+  // ── Legacy IMIDUS Styles ─────────────────────────────────
   // Wordmark (Georgia font, for display contexts only)
   wordmark: {
     fontFamily: FontFamilies.display,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MenuItem, MenuItemSize } from '../types/menu.types';
-import { Colors } from '../theme/colors';
+import { Colors, Elevation, Spacing, TextStyles, TouchTarget, BorderRadius } from '../theme';
 
 interface Props {
   item: MenuItem;
@@ -58,55 +58,52 @@ export const MenuItemCard: React.FC<Props> = ({item, onPress}) => {
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
-    backgroundColor: Colors.white,
-    borderRadius: 12,
-    marginHorizontal: 16,
-    marginVertical: 8,
-    // Modern elevation Level 1 - subtle blue tint shadow
-    shadowColor: Colors.brandBlue,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 2,
+    backgroundColor: Colors.surface, // Imperial Onyx: Pure white surface
+    borderRadius: BorderRadius.xl, // 16px for premium feel
+    marginHorizontal: Spacing.base,
+    marginVertical: Spacing.sm,
+    minHeight: TouchTarget.large, // 56px comfortable tap target
+    overflow: 'hidden',
+    ...Elevation.level1, // Imperial Onyx: Ambient shadow with brand blue tint
   },
   image: {
     width: 100,
     height: 100,
-    borderTopLeftRadius: 12,
-    borderBottomLeftRadius: 12,
+    backgroundColor: Colors.lightGray, // Placeholder background
   },
   content: {
     flex: 1,
-    padding: 12,
+    padding: Spacing.md,
+    justifyContent: 'space-between',
   },
   name: {
-    fontSize: 16,
-    fontWeight: '600',
+    ...TextStyles.title, // Imperial Onyx: Title style (18px / 600)
+    color: Colors.slate900,
     marginBottom: 4,
-    color: Colors.textPrimary,
   },
   description: {
-    fontSize: 14,
-    color: Colors.textMuted,
-    marginBottom: 8,
+    ...TextStyles.body, // Imperial Onyx: Body style (14px / 500 / 1.625 leading)
+    color: Colors.slate600,
+    marginBottom: Spacing.xs,
   },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginTop: Spacing.xs,
   },
   price: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.brandGold, // Brand Gold
+    ...TextStyles.price, // Imperial Onyx: Price style (bold, gold)
+    fontSize: 18,
   },
   sizesAvailable: {
-    fontSize: 12,
-    color: Colors.textMuted,
+    ...TextStyles.microLabel, // Imperial Onyx: Micro-label with extreme tracking
+    fontSize: 10,
+    color: Colors.slate600,
   },
   outOfStock: {
-    fontSize: 12,
+    ...TextStyles.label,
     color: Colors.error,
-    fontWeight: '600',
+    fontSize: 11,
   },
 });

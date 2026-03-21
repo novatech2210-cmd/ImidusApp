@@ -7,6 +7,7 @@ import { SyncProvider } from "@/context/SyncContext";
 import type { Metadata } from "next";
 import "./globals.css";
 import "./customer-theme.css";
+import "./imperial-onyx.css";
 
 export const metadata: Metadata = {
   title: "IMIDUSAPP | The Digital Growth Engine for Restaurants",
@@ -21,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="customer-layout">
+      <body className="customer-layout imperial-onyx">
         <AuthProvider>
           <CartProvider>
             <SyncProvider pollingInterval={30000}>

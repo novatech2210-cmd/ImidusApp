@@ -28,42 +28,58 @@ export const BorderRadius = {
   full:  9999,
 } as const;
 
-export const Shadow = {
-  sm: {
+// ── Imperial Onyx Elevation System ────────────────────────
+// Ambient shadows with brand blue tint for studio lighting effect
+export const Elevation = {
+  // Level 1 - Interactive Cards (0 1px 3px rgba(30, 90, 168, 0.08))
+  level1: {
     shadowColor: Colors.brandBlue,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
-    shadowRadius: 4,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  // Level 2 - Hover State (0 4px 6px rgba(30, 90, 168, 0.10))
+  level2: {
+    shadowColor: Colors.brandBlue,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.10,
+    shadowRadius: 6,
     elevation: 2,
   },
-  md: {
+  // Level 3 - Primary CTA, Floating Panels (0 10px 20px rgba(30, 90, 168, 0.12))
+  level3: {
     shadowColor: Colors.brandBlue,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.12,
-    shadowRadius: 8,
+    shadowRadius: 20,
     elevation: 4,
   },
-  lg: {
-    shadowColor: Colors.darkBg,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.16,
-    shadowRadius: 12,
+  // Level 4 - Persistent Navigation, Modals (0 20px 40px rgba(30, 90, 168, 0.15))
+  level4: {
+    shadowColor: Colors.brandBlue,
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.15,
+    shadowRadius: 40,
     elevation: 8,
   },
 } as const;
 
-// Shadow level aliases for component elevation
-export const ShadowLevel = {
-  level1: Shadow.sm,
-  level2: Shadow.md,
-  level3: Shadow.lg,
-  elevation0: {
-    shadowColor: 'transparent',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    elevation: 0,
-  },
+// Legacy shadow aliases (backwards compatibility)
+export const Shadow = {
+  sm: Elevation.level1,
+  md: Elevation.level2,
+  lg: Elevation.level3,
+  xl: Elevation.level4,
+} as const;
+
+// ── Touch Targets (UX Pro Max Guidelines) ─────────────────
+// CRITICAL: Minimum 44x44px for all interactive elements
+export const TouchTarget = {
+  minimum: 44, // iOS/Android minimum touch target
+  comfortable: 48, // Comfortable tap target
+  large: 56, // Large buttons/menu items
+  spacing: 8, // Minimum gap between adjacent touch targets
 } as const;
 
 /** Common shared layout styles */
