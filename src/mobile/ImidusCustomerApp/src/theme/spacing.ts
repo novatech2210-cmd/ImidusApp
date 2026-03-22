@@ -7,61 +7,61 @@ import { StyleSheet } from 'react-native';
 import { Colors } from './colors';
 
 export const Spacing = {
-  xs:   4,
-  sm:   8,
-  md:   12,
+  xs: 4,
+  sm: 8,
+  md: 12,
   base: 16,
-  lg:   20,
-  xl:   24,
-  '2xl':32,
-  '3xl':40,
-  '4xl':48,
-  '5xl':64,
+  lg: 20,
+  xl: 24,
+  '2xl': 32,
+  '3xl': 40,
+  '4xl': 48,
+  '5xl': 64,
 } as const;
 
 export const BorderRadius = {
-  sm:    4,
-  md:    8,
-  lg:    12,
-  xl:    16,
+  sm: 4,
+  md: 8,
+  lg: 12,
+  xl: 16,
   '2xl': 24,
-  full:  9999,
+  full: 9999,
 } as const;
 
 // ── Imperial Onyx Elevation System ────────────────────────
-// Ambient shadows with brand blue tint for studio lighting effect
+// Soft, large-spread shadows with brand Navy tint for premium studio effect
 export const Elevation = {
-  // Level 1 - Interactive Cards (0 1px 3px rgba(30, 90, 168, 0.08))
+  // Level 1 - Interactive Cards
   level1: {
     shadowColor: Colors.brandBlue,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 1,
-  },
-  // Level 2 - Hover State (0 4px 6px rgba(30, 90, 168, 0.10))
-  level2: {
-    shadowColor: Colors.brandBlue,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.10,
-    shadowRadius: 6,
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
     elevation: 2,
   },
-  // Level 3 - Primary CTA, Floating Panels (0 10px 20px rgba(30, 90, 168, 0.12))
-  level3: {
+  // Level 2 - Hover / Active State
+  level2: {
     shadowColor: Colors.brandBlue,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.12,
+    shadowOffset: {width: 0, height: 8},
+    shadowOpacity: 0.06,
     shadowRadius: 20,
     elevation: 4,
   },
-  // Level 4 - Persistent Navigation, Modals (0 20px 40px rgba(30, 90, 168, 0.15))
-  level4: {
+  // Level 3 - Primary CTA, Floating Panels
+  level3: {
     shadowColor: Colors.brandBlue,
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.15,
-    shadowRadius: 40,
+    shadowOffset: {width: 0, height: 16},
+    shadowOpacity: 0.08,
+    shadowRadius: 30,
     elevation: 8,
+  },
+  // Level 4 - Persistent Navigation, Modals
+  level4: {
+    shadowColor: '#000000',
+    shadowOffset: {width: 0, height: 24},
+    shadowOpacity: 0.12,
+    shadowRadius: 40,
+    elevation: 16,
   },
 } as const;
 

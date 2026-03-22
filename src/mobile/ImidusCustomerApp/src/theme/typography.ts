@@ -4,7 +4,7 @@ import {Colors} from './colors';
 // Typography Modernization Rules from MASTER.md
 
 export const FontFamilies = {
-  primary: 'System', // Default system font
+  primary: 'Plus Jakarta Sans', // High-end geometric sans-serif
   display: 'Georgia', // For wordmark only
   mono: 'Courier New', // For order numbers, etc.
 };
@@ -39,14 +39,14 @@ interface CustomTextStyles {
 
 export const TextStyles: CustomTextStyles = {
   // ── Imperial Onyx Typography Scale ───────────────────────
-  // Display - Impact Numbers & Hero Headlines (48px / 900 / -2.4px)
+  // Display - Impact Numbers & Hero Headlines (48px / 800 / -2px)
   display: {
     fontFamily: FontFamilies.primary,
     fontSize: 48,
-    fontWeight: '900',
-    letterSpacing: -2.4, // -0.05em
+    fontWeight: '800',
+    letterSpacing: -2,
     lineHeight: 52,
-    color: Colors.slate900,
+    color: Colors.midnightNavy,
   },
 
   // Headline - Section Titles (24px / 700 / -0.5px)

@@ -1,10 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from '../api/apiClient';
-
-// Storage keys
-const TOKEN_KEY = '@imidus_auth_token';
-const REFRESH_TOKEN_KEY = '@imidus_refresh_token';
-const USER_KEY = '@imidus_user';
+import { tokenStorage } from '../utils/tokenStorage';
 
 // Types
 export interface RegisterData {
@@ -89,7 +84,7 @@ class AuthService {
    */
   async logout(): Promise<void> {
     try {
-      await AsyncStorage.multiRemove([TOKEN_KEY, REFRESH_TOKEN_KEY, USER_KEY]);
+      await tokenStorage.clearTokens();
       console.log('[AuthService] Logout successful');
     } catch (error) {
       console.error('[AuthService] Logout error:', error);
@@ -159,37 +154,21 @@ class AuthService {
    * Get stored JWT token
    */
   async getStoredToken(): Promise<string | null> {
-    try {
-      return await AsyncStorage.getItem(TOKEN_KEY);
-    } catch (error) {
-      console.error('[AuthService] Get token error:', error);
-      return null;
-    }
+    return tokenStorage.getToken();
   }
 
   /**
    * Get stored refresh token
    */
   async getStoredRefreshToken(): Promise<string | null> {
-    try {
-      return await AsyncStorage.getItem(REFRESH_TOKEN_KEY);
-    } catch (error) {
-      console.error('[AuthService] Get refresh token error:', error);
-      return null;
-    }
+    return tokenStorage.getRefreshToken();
   }
 
   /**
    * Get stored user data
    */
   async getStoredUser(): Promise<UserProfile | null> {
-    try {
-      const userJson = await AsyncStorage.getItem(USER_KEY);
-      return userJson ? JSON.parse(userJson) : null;
-    } catch (error) {
-      console.error('[AuthService] Get user error:', error);
-      return null;
-    }
+    return tokenStorage.getUser();
   }
 
   /**
@@ -203,7 +182,7 @@ class AuthService {
   // ===== PRIVATE HELPERS =====
 
   /**
-   * Store authentication data in AsyncStorage
+   * Store authentication data
    */
   private async storeAuthData(
     token: string,
@@ -211,11 +190,8 @@ class AuthService {
     user: UserProfile
   ): Promise<void> {
     try {
-      await AsyncStorage.multiSet([
-        [TOKEN_KEY, token],
-        [REFRESH_TOKEN_KEY, refreshToken],
-        [USER_KEY, JSON.stringify(user)],
-      ]);
+      await tokenStorage.setTokens(token, refreshToken);
+      await tokenStorage.setUser(user);
       console.log('[AuthService] Auth data stored successfully');
     } catch (error) {
       console.error('[AuthService] Store auth data error:', error);
@@ -224,11 +200,11 @@ class AuthService {
   }
 
   /**
-   * Store user data in AsyncStorage
+   * Store user data
    */
   private async storeUserData(user: UserProfile): Promise<void> {
     try {
-      await AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
+      await tokenStorage.setUser(user);
       console.log('[AuthService] User data updated');
     } catch (error) {
       console.error('[AuthService] Store user data error:', error);

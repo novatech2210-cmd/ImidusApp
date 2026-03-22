@@ -35,9 +35,10 @@ namespace IntegrationService.Infrastructure.Data
             return entities.Select(MapAvailableSize);
         }
 
-        public Task<int?> GetItemStockAsync(int itemId, int sizeId)
+        public async Task<int?> GetItemStockAsync(int itemId, int sizeId)
         {
-            return _posRepository.GetItemStockAsync(itemId, sizeId);
+            var stock = await _posRepository.GetItemStockAsync(itemId, sizeId);
+            return (int?)stock?.OnHandQty;
         }
 
         public Task<bool> IsItemInStockAsync(int itemId, int sizeId, decimal quantity)

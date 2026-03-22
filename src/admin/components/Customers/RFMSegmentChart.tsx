@@ -3,6 +3,7 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { SkeletonChart } from '@/components/Loading/Skeleton';
+import { Users } from 'lucide-react';
 
 export interface CustomerSegments {
   highSpend: number;
@@ -19,13 +20,13 @@ interface RFMSegmentChartProps {
   onSegmentClick?: (segment: string) => void;
 }
 
-// RFM Segment Colors (per plan specification)
+// RFM Segment Colors - Imperial Onyx Design System
 const SEGMENT_CONFIG = [
-  { key: 'highSpend', name: 'High-Spend', color: 'var(--brand-gold)', description: 'LTV > $500' },
-  { key: 'frequent', name: 'Frequent', color: 'var(--brand-blue)', description: '10+ visits' },
-  { key: 'recent', name: 'Recent', color: 'var(--segment-recent)', description: 'Last 14 days' },
-  { key: 'atRisk', name: 'At-Risk', color: 'var(--segment-at-risk)', description: '30+ days, LTV > $100' },
-  { key: 'newCustomers', name: 'New', color: 'var(--segment-new)', description: 'Last 30 days' },
+  { key: 'highSpend', name: 'Champions', color: '#D4AF37', description: 'Top spenders' },
+  { key: 'frequent', name: 'Loyal', color: '#0A1F3D', description: 'Regular customers' },
+  { key: 'recent', name: 'Potential', color: '#2E7D32', description: 'Recent activity' },
+  { key: 'atRisk', name: 'At-Risk', color: '#C62828', description: 'Dormant, high-value' },
+  { key: 'newCustomers', name: 'Lost', color: '#6E6E78', description: 'No recent activity' },
 ] as const;
 
 interface CustomTooltipProps {
@@ -38,6 +39,7 @@ interface CustomTooltipProps {
       value: number;
       percent: number;
       description: string;
+      color: string;
     };
   }>;
 }
@@ -46,11 +48,14 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-white px-3 py-2 shadow-lg rounded-lg border border-gray-200">
-        <p className="font-medium text-gray-900">{data.name}</p>
-        <p className="text-sm text-gray-600">{data.value.toLocaleString()} customers</p>
-        <p className="text-sm text-gray-500">{data.percent.toFixed(1)}%</p>
-        <p className="text-xs text-gray-400 mt-1">{data.description}</p>
+      <div className="bg-onyx-bg-tertiary px-4 py-3 shadow-lg rounded-xl border border-onyx-border">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: data.color }} />
+          <p className="font-semibold text-onyx-text-primary">{data.name}</p>
+        </div>
+        <p className="text-sm text-onyx-text-secondary">{data.value.toLocaleString()} customers</p>
+        <p className="text-sm font-medium text-onyx-blue">{data.percent.toFixed(1)}%</p>
+        <p className="text-xs text-onyx-text-muted mt-1">{data.description}</p>
       </div>
     );
   }
@@ -77,14 +82,14 @@ const CustomLegend = ({
   if (!payload) return null;
 
   return (
-    <div className="flex flex-wrap justify-center gap-3 mt-4">
+    <div className="flex flex-wrap justify-center gap-2 mt-4">
       {payload.map((entry, index) => {
         const config = SEGMENT_CONFIG.find(s => s.name === entry.value);
         return (
           <button
             key={index}
             onClick={() => onSegmentClick?.(config?.key || '')}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors ${
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl bg-onyx-bg-tertiary border border-onyx-border hover:border-onyx-border-hover transition-colors ${
               onSegmentClick ? 'cursor-pointer' : 'cursor-default'
             }`}
           >
@@ -92,8 +97,8 @@ const CustomLegend = ({
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-sm text-gray-700">{entry.value}</span>
-            <span className="text-sm font-medium text-gray-900">
+            <span className="text-sm text-onyx-text-secondary">{entry.value}</span>
+            <span className="text-sm font-semibold text-onyx-text-primary">
               {entry.payload.value.toLocaleString()}
             </span>
           </button>
@@ -127,10 +132,11 @@ export default function RFMSegmentChart({
   // Handle empty state
   if (segments.total === 0 || chartData.length === 0) {
     return (
-      <div className="bg-white p-6 rounded-lg border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Customer Segments</h3>
-        <div className="h-64 flex items-center justify-center text-gray-500">
-          No customer segment data available
+      <div className="bg-onyx-bg-secondary p-6 rounded-xl border border-onyx-border">
+        <h3 className="text-lg font-semibold text-onyx-text-primary mb-4">Customer Segments</h3>
+        <div className="h-64 flex flex-col items-center justify-center">
+          <Users size={48} className="text-onyx-text-muted mb-4" />
+          <p className="text-onyx-text-secondary">No customer segment data available</p>
         </div>
       </div>
     );
@@ -151,10 +157,10 @@ export default function RFMSegmentChart({
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg border border-gray-200">
+    <div className="bg-onyx-bg-secondary p-6 rounded-xl border border-onyx-border">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Customer Segments</h3>
-        <span className="text-sm text-gray-500">
+        <h3 className="text-lg font-semibold text-onyx-text-primary">Customer Segments</h3>
+        <span className="text-sm text-onyx-text-muted">
           {segments.total.toLocaleString()} total customers
         </span>
       </div>
@@ -177,8 +183,8 @@ export default function RFMSegmentChart({
                 <Cell
                   key={`cell-${index}`}
                   fill={entry.color}
-                  stroke={entry.color}
-                  strokeWidth={1}
+                  stroke="rgb(26, 26, 31)"
+                  strokeWidth={2}
                 />
               ))}
             </Pie>
@@ -201,15 +207,15 @@ export default function RFMSegmentChart({
         {/* Center text showing total */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ paddingBottom: '60px' }}>
           <div className="text-center">
-            <p className="text-3xl font-bold text-gray-900">{segments.total.toLocaleString()}</p>
-            <p className="text-sm text-gray-500">Total</p>
+            <p className="text-3xl font-bold text-onyx-text-primary">{segments.total.toLocaleString()}</p>
+            <p className="text-sm text-onyx-text-muted">Total</p>
           </div>
         </div>
       </div>
 
       {/* Click hint */}
       {onSegmentClick && (
-        <p className="text-xs text-gray-400 text-center mt-2">
+        <p className="text-xs text-onyx-text-muted text-center mt-2">
           Click a segment to filter the customer list
         </p>
       )}

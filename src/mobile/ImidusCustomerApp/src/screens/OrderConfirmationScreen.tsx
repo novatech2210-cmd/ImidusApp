@@ -9,7 +9,9 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {Colors, Shadow, ShadowLevel, Spacing} from '../theme';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {Colors} from '../theme/colors';
+import {Spacing, Elevation} from '../theme/spacing';
 
 type RootStackParamList = {
   Menu: undefined;
@@ -38,10 +40,6 @@ type OrderConfirmationScreenRouteProp = RouteProp<
 >;
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
-/**
- * Order confirmation screen with receipt-style layout
- * Shows complete order details after successful payment
- */
 export default function OrderConfirmationScreen() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<OrderConfirmationScreenRouteProp>();
@@ -59,9 +57,6 @@ export default function OrderConfirmationScreen() {
     last4Digits,
   } = route.params;
 
-  /**
-   * Navigate back to menu/home screen
-   */
   const handleDone = () => {
     navigation.reset({
       index: 0,
@@ -71,37 +66,41 @@ export default function OrderConfirmationScreen() {
 
   return (
     <View style={styles.container}>
+      <SafeAreaView edges={['top']} style={styles.headerSafe}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Order Complete</Text>
+        </View>
+      </SafeAreaView>
+
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Success Header */}
-        <View style={styles.header}>
+        <View style={styles.successSection}>
           <View style={styles.checkmarkCircle}>
             <Text style={styles.checkmark}>✓</Text>
           </View>
-          <Text style={styles.headerTitle}>Order Confirmed</Text>
-          <Text style={styles.headerSubtitle}>
+          <Text style={styles.successTitle}>Thank You!</Text>
+          <Text style={styles.successSubtitle}>
             Your order has been placed successfully
           </Text>
         </View>
 
+        {/* Order Number Card */}
+        <View style={styles.orderNumberCard}>
+          <Text style={styles.orderNumberLabel}>ORDER NUMBER</Text>
+          <Text style={styles.orderNumberValue}>#{dailyOrderNumber}</Text>
+        </View>
+
         {/* Receipt Card */}
-        <View style={styles.receiptCard}>
-          {/* Order Number */}
-          <View style={styles.orderNumberSection}>
-            <Text style={styles.orderNumberLabel}>Order Number</Text>
-            <Text style={styles.orderNumberValue}>#{dailyOrderNumber}</Text>
-          </View>
-
-          <View style={styles.divider} />
-
+        <View style={styles.card}>
           {/* Order Items */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Items</Text>
+            <Text style={styles.sectionTitle}>ITEMS</Text>
             {orderItems.map((item, index) => (
               <View key={index} style={styles.itemRow}>
                 <View style={styles.itemDetails}>
                   <Text style={styles.itemName}>{item.name}</Text>
                   <Text style={styles.itemSize}>
-                    Size: {item.size} | Qty: {item.quantity}
+                    {item.size} × {item.quantity}
                   </Text>
                 </View>
                 <Text style={styles.itemPrice}>
@@ -115,21 +114,23 @@ export default function OrderConfirmationScreen() {
 
           {/* Totals */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Order Summary</Text>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Subtotal</Text>
               <Text style={styles.totalValue}>${subtotal.toFixed(2)}</Text>
             </View>
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>GST</Text>
+              <Text style={styles.totalLabel}>GST (6%)</Text>
               <Text style={styles.totalValue}>${gstTotal.toFixed(2)}</Text>
             </View>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>PST</Text>
               <Text style={styles.totalValue}>${pstTotal.toFixed(2)}</Text>
             </View>
-            <View style={[styles.totalRow, styles.grandTotalRow]}>
-              <Text style={styles.grandTotalLabel}>Total</Text>
+
+            <View style={styles.grandTotalDivider} />
+
+            <View style={styles.grandTotalRow}>
+              <Text style={styles.grandTotalLabel}>Total Paid</Text>
               <Text style={styles.grandTotalValue}>
                 ${orderTotal.toFixed(2)}
               </Text>
@@ -140,23 +141,23 @@ export default function OrderConfirmationScreen() {
 
           {/* Payment Method */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Payment</Text>
+            <Text style={styles.sectionTitle}>PAYMENT</Text>
             <View style={styles.paymentRow}>
-              <Text style={styles.paymentLabel}>Payment Method</Text>
+              <Text style={styles.paymentLabel}>Method</Text>
               <Text style={styles.paymentValue}>
                 {paymentMethod} •••• {last4Digits}
               </Text>
             </View>
           </View>
 
-          {/* Transaction ID (for support reference) */}
-          <View style={styles.transactionIdSection}>
-            <Text style={styles.transactionIdLabel}>Transaction ID</Text>
-            <Text style={styles.transactionIdValue}>{transactionId}</Text>
+          {/* Transaction ID */}
+          <View style={styles.transactionSection}>
+            <Text style={styles.transactionLabel}>Transaction ID</Text>
+            <Text style={styles.transactionValue}>{transactionId}</Text>
           </View>
         </View>
 
-        {/* Information Notice */}
+        {/* Info Card */}
         <View style={styles.infoCard}>
           <Text style={styles.infoTitle}>What's Next?</Text>
           <Text style={styles.infoText}>
@@ -166,13 +167,13 @@ export default function OrderConfirmationScreen() {
         </View>
 
         {/* Done Button */}
-        <TouchableOpacity onPress={handleDone}>
+        <TouchableOpacity onPress={handleDone} activeOpacity={0.8}>
           <LinearGradient
             colors={[Colors.brandBlue, Colors.brandBlueDark]}
             style={styles.doneButton}
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}>
-            <Text style={styles.doneButtonText}>Done</Text>
+            <Text style={styles.doneButtonText}>Back to Menu</Text>
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
@@ -183,13 +184,27 @@ export default function OrderConfirmationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.elevation0,
+    backgroundColor: Colors.background,
   },
-  scrollContent: {
-    padding: Spacing.base,
-    paddingBottom: Spacing.xl,
+  headerSafe: {
+    backgroundColor: Colors.surface,
   },
   header: {
+    paddingVertical: Spacing.md,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  scrollContent: {
+    padding: Spacing.md,
+    paddingBottom: Spacing.xl,
+  },
+  successSection: {
     alignItems: 'center',
     paddingVertical: Spacing.xl,
   },
@@ -200,65 +215,61 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.success,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: Spacing.base,
+    marginBottom: Spacing.md,
   },
   checkmark: {
-    fontSize: 48,
+    fontSize: 40,
     color: Colors.white,
     fontWeight: 'bold',
   },
-  headerTitle: {
+  successTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: Colors.brandBlue,
-    marginBottom: Spacing.sm,
-    letterSpacing: 0.3,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.xs,
   },
-  headerSubtitle: {
+  successSubtitle: {
     fontSize: 16,
     color: Colors.textSecondary,
   },
-  receiptCard: {
-    backgroundColor: Colors.white,
-    borderRadius: 12,
+  orderNumberCard: {
+    backgroundColor: Colors.surface,
+    borderRadius: 16,
     padding: Spacing.lg,
-    marginBottom: Spacing.base,
-    ...ShadowLevel.level1,
-  },
-  orderNumberSection: {
     alignItems: 'center',
-    paddingVertical: Spacing.base,
+    marginBottom: Spacing.md,
+    borderWidth: 2,
+    borderColor: Colors.brandGold,
+    ...Elevation.level2,
   },
   orderNumberLabel: {
-    fontSize: 14,
+    fontSize: 12,
+    fontWeight: '600',
     color: Colors.textMuted,
-    marginBottom: 4,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 2,
+    marginBottom: Spacing.xs,
   },
   orderNumberValue: {
-    fontSize: 40,
+    fontSize: 48,
     fontWeight: '800',
     color: Colors.brandGold,
-    textShadowColor: 'rgba(212, 175, 55, 0.2)',
-    textShadowOffset: {width: 0, height: 2},
-    textShadowRadius: 4,
   },
-  divider: {
-    height: 1,
-    backgroundColor: Colors.midGray,
-    marginVertical: Spacing.base,
+  card: {
+    backgroundColor: Colors.surface,
+    borderRadius: 16,
+    padding: Spacing.md,
+    marginBottom: Spacing.md,
+    ...Elevation.level1,
   },
   section: {
     marginBottom: Spacing.sm,
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-    marginBottom: Spacing.md,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.textMuted,
+    letterSpacing: 1,
+    marginBottom: Spacing.sm,
   },
   itemRow: {
     flexDirection: 'row',
@@ -274,22 +285,27 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: Colors.textPrimary,
     fontWeight: '600',
-    marginBottom: 4,
   },
   itemSize: {
     fontSize: 13,
     color: Colors.textSecondary,
+    marginTop: 2,
   },
   itemPrice: {
     fontSize: 15,
     color: Colors.textPrimary,
     fontWeight: '600',
   },
+  divider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginVertical: Spacing.sm,
+  },
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 6,
+    paddingVertical: 4,
   },
   totalLabel: {
     fontSize: 14,
@@ -299,21 +315,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.textPrimary,
   },
+  grandTotalDivider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginVertical: Spacing.sm,
+  },
   grandTotalRow: {
-    marginTop: Spacing.sm,
-    paddingTop: Spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: Colors.midGray,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   grandTotalLabel: {
     fontSize: 18,
-    fontWeight: '800',
-    color: Colors.brandBlue,
+    fontWeight: '700',
+    color: Colors.textPrimary,
   },
   grandTotalValue: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '800',
-    color: Colors.brandBlue,
+    color: Colors.brandGold,
   },
   paymentRow: {
     flexDirection: 'row',
@@ -329,27 +349,30 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     fontWeight: '600',
   },
-  transactionIdSection: {
-    marginTop: Spacing.base,
-    paddingTop: Spacing.base,
+  transactionSection: {
+    marginTop: Spacing.sm,
+    paddingTop: Spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: Colors.midGray,
+    borderTopColor: Colors.border,
   },
-  transactionIdLabel: {
-    fontSize: 12,
+  transactionLabel: {
+    fontSize: 11,
     color: Colors.textMuted,
+    letterSpacing: 1,
     marginBottom: 4,
   },
-  transactionIdValue: {
+  transactionValue: {
     fontSize: 12,
     color: Colors.textMuted,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   infoCard: {
     backgroundColor: Colors.infoLight,
-    borderRadius: 12,
-    padding: Spacing.base,
-    marginBottom: Spacing.base,
+    borderRadius: 16,
+    padding: Spacing.md,
+    marginBottom: Spacing.md,
+    borderLeftWidth: 4,
+    borderLeftColor: Colors.info,
   },
   infoTitle: {
     fontSize: 16,
@@ -363,17 +386,15 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   doneButton: {
-    height: 52,
-    borderRadius: 12,
+    height: 56,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    ...ShadowLevel.level2,
+    ...Elevation.level2,
   },
   doneButtonText: {
     color: Colors.white,
     fontSize: 16,
     fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
   },
 });

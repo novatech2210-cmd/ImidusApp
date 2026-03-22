@@ -16,8 +16,9 @@ export default function MainLayout({
   userEmail,
 }: MainLayoutProps) {
   return (
-    <div className="flex h-screen bg-[#F8FAFC]">
-      <div className="gold-line-top fixed top-0 left-0 w-full h-[3px] bg-gradient-to-r from-[#D4AF37] via-[#FDE68A] to-[#D4AF37] z-[100]" />
+    <div className="flex h-screen bg-[#0F0F12]">
+      {/* Gold accent line at top */}
+      <div className="gold-line-top fixed top-0 left-0 w-full h-[3px] z-[100]" />
 
       {/* Sidebar */}
       <Sidebar />
@@ -28,8 +29,8 @@ export default function MainLayout({
         <Header userName={userName} userEmail={userEmail} />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto bg-[#F8FAFC]">
-          <div className="h-full p-6">{children}</div>
+        <main className="flex-1 overflow-auto bg-[#0F0F12]">
+          <div className="h-full">{children}</div>
         </main>
       </div>
     </div>

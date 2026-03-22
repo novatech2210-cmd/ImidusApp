@@ -40,6 +40,15 @@ namespace IntegrationService.API.Middleware
                 return;
             }
 
+            // Skip idempotency for auth endpoints (login, logout, refresh)
+            _logger.LogInformation("Checking idempotency for: {Path}", context.Request.Path);
+            if (context.Request.Path.Value?.StartsWith("/api/auth", StringComparison.OrdinalIgnoreCase) ?? false)
+            {
+                _logger.LogInformation("Skipping idempotency for auth endpoint: {Path}", context.Request.Path);
+                await _next(context);
+                return;
+            }
+
             // Extract Idempotency-Key header
             if (!context.Request.Headers.TryGetValue("Idempotency-Key", out var idempotencyKey) ||
                 string.IsNullOrWhiteSpace(idempotencyKey))

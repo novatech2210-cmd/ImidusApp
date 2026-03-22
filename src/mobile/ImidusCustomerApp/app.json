@@ -1,4 +1,84 @@
 {
   "name": "ImidusCustomerApp",
-  "displayName": "ImidusCustomerApp"
+  "displayName": "IMIDUSAPP",
+  "description": "IMIDUS Customer Ordering Platform - Mobile App",
+  "slug": "imidus-customer-app",
+  "version": "1.0.0",
+  "orientation": "portrait",
+  "icon": "./assets/app-icon.png",
+  "userInterfaceStyle": "light",
+  "splash": {
+    "image": "./assets/splash.png",
+    "resizeMode": "contain",
+    "backgroundColor": "#1A1A2E"
+  },
+  "assetBundlePatterns": [
+    "**/*"
+  ],
+  "ios": {
+    "supportsTabletMode": true,
+    "bundleIdentifier": "com.imidus.customer",
+    "buildNumber": "1",
+    "infoPlist": {
+      "NSLocationWhenInUseUsageDescription": "IMIDUSAPP needs location for order delivery",
+      "NSPhotoLibraryUsageDescription": "IMIDUSAPP needs photos for profile picture",
+      "NSCameraUsageDescription": "IMIDUSAPP needs camera for profile picture",
+      "FirebaseAppDelegateProxyEnabled": false
+    },
+    "requireFullScreen": true,
+    "isTabletOnly": false,
+    "entitlements": {
+      "aps-environment": "production"
+    }
+  },
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/adaptive-icon.png",
+      "backgroundColor": "#1E5AA8"
+    },
+    "package": "com.imidus.customer",
+    "versionCode": 1,
+    "permissions": [
+      "INTERNET",
+      "ACCESS_FINE_LOCATION",
+      "ACCESS_COARSE_LOCATION",
+      "CAMERA",
+      "READ_EXTERNAL_STORAGE",
+      "WRITE_EXTERNAL_STORAGE",
+      "POST_NOTIFICATIONS"
+    ]
+  },
+  "web": {
+    "favicon": "./assets/favicon.png",
+    "backgroundColor": "#1E5AA8"
+  },
+  "plugins": [
+    [
+      "expo-notifications",
+      {
+        "icon": "./assets/notification-icon.png",
+        "color": "#D4AF37"
+      }
+    ],
+    [
+      "expo-location",
+      {
+        "locationAlwaysAndWhenInUsePermission": "Allow IMIDUSAPP to access your location"
+      }
+    ]
+  ],
+  "extra": {
+    "eas": {
+      "projectId": "6740450923"
+    },
+    "apiUrl": "http://localhost:5004",
+    "environment": "development"
+  },
+  "owner": "novatech",
+  "runtimeVersion": "1.0.0",
+  "updates": {
+    "enabled": false,
+    "fallbackToCacheTimeout": 0,
+    "checkAutomatically": "ON_LOAD"
+  }
 }

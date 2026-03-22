@@ -8,7 +8,7 @@ import RFMSegmentChart, { CustomerSegments } from '@/components/Customers/RFMSeg
 import CustomerSearchModal from '@/components/Customers/CustomerSearchModal';
 import { useCustomerList, useCustomerSegments, useCustomerProfile } from '@/lib/hooks';
 import Spinner from '@/components/Loading/Spinner';
-import { Search, Download, Users, Filter, X } from 'lucide-react';
+import { Search, Download, Users, Filter, X, Database } from 'lucide-react';
 
 interface Customer {
   id?: number;
@@ -125,32 +125,38 @@ export default function CustomersPage() {
 
   return (
     <MainLayout>
-      <div className="p-6 space-y-6">
+      <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <Users className="w-6 h-6 text-orange-600" />
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-[#4ADE80]/10 rounded-xl">
+              <Users size={24} className="text-[#4ADE80]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Customers</h1>
-              <p className="text-sm text-gray-600">
-                {segments.total.toLocaleString()} total customers
+              <h1 className="text-2xl font-bold text-[#F5F5F7]">Customers</h1>
+              <p className="text-sm text-[#6E6E78]">
+                {segments.total.toLocaleString()} total customers from POS
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Live from POS badge */}
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-[#4ADE80]/10 rounded-full border border-[#4ADE80]/30">
+              <Database size={14} className="text-[#4ADE80]" />
+              <span className="text-xs font-medium text-[#4ADE80]">tblCustomer</span>
+            </div>
+
             <button
               onClick={() => setShowSearchModal(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#9A9AA3] bg-[#1A1A1F] border border-[#2A2A30] rounded-xl hover:bg-[#222228] hover:text-[#F5F5F7] transition-colors"
             >
               <Search size={16} />
               Quick Search
             </button>
             <button
               onClick={handleExport}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#9A9AA3] bg-[#1A1A1F] border border-[#2A2A30] rounded-xl hover:bg-[#222228] hover:text-[#F5F5F7] transition-colors"
             >
               <Download size={16} />
               Export
@@ -160,7 +166,7 @@ export default function CustomersPage() {
 
         {/* RFM Segment Chart */}
         {isLoadingSegments ? (
-          <div className="flex items-center justify-center h-64 bg-white rounded-lg border border-gray-200">
+          <div className="flex items-center justify-center h-64 bg-[#1A1A1F] rounded-xl border border-[#2A2A30]">
             <Spinner text="Loading segments..." />
           </div>
         ) : (
@@ -172,9 +178,9 @@ export default function CustomersPage() {
         )}
 
         {/* Segment Filter Tabs */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="bg-[#1A1A1F] rounded-xl border border-[#2A2A30] p-4">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="flex items-center gap-2 text-sm font-medium text-gray-700 mr-2">
+            <span className="flex items-center gap-2 text-sm font-medium text-[#9A9AA3] mr-2">
               <Filter size={16} />
               Filter:
             </span>
@@ -182,10 +188,10 @@ export default function CustomersPage() {
               <button
                 key={tab.key}
                 onClick={() => setSegmentFilter(tab.key)}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-xl transition-all ${
                   segmentFilter === tab.key
-                    ? 'bg-orange-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-[#5BA0FF] to-[#3D82E0] text-white'
+                    : 'bg-[#222228] text-[#9A9AA3] hover:bg-[#2A2A30] hover:text-[#F5F5F7]'
                 }`}
               >
                 {tab.label}
@@ -196,7 +202,7 @@ export default function CustomersPage() {
             {(segmentFilter || searchTerm) && (
               <button
                 onClick={clearFilters}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                className="flex items-center gap-1 px-3 py-2 text-sm text-[#6E6E78] hover:text-[#FF6B6B] transition-colors"
               >
                 <X size={14} />
                 Clear
@@ -207,8 +213,8 @@ export default function CustomersPage() {
           {/* Active filter indicator */}
           {segmentFilter && (
             <div className="mt-3 flex items-center gap-2">
-              <span className="text-sm text-gray-500">Active filter:</span>
-              <span className="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-700 rounded">
+              <span className="text-sm text-[#6E6E78]">Active filter:</span>
+              <span className="px-3 py-1 text-xs font-medium bg-[#5BA0FF]/10 text-[#5BA0FF] rounded-full border border-[#5BA0FF]/30">
                 {SEGMENT_TABS.find(t => t.key === segmentFilter)?.label || segmentFilter}
               </span>
             </div>
@@ -217,7 +223,7 @@ export default function CustomersPage() {
 
         {/* Customer List */}
         {isLoadingCustomers && !customersData.length ? (
-          <div className="flex items-center justify-center h-64 bg-white rounded-lg border border-gray-200">
+          <div className="flex items-center justify-center h-64 bg-[#1A1A1F] rounded-xl border border-[#2A2A30]">
             <Spinner text="Loading customers..." />
           </div>
         ) : (

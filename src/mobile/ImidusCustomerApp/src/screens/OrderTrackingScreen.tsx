@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import apiClient from '../api/apiClient';
-import {Colors, Shadow, ShadowLevel, Spacing} from '../theme';
+import {Colors, Elevation, Spacing} from '../theme';
 
 interface OrderStatus {
   salesId: number;
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginBottom: Spacing.xl,
-    ...ShadowLevel.level1,
+    ...Elevation.level1,
   },
   pendingBadge: {
     backgroundColor: Colors.warningLight,

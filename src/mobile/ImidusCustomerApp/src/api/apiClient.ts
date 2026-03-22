@@ -1,6 +1,14 @@
 import axios from 'axios';
 import { ENV } from '../config/environment';
-import authService from '../services/authService';
+import { tokenStorage } from '../utils/tokenStorage';
+
+// Generate a unique idempotency key using timestamp + random string
+const generateIdempotencyKey = (): string => {
+  const timestamp = Date.now().toString(36);
+  const randomPart = Math.random().toString(36).substring(2, 15);
+  const randomPart2 = Math.random().toString(36).substring(2, 15);
+  return `${timestamp}-${randomPart}-${randomPart2}`;
+};
 
 const apiClient = axios.create({
   baseURL: ENV.API_BASE_URL,
@@ -10,13 +18,20 @@ const apiClient = axios.create({
   },
 });
 
-// Request interceptor - attach JWT token to all requests
+// Request interceptor - attach JWT token and idempotency key to requests
 apiClient.interceptors.request.use(
   async (config) => {
-    const token = await authService.getStoredToken();
+    const token = await tokenStorage.getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // Add Idempotency-Key header for POST, PUT, PATCH requests
+    const method = config.method?.toLowerCase() || '';
+    if (['post', 'put', 'patch'].includes(method)) {
+      config.headers['Idempotency-Key'] = generateIdempotencyKey();
+    }
+
     return config;
   },
   (error) => {
@@ -30,22 +45,11 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // If 401 and not already retried, try to refresh token
+    // If 401 and not already retried, clear tokens and reject
+    // (Token refresh is handled by authService to avoid circular dependency)
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-
-      try {
-        // Try to refresh token
-        const response = await authService.refreshToken();
-
-        // Retry original request with new token
-        originalRequest.headers.Authorization = `Bearer ${response.token}`;
-        return apiClient(originalRequest);
-      } catch (refreshError) {
-        // Refresh failed, redirect to login (handled by authService.logout)
-        console.log('[API] Token refresh failed, user needs to re-login');
-        return Promise.reject(error);
-      }
+      console.log('[API] 401 error - token may be invalid');
     }
 
     return Promise.reject(error);

@@ -66,15 +66,15 @@ export default function OrderFilters({
     filters.searchTerm;
 
   return (
-    <div className="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
+    <div className="bg-[#1A1A1F] p-4 rounded-xl border border-[#2A2A30] space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+        <div className="flex items-center gap-2 text-sm font-medium text-[#9A9AA3]">
           <Filter size={16} />
           Filters
         </div>
         {hasActiveFilters && (
-          <span className="text-xs text-orange-600 font-medium">
+          <span className="text-xs text-[#5BA0FF] font-medium px-2 py-0.5 bg-[#5BA0FF]/10 rounded-full">
             Filters active
           </span>
         )}
@@ -84,13 +84,13 @@ export default function OrderFilters({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         {/* Status Dropdown */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-[#6E6E78] uppercase tracking-wider mb-2">
             Order Status
           </label>
           <select
             value={filters.status}
             onChange={(e) => handleChange('status', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-4 py-2.5 bg-[#222228] border border-[#2A2A30] rounded-xl text-[#F5F5F7] text-sm focus:outline-none focus:border-[#5BA0FF] transition-colors"
           >
             <option value="">All Statuses</option>
             <option value="pending">Pending</option>
@@ -103,13 +103,13 @@ export default function OrderFilters({
 
         {/* Payment Status Dropdown */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-[#6E6E78] uppercase tracking-wider mb-2">
             Payment Status
           </label>
           <select
             value={filters.paymentStatus}
             onChange={(e) => handleChange('paymentStatus', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-4 py-2.5 bg-[#222228] border border-[#2A2A30] rounded-xl text-[#F5F5F7] text-sm focus:outline-none focus:border-[#5BA0FF] transition-colors"
           >
             <option value="">All Payments</option>
             <option value="paid">Paid</option>
@@ -121,9 +121,9 @@ export default function OrderFilters({
 
         {/* Start Date */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-[#6E6E78] uppercase tracking-wider mb-2">
             <span className="flex items-center gap-1">
-              <Calendar size={14} />
+              <Calendar size={12} />
               Start Date
             </span>
           </label>
@@ -131,15 +131,15 @@ export default function OrderFilters({
             type="date"
             value={filters.startDate}
             onChange={(e) => handleChange('startDate', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-4 py-2.5 bg-[#222228] border border-[#2A2A30] rounded-xl text-[#F5F5F7] text-sm focus:outline-none focus:border-[#5BA0FF] transition-colors"
           />
         </div>
 
         {/* End Date */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-[#6E6E78] uppercase tracking-wider mb-2">
             <span className="flex items-center gap-1">
-              <Calendar size={14} />
+              <Calendar size={12} />
               End Date
             </span>
           </label>
@@ -147,15 +147,15 @@ export default function OrderFilters({
             type="date"
             value={filters.endDate}
             onChange={(e) => handleChange('endDate', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-4 py-2.5 bg-[#222228] border border-[#2A2A30] rounded-xl text-[#F5F5F7] text-sm focus:outline-none focus:border-[#5BA0FF] transition-colors"
           />
         </div>
 
         {/* Search Input */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-[#6E6E78] uppercase tracking-wider mb-2">
             <span className="flex items-center gap-1">
-              <Search size={14} />
+              <Search size={12} />
               Search
             </span>
           </label>
@@ -164,7 +164,7 @@ export default function OrderFilters({
             placeholder="Order # or customer..."
             value={filters.searchTerm}
             onChange={(e) => handleChange('searchTerm', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-4 py-2.5 bg-[#222228] border border-[#2A2A30] rounded-xl text-[#F5F5F7] text-sm placeholder-[#6E6E78] focus:outline-none focus:border-[#5BA0FF] transition-colors"
           />
         </div>
 
@@ -173,7 +173,7 @@ export default function OrderFilters({
           <button
             onClick={onReset}
             disabled={!hasActiveFilters}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-[#2A2A30] text-[#9A9AA3] rounded-xl hover:bg-[#222228] hover:text-[#F5F5F7] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <RotateCcw size={16} />
             Reset
@@ -182,35 +182,35 @@ export default function OrderFilters({
       </div>
 
       {/* Quick Filter Buttons */}
-      <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100">
-        <span className="text-xs text-gray-500 mr-2">Quick filters:</span>
+      <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-[#2A2A30]">
+        <span className="text-xs text-[#6E6E78] mr-2">Quick filters:</span>
         <button
           onClick={() => setQuickDateRange('today')}
-          className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
+          className="px-3 py-1.5 text-xs font-medium text-[#9A9AA3] bg-[#222228] rounded-full hover:bg-[#2A2A30] hover:text-[#F5F5F7] transition-colors"
         >
           Today
         </button>
         <button
           onClick={() => setQuickDateRange(7)}
-          className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
+          className="px-3 py-1.5 text-xs font-medium text-[#9A9AA3] bg-[#222228] rounded-full hover:bg-[#2A2A30] hover:text-[#F5F5F7] transition-colors"
         >
           Last 7 Days
         </button>
         <button
           onClick={() => setQuickDateRange('thisMonth')}
-          className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
+          className="px-3 py-1.5 text-xs font-medium text-[#9A9AA3] bg-[#222228] rounded-full hover:bg-[#2A2A30] hover:text-[#F5F5F7] transition-colors"
         >
           This Month
         </button>
         <button
           onClick={() => handleChange('status', 'pending')}
-          className="px-3 py-1 text-xs font-medium text-yellow-700 bg-yellow-100 rounded-full hover:bg-yellow-200 transition-colors"
+          className="px-3 py-1.5 text-xs font-medium text-[#FFD666] bg-[#FFD666]/10 rounded-full hover:bg-[#FFD666]/20 transition-colors"
         >
           Pending Only
         </button>
         <button
           onClick={() => handleChange('status', 'ready')}
-          className="px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors"
+          className="px-3 py-1.5 text-xs font-medium text-[#5BA0FF] bg-[#5BA0FF]/10 rounded-full hover:bg-[#5BA0FF]/20 transition-colors"
         >
           Ready Only
         </button>

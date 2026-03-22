@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { MenuItem, MenuItemSize } from '../types/menu.types';
-import { Colors } from '../theme/colors';
-import { Spacing } from '../theme/spacing';
+import React, {useState, useEffect} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
+import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+import LinearGradient from 'react-native-linear-gradient';
+import {MenuItem, MenuItemSize} from '../types/menu.types';
+import {Colors} from '../theme/colors';
+import {Spacing, Elevation} from '../theme/spacing';
 
 interface ItemDetailSheetProps {
   item: MenuItem | null;
@@ -14,7 +15,7 @@ interface ItemDetailSheetProps {
 export const ItemDetailSheet: React.FC<ItemDetailSheetProps> = ({
   item,
   bottomSheetRef,
-  onAddToCart
+  onAddToCart,
 }) => {
   const [selectedSize, setSelectedSize] = useState<MenuItemSize | null>(null);
   const [quantity, setQuantity] = useState(1);
@@ -33,13 +34,13 @@ export const ItemDetailSheet: React.FC<ItemDetailSheetProps> = ({
     if (selectedSize) {
       onAddToCart(item, selectedSize, quantity);
       bottomSheetRef.current?.close();
-      // Reset state
       setSelectedSize(null);
       setQuantity(1);
     }
   };
 
   const inStockSizes = item.sizes.filter(s => s.inStock);
+  const totalPrice = (selectedSize?.price || 0) * quantity;
 
   return (
     <BottomSheet
@@ -47,74 +48,103 @@ export const ItemDetailSheet: React.FC<ItemDetailSheetProps> = ({
       index={-1}
       snapPoints={['50%', '75%']}
       enablePanDownToClose={true}
-    >
+      backgroundStyle={styles.sheetBackground}
+      handleIndicatorStyle={styles.handleIndicator}>
       <BottomSheetView style={styles.contentContainer}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Text style={styles.title}>{item.name}</Text>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.title}>{item.name}</Text>
+            {item.isAlcohol && (
+              <View style={styles.alcoholBadge}>
+                <Text style={styles.alcoholBadgeText}>21+</Text>
+              </View>
+            )}
+          </View>
+
           {item.description && (
             <Text style={styles.description}>{item.description}</Text>
           )}
 
-          {item.isAlcohol && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>Alcohol</Text>
-            </View>
-          )}
-
-          <Text style={styles.sectionTitle}>Select Size</Text>
+          {/* Size Selection */}
+          <Text style={styles.sectionTitle}>SELECT SIZE</Text>
           <View style={styles.sizeChips}>
             {inStockSizes.map(size => (
               <TouchableOpacity
                 key={size.sizeId}
                 style={[
                   styles.sizeChip,
-                  selectedSize?.sizeId === size.sizeId && styles.sizeChipSelected
+                  selectedSize?.sizeId === size.sizeId && styles.sizeChipSelected,
                 ]}
                 onPress={() => setSelectedSize(size)}
-              >
-                <Text style={[
-                  styles.sizeChipText,
-                  selectedSize?.sizeId === size.sizeId && styles.sizeChipTextSelected
-                ]}>
+                activeOpacity={0.7}>
+                <Text
+                  style={[
+                    styles.sizeChipText,
+                    selectedSize?.sizeId === size.sizeId && styles.sizeChipTextSelected,
+                  ]}>
                   {size.sizeName}
                 </Text>
-                <Text style={[
-                  styles.sizeChipPrice,
-                  selectedSize?.sizeId === size.sizeId && styles.sizeChipPriceSelected
-                ]}>
+                <Text
+                  style={[
+                    styles.sizeChipPrice,
+                    selectedSize?.sizeId === size.sizeId && styles.sizeChipPriceSelected,
+                  ]}>
                   ${size.price.toFixed(2)}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
 
+          {/* Quantity */}
           <View style={styles.quantityRow}>
-            <Text style={styles.sectionTitle}>Quantity</Text>
+            <Text style={styles.sectionTitle}>QUANTITY</Text>
             <View style={styles.quantityControls}>
               <TouchableOpacity
                 style={styles.quantityButton}
-                onPress={() => setQuantity(Math.max(1, quantity - 1))}
-              >
-                <Text style={styles.quantityButtonText}>-</Text>
+                onPress={() => setQuantity(Math.max(1, quantity - 1))}>
+                <Text style={styles.quantityButtonText}>−</Text>
               </TouchableOpacity>
               <Text style={styles.quantityText}>{quantity}</Text>
               <TouchableOpacity
-                style={styles.quantityButton}
-                onPress={() => setQuantity(quantity + 1)}
-              >
-                <Text style={styles.quantityButtonText}>+</Text>
+                style={[styles.quantityButton, styles.quantityButtonAdd]}
+                onPress={() => setQuantity(quantity + 1)}>
+                <Text style={[styles.quantityButtonText, styles.quantityButtonAddText]}>
+                  +
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
 
+          {/* Add to Cart Button */}
           <TouchableOpacity
-            style={[styles.addButton, !selectedSize && styles.addButtonDisabled]}
             onPress={handleAddToCart}
             disabled={!selectedSize}
-          >
-            <Text style={styles.addButtonText}>
-              Add to Cart - ${((selectedSize?.price || 0) * quantity).toFixed(2)}
-            </Text>
+            activeOpacity={0.8}>
+            <LinearGradient
+              colors={
+                selectedSize
+                  ? [Colors.brandGold, Colors.goldDark]
+                  : [Colors.surfaceContainerHigh, Colors.surfaceContainerHigh]
+              }
+              style={styles.addButton}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 0}}>
+              <Text
+                style={[
+                  styles.addButtonText,
+                  !selectedSize && styles.addButtonTextDisabled,
+                ]}>
+                Add to Cart
+              </Text>
+              <Text
+                style={[
+                  styles.addButtonPrice,
+                  !selectedSize && styles.addButtonTextDisabled,
+                ]}>
+                ${totalPrice.toFixed(2)}
+              </Text>
+            </LinearGradient>
           </TouchableOpacity>
         </ScrollView>
       </BottomSheetView>
@@ -123,116 +153,152 @@ export const ItemDetailSheet: React.FC<ItemDetailSheetProps> = ({
 };
 
 const styles = StyleSheet.create({
+  sheetBackground: {
+    backgroundColor: Colors.surface,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  handleIndicator: {
+    backgroundColor: Colors.surfaceContainerHigh,
+    width: 40,
+  },
   contentContainer: {
     flex: 1,
-    padding: Spacing.md
+    padding: Spacing.lg,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.sm,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.text,
-    marginBottom: Spacing.sm
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    flex: 1,
+  },
+  alcoholBadge: {
+    backgroundColor: Colors.warning,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  alcoholBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: Colors.textOnGold,
   },
   description: {
-    fontSize: 16,
+    fontSize: 15,
     color: Colors.textSecondary,
-    marginBottom: Spacing.md
-  },
-  badge: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#FFC107',
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: 4,
-    marginBottom: Spacing.md
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: Colors.text
+    lineHeight: 22,
+    marginBottom: Spacing.lg,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 12,
     fontWeight: '600',
-    color: Colors.text,
-    marginBottom: Spacing.sm
+    color: Colors.textMuted,
+    letterSpacing: 1,
+    marginBottom: Spacing.sm,
   },
   sizeChips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: Spacing.lg
+    marginBottom: Spacing.lg,
   },
   sizeChip: {
-    borderWidth: 1,
+    backgroundColor: Colors.surfaceContainer,
+    borderWidth: 2,
     borderColor: Colors.border,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    borderRadius: 8,
+    borderRadius: 12,
     marginRight: Spacing.sm,
-    marginBottom: Spacing.sm
+    marginBottom: Spacing.sm,
+    minWidth: 100,
+    alignItems: 'center',
   },
   sizeChipSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: '#FFF9E6'
+    borderColor: Colors.brandGold,
+    backgroundColor: 'rgba(255, 214, 102, 0.1)',
   },
   sizeChipText: {
     fontSize: 16,
-    fontWeight: '500',
-    color: Colors.text
+    fontWeight: '600',
+    color: Colors.textPrimary,
   },
   sizeChipTextSelected: {
-    color: Colors.primary
+    color: Colors.brandGold,
   },
   sizeChipPrice: {
     fontSize: 14,
     color: Colors.textSecondary,
-    marginTop: 4
+    marginTop: 4,
   },
   sizeChipPriceSelected: {
-    color: Colors.primary,
-    fontWeight: '600'
+    color: Colors.brandGold,
+    fontWeight: '600',
   },
   quantityRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.lg
+    marginBottom: Spacing.lg,
   },
   quantityControls: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: Colors.surfaceContainer,
+    borderRadius: 20,
+    padding: 4,
   },
   quantityButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: Colors.lightGray,
+    backgroundColor: Colors.surface,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+  },
+  quantityButtonAdd: {
+    backgroundColor: Colors.brandBlue,
   },
   quantityButtonText: {
     fontSize: 20,
     fontWeight: '600',
-    color: Colors.text
+    color: Colors.textPrimary,
+  },
+  quantityButtonAddText: {
+    color: Colors.white,
   },
   quantityText: {
     fontSize: 18,
+    fontWeight: '700',
     marginHorizontal: Spacing.md,
-    color: Colors.text
+    color: Colors.textPrimary,
+    minWidth: 24,
+    textAlign: 'center',
   },
   addButton: {
-    backgroundColor: Colors.primary,
-    paddingVertical: Spacing.md,
-    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: Spacing.sm
-  },
-  addButtonDisabled: {
-    backgroundColor: Colors.gray
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: 16,
+    marginTop: Spacing.sm,
   },
   addButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.textOnGold,
+  },
+  addButtonPrice: {
     fontSize: 18,
-    fontWeight: '600',
-    color: Colors.white
-  }
+    fontWeight: '800',
+    color: Colors.textOnGold,
+  },
+  addButtonTextDisabled: {
+    color: Colors.textMuted,
+  },
 });

@@ -44,7 +44,7 @@ export default function Modal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
       {/* Backdrop */}
       <div
         className="absolute inset-0"
@@ -52,26 +52,26 @@ export default function Modal({
       />
 
       {/* Modal */}
-      <div className={`relative bg-white rounded-lg shadow-lg ${sizeClasses[size]} w-full mx-4 max-h-[90vh] flex flex-col`}>
+      <div className={`relative bg-onyx-bg-secondary rounded-2xl border border-onyx-border shadow-2xl ${sizeClasses[size]} w-full mx-4 max-h-[90vh] flex flex-col`}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-onyx-border">
+          <h2 className="text-lg font-semibold text-onyx-text-primary">{title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="p-2 text-onyx-text-muted hover:text-onyx-text-primary hover:bg-onyx-bg-tertiary rounded-lg transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-4">
+        <div className="flex-1 overflow-y-auto">
           {children}
         </div>
 
         {/* Footer */}
         {footer && (
-          <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 rounded-b-lg">
+          <div className="border-t border-onyx-border px-6 py-4 bg-onyx-bg-tertiary rounded-b-2xl">
             {footer}
           </div>
         )}

@@ -53,9 +53,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowWebApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000")
+            policy.WithOrigins("http://localhost:3000", "http://localhost:3001") // Add Admin Portal origin
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials(); // Allow cookies for authentication
         });
 });
 
@@ -158,15 +159,28 @@ builder.Services.AddScoped<OnlineOrderStatusRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IMenuRepository, MenuRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Enterprise Feature Repositories
+builder.Services.AddScoped<ICampaignRepository, CampaignRepository>();
+builder.Services.AddScoped<IScheduledOrderRepository, ScheduledOrderRepository>();
+builder.Services.AddScoped<IMenuOverlayRepository, MenuOverlayRepository>();
+builder.Services.AddScoped<ICustomerAnalyticsRepository, CustomerAnalyticsRepository>();
 
 // Service Registrations
 builder.Services.AddScoped<IOrderProcessingService, OrderProcessingService>();
 builder.Services.AddScoped<ILoyaltyService, LoyaltyService>();
 builder.Services.AddScoped<IUpsellService, UpsellService>();
-builder.Services.AddScoped<BirthdayRewardService>();
-builder.Services.AddHostedService<BirthdayRewardBackgroundService>();
+builder.Services.AddBirthdayRewardService();
+builder.Services.AddScoped<IRFMSegmentationService, RFMSegmentationService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<INotificationService, FcmNotificationService>();
+
+// Enterprise Feature Services
+builder.Services.AddSingleton<ICampaignService, CampaignService>();
+builder.Services.AddHostedService(sp => (CampaignService)sp.GetRequiredService<ICampaignService>());
+builder.Services.AddHostedService<ScheduledOrderService>();
 
 // Background Services
 builder.Services.AddHostedService<OrderStatusPollingService>();

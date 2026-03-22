@@ -1,0 +1,69 @@
+{
+  "cli": {
+    "version": ">= 5.2.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "buildConfiguration": "Debug"
+      },
+      "android": {
+        "buildConfiguration": "debug"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "ios": {
+        "buildConfiguration": "Release",
+        "enterpriseProvisioning": "adhoc"
+      },
+      "android": {
+        "buildConfiguration": "release",
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "production": {
+      "distribution": "store",
+      "ios": {
+        "buildConfiguration": "Release",
+        "enterpriseProvisioning": "universal",
+        "scheme": "ImidusCustomerApp"
+      },
+      "android": {
+        "buildConfiguration": "release",
+        "gradleCommand": ":app:bundleRelease"
+      }
+    },
+    "testflight": {
+      "distribution": "internal",
+      "ios": {
+        "buildConfiguration": "Release",
+        "enterpriseProvisioning": "universal",
+        "scheme": "ImidusCustomerApp",
+        "imagemagickColorspace": "srgb"
+      },
+      "android": {
+        "buildConfiguration": "release",
+        "gradleCommand": ":app:assembleRelease"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "novatech2210@gmail.com",
+        "ascAppId": "6740450923",
+        "appleTeamId": "ABC123DEF4"
+      }
+    },
+    "testflight": {
+      "ios": {
+        "appleId": "novatech2210@gmail.com",
+        "ascAppId": "6740450923",
+        "appleTeamId": "ABC123DEF4"
+      }
+    }
+  }
+}

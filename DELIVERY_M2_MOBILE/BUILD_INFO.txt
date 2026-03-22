@@ -1,0 +1,53 @@
+IMIDUSAPP - Milestone 2 Mobile Build
+=====================================
+
+BUILD DATE: March 19, 2026
+PLATFORM: Android
+MINIMUM API LEVEL: 24 (Android 7.0)
+TARGET API LEVEL: 34 (Android 14)
+
+FILE DETAILS:
+- Name: imidus-customer-app-release.apk
+- Size: 58 MB
+- Architecture: ARM64 + ARM32
+
+FEATURES INCLUDED:
+✓ User authentication (login/register)
+✓ Menu browsing with categories
+✓ Shopping cart management
+✓ Checkout and payment (Authorize.net)
+✓ Order tracking and history
+✓ Loyalty points system
+✓ Push notifications (Firebase FCM)
+✓ IMIDUSAPP branding (orange/blue/gold theme)
+✓ Responsive design (all screen sizes)
+✓ Offline support (partial)
+
+BACKEND INTEGRATION:
+- API Base URL: http://localhost:5004 (development)
+- Database: Microsoft SQL Server 2005 Express (INI_Restaurant)
+- Authentication: JWT tokens
+- Data Sync: Real-time via REST API
+
+KNOWN LIMITATIONS:
+- iOS app: In preparation (TestFlight link to follow)
+- Offline mode: Limited to cached menu
+- Payment: Authorize.net tokenization only (no card storage)
+
+BUILD CONFIGURATION:
+- React Native: 0.73
+- Node.js: 18.x
+- npm: 9.x
+- Gradle: 8.x
+- Android SDK: 34
+
+TESTING INSTRUCTIONS:
+1. See INSTALLATION_GUIDE.md for setup
+2. See TEST_PLAN.md for test scenarios
+3. Use test credentials provided
+4. Report issues to: novatech2210@gmail.com
+
+SUPPORT:
+Email: novatech2210@gmail.com
+Availability: Business hours (UTC-5)
+Response Time: <4 hours

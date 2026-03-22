@@ -9,7 +9,7 @@ import CancelOrderDialog from '@/components/Orders/CancelOrderDialog';
 import OrderFilters, { OrderFilterState, initialFilters } from '@/components/Orders/OrderFilters';
 import { useOrderQueue, useOrderDetail } from '@/lib/hooks';
 import Spinner from '@/components/Loading/Spinner';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, ShoppingCart, Database } from 'lucide-react';
 
 interface Order {
   id: number;
@@ -71,12 +71,23 @@ export default function OrdersPage() {
 
   return (
     <MainLayout>
-      <div className="p-6 space-y-6">
+      <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Orders</h1>
-            <p className="text-gray-600">Manage and track customer orders</p>
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-[#5BA0FF]/10 rounded-xl">
+              <ShoppingCart size={24} className="text-[#5BA0FF]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-[#F5F5F7]">Orders</h1>
+              <p className="text-sm text-[#6E6E78]">Manage and track customer orders</p>
+            </div>
+          </div>
+
+          {/* Live from POS badge */}
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#4ADE80]/10 rounded-full border border-[#4ADE80]/30">
+            <Database size={14} className="text-[#4ADE80]" />
+            <span className="text-xs font-medium text-[#4ADE80]">Live from INI_Restaurant</span>
           </div>
         </div>
 
@@ -88,17 +99,17 @@ export default function OrdersPage() {
         />
 
         {/* Filter Summary and Refresh */}
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-600">
+        <div className="flex items-center justify-between bg-[#1A1A1F] p-4 rounded-xl border border-[#2A2A30]">
+          <div className="text-sm text-[#9A9AA3]">
             {hasActiveFilters ? (
-              <span>Showing {ordersData.length} orders matching filters</span>
+              <span>Showing <span className="text-[#F5F5F7] font-semibold">{ordersData.length}</span> orders matching filters</span>
             ) : (
-              <span>Showing {ordersData.length} recent orders</span>
+              <span>Showing <span className="text-[#F5F5F7] font-semibold">{ordersData.length}</span> recent orders</span>
             )}
           </div>
           <button
             onClick={() => refetch()}
-            className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#5BA0FF] to-[#3D82E0] text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity"
           >
             <RefreshCw size={16} />
             Refresh
@@ -107,7 +118,7 @@ export default function OrdersPage() {
 
         {/* Order Queue */}
         {isLoadingQueue && !ordersData.length ? (
-          <div className="flex items-center justify-center h-64">
+          <div className="flex items-center justify-center h-64 bg-[#1A1A1F] rounded-xl border border-[#2A2A30]">
             <Spinner text="Loading orders..." />
           </div>
         ) : (
@@ -132,11 +143,11 @@ export default function OrdersPage() {
 
       {/* Footer Actions */}
       {showDetail && orderDetail && (
-        <div className="fixed bottom-0 right-0 left-0 bg-white border-t border-gray-200 p-4 z-40">
-          <div className="max-w-7xl mx-auto flex justify-end gap-2">
+        <div className="fixed bottom-0 right-0 left-0 bg-[#1A1A1F] border-t border-[#2A2A30] p-4 z-40">
+          <div className="max-w-7xl mx-auto flex justify-end gap-3">
             <button
               onClick={() => setShowDetail(false)}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 border border-[#2A2A30] text-[#9A9AA3] rounded-xl hover:bg-[#222228] hover:text-[#F5F5F7] transition-colors"
             >
               Close
             </button>
@@ -144,14 +155,14 @@ export default function OrdersPage() {
               <>
                 <button
                   onClick={handleCancel}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                  className="px-4 py-2 bg-[#FF6B6B]/10 text-[#FF6B6B] border border-[#FF6B6B]/30 rounded-xl hover:bg-[#FF6B6B]/20 transition-colors"
                 >
                   Cancel Order
                 </button>
                 {orderDetail.paymentStatus === 'paid' && (
                   <button
                     onClick={handleRefund}
-                    className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                    className="px-4 py-2 bg-gradient-to-r from-[#FFD666] to-[#E5B84D] text-[#1A1A1F] font-semibold rounded-xl hover:opacity-90 transition-opacity"
                   >
                     Refund
                   </button>

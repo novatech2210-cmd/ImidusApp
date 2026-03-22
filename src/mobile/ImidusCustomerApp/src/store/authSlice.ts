@@ -19,7 +19,7 @@ const initialState: AuthState = {
   user: null,
   token: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true, // Start with loading true to show splash while checking auth
   error: null,
 };
 

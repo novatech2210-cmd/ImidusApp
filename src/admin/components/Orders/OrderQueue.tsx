@@ -3,6 +3,7 @@
 import React from 'react';
 import DataTable, { Column } from '@/components/Tables/DataTable';
 import { SkeletonTable } from '@/components/Loading/Skeleton';
+import { ShoppingBag, Clock } from 'lucide-react';
 
 interface OrderItem {
   id: number;
@@ -32,12 +33,23 @@ interface OrderQueueProps {
 export default function OrderQueue({ orders, loading = false, onOrderClick }: OrderQueueProps) {
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      completed: 'bg-green-100 text-green-800',
-      cancelled: 'bg-red-100 text-red-800',
-      refunded: 'bg-gray-100 text-gray-800',
+      pending: 'bg-[#FFD666]/20 text-[#FFD666]',
+      ready: 'bg-[#5BA0FF]/20 text-[#5BA0FF]',
+      completed: 'bg-[#4ADE80]/20 text-[#4ADE80]',
+      cancelled: 'bg-[#FF6B6B]/20 text-[#FF6B6B]',
+      refunded: 'bg-[#9A9AA3]/20 text-[#9A9AA3]',
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || 'bg-[#222228] text-[#9A9AA3]';
+  };
+
+  const getPaymentColor = (status: string) => {
+    const colors: Record<string, string> = {
+      paid: 'bg-[#4ADE80]/20 text-[#4ADE80]',
+      pending: 'bg-[#FFD666]/20 text-[#FFD666]',
+      failed: 'bg-[#FF6B6B]/20 text-[#FF6B6B]',
+      refunded: 'bg-[#9A9AA3]/20 text-[#9A9AA3]',
+    };
+    return colors[status] || 'bg-[#222228] text-[#9A9AA3]';
   };
 
   const columns: Column<Order>[] = [
@@ -45,24 +57,34 @@ export default function OrderQueue({ orders, loading = false, onOrderClick }: Or
       key: 'orderNumber',
       label: 'Order #',
       sortable: true,
+      render: (value) => (
+        <span className="font-mono font-semibold text-[#5BA0FF]">{value}</span>
+      ),
     },
     {
       key: 'customerName',
       label: 'Customer',
       sortable: true,
+      render: (value) => (
+        <span className="text-[#F5F5F7] font-medium">{value}</span>
+      ),
     },
     {
       key: 'total',
       label: 'Total',
       sortable: true,
-      render: (value) => `$${(value / 100).toLocaleString('en-US', { maximumFractionDigits: 2 })}`,
+      render: (value) => (
+        <span className="font-semibold text-[#FFD666]">
+          ${(value / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </span>
+      ),
     },
     {
       key: 'status',
       label: 'Status',
       sortable: true,
       render: (value) => (
-        <span className={`px-2 py-1 text-xs font-medium rounded ${getStatusColor(value)}`}>
+        <span className={`inline-flex px-2.5 py-1 text-xs font-medium rounded-full ${getStatusColor(value)}`}>
           {value.charAt(0).toUpperCase() + value.slice(1)}
         </span>
       ),
@@ -72,7 +94,7 @@ export default function OrderQueue({ orders, loading = false, onOrderClick }: Or
       label: 'Payment',
       sortable: true,
       render: (value) => (
-        <span className={`px-2 py-1 text-xs font-medium rounded ${getStatusColor(value)}`}>
+        <span className={`inline-flex px-2.5 py-1 text-xs font-medium rounded-full ${getPaymentColor(value)}`}>
           {value.charAt(0).toUpperCase() + value.slice(1)}
         </span>
       ),
@@ -80,7 +102,12 @@ export default function OrderQueue({ orders, loading = false, onOrderClick }: Or
     {
       key: 'createdAt',
       label: 'Time',
-      render: (value) => new Date(value).toLocaleTimeString(),
+      render: (value) => (
+        <span className="flex items-center gap-1.5 text-[#9A9AA3] text-sm">
+          <Clock size={14} />
+          {new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </span>
+      ),
     },
   ];
 
@@ -88,9 +115,24 @@ export default function OrderQueue({ orders, loading = false, onOrderClick }: Or
     return <SkeletonTable rows={10} cols={6} />;
   }
 
+  if (orders.length === 0) {
+    return (
+      <div className="bg-[#1A1A1F] p-12 rounded-xl border border-[#2A2A30] flex flex-col items-center justify-center">
+        <ShoppingBag size={48} className="text-[#6E6E78] mb-4" />
+        <p className="text-[#9A9AA3] font-medium">No orders in queue</p>
+        <p className="text-sm text-[#6E6E78]">Orders will appear here as they come in</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-white p-6 rounded-lg border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Queue</h3>
+    <div className="bg-[#1A1A1F] p-6 rounded-xl border border-[#2A2A30]">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-[#F5F5F7]">Order Queue</h3>
+        <span className="text-xs font-medium text-[#6E6E78] bg-[#222228] px-3 py-1 rounded-full">
+          {orders.length} orders
+        </span>
+      </div>
       <DataTable<Order>
         columns={columns}
         data={orders}

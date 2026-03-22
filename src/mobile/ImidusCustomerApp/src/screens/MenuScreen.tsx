@@ -25,7 +25,7 @@ import {
 } from '../services/menuService';
 import {RootState} from '../store';
 import {addToCart} from '../store/cartSlice';
-import {Colors, Shadow, Spacing, Elevation, TouchTarget, TextStyles} from '../theme';
+import {Colors, Spacing, Elevation, TouchTarget, TextStyles} from '../theme';
 import {Category, MenuItem, MenuItemSize} from '../types/menu.types';
 
 interface MenuSection {
@@ -48,6 +48,10 @@ const MenuScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const cartTotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
 
   const [posConnected, setPosConnected] = useState(true);
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -63,7 +67,7 @@ const MenuScreen = ({navigation}: any) => {
     Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
-          toValue: 1.2,
+          toValue: 1.3,
           duration: 1000,
           useNativeDriver: true,
         }),
@@ -87,7 +91,6 @@ const MenuScreen = ({navigation}: any) => {
       if (!selectedCategoryId && cached.categories.length > 0) {
         setSelectedCategoryId(cached.categories[0].categoryId);
       }
-      // Load items from cache for all categories
       await loadAllCategoryItems(cached.categories);
       setLoading(false);
     }
@@ -97,7 +100,6 @@ const MenuScreen = ({navigation}: any) => {
       const freshCategories = await fetchMenuWithCache();
       setCategories(freshCategories);
 
-      // Load items for all categories
       if (freshCategories.length > 0) {
         if (!selectedCategoryId) {
           setSelectedCategoryId(freshCategories[0].categoryId);
@@ -115,7 +117,6 @@ const MenuScreen = ({navigation}: any) => {
 
   const loadAllCategoryItems = async (categoriesToLoad: Category[]) => {
     try {
-      // Load items for all categories in parallel
       const itemPromises = categoriesToLoad.map(async cat => {
         try {
           const items = await fetchItemsByCategory(cat.categoryId);
@@ -138,7 +139,6 @@ const MenuScreen = ({navigation}: any) => {
       });
 
       const loadedSections = await Promise.all(itemPromises);
-      // Filter out empty categories
       const nonEmptySections = loadedSections.filter(s => s.data.length > 0);
       setSections(nonEmptySections);
     } catch (error) {
@@ -155,7 +155,6 @@ const MenuScreen = ({navigation}: any) => {
   const handleCategoryPress = (categoryId: number, index: number) => {
     setSelectedCategoryId(categoryId);
 
-    // Find section index and scroll to it
     const sectionIndex = sections.findIndex(s => s.categoryId === categoryId);
     if (sectionIndex !== -1 && sectionListRef.current) {
       sectionListRef.current.scrollToLocation({
@@ -166,7 +165,6 @@ const MenuScreen = ({navigation}: any) => {
       });
     }
 
-    // Scroll category tab into view
     if (categoryListRef.current) {
       categoryListRef.current.scrollToIndex({
         index,
@@ -203,7 +201,7 @@ const MenuScreen = ({navigation}: any) => {
     const isSelected = selectedCategoryId === item.categoryId;
     return (
       <TouchableOpacity
-        style={styles.categoryButton}
+        style={[styles.categoryButton, isSelected && styles.categoryButtonActive]}
         onPress={() => handleCategoryPress(item.categoryId, index)}>
         <Text
           style={[
@@ -212,7 +210,6 @@ const MenuScreen = ({navigation}: any) => {
           ]}>
           {item.name}
         </Text>
-        {isSelected && <View style={styles.activeIndicator} />}
       </TouchableOpacity>
     );
   };
@@ -224,6 +221,7 @@ const MenuScreen = ({navigation}: any) => {
   }) => (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{section.title}</Text>
+      <View style={styles.sectionDivider} />
     </View>
   );
 
@@ -237,7 +235,6 @@ const MenuScreen = ({navigation}: any) => {
       if (firstVisibleSection) {
         setSelectedCategoryId(firstVisibleSection.categoryId);
 
-        // Scroll category tab into view
         const categoryIndex = categories.findIndex(
           c => c.categoryId === firstVisibleSection.categoryId,
         );
@@ -258,6 +255,8 @@ const MenuScreen = ({navigation}: any) => {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
+          <Text style={styles.errorEmoji}>😕</Text>
+          <Text style={styles.errorTitle}>Connection Error</Text>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={loadMenu}>
             <Text style={styles.retryButtonText}>Try Again</Text>
@@ -269,18 +268,21 @@ const MenuScreen = ({navigation}: any) => {
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
-      <View style={{flex: 1, backgroundColor: Colors.background}}>
-        <LinearGradient
-          colors={[Colors.brandBlue, Colors.brandBlueDark]}
-          style={styles.headerGradient}>
-          <SafeAreaView edges={['top']}>
-            <View style={styles.header}>
-              <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-                <Text style={styles.headerLink}>Profile</Text>
-              </TouchableOpacity>
+      <View style={styles.container}>
+        {/* Header */}
+        <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
+          <View style={styles.header}>
+            <TouchableOpacity
+              style={styles.profileButton}
+              onPress={() => navigation.navigate('Profile')}>
+              <View style={styles.avatarPlaceholder}>
+                <Text style={styles.avatarText}>👤</Text>
+              </View>
+            </TouchableOpacity>
 
-              <View style={styles.titleContainer}>
-                <Text style={styles.title}>Menu</Text>
+            <View style={styles.titleContainer}>
+              <Text style={styles.brandName}>IMIDUS</Text>
+              <View style={styles.syncContainer}>
                 <Animated.View
                   style={[
                     styles.syncDot,
@@ -290,23 +292,34 @@ const MenuScreen = ({navigation}: any) => {
                     {transform: [{scale: pulseAnim}]},
                   ]}
                 />
+                <Text style={styles.syncText}>
+                  {posConnected ? 'Live' : 'Syncing'}
+                </Text>
               </View>
-
-              <TouchableOpacity
-                style={styles.cartCountButton}
-                onPress={() => navigation.navigate('Cart')}>
-                <Text style={styles.cartCountText}>Cart ({cartCount})</Text>
-              </TouchableOpacity>
             </View>
-          </SafeAreaView>
-        </LinearGradient>
 
+            <TouchableOpacity
+              style={styles.cartButton}
+              onPress={() => navigation.navigate('Cart')}>
+              <Text style={styles.cartIcon}>🛒</Text>
+              {cartCount > 0 && (
+                <View style={styles.cartBadge}>
+                  <Text style={styles.cartBadgeText}>{cartCount}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+
+        {/* Category Tabs */}
         <View style={styles.categoryListContainer}>
           <FlatList
             ref={categoryListRef}
             data={categories}
             renderItem={renderCategory}
-            keyExtractor={(item, index) => item?.categoryId?.toString() ?? `cat-${index}`}
+            keyExtractor={(item, index) =>
+              item?.categoryId?.toString() ?? `cat-${index}`
+            }
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.categoryList}
@@ -314,6 +327,7 @@ const MenuScreen = ({navigation}: any) => {
           />
         </View>
 
+        {/* Menu Items */}
         {loading && sections.length === 0 ? (
           <SkeletonMenuList />
         ) : (
@@ -322,7 +336,9 @@ const MenuScreen = ({navigation}: any) => {
             sections={sections}
             renderItem={renderItem}
             renderSectionHeader={renderSectionHeader}
-            keyExtractor={(item, index) => item?.itemId?.toString() ?? `item-${index}`}
+            keyExtractor={(item, index) =>
+              item?.itemId?.toString() ?? `item-${index}`
+            }
             contentContainerStyle={styles.itemList}
             stickySectionHeadersEnabled={false}
             onViewableItemsChanged={onViewableItemsChanged}
@@ -331,12 +347,32 @@ const MenuScreen = ({navigation}: any) => {
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                tintColor={Colors.primary}
-                colors={[Colors.primary]}
+                tintColor={Colors.brandGold}
+                colors={[Colors.brandGold]}
               />
             }
             onScrollToIndexFailed={() => {}}
           />
+        )}
+
+        {/* Floating Cart Button */}
+        {cartCount > 0 && (
+          <TouchableOpacity
+            style={styles.floatingCartButton}
+            onPress={() => navigation.navigate('Cart')}>
+            <LinearGradient
+              colors={[Colors.brandGold, Colors.goldDark]}
+              style={styles.floatingCartGradient}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 0}}>
+              <Text style={styles.floatingCartText}>
+                View Cart · ${cartTotal.toFixed(2)}
+              </Text>
+              <View style={styles.floatingCartCount}>
+                <Text style={styles.floatingCartCountText}>{cartCount}</Text>
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
         )}
 
         <ItemDetailSheet
@@ -354,122 +390,212 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  headerGradient: {
-    paddingBottom: Spacing.xs,
+  headerSafeArea: {
+    backgroundColor: Colors.surface,
   },
   header: {
-    padding: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
-  titleContainer: {
-    flexDirection: 'row',
+  profileButton: {
+    minHeight: TouchTarget.minimum,
+    minWidth: TouchTarget.minimum,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    ...TextStyles.headline,
-    color: Colors.white,
+  avatarPlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.surfaceContainer,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: {
+    fontSize: 20,
+  },
+  titleContainer: {
+    alignItems: 'center',
+  },
+  brandName: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+    letterSpacing: 2,
+  },
+  syncContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
   },
   syncDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginLeft: Spacing.sm,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 4,
   },
   syncDotConnected: {
-    backgroundColor: Colors.success, // Green when POS connected
+    backgroundColor: Colors.success,
   },
   syncDotReconnecting: {
-    backgroundColor: Colors.warning, // Orange when reconnecting
+    backgroundColor: Colors.warning,
   },
-  cartCountButton: {
-    backgroundColor: Colors.brandGold,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: 20,
-    minHeight: TouchTarget.minimum, // 44px touch target
+  syncText: {
+    fontSize: 10,
+    color: Colors.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  cartButton: {
+    minHeight: TouchTarget.minimum,
+    minWidth: TouchTarget.minimum,
     justifyContent: 'center',
-    ...Elevation.level3, // High elevation for CTA
+    alignItems: 'center',
+    position: 'relative',
   },
-  cartCountText: {
-    ...TextStyles.label,
+  cartIcon: {
+    fontSize: 24,
+  },
+  cartBadge: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    backgroundColor: Colors.brandGold,
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+  },
+  cartBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
     color: Colors.textOnGold,
   },
-  headerLink: {
-    color: Colors.white,
-    fontWeight: '600',
-    fontSize: 14,
-  },
   categoryListContainer: {
-    backgroundColor: Colors.white,
-    paddingVertical: 0,
+    backgroundColor: Colors.surface,
+    paddingVertical: Spacing.xs,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.midGray,
+    borderBottomColor: Colors.border,
   },
   categoryList: {
     paddingHorizontal: Spacing.sm,
   },
   categoryButton: {
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
-    marginHorizontal: Spacing.xs,
-    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    marginHorizontal: 4,
+    borderRadius: 20,
+    backgroundColor: Colors.surfaceContainer,
+    minHeight: 36,
     justifyContent: 'center',
-    minHeight: TouchTarget.minimum, // 44px touch target
-    minWidth: TouchTarget.minimum,
   },
-  activeIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    left: Spacing.md,
-    right: Spacing.md,
-    height: 3,
-    backgroundColor: Colors.brandGold,
-    borderRadius: 1.5,
+  categoryButtonActive: {
+    backgroundColor: Colors.brandBlue,
   },
   categoryText: {
-    ...TextStyles.label,
-    color: Colors.slate600,
+    fontSize: 13,
+    fontWeight: '600',
+    color: Colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   selectedCategoryText: {
-    ...TextStyles.label,
-    color: Colors.brandBlue,
+    color: Colors.white,
   },
   sectionHeader: {
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.sm,
     backgroundColor: Colors.background,
   },
   sectionTitle: {
-    ...TextStyles.title,
-    color: Colors.slate900,
+    fontSize: 20,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    marginBottom: Spacing.xs,
+  },
+  sectionDivider: {
+    height: 2,
+    width: 40,
+    backgroundColor: Colors.brandGold,
+    borderRadius: 1,
   },
   itemList: {
-    paddingVertical: Spacing.sm,
+    paddingBottom: 100,
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: Spacing.xl,
+    backgroundColor: Colors.background,
   },
-  errorText: {
-    fontSize: 16,
-    color: Colors.error,
-    textAlign: 'center',
+  errorEmoji: {
+    fontSize: 48,
     marginBottom: Spacing.md,
   },
+  errorTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    marginBottom: Spacing.sm,
+  },
+  errorText: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: Spacing.lg,
+  },
   retryButton: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
-    borderRadius: 8,
+    backgroundColor: Colors.brandBlue,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+    borderRadius: 25,
   },
   retryButtonText: {
     color: Colors.white,
-    fontWeight: '600',
+    fontWeight: '700',
     fontSize: 16,
+  },
+  floatingCartButton: {
+    position: 'absolute',
+    bottom: Spacing.xl,
+    left: Spacing.lg,
+    right: Spacing.lg,
+    ...Elevation.level3,
+  },
+  floatingCartGradient: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: 30,
+  },
+  floatingCartText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.textOnGold,
+  },
+  floatingCartCount: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  floatingCartCountText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.textOnGold,
   },
 });
 

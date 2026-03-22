@@ -1,0 +1,92 @@
+version: "3.8"
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: imidus-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD:-YourStrong@Passw0rd123}
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -Q "SELECT 1" -C -No || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    networks:
+      - imidus-network
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: imidus-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__PosDatabase=Server=sqlserver;Database=INI_Restaurant;User Id=sa;Password=${SA_PASSWORD:-YourStrong@Passw0rd123};TrustServerCertificate=True;
+      - ConnectionStrings__BackendDatabase=Server=sqlserver;Database=IntegrationService;User Id=sa;Password=${SA_PASSWORD:-YourStrong@Passw0rd123};TrustServerCertificate=True;
+      - JwtSettings__Secret=${JWT_SECRET:-YourSuperSecretKeyWith32CharactersMin}
+      - JwtSettings__Issuer=IMIDUS
+      - JwtSettings__Audience=IMIDUS-Clients
+      - JwtSettings__ExpiryMinutes=1440
+      - AuthorizeNet__Environment=${AUTHORIZENET_ENVIRONMENT:-Sandbox}
+      - AuthorizeNet__ApiLoginId=${AUTHORIZENET_API_LOGIN_ID}
+      - AuthorizeNet__TransactionKey=${AUTHORIZENET_TRANSACTION_KEY}
+      - OnlineOrderSettings__CompanyId=1
+      - OnlineOrderSettings__CashierId=999
+      - OnlineOrderSettings__StationId=2
+      - OnlineOrderSettings__TableId=201
+    ports:
+      - "5004:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - imidus-network
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: imidus-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - api
+    networks:
+      - imidus-network
+    restart: unless-stopped
+
+  adminer:
+    image: adminer:latest
+    container_name: imidus-adminer
+    ports:
+      - "8080:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=sqlserver
+    depends_on:
+      - sqlserver
+    networks:
+      - imidus-network
+    restart: unless-stopped
+    profiles:
+      - debug
+
+volumes:
+  sqlserver-data:
+    driver: local
+
+networks:
+  imidus-network:
+    driver: bridge

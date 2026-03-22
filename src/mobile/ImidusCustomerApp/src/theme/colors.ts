@@ -1,81 +1,94 @@
 /**
- * IMIDUS Technologies – Brand Colour System
- * Single source of truth for all colour usage in the React Native app.
- * Extracted from official Imidus brand assets (Feb 2026).
+ * IMIDUS Technologies – Modern Dark Theme Color System
+ * Inspired by Google Stitch / Material Design 3 dark mode
  *
  * DO NOT hardcode colours anywhere else in the codebase.
  * Import from this file: import { Colors } from '@/theme';
  */
 
 export const Colors = {
-  // ── Imperial Onyx × IMIDUS Primary Brand ──────────────────
-  brandBlue: '#1E5AA8', // Primary — nav bar, buttons, headings, splash bg
-  brandBlueDark: '#154378', // Darker shade for gradients
-  brandBlueLight: '#2E6AB8', // Light shade for hover states
-  midnightNavy: '#0A1F3D', // Imperial Onyx — Deep authority backgrounds
-  brandGold: '#D4AF37', // Accent  — CTA, prices, loyalty points, active tabs
-  goldLight: '#E8C55B', // Soft gold for shimmer effects
-  goldDark: '#B8941F', // Rich gold for pressed states
-  darkBg: '#1A1A2E', // Dark    — splash overlay, modal backdrop, sidebar
+  // ── CORE LUXURY SURFACES ────────────────────────────────────
+  background: '#F5F7FA', // Soft gray-white background
+  surface: '#FFFFFF', // Pure white cards
+  surfaceContainer: '#FFFFFF',
+  surfaceContainerLow: '#FBFCFD',
+  surfaceContainerHigh: '#F0F4F8',
+  surfaceContainerHighest: '#E2E8F0',
 
-  // ── Imperial Onyx Surfaces ────────────────────────────────
+  // ── BRAND COLORS (Imperial Onyx) ────────────────────────────
+  brandBlue: '#0A1F3D', // Midnight Navy - primary dominance
+  brandBlueDark: '#051020',
+  brandBlueLight: '#152E52',
+  brandGold: '#D4AF37', // Imperial Gold - luxury accents
+  goldLight: '#E5C76B',
+  goldDark: '#B08D26',
+  midnightNavy: '#0A1F3D',
+  darkBg: '#0A1F3D',
+
+  // ── NEUTRAL SURFACES ────────────────────────────────────────
   white: '#FFFFFF',
-  surface: '#FFFFFF', // Pure white canvas
-  surfaceContainerLow: '#F5F5F5', // Secondary dashboard modules
-  surfaceContainer: '#E5E5E5', // Input backgrounds, unselected cards
-  surfaceContainerHighest: '#DDDDDD', // Preview states
-  lightBlue: '#D6E4F7', // Table row alternate, info cards, secondary btn bg
-  lightGold: '#FDF6E3', // Loyalty/rewards section bg, birthday offer cards
-  lightGray: '#F5F5F5', // List item bg, dividers, disabled fills
-  midGray: '#DDDDDD', // Input borders, card separators, table lines
+  lightBlue: '#F0F4F8',
+  lightGold: '#FFF9E6',
+  lightGray: '#F5F7FA',
+  midGray: '#E2E8F0',
 
-  // ── Imperial Onyx Text Hierarchy ──────────────────────────
-  slate900: '#0F172A', // Text Primary — high contrast authority
-  slate600: '#475569', // Text Muted — secondary information
-  textPrimary: '#0F172A', // Using slate-900 for Imperial Onyx authority
-  textSecondary: '#475569', // Using slate-600
-  textMuted: '#888888',
+  // ── TEXT HIERARCHY (Midnight Navy based) ────────────────────
+  slate900: '#0A1F3D', // Primary text
+  slate800: '#1A2E44', // Strong text
+  slate700: '#2D3E50', // Medium text
+  slate600: '#4A5568', // Secondary text
+  slate500: '#718096', // Muted text
+  slate400: '#A0AEC0', // Hint text
+  textPrimary: '#0A1F3D',
+  textSecondary: '#4A5568',
+  textMuted: '#718096',
   textOnDark: '#FFFFFF',
-  textOnGold: '#0F172A', // Dark text for gold backgrounds (contrast)
+  textOnGold: '#FFFFFF', // White looks better on gold in high-end UI
 
-  // ── Status ─────────────────────────────────────────────────
-  error: '#C62828', // Failed payments, out-of-stock, form errors
-  errorLight: '#FFEBEE',
-  success: '#2E7D32', // Order confirmed, payment success, loyalty earned
-  successLight: '#E8F5E9',
-  warning: '#E65100', // Pending, low stock, caution notices
-  warningLight: '#FFF3E0',
-  info: '#1565C0',
-  infoLight: '#E3F2FD',
+  // ── STATUS COLORS ───────────────────────────────────────────
+  error: '#E53E3E',
+  errorLight: '#FFF5F5',
+  success: '#38A169',
+  successLight: '#F0FFF4',
+  warning: '#D69E2E',
+  warningLight: '#FFFFF0',
+  info: '#3182CE',
+  infoLight: '#EBF8FF',
 
-  // ── Transparent / Overlay ─────────────────────────────────
-  overlay: 'rgba(0,0,0,0.5)',
-  overlayLight: 'rgba(0,0,0,0.2)',
-  cardShadow: 'rgba(30, 90, 168, 0.12)',
-  glassBg: 'rgba(255, 255, 255, 0.80)', // Glassmorphism background
-  glassBgDark: 'rgba(26, 26, 46, 0.85)', // Dark glass background
-  glassBorder: 'rgba(255, 255, 255, 0.2)', // Glass border
-  glassShadow: 'rgba(30, 90, 168, 0.12)', // Glass shadow tint
+  // ── GLASS / OVERLAY ─────────────────────────────────────────
+  overlay: 'rgba(10, 31, 61, 0.4)',
+  overlayLight: 'rgba(10, 31, 61, 0.2)',
+  cardShadow: 'rgba(10, 31, 61, 0.08)',
+  glassBg: 'rgba(255, 255, 255, 0.85)',
+  glassBgDark: 'rgba(10, 31, 61, 0.90)',
+  glassBorder: 'rgba(10, 31, 61, 0.05)',
+  glassShadow: 'rgba(10, 31, 61, 0.12)',
 
-  // ── Input ─────────────────────────────────────────────────
-  inputBorder: '#DDDDDD',
-  inputBorderFocus: '#1E5AA8',
-  inputBackground: '#E5E5E5', // surfaceContainer for borderless inputs
-  placeholderText: '#47556980', // slate-600 at 50% opacity
+  // ── INPUT FIELDS ────────────────────────────────────────────
+  inputBorder: '#E2E8F0',
+  inputBorderFocus: '#0A1F3D',
+  inputBackground: '#FFFFFF',
+  placeholderText: '#A0AEC0',
 
-  // ── Semantic Aliases (Recommended) ────────────────────────
-  primary: '#1E5AA8', // brandBlue
-  primaryDark: '#0A1F3D', // midnightNavy
-  primaryLight: '#2E6AB8', // brandBlueLight
-  secondary: '#D4AF37', // brandGold
-  background: '#FFFFFF',
-  border: '#DDDDDD', // midGray
-  text: '#0F172A', // slate900 for Imperial authority
-  
-  // ── Legacy Aliases ────────────────────────────────────
-  gray: '#808080',
+  // ── SEMANTIC ALIASES ────────────────────────────────────────
+  primary: '#0A1F3D', // Midnight Navy
+  primaryDark: '#051020',
+  primaryLight: '#152E52',
+  secondary: '#D4AF37', // Imperial Gold
+  border: 'transparent', // Favor surfaces over lines
+  text: '#0A1F3D',
+
+  // ── ELEVATION LEVELS ────────────────────────────────────────
+  elevation0: '#F5F7FA', // Base background
+  elevation1: '#FFFFFF', // Surface
+  elevation2: '#FBFCFD', // Raised
+  elevation3: '#F3F5F7', // Dialogs
+  elevation4: '#EBEFF2', // Navigation
+  elevation5: '#E2E8F0', // Highest
+
+  // ── LEGACY ──────────────────────────────────────────────────
+  gray: '#718096',
   goldButton: '#D4AF37',
-  elevation0: 'transparent',
 } as const;
 
 export type ColorKey = keyof typeof Colors;

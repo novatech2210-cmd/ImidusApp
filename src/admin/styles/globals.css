@@ -4,17 +4,369 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   IMIDUS Admin Portal - Imperial Onyx Dark Theme
+   Inspired by Google Stitch / Material Design 3 Dark Mode
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 :root {
-  --color-brand-gold: #d4af37;
-  --color-brand-blue: #1e5aa8;
-  --color-brand-navy: #1a1a2e;
-  --color-white: #ffffff;
+  /* Core Dark Surfaces - Imperial Onyx */
+  --color-bg-primary: #0F0F12;        /* Base dark background */
+  --color-bg-secondary: #1A1A1F;      /* Secondary surface */
+  --color-bg-tertiary: #222228;       /* Tertiary/elevated surface */
+  --color-bg-elevated: #2A2A30;       /* Elevated/modal background */
+  --color-bg-overlay: #323238;        /* Overlay backdrop */
+  --color-dark-bg: #1A1A2E;           /* Alternative dark from mobile spec */
+
+  /* Brand Colors - Aligned with Mobile Spec */
+  --color-brand-blue: #0A1F3D;        /* Midnight Navy - PRIMARY (was #5BA0FF) */
+  --color-brand-blue-dark: #051020;   /* Darker navy variant */
+  --color-brand-blue-light: #152E52;  /* Lighter navy variant */
+  --color-brand-gold: #D4AF37;        /* Imperial Gold - ACCENT (was #FFD666) */
+  --color-brand-gold-dark: #B08D26;   /* Darker gold */
+  --color-brand-gold-light: #E5C76B;  /* Lighter gold */
+
+  /* Text Colors */
+  --color-text-primary: #F5F5F7;
+  --color-text-secondary: #9A9AA3;
+  --color-text-muted: #6E6E78;
+  --color-text-on-gold: #1A1A1F;
+
+  /* Border Colors */
+  --color-border: #2A2A30;
+  --color-border-light: #3A3A42;
+
+  /* Status Colors */
+  --color-success: #4ADE80;
+  --color-success-bg: #1A2D22;
+  --color-error: #FF6B6B;
+  --color-error-bg: #2D1F1F;
+  --color-warning: #FFB86C;
+  --color-warning-bg: #2D2518;
+  --color-info: #60A5FA;
+  --color-info-bg: #1A2433;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-gold: 0 4px 16px rgba(255, 214, 102, 0.15);
+  --shadow-blue: 0 4px 16px rgba(91, 160, 255, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
 }
 
 body {
   font-family: "Outfit", "Inter", system-ui, sans-serif;
-  color: var(--color-brand-navy);
-  background-color: #f8f9fc;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Base Components
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* Focus States */
+*:focus-visible {
+  outline: 2px solid var(--color-brand-blue);
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Card Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.card {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--color-border-light);
+  box-shadow: var(--shadow-md);
+}
+
+.card-elevated {
+  background-color: var(--color-bg-tertiary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Button Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-dark));
+  color: white;
+}
+
+.btn-primary:hover {
+  box-shadow: var(--shadow-blue);
+  transform: translateY(-1px);
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--color-brand-gold), var(--color-brand-gold-dark));
+  color: var(--color-text-on-gold);
+}
+
+.btn-gold:hover {
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--color-border-light);
+  color: var(--color-text-primary);
+}
+
+.btn-outline:hover {
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-brand-blue);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Input Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.input {
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  transition: all 0.2s ease;
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.input:focus {
+  border-color: var(--color-brand-blue);
+  background-color: var(--color-bg-secondary);
+  box-shadow: 0 0 0 3px rgba(91, 160, 255, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Table Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.table-dark {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table-dark th {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table-dark td {
+  padding: 16px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.table-dark tr:hover td {
+  background-color: var(--color-bg-tertiary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Badge Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.badge-error {
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.badge-warning {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.badge-info {
+  background-color: var(--color-info-bg);
+  color: var(--color-info);
+}
+
+.badge-gold {
+  background-color: rgba(255, 214, 102, 0.15);
+  color: var(--color-brand-gold);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Sidebar Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.admin-sidebar {
+  background-color: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border);
+}
+
+.sidebar-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.sidebar-item:hover {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.sidebar-item.active {
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-dark));
+  color: white;
+  box-shadow: var(--shadow-blue);
+}
+
+.sidebar-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px;
+  background-color: var(--color-brand-gold);
+  border-radius: 0 4px 4px 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Chart Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: var(--color-border) !important;
+}
+
+.recharts-text {
+  fill: var(--color-text-secondary) !important;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: var(--color-bg-elevated) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 12px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Utility Classes
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, var(--color-brand-gold), var(--color-brand-gold-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-blue {
+  background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-blue-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glow-gold {
+  box-shadow: var(--shadow-gold);
+}
+
+.glow-blue {
+  box-shadow: var(--shadow-blue);
+}
+
+.glass {
+  background: rgba(26, 26, 31, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Gold accent line for top of page */
+.gold-line-top {
+  background: linear-gradient(90deg,
+    var(--color-brand-gold) 0%,
+    var(--color-brand-gold-light) 50%,
+    var(--color-brand-gold) 100%
+  );
 }

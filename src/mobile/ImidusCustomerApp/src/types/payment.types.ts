@@ -30,3 +30,27 @@ export interface PaymentError {
   message: string;
   code?: string;
 }
+
+/**
+ * Payment request to send to backend
+ */
+export interface PaymentRequest {
+  salesId: number;
+  token: PaymentToken;
+  amount: number;
+  dailyOrderNumber: number;
+  customerId?: number;
+  pointsToRedeem?: number;
+}
+
+/**
+ * Payment response from backend
+ */
+export interface PaymentResponse {
+  success: boolean;
+  transactionId?: string;
+  ticketId?: number;
+  dailyOrderNumber?: number;
+  errorMessage?: string;
+  errorCode?: string;
+}

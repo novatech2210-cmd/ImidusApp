@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,10 @@ import {
   ActivityIndicator,
   Switch,
 } from 'react-native';
-import { CardData } from '../types/payment.types';
+import LinearGradient from 'react-native-linear-gradient';
+import {CardData} from '../types/payment.types';
+import {Colors} from '../theme/colors';
+import {Spacing, Elevation} from '../theme/spacing';
 
 interface PaymentFormProps {
   onSubmit: (cardData: CardData) => void;
@@ -16,32 +19,21 @@ interface PaymentFormProps {
   error?: string;
 }
 
-/**
- * Payment form component with credit card input and validation
- * Implements Luhn algorithm for card validation and auto-formatting
- */
-export default function PaymentForm({ onSubmit, loading, error }: PaymentFormProps) {
+export default function PaymentForm({onSubmit, loading, error}: PaymentFormProps) {
   const [cardNumber, setCardNumber] = useState('');
   const [expirationMonth, setExpirationMonth] = useState('');
   const [expirationYear, setExpirationYear] = useState('');
   const [cvv, setCvv] = useState('');
   const [saveCard, setSaveCard] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
-  /**
-   * Format card number with spaces every 4 digits
-   * Example: "1234567890123456" -> "1234 5678 9012 3456"
-   */
   const formatCardNumber = (value: string) => {
     const cleaned = value.replace(/\s/g, '');
     const chunks = cleaned.match(/.{1,4}/g) || [];
     return chunks.join(' ');
   };
 
-  /**
-   * Luhn algorithm for card number validation
-   * https://en.wikipedia.org/wiki/Luhn_algorithm
-   */
   const validateCardNumber = (cardNum: string): boolean => {
     const cleaned = cardNum.replace(/\s/g, '');
     if (!/^\d{13,19}$/.test(cleaned)) return false;
@@ -64,9 +56,6 @@ export default function PaymentForm({ onSubmit, loading, error }: PaymentFormPro
     return sum % 10 === 0;
   };
 
-  /**
-   * Validate expiration date is in the future
-   */
   const validateExpiration = (month: string, year: string): boolean => {
     const monthNum = parseInt(month, 10);
     const yearNum = parseInt(year, 10);
@@ -84,45 +73,33 @@ export default function PaymentForm({ onSubmit, loading, error }: PaymentFormPro
     return true;
   };
 
-  /**
-   * Validate CVV format (3-4 digits)
-   */
   const validateCvv = (cvvValue: string): boolean => {
     return /^\d{3,4}$/.test(cvvValue);
   };
 
-  /**
-   * Handle card number input with auto-formatting
-   */
   const handleCardNumberChange = (value: string) => {
     const cleaned = value.replace(/\D/g, '');
     if (cleaned.length <= 16) {
       setCardNumber(formatCardNumber(cleaned));
       if (validationErrors.cardNumber) {
-        setValidationErrors({ ...validationErrors, cardNumber: '' });
+        setValidationErrors({...validationErrors, cardNumber: ''});
       }
     }
   };
 
-  /**
-   * Handle form submission with validation
-   */
   const handleSubmit = () => {
     const errors: Record<string, string> = {};
 
-    // Validate card number
     if (!validateCardNumber(cardNumber)) {
       errors.cardNumber = 'Invalid card number';
     }
 
-    // Validate expiration
     if (!validateExpiration(expirationMonth, expirationYear)) {
       errors.expiration = 'Invalid or expired card';
     }
 
-    // Validate CVV
     if (!validateCvv(cvv)) {
-      errors.cvv = 'Invalid CVV (3-4 digits)';
+      errors.cvv = 'Invalid CVV';
     }
 
     setValidationErrors(errors);
@@ -140,168 +117,226 @@ export default function PaymentForm({ onSubmit, loading, error }: PaymentFormPro
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Payment Information</Text>
+      <Text style={styles.subtitle}>Enter your card details securely</Text>
 
       {/* Card Number */}
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>Card Number</Text>
+        <Text style={styles.label}>CARD NUMBER</Text>
         <TextInput
-          style={[styles.input, validationErrors.cardNumber ? styles.inputError : undefined]}
+          style={[
+            styles.input,
+            focusedInput === 'cardNumber' ? styles.inputFocused : undefined,
+            validationErrors.cardNumber ? styles.inputError : undefined,
+          ]}
           placeholder="1234 5678 9012 3456"
+          placeholderTextColor={Colors.textMuted}
           keyboardType="numeric"
           value={cardNumber}
           onChangeText={handleCardNumberChange}
           editable={!loading}
           maxLength={19}
+          onFocus={() => setFocusedInput('cardNumber')}
+          onBlur={() => setFocusedInput(null)}
         />
         {validationErrors.cardNumber && (
           <Text style={styles.errorText}>{validationErrors.cardNumber}</Text>
         )}
       </View>
 
-      {/* Expiration Date */}
+      {/* Expiration Date & CVV */}
       <View style={styles.row}>
         <View style={[styles.inputGroup, styles.flex1]}>
-          <Text style={styles.label}>Month</Text>
+          <Text style={styles.label}>MONTH</Text>
           <TextInput
-            style={[styles.input, validationErrors.expiration ? styles.inputError : undefined]}
+            style={[
+              styles.input,
+              focusedInput === 'month' ? styles.inputFocused : undefined,
+              validationErrors.expiration ? styles.inputError : undefined,
+            ]}
             placeholder="MM"
+            placeholderTextColor={Colors.textMuted}
             keyboardType="numeric"
             value={expirationMonth}
-            onChangeText={(value) => {
+            onChangeText={value => {
               if (/^\d{0,2}$/.test(value)) {
                 setExpirationMonth(value);
                 if (validationErrors.expiration) {
-                  setValidationErrors({ ...validationErrors, expiration: '' });
+                  setValidationErrors({...validationErrors, expiration: ''});
                 }
               }
             }}
             editable={!loading}
             maxLength={2}
+            onFocus={() => setFocusedInput('month')}
+            onBlur={() => setFocusedInput(null)}
           />
         </View>
 
         <View style={[styles.inputGroup, styles.flex1, styles.marginLeft]}>
-          <Text style={styles.label}>Year</Text>
+          <Text style={styles.label}>YEAR</Text>
           <TextInput
-            style={[styles.input, validationErrors.expiration ? styles.inputError : undefined]}
+            style={[
+              styles.input,
+              focusedInput === 'year' ? styles.inputFocused : undefined,
+              validationErrors.expiration ? styles.inputError : undefined,
+            ]}
             placeholder="YYYY"
+            placeholderTextColor={Colors.textMuted}
             keyboardType="numeric"
             value={expirationYear}
-            onChangeText={(value) => {
+            onChangeText={value => {
               if (/^\d{0,4}$/.test(value)) {
                 setExpirationYear(value);
                 if (validationErrors.expiration) {
-                  setValidationErrors({ ...validationErrors, expiration: '' });
+                  setValidationErrors({...validationErrors, expiration: ''});
                 }
               }
             }}
             editable={!loading}
             maxLength={4}
+            onFocus={() => setFocusedInput('year')}
+            onBlur={() => setFocusedInput(null)}
           />
         </View>
 
         <View style={[styles.inputGroup, styles.cvvGroup]}>
           <Text style={styles.label}>CVV</Text>
           <TextInput
-            style={[styles.input, validationErrors.cvv ? styles.inputError : undefined]}
+            style={[
+              styles.input,
+              focusedInput === 'cvv' ? styles.inputFocused : undefined,
+              validationErrors.cvv ? styles.inputError : undefined,
+            ]}
             placeholder="123"
+            placeholderTextColor={Colors.textMuted}
             keyboardType="numeric"
             secureTextEntry
             value={cvv}
-            onChangeText={(value) => {
+            onChangeText={value => {
               if (/^\d{0,4}$/.test(value)) {
                 setCvv(value);
                 if (validationErrors.cvv) {
-                  setValidationErrors({ ...validationErrors, cvv: '' });
+                  setValidationErrors({...validationErrors, cvv: ''});
                 }
               }
             }}
             editable={!loading}
             maxLength={4}
+            onFocus={() => setFocusedInput('cvv')}
+            onBlur={() => setFocusedInput(null)}
           />
         </View>
       </View>
+
       {validationErrors.expiration && (
         <Text style={styles.errorText}>{validationErrors.expiration}</Text>
       )}
-      {validationErrors.cvv && <Text style={styles.errorText}>{validationErrors.cvv}</Text>}
+      {validationErrors.cvv && (
+        <Text style={styles.errorText}>{validationErrors.cvv}</Text>
+      )}
 
-      {/* Save Card Option (V1 UI placeholder - not functional) */}
+      {/* Save Card Option */}
       <View style={styles.switchRow}>
         <Text style={styles.switchLabel}>Save card for future orders</Text>
         <Switch
           value={saveCard}
           onValueChange={setSaveCard}
           disabled={loading}
-          trackColor={{ false: '#d1d5db', true: '#10b981' }}
-          thumbColor="#fff"
+          trackColor={{false: Colors.surfaceContainerHigh, true: Colors.success}}
+          thumbColor={Colors.white}
         />
       </View>
       <Text style={styles.comingSoon}>(Coming soon)</Text>
 
       {/* Error Display */}
-      {error && <Text style={styles.apiError}>{error}</Text>}
+      {error && (
+        <View style={styles.apiErrorContainer}>
+          <Text style={styles.apiError}>{error}</Text>
+        </View>
+      )}
 
       {/* Submit Button */}
       <TouchableOpacity
-        style={[styles.button, loading && styles.buttonDisabled]}
         onPress={handleSubmit}
         disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Complete Payment</Text>
-        )}
+        activeOpacity={0.8}>
+        <LinearGradient
+          colors={
+            loading
+              ? [Colors.surfaceContainerHigh, Colors.surfaceContainerHigh]
+              : [Colors.success, '#2DA066']
+          }
+          style={styles.button}
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}>
+          {loading ? (
+            <ActivityIndicator color={Colors.white} />
+          ) : (
+            <Text style={styles.buttonText}>Complete Payment</Text>
+          )}
+        </LinearGradient>
       </TouchableOpacity>
 
       {/* Security Notice */}
-      <Text style={styles.securityNotice}>
-        Your card information is encrypted and never stored on our servers
-      </Text>
+      <View style={styles.securityNotice}>
+        <Text style={styles.securityIcon}>🔒</Text>
+        <Text style={styles.securityText}>
+          Your card information is encrypted and never stored on our servers
+        </Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginBottom: 16,
+    backgroundColor: Colors.surface,
+    borderRadius: 16,
+    padding: Spacing.md,
+    ...Elevation.level1,
   },
   title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 20,
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.lg,
   },
   inputGroup: {
-    marginBottom: 16,
+    marginBottom: Spacing.md,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
-    marginBottom: 6,
+    fontSize: 11,
+    fontWeight: '600',
+    color: Colors.textMuted,
+    letterSpacing: 1,
+    marginBottom: Spacing.xs,
   },
   input: {
-    height: 48,
+    height: 52,
     borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderColor: Colors.border,
+    borderRadius: 12,
+    paddingHorizontal: Spacing.md,
     fontSize: 16,
-    color: '#111827',
-    backgroundColor: '#fff',
+    color: Colors.textPrimary,
+    backgroundColor: Colors.surfaceContainer,
+  },
+  inputFocused: {
+    borderColor: Colors.brandBlue,
+    backgroundColor: Colors.surfaceContainerLow,
   },
   inputError: {
-    borderColor: '#ef4444',
+    borderColor: Colors.error,
   },
   errorText: {
-    color: '#ef4444',
+    color: Colors.error,
     fontSize: 12,
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
   row: {
     flexDirection: 'row',
@@ -311,56 +346,69 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   marginLeft: {
-    marginLeft: 12,
+    marginLeft: Spacing.sm,
   },
   cvvGroup: {
-    width: 90,
-    marginLeft: 12,
+    width: 100,
+    marginLeft: Spacing.sm,
   },
   switchRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: Spacing.sm,
     marginBottom: 4,
   },
   switchLabel: {
     fontSize: 14,
-    color: '#374151',
+    color: Colors.textSecondary,
   },
   comingSoon: {
     fontSize: 12,
-    color: '#9ca3af',
-    marginBottom: 16,
+    color: Colors.textMuted,
+    marginBottom: Spacing.md,
+  },
+  apiErrorContainer: {
+    backgroundColor: Colors.errorLight,
+    borderRadius: 12,
+    padding: Spacing.md,
+    marginBottom: Spacing.md,
+    borderLeftWidth: 4,
+    borderLeftColor: Colors.error,
   },
   apiError: {
-    backgroundColor: '#fee2e2',
-    color: '#991b1b',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
+    color: Colors.error,
     fontSize: 14,
   },
   button: {
-    backgroundColor: '#10b981',
-    height: 52,
-    borderRadius: 8,
+    height: 56,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonDisabled: {
-    backgroundColor: '#9ca3af',
+    marginTop: Spacing.sm,
   },
   buttonText: {
-    color: '#fff',
+    color: Colors.white,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   securityNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: Spacing.md,
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+  },
+  securityIcon: {
+    fontSize: 14,
+    marginRight: Spacing.xs,
+  },
+  securityText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.textMuted,
     textAlign: 'center',
-    marginTop: 12,
+    flex: 1,
   },
 });

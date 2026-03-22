@@ -5,7 +5,7 @@ import { useActivityLogs } from '@/lib/hooks';
 import MainLayout from '@/components/Navigation/MainLayout';
 import Spinner from '@/components/Loading/Spinner';
 import { formatDateTime } from '@/lib/utils';
-import { AlertCircle, CheckCircle, Trash2, RotateCcw } from 'lucide-react';
+import { AlertCircle, CheckCircle, Trash2, RotateCcw, FileText, Filter } from 'lucide-react';
 
 export default function LogsPage() {
   const { data: logs, isLoading } = useActivityLogs();
@@ -19,36 +19,45 @@ export default function LogsPage() {
 
   const getActionColor = (action: string) => {
     const colors: Record<string, string> = {
-      RefundProcessed: 'bg-orange-100 text-orange-800',
-      CampaignSent: 'bg-blue-100 text-blue-800',
-      MenuOverride: 'bg-purple-100 text-purple-800',
-      CustomerEdited: 'bg-green-100 text-green-800',
-      BirthdayReward: 'bg-pink-100 text-pink-800',
+      RefundProcessed: 'bg-[#FFD666]/20 text-[#FFD666]',
+      CampaignSent: 'bg-[#5BA0FF]/20 text-[#5BA0FF]',
+      MenuOverride: 'bg-[#A855F7]/20 text-[#A855F7]',
+      CustomerEdited: 'bg-[#4ADE80]/20 text-[#4ADE80]',
+      BirthdayReward: 'bg-[#FF6B6B]/20 text-[#FF6B6B]',
     };
-    return colors[action] || 'bg-gray-100 text-gray-800';
+    return colors[action] || 'bg-[#222228] text-[#9A9AA3]';
   };
 
   if (isLoading) return <Spinner fullScreen />;
 
   return (
     <MainLayout>
-      <div className="p-6">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Activity Logs</h1>
-          <p className="text-gray-600">Track all admin actions and system events</p>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-[#A855F7]/10 rounded-xl">
+            <FileText size={24} className="text-[#A855F7]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-[#F5F5F7]">Activity Logs</h1>
+            <p className="text-sm text-[#6E6E78]">Track all admin actions and system events</p>
+          </div>
         </div>
 
         {/* Filters */}
-        <div className="card mb-6">
+        <div className="bg-[#1A1A1F] p-4 rounded-xl border border-[#2A2A30]">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Filter by Action
+              <label className="block text-xs font-medium text-[#6E6E78] uppercase tracking-wider mb-2">
+                <div className="flex items-center gap-2">
+                  <Filter size={14} />
+                  Filter by Action
+                </div>
               </label>
               <select
                 value={filterAction}
                 onChange={(e) => setFilterAction(e.target.value)}
-                className="w-full"
+                className="w-full px-4 py-2.5 bg-[#222228] border border-[#2A2A30] rounded-xl text-[#F5F5F7] focus:outline-none focus:border-[#5BA0FF] transition-colors"
               >
                 <option value="">All Actions</option>
                 {actions.map((action) => (
@@ -59,12 +68,12 @@ export default function LogsPage() {
               </select>
             </div>
             <div className="flex items-end gap-2">
-              <button className="btn btn-secondary flex items-center gap-2">
-                <RotateCcw className="w-4 h-4" />
+              <button className="flex items-center gap-2 px-4 py-2.5 border border-[#2A2A30] text-[#9A9AA3] rounded-xl hover:bg-[#222228] hover:text-[#F5F5F7] transition-colors">
+                <RotateCcw size={16} />
                 Refresh
               </button>
-              <button className="btn btn-danger flex items-center gap-2">
-                <Trash2 className="w-4 h-4" />
+              <button className="flex items-center gap-2 px-4 py-2.5 bg-[#FF6B6B]/10 text-[#FF6B6B] border border-[#FF6B6B]/30 rounded-xl hover:bg-[#FF6B6B]/20 transition-colors">
+                <Trash2 size={16} />
                 Clear Old
               </button>
             </div>
@@ -72,14 +81,14 @@ export default function LogsPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="card">
-            <p className="text-sm text-gray-600 mb-1">Total Logs</p>
-            <p className="text-3xl font-bold text-gray-900">{logs?.length || 0}</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-[#1A1A1F] p-6 rounded-xl border border-[#2A2A30]">
+            <p className="text-xs text-[#6E6E78] uppercase tracking-wider mb-2">Total Logs</p>
+            <p className="text-3xl font-bold text-[#F5F5F7]">{logs?.length || 0}</p>
           </div>
-          <div className="card">
-            <p className="text-sm text-gray-600 mb-1">Today</p>
-            <p className="text-3xl font-bold text-blue-600">
+          <div className="bg-[#1A1A1F] p-6 rounded-xl border border-[#2A2A30]">
+            <p className="text-xs text-[#6E6E78] uppercase tracking-wider mb-2">Today</p>
+            <p className="text-3xl font-bold text-[#5BA0FF]">
               {logs?.filter((log: any) => {
                 const logDate = new Date(log.timestamp);
                 const today = new Date();
@@ -87,9 +96,9 @@ export default function LogsPage() {
               }).length || 0}
             </p>
           </div>
-          <div className="card">
-            <p className="text-sm text-gray-600 mb-1">Last 7 Days</p>
-            <p className="text-3xl font-bold text-green-600">
+          <div className="bg-[#1A1A1F] p-6 rounded-xl border border-[#2A2A30]">
+            <p className="text-xs text-[#6E6E78] uppercase tracking-wider mb-2">Last 7 Days</p>
+            <p className="text-3xl font-bold text-[#4ADE80]">
               {logs?.filter((log: any) => {
                 const logDate = new Date(log.timestamp);
                 const now = new Date();
@@ -101,39 +110,40 @@ export default function LogsPage() {
         </div>
 
         {/* Logs Table */}
-        <div className="card">
+        <div className="bg-[#1A1A1F] rounded-xl border border-[#2A2A30] overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="table">
-              <thead>
+            <table className="w-full">
+              <thead className="bg-[#222228] border-b border-[#2A2A30]">
                 <tr>
-                  <th>Timestamp</th>
-                  <th>Admin</th>
-                  <th>Action</th>
-                  <th>Description</th>
-                  <th>IP Address</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#6E6E78] uppercase tracking-wider">Timestamp</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#6E6E78] uppercase tracking-wider">Admin</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#6E6E78] uppercase tracking-wider">Action</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#6E6E78] uppercase tracking-wider">Description</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#6E6E78] uppercase tracking-wider">IP Address</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredLogs.length > 0 ? (
                   filteredLogs.map((log: any) => (
-                    <tr key={log.id}>
-                      <td className="text-sm">{formatDateTime(log.timestamp)}</td>
-                      <td>
-                        <span className="font-medium">{log.adminUser}</span>
+                    <tr key={log.id} className="border-b border-[#2A2A30]/50 hover:bg-[#222228] transition-colors">
+                      <td className="px-6 py-4 text-sm text-[#9A9AA3]">{formatDateTime(log.timestamp)}</td>
+                      <td className="px-6 py-4">
+                        <span className="font-medium text-[#F5F5F7]">{log.adminUser}</span>
                       </td>
-                      <td>
-                        <span className={`badge ${getActionColor(log.action)}`}>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getActionColor(log.action)}`}>
                           {log.action}
                         </span>
                       </td>
-                      <td className="text-sm text-gray-600">{log.description}</td>
-                      <td className="text-xs text-gray-500 font-mono">{log.ipAddress}</td>
+                      <td className="px-6 py-4 text-sm text-[#9A9AA3]">{log.description}</td>
+                      <td className="px-6 py-4 text-xs text-[#6E6E78] font-mono">{log.ipAddress}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="text-center py-8 text-gray-500">
-                      No logs found
+                    <td colSpan={5} className="text-center py-12 text-[#6E6E78]">
+                      <FileText size={40} className="mx-auto mb-4 opacity-50" />
+                      <p>No logs found</p>
                     </td>
                   </tr>
                 )}
@@ -143,8 +153,8 @@ export default function LogsPage() {
         </div>
 
         {/* Retention Notice */}
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-900">
+        <div className="p-4 bg-[#5BA0FF]/10 border border-[#5BA0FF]/30 rounded-xl">
+          <p className="text-sm text-[#5BA0FF]">
             Logs are retained for 90 days. For long-term audit requirements, please export logs regularly.
           </p>
         </div>

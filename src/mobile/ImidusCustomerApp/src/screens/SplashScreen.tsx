@@ -1,26 +1,51 @@
 import React, {useEffect, useRef} from 'react';
 import {Animated, StatusBar, StyleSheet, Text, View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import {Colors, Spacing, TextStyles} from '../theme';
+import {Colors, Spacing} from '../theme';
 
 const SplashScreen = () => {
   const progressAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const glowAnim = useRef(new Animated.Value(0.3)).current;
 
   useEffect(() => {
-    // Fade in content
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
+    // Fade and scale in content
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 8,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Pulsing glow effect
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowAnim, {
+          toValue: 0.6,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(glowAnim, {
+          toValue: 0.3,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+      ]),
+    ).start();
 
     // Animate loading bar
     Animated.loop(
       Animated.sequence([
         Animated.timing(progressAnim, {
           toValue: 100,
-          duration: 2000,
+          duration: 1800,
           useNativeDriver: false,
         }),
         Animated.timing(progressAnim, {
@@ -30,46 +55,59 @@ const SplashScreen = () => {
         }),
       ]),
     ).start();
-  }, [progressAnim, fadeAnim]);
+  }, [progressAnim, fadeAnim, scaleAnim, glowAnim]);
 
   return (
-    <LinearGradient
-      colors={[Colors.brandBlue, Colors.brandBlueDark]}
-      style={styles.container}
-      start={{x: 0, y: 0}}
-      end={{x: 1, y: 1}}>
+    <View style={styles.container}>
       <StatusBar
         barStyle="light-content"
         translucent
         backgroundColor="transparent"
       />
 
-      {/* Subtle radial highlight effect */}
-      <View style={styles.radialHighlight} />
+      {/* Animated glow effect */}
+      <Animated.View style={[styles.glowCircle, {opacity: glowAnim}]} />
+      <Animated.View style={[styles.glowCircle2, {opacity: glowAnim}]} />
 
       {/* Logo Section */}
-      <Animated.View style={[styles.logoSection, {opacity: fadeAnim}]}>
-        <Text style={TextStyles.wordmark}>IMIDUS</Text>
-        <Text style={styles.tagline}>
-          Seamless Ordering. Real-Time Sync. Unified Loyalty.
-        </Text>
+      <Animated.View
+        style={[
+          styles.logoSection,
+          {
+            opacity: fadeAnim,
+            transform: [{scale: scaleAnim}],
+          },
+        ]}>
+        <Text style={styles.brandName}>IMIDUS</Text>
+        <View style={styles.taglineContainer}>
+          <View style={styles.dot} />
+          <Text style={styles.tagline}>Order</Text>
+          <View style={styles.dot} />
+          <Text style={styles.tagline}>Track</Text>
+          <View style={styles.dot} />
+          <Text style={styles.tagline}>Earn</Text>
+          <View style={styles.dot} />
+        </View>
       </Animated.View>
 
-      {/* Loading Bar */}
-      <View style={styles.loadingContainer}>
-        <Animated.View
-          style={[
-            styles.loadingBar,
-            {
-              width: progressAnim.interpolate({
-                inputRange: [0, 100],
-                outputRange: ['0%', '100%'],
-              }),
-            },
-          ]}
-        />
+      {/* Loading indicator */}
+      <View style={styles.loadingSection}>
+        <View style={styles.loadingContainer}>
+          <Animated.View
+            style={[
+              styles.loadingBar,
+              {
+                width: progressAnim.interpolate({
+                  inputRange: [0, 100],
+                  outputRange: ['0%', '100%'],
+                }),
+              },
+            ]}
+          />
+        </View>
+        <Text style={styles.loadingText}>Connecting to POS...</Text>
       </View>
-    </LinearGradient>
+    </View>
   );
 };
 
@@ -78,49 +116,83 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.brandBlue,
+    backgroundColor: Colors.background,
     position: 'relative',
     overflow: 'hidden',
   },
-
-  radialHighlight: {
+  glowCircle: {
     position: 'absolute',
-    width: 600,
-    height: 600,
-    borderRadius: 300,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    top: -150,
-    right: -150,
+    width: 400,
+    height: 400,
+    borderRadius: 200,
+    backgroundColor: Colors.brandBlue,
+    top: -100,
+    right: -100,
+    opacity: 0.15,
   },
-
+  glowCircle2: {
+    position: 'absolute',
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: Colors.brandGold,
+    bottom: -50,
+    left: -50,
+    opacity: 0.1,
+  },
   logoSection: {
     alignItems: 'center',
-    marginBottom: Spacing['3xl'],
   },
-
+  brandName: {
+    fontSize: 56,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+    letterSpacing: 8,
+    textShadowColor: 'rgba(91, 160, 255, 0.3)',
+    textShadowOffset: {width: 0, height: 4},
+    textShadowRadius: 20,
+  },
+  taglineContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: Spacing.lg,
+  },
   tagline: {
-    ...TextStyles.taglineGold,
-    marginTop: Spacing.sm,
-    width: 250,
-    textAlign: 'center',
-    lineHeight: 20,
-    textTransform: 'none', // Override uppercase for sub-marketing line
+    fontSize: 14,
+    color: Colors.textSecondary,
+    fontWeight: '500',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
-
-  loadingContainer: {
-    width: 140,
+  dot: {
+    width: 4,
     height: 4,
-    backgroundColor: 'rgba(255,255,255,0.2)',
     borderRadius: 2,
-    overflow: 'hidden',
+    backgroundColor: Colors.brandGold,
+    marginHorizontal: Spacing.sm,
+  },
+  loadingSection: {
     position: 'absolute',
     bottom: 80,
+    alignItems: 'center',
   },
-
+  loadingContainer: {
+    width: 180,
+    height: 3,
+    backgroundColor: Colors.surfaceContainer,
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
   loadingBar: {
     height: '100%',
     backgroundColor: Colors.brandGold,
     borderRadius: 2,
+  },
+  loadingText: {
+    fontSize: 12,
+    color: Colors.textMuted,
+    marginTop: Spacing.sm,
+    letterSpacing: 0.5,
   },
 });
 

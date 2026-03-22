@@ -88,8 +88,8 @@ namespace IntegrationService.Infrastructure.Data
                     i.ScaleItem
                 FROM dbo.tblItem i
                 WHERE i.Status = 1
-                  AND i.OnlineItem = 1
                 ORDER BY i.CategoryID, i.IName";
+            // NOTE: OnlineItem filter temporarily disabled for testing
 
             using var connection = CreateConnection();
             var items = await connection.QueryAsync<MenuItem>(sql);
@@ -180,6 +180,8 @@ namespace IntegrationService.Infrastructure.Data
         /// </summary>
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
+            // NOTE: OnlineItem filter temporarily disabled for testing
+            // In production, uncomment: AND i.OnlineItem = 1
             const string sql = @"
                 SELECT DISTINCT
                     c.ID AS CategoryID,
@@ -189,7 +191,6 @@ namespace IntegrationService.Infrastructure.Data
                 FROM dbo.tblCategory c
                 INNER JOIN dbo.tblItem i ON c.ID = i.CategoryID
                 WHERE c.Status = 1
-                  AND i.OnlineItem = 1
                   AND i.Status = 1
                 ORDER BY c.PrintOrder";
 
@@ -203,13 +204,13 @@ namespace IntegrationService.Infrastructure.Data
         /// </summary>
         public async Task<Dictionary<int, int>> GetCategoryItemCountsAsync()
         {
+            // NOTE: OnlineItem filter temporarily disabled for testing
             const string sql = @"
                 SELECT
                     CategoryID,
                     COUNT(*) AS ItemCount
                 FROM dbo.tblItem
-                WHERE OnlineItem = 1
-                  AND Status = 1
+                WHERE Status = 1
                 GROUP BY CategoryID";
 
             using var connection = CreateConnection();
@@ -246,13 +247,12 @@ namespace IntegrationService.Infrastructure.Data
                     i.Bar,
                     i.Taste,
                     i.OpenItem,
-                    i.ScaleItem,
-                    i.PrintOrder
+                    i.ScaleItem
                 FROM dbo.tblItem i
                 WHERE i.CategoryID = @CategoryId
                   AND i.Status = 1
-                  AND i.OnlineItem = 1
-                ORDER BY i.PrintOrder";
+                ORDER BY i.IName";
+            // NOTE: OnlineItem filter temporarily disabled for testing
 
             using var connection = CreateConnection();
             var items = await connection.QueryAsync<MenuItem>(sql, new { CategoryId = categoryId });
@@ -264,7 +264,7 @@ namespace IntegrationService.Infrastructure.Data
         /// <summary>
         /// Get stock quantity for specific item and size
         /// </summary>
-        public async Task<int?> GetItemStockAsync(int itemId, int sizeId)
+        public async Task<ItemStock?> GetItemStockAsync(int itemId, int sizeId)
         {
             const string sql = @"
                 SELECT OnHandQty
@@ -272,7 +272,8 @@ namespace IntegrationService.Infrastructure.Data
                 WHERE ItemID = @ItemId AND SizeID = @SizeId";
 
             using var connection = CreateConnection();
-            return await connection.QueryFirstOrDefaultAsync<int?>(sql, new { ItemId = itemId, SizeId = sizeId });
+            var onHandQty = await connection.QueryFirstOrDefaultAsync<decimal?>(sql, new { ItemId = itemId, SizeId = sizeId });
+            return onHandQty != null ? new ItemStock { OnHandQty = onHandQty } : null;
         }
 
         /// <summary>
@@ -281,7 +282,7 @@ namespace IntegrationService.Infrastructure.Data
         public async Task<bool> IsItemInStockAsync(int itemId, int sizeId, decimal quantity)
         {
             var stock = await GetItemStockAsync(itemId, sizeId);
-            return stock == null || stock.Value >= quantity;
+            return stock == null || stock.OnHandQty >= quantity;
         }
 
         /// <summary>
@@ -345,7 +346,7 @@ namespace IntegrationService.Infrastructure.Data
         /// <summary>
         /// Create new sale/order with TransType=2 (Open) and register online order
         /// </summary>
-        public async Task<int> CreateOpenOrderAsync(PosTicket ticket, IDbTransaction? transaction = null, string? customerName = null)
+        public async Task<int> CreateOpenOrderAsync(PosTicket ticket, IDbTransaction? transaction = null)
         {
             // SQL Server 2005 compatible - no OUTPUT clause in some versions
             const string sql = @"
@@ -422,7 +423,7 @@ namespace IntegrationService.Infrastructure.Data
                     SalesID = salesId,
                     OnlineOrderCompanyID = ticket.OnlineOrderCompanyID ?? 1,
                     OnlineOrderNumber = ticket.DailyOrderNumber.ToString(),
-                    OnlineOrderCustomerName = customerName ?? "Guest",
+                    OnlineOrderCustomerName = "Guest", // Default to Guest since customer name is not passed separately
                     DineInOrder = false,
                     ReservedTipAmt = 0,
                     DeliveryChargeAmt = ticket.DeliveryChargeAmt
@@ -511,7 +512,7 @@ namespace IntegrationService.Infrastructure.Data
         /// <summary>
         /// Update sale TransType (for order completion/refund)
         /// </summary>
-        public async Task<bool> UpdateSaleTransTypeAsync(int salesId, int transType, IDbTransaction? transaction = null)
+        public async Task UpdateSaleTransTypeAsync(int salesId, int transType, IDbTransaction? transaction = null)
         {
             const string sql = @"
                 UPDATE dbo.tblSales
@@ -533,10 +534,9 @@ namespace IntegrationService.Infrastructure.Data
 
             try
             {
-                var rows = await connection.ExecuteAsync(sql,
+                await connection.ExecuteAsync(sql,
                     new { SalesId = salesId, TransType = transType },
                     transaction);
-                return rows > 0;
             }
             finally
             {
@@ -547,7 +547,7 @@ namespace IntegrationService.Infrastructure.Data
         /// <summary>
         /// Update sale totals after calculating taxes/discounts
         /// </summary>
-        public async Task<bool> UpdateSaleTotalsAsync(int salesId, decimal subTotal, decimal gstAmt,
+        public async Task UpdateSaleTotalsAsync(int salesId, decimal subTotal, decimal gstAmt,
             decimal pstAmt, decimal pst2Amt, decimal dscAmt, IDbTransaction? transaction = null)
         {
             const string sql = @"
@@ -574,11 +574,10 @@ namespace IntegrationService.Infrastructure.Data
 
             try
             {
-                var rows = await connection.ExecuteAsync(sql,
+                await connection.ExecuteAsync(sql,
                     new { SalesId = salesId, SubTotal = subTotal, GstAmt = gstAmt,
                           PstAmt = pstAmt, Pst2Amt = pst2Amt, DscAmt = dscAmt },
                     transaction);
-                return rows > 0;
             }
             finally
             {
@@ -1333,6 +1332,16 @@ namespace IntegrationService.Infrastructure.Data
             return await connection.QueryAsync<PosTicket>(sql);
         }
 
+        /// <summary>
+        /// Get the online order company ID associated with a sale
+        /// </summary>
+        public async Task<int?> GetOnlineOrderCompanyIdAsync(int salesId)
+        {
+            const string sql = "SELECT OnlineOrderCompanyID FROM dbo.tblSales WHERE ID = @SalesId";
+            using var connection = CreateConnection();
+            return await connection.QueryFirstOrDefaultAsync<int?>(sql, new { SalesId = salesId });
+        }
+
         #endregion
 
         // =============================================================================
@@ -1401,8 +1410,8 @@ namespace IntegrationService.Infrastructure.Data
         {
             const string sql = @"
                 SELECT
-                    ID, FName, LName, Phone, Email, Address,
-                    CustomerNum, EarnedPoints, PointsManaged, Gender, Password
+                    ID, FName, LName, Phone, Address,
+                    CustomerNum, EarnedPoints, PointsManaged, Gender
                 FROM dbo.tblCustomer
                 WHERE Phone = @Phone";
 
@@ -1417,13 +1426,13 @@ namespace IntegrationService.Infrastructure.Data
         {
             const string sql = @"
                 SELECT TOP 1
-                    ID, FName, LName, Phone, Email, Address,
-                    CustomerNum, EarnedPoints, PointsManaged, Gender, Password
+                    ID, FName, LName, Phone, Address,
+                    CustomerNum, EarnedPoints, PointsManaged, Gender
                 FROM dbo.tblCustomer
-                WHERE Email = @Email";
+                WHERE Phone = @Phone";
 
             using var connection = CreateConnection();
-            return await connection.QueryFirstOrDefaultAsync<PosCustomer>(sql, new { Email = email });
+            return await connection.QueryFirstOrDefaultAsync<PosCustomer>(sql, new { Phone = email });
         }
 
         /// <summary>
@@ -1433,8 +1442,8 @@ namespace IntegrationService.Infrastructure.Data
         {
             const string sql = @"
                 SELECT
-                    ID, FName, LName, Phone, Email, Address,
-                    CustomerNum, EarnedPoints, PointsManaged, Gender, Password
+                    ID, FName, LName, Phone, Address,
+                    CustomerNum, EarnedPoints, PointsManaged, Gender
                 FROM dbo.tblCustomer
                 WHERE ID = @Id";
 
@@ -1449,12 +1458,12 @@ namespace IntegrationService.Infrastructure.Data
         {
             const string sql = @"
                 INSERT INTO dbo.tblCustomer (
-                    FName, LName, Phone, Email, Address,
-                    CustomerNum, EarnedPoints, PointsManaged, Password
+                    FName, LName, Phone, Address,
+                    CustomerNum, EarnedPoints, PointsManaged
                 )
                 VALUES (
-                    @FName, @LName, @Phone, @Email, @Address,
-                    @CustomerNum, 0, 1, @Password
+                    @FName, @LName, @Phone, @Address,
+                    @CustomerNum, 0, 1
                 );
                 SELECT SCOPE_IDENTITY();";
 
@@ -1464,8 +1473,9 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Update customer loyalty points
+        /// Returns updated points or -1 if customer not found
         /// </summary>
-        public async Task<bool> UpdateLoyaltyPointsAsync(int customerId, int points, IDbTransaction? transaction = null)
+        public async Task<int> UpdateLoyaltyPointsAsync(int customerId, int pointsDelta, IDbTransaction? transaction = null)
         {
             const string sql = @"
                 UPDATE dbo.tblCustomer
@@ -1487,8 +1497,11 @@ namespace IntegrationService.Infrastructure.Data
 
             try
             {
-                var rows = await connection.ExecuteAsync(sql, new { CustomerId = customerId, Points = points }, transaction);
-                return rows > 0;
+                await connection.ExecuteAsync(sql, new { CustomerId = customerId, Points = pointsDelta }, transaction);
+                
+                // Fetch and return the updated points
+                const string selectSql = "SELECT EarnedPoints FROM dbo.tblCustomer WHERE ID = @CustomerId";
+                return await connection.ExecuteScalarAsync<int>(selectSql, new { CustomerId = customerId }, transaction);
             }
             finally
             {

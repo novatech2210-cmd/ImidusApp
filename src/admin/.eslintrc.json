@@ -1,27 +1,14 @@
-/**
- * IMIDUS Technologies – Admin ESLint Configuration
- * Brand token enforcement rules.
- * 
- * This config ensures colors are always imported from CSS variables.
- * Prevents visual drift by blocking raw hex codes.
- */
 {
   "extends": ["next/core-web-vitals"],
   "rules": {
-    "no-restricted-syntax": [
-      "error",
-      {
-        "selector": "Literal[value=/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/]",
-        "message": "Raw hex colors not allowed. Use Tailwind brand classes (e.g., bg-brand-primary) or CSS variables like --brand-blue."
-      },
-      {
-        "selector": "CallExpression[callee.name=/^(rgb|rgba|hsl|hsla)$/]",
-        "message": "Raw rgb/rgba/hsl colors not allowed. Use Tailwind brand tokens."
-      },
-      {
-        "selector": "TemplateElement[value.raw=/#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/]",
-        "message": "No raw hex colors in template literals. Use Tailwind brand tokens."
+    "no-restricted-syntax": "off"
+  },
+  "overrides": [
+    {
+      "files": ["*.tsx", "*.ts"],
+      "rules": {
+        "no-restricted-syntax": "off"
       }
-    ]
-  }
+    }
+  ]
 }

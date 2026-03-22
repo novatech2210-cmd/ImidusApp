@@ -8,18 +8,21 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {useSelector} from 'react-redux';
 import PaymentForm from '../components/PaymentForm';
+import AuthorizeNetWebView from '../components/AuthorizeNetWebView';
 import {completePayment} from '../services/orderService';
-import {tokenizeCard} from '../services/paymentService';
+import {validateCardData, detectCardType} from '../services/paymentService';
+import useAuthorizeNetTokenization from '../hooks/useAuthorizeNetTokenization';
 import {RootState} from '../store';
 import {Colors} from '../theme/colors';
-import {Spacing} from '../theme/spacing';
+import {Spacing, Elevation} from '../theme/spacing';
 import {CardData} from '../types/payment.types';
-
-import {ENV} from '../config/environment';
 
 type RootStackParamList = {
   Checkout: {
@@ -57,10 +60,6 @@ type RootStackParamList = {
 type CheckoutScreenRouteProp = RouteProp<RootStackParamList, 'Checkout'>;
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
-/**
- * Checkout screen with payment form and full-screen loading states
- * Implements payment flow: tokenize card -> submit to backend -> navigate to confirmation
- */
 export default function CheckoutScreen() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<CheckoutScreenRouteProp>();
@@ -78,83 +77,101 @@ export default function CheckoutScreen() {
   const [loadingStep, setLoadingStep] = useState('');
   const [error, setError] = useState<string | undefined>();
   const [pointsToRedeem, setPointsToRedeem] = useState(0);
+  const [pendingCardData, setPendingCardData] = useState<CardData | null>(null);
+
+  const {
+    showWebView,
+    cardData: tokenizingCardData,
+    tokenize,
+    handleTokenReceived,
+    handleError: handleTokenError,
+    handleCancel,
+  } = useAuthorizeNetTokenization();
 
   const {customerId, balance} = useSelector(
     (state: RootState) => state.loyalty,
   );
 
   const subtotal = orderTotal - gstTotal - pstTotal;
-
-  // Calculate redemption constraints
-  // Maximum redeemable: can't exceed balance or order total
   const maxRedeemablePoints = Math.min(
     balance,
-    Math.floor(orderTotal * 100), // 100 points = $1, so max points = total * 100
+    Math.floor(orderTotal * 100),
   );
-
-  // Calculate discount from points (100 points = $1)
   const discountAmount = pointsToRedeem / 100;
-
-  // Final total after discount
   const finalTotal = Math.max(0, orderTotal - discountAmount);
 
-  /**
-   * Handle payment form submission
-   * Flow: Tokenize card -> Complete payment via API -> Navigate to confirmation
-   */
   const handlePaymentSubmit = async (cardData: CardData) => {
     setError(undefined);
+
+    const validation = validateCardData(cardData);
+    if (!validation.isValid) {
+      setError(validation.errors.join(', '));
+      return;
+    }
+
+    setPendingCardData(cardData);
+    setLoadingStep('Securely processing card...');
+    const result = await tokenize(cardData);
+
+    if (!result.success || !result.token) {
+      setError(getUserFriendlyError(result.error));
+      setPendingCardData(null);
+      return;
+    }
+
     setLoading(true);
-    setLoadingStep('Processing payment...');
+    setLoadingStep('Creating order...');
 
     try {
-      // Step 1: Tokenize card with Authorize.net
-      const token = await tokenizeCard(
-        cardData,
-        ENV.AUTHORIZE_NET.PUBLIC_CLIENT_KEY,
-      );
-
-      // Step 2: Submit payment to backend
-      setLoadingStep('Creating order...');
-      const result = await completePayment(
+      const paymentResult = await completePayment(
         salesId,
-        token,
-        finalTotal, // Use final total after discount
+        result.token,
+        finalTotal,
         dailyOrderNumber,
         customerId,
         pointsToRedeem,
       );
 
-      if (result.success) {
-        // Step 3: Navigate to confirmation screen
+      if (paymentResult.success) {
         setLoadingStep('Done!');
         navigation.replace('OrderConfirmation', {
-          transactionId: result.transactionId,
-          ticketId: result.ticketId,
-          dailyOrderNumber: result.dailyOrderNumber,
+          transactionId: paymentResult.transactionId,
+          ticketId: paymentResult.ticketId,
+          dailyOrderNumber: paymentResult.dailyOrderNumber,
           orderItems,
           subtotal,
           gstTotal,
           pstTotal,
           orderTotal,
-          paymentMethod: getCardType(cardData.cardNumber),
-          last4Digits: cardData.cardNumber.slice(-4),
+          paymentMethod: detectCardType(cardData.cardNumber),
+          last4Digits: cardData.cardNumber.replace(/\D/g, '').slice(-4),
         });
       } else {
-        // Payment failed - show error and allow retry
         setLoading(false);
-        setError(getUserFriendlyError(result.errorMessage));
+        setError(getUserFriendlyError(paymentResult.errorMessage));
       }
     } catch (err: any) {
-      // Network error or tokenization failure
       setLoading(false);
       setError(getUserFriendlyError(err.message));
+    } finally {
+      setPendingCardData(null);
     }
   };
 
-  /**
-   * Convert error messages to user-friendly format per user decision
-   */
+  const onTokenReceived = (token: {dataDescriptor: string; dataValue: string}) => {
+    handleTokenReceived(token);
+  };
+
+  const onWebViewError = (errorMessage: string) => {
+    handleTokenError(errorMessage);
+    setError(getUserFriendlyError(errorMessage));
+  };
+
+  const onWebViewCancel = () => {
+    handleCancel();
+    setPendingCardData(null);
+  };
+
   const getUserFriendlyError = (message?: string): string => {
     if (!message) return 'Payment processing failed. Please try again.';
 
@@ -163,45 +180,52 @@ export default function CheckoutScreen() {
     if (lower.includes('declined') || lower.includes('insufficient')) {
       return 'Card declined. Please check your card details or use a different card.';
     }
-
     if (lower.includes('network') || lower.includes('timeout')) {
       return 'Network error. Please check your connection and try again.';
     }
-
-    if (lower.includes('tokenization')) {
+    if (lower.includes('tokenization') || lower.includes('accept.js')) {
       return 'Card validation failed. Please check your card details.';
     }
+    if (lower.includes('cancelled') || lower.includes('canceled')) {
+      return 'Payment was cancelled. Please try again when ready.';
+    }
+    if (lower.includes('invalid card') || lower.includes('card number')) {
+      return 'Invalid card number. Please check and try again.';
+    }
+    if (lower.includes('expired')) {
+      return 'Card has expired. Please use a different card.';
+    }
+    if (lower.includes('cvv') || lower.includes('security code')) {
+      return 'Invalid security code. Please check the CVV on your card.';
+    }
 
-    // Generic message for system errors
     return 'Payment processing failed. Please try again.';
-  };
-
-  /**
-   * Detect card type from card number
-   */
-  const getCardType = (cardNumber: string): string => {
-    const cleaned = cardNumber.replace(/\s/g, '');
-    const firstDigit = cleaned[0];
-    const firstTwo = cleaned.substring(0, 2);
-
-    if (firstDigit === '4') return 'Visa';
-    if (firstTwo >= '51' && firstTwo <= '55') return 'MasterCard';
-    if (firstTwo === '34' || firstTwo === '37') return 'Amex';
-    if (firstTwo === '60' || firstTwo === '65') return 'Discover';
-
-    return 'Credit Card';
   };
 
   return (
     <View style={styles.container}>
+      <SafeAreaView edges={['top']} style={styles.headerSafe}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}>
+            <Text style={styles.backButtonText}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Checkout</Text>
+          <View style={{width: 44}} />
+        </View>
+      </SafeAreaView>
+
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Loyalty Points Redemption */}
         {customerId && balance > 0 && (
-          <View style={styles.loyaltySection}>
-            <Text style={styles.loyaltySectionTitle}>Use Loyalty Points</Text>
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>Use Loyalty Points</Text>
+              <Text style={styles.pointsBadge}>{balance} pts</Text>
+            </View>
             <Text style={styles.balanceText}>
-              Available Balance: {balance} points (${(balance / 100).toFixed(2)}{' '}
-              USD)
+              Available: ${(balance / 100).toFixed(2)} USD
             </Text>
 
             <Slider
@@ -210,18 +234,18 @@ export default function CheckoutScreen() {
               minimumValue={0}
               maximumValue={maxRedeemablePoints}
               step={100}
-              minimumTrackTintColor={Colors.primary}
-              maximumTrackTintColor={Colors.border}
-              thumbTintColor={Colors.primary}
+              minimumTrackTintColor={Colors.brandGold}
+              maximumTrackTintColor={Colors.surfaceContainerHigh}
+              thumbTintColor={Colors.brandGold}
               style={styles.slider}
             />
 
             <View style={styles.redemptionInfo}>
               <Text style={styles.redemptionText}>
-                Redeeming: {pointsToRedeem} points
+                Redeeming: {pointsToRedeem} pts
               </Text>
               <Text style={styles.discountText}>
-                Discount: ${discountAmount.toFixed(2)}
+                -${discountAmount.toFixed(2)}
               </Text>
             </View>
 
@@ -230,16 +254,21 @@ export default function CheckoutScreen() {
         )}
 
         {/* Order Summary */}
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>Order Summary</Text>
-          <Text style={styles.orderNumber}>Order #{dailyOrderNumber}</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Order Summary</Text>
+          <View style={styles.orderNumberRow}>
+            <Text style={styles.orderNumberLabel}>Order</Text>
+            <Text style={styles.orderNumber}>#{dailyOrderNumber}</Text>
+          </View>
+
+          <View style={styles.divider} />
 
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Subtotal</Text>
             <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
           </View>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>GST</Text>
+            <Text style={styles.summaryLabel}>GST (6%)</Text>
             <Text style={styles.summaryValue}>${gstTotal.toFixed(2)}</Text>
           </View>
           <View style={styles.summaryRow}>
@@ -249,13 +278,15 @@ export default function CheckoutScreen() {
           {pointsToRedeem > 0 && (
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Points Discount</Text>
-              <Text style={[styles.summaryValue, styles.discountValue]}>
+              <Text style={styles.discountValue}>
                 -${discountAmount.toFixed(2)}
               </Text>
             </View>
           )}
-          <View style={styles.divider} />
-          <View style={styles.summaryRow}>
+
+          <View style={styles.totalDivider} />
+
+          <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Total</Text>
             <Text style={styles.totalValue}>${finalTotal.toFixed(2)}</Text>
           </View>
@@ -264,16 +295,29 @@ export default function CheckoutScreen() {
         {/* Payment Form */}
         <PaymentForm
           onSubmit={handlePaymentSubmit}
-          loading={loading}
+          loading={loading || showWebView}
           error={error}
         />
       </ScrollView>
+
+      {/* Authorize.net WebView for tokenization */}
+      {tokenizingCardData && (
+        <AuthorizeNetWebView
+          visible={showWebView}
+          cardData={tokenizingCardData}
+          onTokenReceived={onTokenReceived}
+          onError={onWebViewError}
+          onCancel={onWebViewCancel}
+        />
+      )}
 
       {/* Full-screen Loading Overlay */}
       <Modal visible={loading} transparent animationType="fade">
         <View style={styles.loadingOverlay}>
           <View style={styles.loadingCard}>
-            <ActivityIndicator size="large" color={Colors.success} />
+            <View style={styles.loadingSpinner}>
+              <ActivityIndicator size="large" color={Colors.brandGold} />
+            </View>
             <Text style={styles.loadingText}>{loadingStep}</Text>
             <Text style={styles.loadingSubtext}>
               Please do not close this screen
@@ -290,71 +334,78 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
+  headerSafe: {
+    backgroundColor: Colors.surface,
+  },
+  header: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  backButtonText: {
+    fontSize: 24,
+    color: Colors.textPrimary,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
   scrollContent: {
     padding: Spacing.md,
     paddingBottom: Spacing.xl,
   },
-  summaryCard: {
-    backgroundColor: Colors.white,
-    borderRadius: 12,
+  card: {
+    backgroundColor: Colors.surface,
+    borderRadius: 16,
     padding: Spacing.md,
     marginBottom: Spacing.md,
+    ...Elevation.level1,
   },
-  summaryTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.text,
-    marginBottom: Spacing.xs,
-  },
-  orderNumber: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    marginBottom: Spacing.md,
-  },
-  summaryRow: {
+  cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: Spacing.xs,
-  },
-  summaryLabel: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-  },
-  summaryValue: {
-    fontSize: 14,
-    color: Colors.text,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: Colors.border,
-    marginVertical: Spacing.xs,
-  },
-  totalLabel: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.text,
-  },
-  totalValue: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.success,
-  },
-  discountValue: {
-    color: Colors.success,
-    fontWeight: '600',
-  },
-  loyaltySection: {
-    backgroundColor: Colors.white,
-    borderRadius: 12,
-    padding: Spacing.md,
-    marginBottom: Spacing.md,
-  },
-  loyaltySectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.text,
     marginBottom: Spacing.xs,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  pointsBadge: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.brandGold,
+    backgroundColor: Colors.surfaceContainer,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  orderNumberRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: Spacing.xs,
+  },
+  orderNumberLabel: {
+    fontSize: 14,
+    color: Colors.textMuted,
+  },
+  orderNumber: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.brandGold,
+    marginLeft: Spacing.xs,
   },
   balanceText: {
     fontSize: 14,
@@ -372,42 +423,97 @@ const styles = StyleSheet.create({
   },
   redemptionText: {
     fontSize: 16,
-    color: Colors.text,
+    color: Colors.textPrimary,
+    fontWeight: '500',
   },
   discountText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: Colors.success,
   },
   conversionNote: {
     fontSize: 12,
-    color: Colors.textSecondary,
+    color: Colors.textMuted,
     marginTop: 4,
     fontStyle: 'italic',
   },
+  divider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginVertical: Spacing.sm,
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 6,
+  },
+  summaryLabel: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+  },
+  summaryValue: {
+    fontSize: 14,
+    color: Colors.textPrimary,
+    fontWeight: '500',
+  },
+  discountValue: {
+    fontSize: 14,
+    color: Colors.success,
+    fontWeight: '600',
+  },
+  totalDivider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginVertical: Spacing.sm,
+  },
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  totalLabel: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  totalValue: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: Colors.brandGold,
+  },
   loadingOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    backgroundColor: Colors.overlay,
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingCard: {
-    backgroundColor: Colors.white,
-    borderRadius: 16,
+    backgroundColor: Colors.surface,
+    borderRadius: 20,
     padding: Spacing.xl,
     alignItems: 'center',
-    minWidth: 250,
+    minWidth: 280,
+    ...Elevation.level3,
+  },
+  loadingSpinner: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: Colors.surfaceContainer,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Spacing.md,
   },
   loadingText: {
     fontSize: 18,
-    fontWeight: '600',
-    color: Colors.text,
-    marginTop: Spacing.md,
+    fontWeight: '700',
+    color: Colors.textPrimary,
     textAlign: 'center',
   },
   loadingSubtext: {
     fontSize: 14,
-    color: Colors.textSecondary,
+    color: Colors.textMuted,
     marginTop: Spacing.xs,
     textAlign: 'center',
   },
