@@ -50,6 +50,9 @@ Thumbs.db
 # GSD Planning (local-only)
 .planning/
 
+# Git worktrees (isolated workspaces)
+.worktrees/
+
 # Database backups (large binary files)
 src/backend/db/backups/*.bak
 src/backend/db/backups/*.BAK
