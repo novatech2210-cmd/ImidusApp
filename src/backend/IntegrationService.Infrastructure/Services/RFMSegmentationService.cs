@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using IntegrationService.Core.Domain.Entities;
 using IntegrationService.Core.Models;
 
 namespace IntegrationService.Infrastructure.Services

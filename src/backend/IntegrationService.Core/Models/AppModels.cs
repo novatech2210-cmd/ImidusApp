@@ -35,4 +35,14 @@ namespace IntegrationService.Core.Models
         public int? OnHandQty { get; set; }
         public bool ApplyNoDSC { get; set; }
     }
+
+    public class Customer
+    {
+        public int CustomerID { get; set; }
+        public string FName { get; set; } = string.Empty;
+        public string LName { get; set; } = string.Empty;
+        public string? Phone { get; set; }
+        public string? Email { get; set; }
+        public int EarnedPoints { get; set; }
+    }
 }
