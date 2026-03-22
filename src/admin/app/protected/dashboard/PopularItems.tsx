@@ -27,46 +27,46 @@ export default function PopularItems({
 
   if (!data || data.length === 0) {
     return (
-      <div className="bg-[#1A1A1F] p-6 rounded-2xl border border-[#2A2A30]">
+      <div className="bg-[bg-onyx-bg-secondary] p-6 rounded-2xl border border-[border-onyx-border]">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-[#FFD666]/10 rounded-xl">
-            <Trophy size={20} className="text-[#FFD666]" />
+          <div className="p-2 bg-[onyx-gold]/10 rounded-xl">
+            <Trophy size={20} className="text-[onyx-gold]" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-[#F5F5F7]">
+            <h3 className="text-lg font-semibold text-[text-onyx-text-primary]">
               Top Selling Items
             </h3>
-            <p className="text-xs text-[#6E6E78]">
+            <p className="text-xs text-[text-onyx-text-muted]">
               From INI_Restaurant tblSalesDetail
             </p>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center py-12">
-          <Package size={48} className="text-[#6E6E78] mb-4" />
-          <p className="text-[#9A9AA3]">No popular items data available</p>
+          <Package size={48} className="text-[text-onyx-text-muted] mb-4" />
+          <p className="text-[text-onyx-text-secondary]">No popular items data available</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#1A1A1F] p-6 rounded-2xl border border-[#2A2A30]">
+    <div className="bg-[bg-onyx-bg-secondary] p-6 rounded-2xl border border-[border-onyx-border]">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-[#FFD666]/10 rounded-xl">
-            <Trophy size={20} className="text-[#FFD666]" />
+          <div className="p-2 bg-[onyx-gold]/10 rounded-xl">
+            <Trophy size={20} className="text-[onyx-gold]" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-[#F5F5F7]">
+            <h3 className="text-lg font-semibold text-[text-onyx-text-primary]">
               Top Selling Items
             </h3>
-            <p className="text-xs text-[#6E6E78]">
+            <p className="text-xs text-[text-onyx-text-muted]">
               Based on order quantity from POS
             </p>
           </div>
         </div>
 
-        <span className="text-xs font-medium text-[#6E6E78] bg-[#222228] px-3 py-1 rounded-full">
+        <span className="text-xs font-medium text-[text-onyx-text-muted] bg-[bg-onyx-bg-tertiary] px-3 py-1 rounded-full">
           Top {data.length} items
         </span>
       </div>
@@ -74,17 +74,17 @@ export default function PopularItems({
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[#2A2A30]">
-              <th className="text-left py-3 px-4 text-xs font-semibold text-[#6E6E78] uppercase tracking-wider">
+            <tr className="border-b border-[border-onyx-border]">
+              <th className="text-left py-3 px-4 text-xs font-semibold text-[text-onyx-text-muted] uppercase tracking-wider">
                 Rank
               </th>
-              <th className="text-left py-3 px-4 text-xs font-semibold text-[#6E6E78] uppercase tracking-wider">
+              <th className="text-left py-3 px-4 text-xs font-semibold text-[text-onyx-text-muted] uppercase tracking-wider">
                 Item Name
               </th>
-              <th className="text-right py-3 px-4 text-xs font-semibold text-[#6E6E78] uppercase tracking-wider">
+              <th className="text-right py-3 px-4 text-xs font-semibold text-[text-onyx-text-muted] uppercase tracking-wider">
                 Orders
               </th>
-              <th className="text-right py-3 px-4 text-xs font-semibold text-[#6E6E78] uppercase tracking-wider">
+              <th className="text-right py-3 px-4 text-xs font-semibold text-[text-onyx-text-muted] uppercase tracking-wider">
                 Revenue
               </th>
             </tr>
@@ -93,18 +93,18 @@ export default function PopularItems({
             {data.map((item, index) => (
               <tr
                 key={item.id || index}
-                className="border-b border-[#2A2A30]/50 hover:bg-[#222228] transition-colors"
+                className="border-b border-[border-onyx-border]/50 hover:bg-[bg-onyx-bg-tertiary] transition-colors"
               >
                 <td className="py-4 px-4">
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
                       index === 0
-                        ? "bg-[#FFD666]/20 text-[#FFD666]"
+                        ? "bg-[onyx-gold]/20 text-[onyx-gold]"
                         : index === 1
-                          ? "bg-[#9A9AA3]/20 text-[#9A9AA3]"
+                          ? "bg-[text-onyx-text-secondary]/20 text-[text-onyx-text-secondary]"
                           : index === 2
                             ? "bg-[#CD7F32]/20 text-[#CD7F32]"
-                            : "bg-[#222228] text-[#6E6E78]"
+                            : "bg-[bg-onyx-bg-tertiary] text-[text-onyx-text-muted]"
                     }`}
                   >
                     {index + 1}
@@ -112,14 +112,14 @@ export default function PopularItems({
                 </td>
                 <td className="py-4 px-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#222228] rounded-lg flex items-center justify-center">
-                      <Package size={18} className="text-[#6E6E78]" />
+                    <div className="w-10 h-10 bg-[bg-onyx-bg-tertiary] rounded-lg flex items-center justify-center">
+                      <Package size={18} className="text-[text-onyx-text-muted]" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-[#F5F5F7]">
+                      <p className="text-sm font-medium text-[text-onyx-text-primary]">
                         {item.itemName}
                       </p>
-                      <p className="text-xs text-[#6E6E78]">
+                      <p className="text-xs text-[text-onyx-text-muted]">
                         ID: {item.itemId}
                       </p>
                     </div>
@@ -127,7 +127,7 @@ export default function PopularItems({
                 </td>
                 <td className="py-4 px-4 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <span className="text-sm font-semibold text-[#5BA0FF]">
+                    <span className="text-sm font-semibold text-[onyx-blue]">
                       {(item.quantity || 0).toLocaleString()}
                     </span>
                     {index < 3 && (
@@ -136,7 +136,7 @@ export default function PopularItems({
                   </div>
                 </td>
                 <td className="py-4 px-4 text-right">
-                  <span className="text-sm font-semibold text-[#FFD666]">
+                  <span className="text-sm font-semibold text-[onyx-gold]">
                     $
                     {(item.revenue / 100).toLocaleString("en-US", {
                       maximumFractionDigits: 2,

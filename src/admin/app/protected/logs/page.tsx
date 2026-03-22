@@ -19,13 +19,13 @@ export default function LogsPage() {
 
   const getActionColor = (action: string) => {
     const colors: Record<string, string> = {
-      RefundProcessed: 'bg-[#FFD666]/20 text-[#FFD666]',
-      CampaignSent: 'bg-[#5BA0FF]/20 text-[#5BA0FF]',
+      RefundProcessed: 'bg-[onyx-gold]/20 text-[onyx-gold]',
+      CampaignSent: 'bg-[onyx-blue]/20 text-[onyx-blue]',
       MenuOverride: 'bg-[#A855F7]/20 text-[#A855F7]',
       CustomerEdited: 'bg-[#4ADE80]/20 text-[#4ADE80]',
       BirthdayReward: 'bg-[#FF6B6B]/20 text-[#FF6B6B]',
     };
-    return colors[action] || 'bg-[#222228] text-[#9A9AA3]';
+    return colors[action] || 'bg-[bg-onyx-bg-tertiary] text-[text-onyx-text-secondary]';
   };
 
   if (isLoading) return <Spinner fullScreen />;
@@ -39,16 +39,16 @@ export default function LogsPage() {
             <FileText size={24} className="text-[#A855F7]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#F5F5F7]">Activity Logs</h1>
-            <p className="text-sm text-[#6E6E78]">Track all admin actions and system events</p>
+            <h1 className="text-2xl font-bold text-[text-onyx-text-primary]">Activity Logs</h1>
+            <p className="text-sm text-[text-onyx-text-muted]">Track all admin actions and system events</p>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-[#1A1A1F] p-4 rounded-xl border border-[#2A2A30]">
+        <div className="bg-[bg-onyx-bg-secondary] p-4 rounded-xl border border-[border-onyx-border]">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
-              <label className="block text-xs font-medium text-[#6E6E78] uppercase tracking-wider mb-2">
+              <label className="block text-xs font-medium text-[text-onyx-text-muted] uppercase tracking-wider mb-2">
                 <div className="flex items-center gap-2">
                   <Filter size={14} />
                   Filter by Action
@@ -57,7 +57,7 @@ export default function LogsPage() {
               <select
                 value={filterAction}
                 onChange={(e) => setFilterAction(e.target.value)}
-                className="w-full px-4 py-2.5 bg-[#222228] border border-[#2A2A30] rounded-xl text-[#F5F5F7] focus:outline-none focus:border-[#5BA0FF] transition-colors"
+                className="w-full px-4 py-2.5 bg-[bg-onyx-bg-tertiary] border border-[border-onyx-border] rounded-xl text-[text-onyx-text-primary] focus:outline-none focus:border-[onyx-blue] transition-colors"
               >
                 <option value="">All Actions</option>
                 {actions.map((action) => (
@@ -68,7 +68,7 @@ export default function LogsPage() {
               </select>
             </div>
             <div className="flex items-end gap-2">
-              <button className="flex items-center gap-2 px-4 py-2.5 border border-[#2A2A30] text-[#9A9AA3] rounded-xl hover:bg-[#222228] hover:text-[#F5F5F7] transition-colors">
+              <button className="flex items-center gap-2 px-4 py-2.5 border border-[border-onyx-border] text-[text-onyx-text-secondary] rounded-xl hover:bg-[bg-onyx-bg-tertiary] hover:text-[text-onyx-text-primary] transition-colors">
                 <RotateCcw size={16} />
                 Refresh
               </button>
@@ -82,13 +82,13 @@ export default function LogsPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-[#1A1A1F] p-6 rounded-xl border border-[#2A2A30]">
-            <p className="text-xs text-[#6E6E78] uppercase tracking-wider mb-2">Total Logs</p>
-            <p className="text-3xl font-bold text-[#F5F5F7]">{logs?.length || 0}</p>
+          <div className="bg-[bg-onyx-bg-secondary] p-6 rounded-xl border border-[border-onyx-border]">
+            <p className="text-xs text-[text-onyx-text-muted] uppercase tracking-wider mb-2">Total Logs</p>
+            <p className="text-3xl font-bold text-[text-onyx-text-primary]">{logs?.length || 0}</p>
           </div>
-          <div className="bg-[#1A1A1F] p-6 rounded-xl border border-[#2A2A30]">
-            <p className="text-xs text-[#6E6E78] uppercase tracking-wider mb-2">Today</p>
-            <p className="text-3xl font-bold text-[#5BA0FF]">
+          <div className="bg-[bg-onyx-bg-secondary] p-6 rounded-xl border border-[border-onyx-border]">
+            <p className="text-xs text-[text-onyx-text-muted] uppercase tracking-wider mb-2">Today</p>
+            <p className="text-3xl font-bold text-[onyx-blue]">
               {logs?.filter((log: any) => {
                 const logDate = new Date(log.timestamp);
                 const today = new Date();
@@ -96,8 +96,8 @@ export default function LogsPage() {
               }).length || 0}
             </p>
           </div>
-          <div className="bg-[#1A1A1F] p-6 rounded-xl border border-[#2A2A30]">
-            <p className="text-xs text-[#6E6E78] uppercase tracking-wider mb-2">Last 7 Days</p>
+          <div className="bg-[bg-onyx-bg-secondary] p-6 rounded-xl border border-[border-onyx-border]">
+            <p className="text-xs text-[text-onyx-text-muted] uppercase tracking-wider mb-2">Last 7 Days</p>
             <p className="text-3xl font-bold text-[#4ADE80]">
               {logs?.filter((log: any) => {
                 const logDate = new Date(log.timestamp);
@@ -110,38 +110,38 @@ export default function LogsPage() {
         </div>
 
         {/* Logs Table */}
-        <div className="bg-[#1A1A1F] rounded-xl border border-[#2A2A30] overflow-hidden">
+        <div className="bg-[bg-onyx-bg-secondary] rounded-xl border border-[border-onyx-border] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-[#222228] border-b border-[#2A2A30]">
+              <thead className="bg-[bg-onyx-bg-tertiary] border-b border-[border-onyx-border]">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#6E6E78] uppercase tracking-wider">Timestamp</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#6E6E78] uppercase tracking-wider">Admin</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#6E6E78] uppercase tracking-wider">Action</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#6E6E78] uppercase tracking-wider">Description</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#6E6E78] uppercase tracking-wider">IP Address</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-[text-onyx-text-muted] uppercase tracking-wider">Timestamp</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-[text-onyx-text-muted] uppercase tracking-wider">Admin</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-[text-onyx-text-muted] uppercase tracking-wider">Action</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-[text-onyx-text-muted] uppercase tracking-wider">Description</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-[text-onyx-text-muted] uppercase tracking-wider">IP Address</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredLogs.length > 0 ? (
                   filteredLogs.map((log: any) => (
-                    <tr key={log.id} className="border-b border-[#2A2A30]/50 hover:bg-[#222228] transition-colors">
-                      <td className="px-6 py-4 text-sm text-[#9A9AA3]">{formatDateTime(log.timestamp)}</td>
+                    <tr key={log.id} className="border-b border-[border-onyx-border]/50 hover:bg-[bg-onyx-bg-tertiary] transition-colors">
+                      <td className="px-6 py-4 text-sm text-[text-onyx-text-secondary]">{formatDateTime(log.timestamp)}</td>
                       <td className="px-6 py-4">
-                        <span className="font-medium text-[#F5F5F7]">{log.adminUser}</span>
+                        <span className="font-medium text-[text-onyx-text-primary]">{log.adminUser}</span>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getActionColor(log.action)}`}>
                           {log.action}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#9A9AA3]">{log.description}</td>
-                      <td className="px-6 py-4 text-xs text-[#6E6E78] font-mono">{log.ipAddress}</td>
+                      <td className="px-6 py-4 text-sm text-[text-onyx-text-secondary]">{log.description}</td>
+                      <td className="px-6 py-4 text-xs text-[text-onyx-text-muted] font-mono">{log.ipAddress}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="text-center py-12 text-[#6E6E78]">
+                    <td colSpan={5} className="text-center py-12 text-[text-onyx-text-muted]">
                       <FileText size={40} className="mx-auto mb-4 opacity-50" />
                       <p>No logs found</p>
                     </td>
@@ -153,8 +153,8 @@ export default function LogsPage() {
         </div>
 
         {/* Retention Notice */}
-        <div className="p-4 bg-[#5BA0FF]/10 border border-[#5BA0FF]/30 rounded-xl">
-          <p className="text-sm text-[#5BA0FF]">
+        <div className="p-4 bg-[onyx-blue]/10 border border-[onyx-blue]/30 rounded-xl">
+          <p className="text-sm text-[onyx-blue]">
             Logs are retained for 90 days. For long-term audit requirements, please export logs regularly.
           </p>
         </div>

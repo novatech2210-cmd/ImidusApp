@@ -28,16 +28,16 @@ interface SalesChartProps {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[#222228] border border-[#2A2A30] rounded-xl p-4 shadow-lg">
-        <p className="text-sm font-semibold text-[#F5F5F7] mb-2">{label}</p>
+      <div className="bg-onyx-bg-tertiary border border-onyx-border rounded-xl p-4 shadow-lg">
+        <p className="text-sm font-semibold text-onyx-text-primary mb-2">{label}</p>
         {payload.map((entry: any, index: number) => (
           <div key={index} className="flex items-center gap-2 text-sm">
             <div
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-[#9A9AA3]">{entry.name}:</span>
-            <span className="font-semibold text-[#F5F5F7]">
+            <span className="text-onyx-text-secondary">{entry.name}:</span>
+            <span className="font-semibold text-onyx-text-primary">
               {entry.name === 'Revenue ($)'
                 ? `$${entry.value.toLocaleString()}`
                 : entry.value.toLocaleString()}

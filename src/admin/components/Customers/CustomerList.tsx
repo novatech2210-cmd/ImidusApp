@@ -31,17 +31,17 @@ export default function CustomerList({
   const getSegmentColor = (segment: string) => {
     const colors: Record<string, string> = {
       // RFM segment colors - dark theme
-      'high-spend': 'bg-[#FFD666]/20 text-[#FFD666]',
-      'frequent': 'bg-[#5BA0FF]/20 text-[#5BA0FF]',
+      'high-spend': 'bg-[onyx-gold]/20 text-[onyx-gold]',
+      'frequent': 'bg-[onyx-blue]/20 text-[onyx-blue]',
       'recent': 'bg-[#4ADE80]/20 text-[#4ADE80]',
       'at-risk': 'bg-[#FF6B6B]/20 text-[#FF6B6B]',
       'new': 'bg-[#A855F7]/20 text-[#A855F7]',
       // Legacy segment colors
-      vip: 'bg-[#FFD666]/20 text-[#FFD666]',
-      regular: 'bg-[#5BA0FF]/20 text-[#5BA0FF]',
+      vip: 'bg-[onyx-gold]/20 text-[onyx-gold]',
+      regular: 'bg-[onyx-blue]/20 text-[onyx-blue]',
       at_risk: 'bg-[#FF6B6B]/20 text-[#FF6B6B]',
     };
-    return colors[segment.toLowerCase()] || 'bg-[#222228] text-[#9A9AA3]';
+    return colors[segment.toLowerCase()] || 'bg-[bg-onyx-bg-tertiary] text-[text-onyx-text-secondary]';
   };
 
   const columns: Column<Customer>[] = [
@@ -50,7 +50,7 @@ export default function CustomerList({
       label: 'Name',
       sortable: true,
       render: (value) => (
-        <span className="font-medium text-[#F5F5F7]">{value}</span>
+        <span className="font-medium text-[text-onyx-text-primary]">{value}</span>
       ),
     },
     {
@@ -58,14 +58,14 @@ export default function CustomerList({
       label: 'Email',
       sortable: true,
       render: (value) => (
-        <span className="text-[#9A9AA3]">{value}</span>
+        <span className="text-[text-onyx-text-secondary]">{value}</span>
       ),
     },
     {
       key: 'phone',
       label: 'Phone',
       render: (value) => (
-        <span className="text-[#9A9AA3] font-mono">{value}</span>
+        <span className="text-[text-onyx-text-secondary] font-mono">{value}</span>
       ),
     },
     {
@@ -83,7 +83,7 @@ export default function CustomerList({
       label: 'Total Spent',
       sortable: true,
       render: (value) => (
-        <span className="font-semibold text-[#FFD666]">
+        <span className="font-semibold text-[onyx-gold]">
           ${(value / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </span>
       ),
@@ -93,14 +93,14 @@ export default function CustomerList({
       label: 'Orders',
       sortable: true,
       render: (value) => (
-        <span className="text-[#F5F5F7]">{value.toLocaleString()}</span>
+        <span className="text-[text-onyx-text-primary]">{value.toLocaleString()}</span>
       ),
     },
     {
       key: 'lastOrder',
       label: 'Last Order',
       render: (value) => (
-        <span className="text-[#9A9AA3]">
+        <span className="text-[text-onyx-text-secondary]">
           {value ? new Date(value).toLocaleDateString() : 'Never'}
         </span>
       ),
@@ -110,7 +110,7 @@ export default function CustomerList({
       label: 'Points',
       sortable: true,
       render: (value) => (
-        <span className="flex items-center gap-1 text-[#FFD666] font-medium">
+        <span className="flex items-center gap-1 text-[onyx-gold] font-medium">
           <Star size={14} />
           {(value || 0).toLocaleString()}
         </span>
@@ -124,19 +124,19 @@ export default function CustomerList({
 
   if (customers.length === 0) {
     return (
-      <div className="bg-[#1A1A1F] p-12 rounded-xl border border-[#2A2A30] flex flex-col items-center justify-center">
-        <Users size={48} className="text-[#6E6E78] mb-4" />
-        <p className="text-[#9A9AA3] font-medium">No customers found</p>
-        <p className="text-sm text-[#6E6E78]">Try adjusting your filters</p>
+      <div className="bg-[bg-onyx-bg-secondary] p-12 rounded-xl border border-[border-onyx-border] flex flex-col items-center justify-center">
+        <Users size={48} className="text-[text-onyx-text-muted] mb-4" />
+        <p className="text-[text-onyx-text-secondary] font-medium">No customers found</p>
+        <p className="text-sm text-[text-onyx-text-muted]">Try adjusting your filters</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#1A1A1F] p-6 rounded-xl border border-[#2A2A30]">
+    <div className="bg-[bg-onyx-bg-secondary] p-6 rounded-xl border border-[border-onyx-border]">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-[#F5F5F7]">Customers</h3>
-        <span className="text-xs font-medium text-[#6E6E78] bg-[#222228] px-3 py-1 rounded-full">
+        <h3 className="text-lg font-semibold text-[text-onyx-text-primary]">Customers</h3>
+        <span className="text-xs font-medium text-[text-onyx-text-muted] bg-[bg-onyx-bg-tertiary] px-3 py-1 rounded-full">
           {customers.length} customers
         </span>
       </div>

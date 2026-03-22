@@ -75,12 +75,12 @@ export default function OrdersPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-[#5BA0FF]/10 rounded-xl">
-              <ShoppingCart size={24} className="text-[#5BA0FF]" />
+            <div className="p-3 bg-[onyx-blue]/10 rounded-xl">
+              <ShoppingCart size={24} className="text-[onyx-blue]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-[#F5F5F7]">Orders</h1>
-              <p className="text-sm text-[#6E6E78]">Manage and track customer orders</p>
+              <h1 className="text-2xl font-bold text-[text-onyx-text-primary]">Orders</h1>
+              <p className="text-sm text-[text-onyx-text-muted]">Manage and track customer orders</p>
             </div>
           </div>
 
@@ -99,17 +99,17 @@ export default function OrdersPage() {
         />
 
         {/* Filter Summary and Refresh */}
-        <div className="flex items-center justify-between bg-[#1A1A1F] p-4 rounded-xl border border-[#2A2A30]">
-          <div className="text-sm text-[#9A9AA3]">
+        <div className="flex items-center justify-between bg-[bg-onyx-bg-secondary] p-4 rounded-xl border border-[border-onyx-border]">
+          <div className="text-sm text-[text-onyx-text-secondary]">
             {hasActiveFilters ? (
-              <span>Showing <span className="text-[#F5F5F7] font-semibold">{ordersData.length}</span> orders matching filters</span>
+              <span>Showing <span className="text-[text-onyx-text-primary] font-semibold">{ordersData.length}</span> orders matching filters</span>
             ) : (
-              <span>Showing <span className="text-[#F5F5F7] font-semibold">{ordersData.length}</span> recent orders</span>
+              <span>Showing <span className="text-[text-onyx-text-primary] font-semibold">{ordersData.length}</span> recent orders</span>
             )}
           </div>
           <button
             onClick={() => refetch()}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#5BA0FF] to-[#3D82E0] text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[onyx-blue] to-[#3D82E0] text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity"
           >
             <RefreshCw size={16} />
             Refresh
@@ -118,7 +118,7 @@ export default function OrdersPage() {
 
         {/* Order Queue */}
         {isLoadingQueue && !ordersData.length ? (
-          <div className="flex items-center justify-center h-64 bg-[#1A1A1F] rounded-xl border border-[#2A2A30]">
+          <div className="flex items-center justify-center h-64 bg-[bg-onyx-bg-secondary] rounded-xl border border-[border-onyx-border]">
             <Spinner text="Loading orders..." />
           </div>
         ) : (
@@ -143,11 +143,11 @@ export default function OrdersPage() {
 
       {/* Footer Actions */}
       {showDetail && orderDetail && (
-        <div className="fixed bottom-0 right-0 left-0 bg-[#1A1A1F] border-t border-[#2A2A30] p-4 z-40">
+        <div className="fixed bottom-0 right-0 left-0 bg-[bg-onyx-bg-secondary] border-t border-[border-onyx-border] p-4 z-40">
           <div className="max-w-7xl mx-auto flex justify-end gap-3">
             <button
               onClick={() => setShowDetail(false)}
-              className="px-4 py-2 border border-[#2A2A30] text-[#9A9AA3] rounded-xl hover:bg-[#222228] hover:text-[#F5F5F7] transition-colors"
+              className="px-4 py-2 border border-[border-onyx-border] text-[text-onyx-text-secondary] rounded-xl hover:bg-[bg-onyx-bg-tertiary] hover:text-[text-onyx-text-primary] transition-colors"
             >
               Close
             </button>
@@ -162,7 +162,7 @@ export default function OrdersPage() {
                 {orderDetail.paymentStatus === 'paid' && (
                   <button
                     onClick={handleRefund}
-                    className="px-4 py-2 bg-gradient-to-r from-[#FFD666] to-[#E5B84D] text-[#1A1A1F] font-semibold rounded-xl hover:opacity-90 transition-opacity"
+                    className="px-4 py-2 bg-gradient-to-r from-[onyx-gold] to-[#E5B84D] text-[bg-onyx-bg-secondary] font-semibold rounded-xl hover:opacity-90 transition-opacity"
                   >
                     Refund
                   </button>

@@ -36,17 +36,17 @@ export default function RewardsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-[#FFD666]/20 to-[#FF6B6B]/20 rounded-xl">
-              <Gift size={24} className="text-[#FFD666]" />
+            <div className="p-3 bg-gradient-to-br from-[onyx-gold]/20 to-[#FF6B6B]/20 rounded-xl">
+              <Gift size={24} className="text-[onyx-gold]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-[#F5F5F7]">Birthday Rewards</h1>
-              <p className="text-sm text-[#6E6E78]">Automated birthday reward system for customers</p>
+              <h1 className="text-2xl font-bold text-[text-onyx-text-primary]">Birthday Rewards</h1>
+              <p className="text-sm text-[text-onyx-text-muted]">Automated birthday reward system for customers</p>
             </div>
           </div>
           <button
             onClick={() => setModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#FFD666] to-[#E5B84D] text-[#1A1A1F] font-semibold rounded-xl hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[onyx-gold] to-[#E5B84D] text-[bg-onyx-bg-secondary] font-semibold rounded-xl hover:opacity-90 transition-opacity"
           >
             <Plus size={18} />
             Configure Rewards
@@ -56,27 +56,27 @@ export default function RewardsPage() {
         {/* Current Configuration */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Reward Type */}
-          <div className="bg-[#1A1A1F] p-6 rounded-xl border border-[#2A2A30]">
+          <div className="bg-[bg-onyx-bg-secondary] p-6 rounded-xl border border-[border-onyx-border]">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-[#9A9AA3] uppercase tracking-wider">Reward Type</h3>
-              <div className="p-2 bg-[#FFD666]/10 rounded-lg">
-                <Sparkles size={18} className="text-[#FFD666]" />
+              <h3 className="text-sm font-medium text-[text-onyx-text-secondary] uppercase tracking-wider">Reward Type</h3>
+              <div className="p-2 bg-[onyx-gold]/10 rounded-lg">
+                <Sparkles size={18} className="text-[onyx-gold]" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-[#FFD666]">
+            <p className="text-3xl font-bold text-[onyx-gold]">
               {config.rewardType === 'points' ? `${config.value} Points` :
                config.rewardType === 'discount' ? `${config.value}% Off` :
                'Free Item'}
             </p>
-            <p className="text-xs text-[#6E6E78] mt-2">
+            <p className="text-xs text-[text-onyx-text-muted] mt-2">
               Reward value given on customer&apos;s birthday
             </p>
           </div>
 
           {/* Status */}
-          <div className="bg-[#1A1A1F] p-6 rounded-xl border border-[#2A2A30]">
+          <div className="bg-[bg-onyx-bg-secondary] p-6 rounded-xl border border-[border-onyx-border]">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-[#9A9AA3] uppercase tracking-wider">Status</h3>
+              <h3 className="text-sm font-medium text-[text-onyx-text-secondary] uppercase tracking-wider">Status</h3>
             </div>
             <p className={`text-3xl font-bold ${config.isActive ? 'text-[#4ADE80]' : 'text-[#FF6B6B]'}`}>
               {config.isActive ? 'Active' : 'Inactive'}
@@ -95,41 +95,41 @@ export default function RewardsPage() {
         </div>
 
         {/* How It Works */}
-        <div className="bg-[#1A1A1F] rounded-xl border border-[#2A2A30] overflow-hidden">
-          <div className="px-6 py-4 border-b border-[#2A2A30]">
-            <h2 className="text-lg font-semibold text-[#F5F5F7]">How It Works</h2>
+        <div className="bg-[bg-onyx-bg-secondary] rounded-xl border border-[border-onyx-border] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[border-onyx-border]">
+            <h2 className="text-lg font-semibold text-[text-onyx-text-primary]">How It Works</h2>
           </div>
           <div className="p-6 space-y-6">
             <div className="flex gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[#5BA0FF]/20 text-[#5BA0FF] flex items-center justify-center font-bold">1</div>
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[onyx-blue]/20 text-[onyx-blue] flex items-center justify-center font-bold">1</div>
               <div>
-                <p className="font-medium text-[#F5F5F7]">System Scans Birthdays</p>
-                <p className="text-sm text-[#6E6E78]">Background job runs daily to find customers with birthdays today from tblCustomer</p>
+                <p className="font-medium text-[text-onyx-text-primary]">System Scans Birthdays</p>
+                <p className="text-sm text-[text-onyx-text-muted]">Background job runs daily to find customers with birthdays today from tblCustomer</p>
               </div>
             </div>
             <div className="flex gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[#FFD666]/20 text-[#FFD666] flex items-center justify-center font-bold">2</div>
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[onyx-gold]/20 text-[onyx-gold] flex items-center justify-center font-bold">2</div>
               <div>
-                <p className="font-medium text-[#F5F5F7]">Award Reward</p>
-                <p className="text-sm text-[#6E6E78]">Automatically credits configured reward (points, discount, or item) to tblPointsDetail</p>
+                <p className="font-medium text-[text-onyx-text-primary]">Award Reward</p>
+                <p className="text-sm text-[text-onyx-text-muted]">Automatically credits configured reward (points, discount, or item) to tblPointsDetail</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[#4ADE80]/20 text-[#4ADE80] flex items-center justify-center font-bold">3</div>
               <div>
-                <p className="font-medium text-[#F5F5F7]">Send Notification</p>
-                <p className="text-sm text-[#6E6E78]">Firebase FCM notification sent with birthday greeting</p>
+                <p className="font-medium text-[text-onyx-text-primary]">Send Notification</p>
+                <p className="text-sm text-[text-onyx-text-muted]">Firebase FCM notification sent with birthday greeting</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Recent Activations */}
-        <div className="bg-[#1A1A1F] rounded-xl border border-[#2A2A30] overflow-hidden">
-          <div className="px-6 py-4 border-b border-[#2A2A30]">
-            <h2 className="text-lg font-semibold text-[#F5F5F7]">Recent Birthday Rewards Sent</h2>
+        <div className="bg-[bg-onyx-bg-secondary] rounded-xl border border-[border-onyx-border] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[border-onyx-border]">
+            <h2 className="text-lg font-semibold text-[text-onyx-text-primary]">Recent Birthday Rewards Sent</h2>
           </div>
-          <div className="flex flex-col items-center justify-center py-12 text-[#6E6E78]">
+          <div className="flex flex-col items-center justify-center py-12 text-[text-onyx-text-muted]">
             <Gift size={40} className="mb-4 opacity-50" />
             <p>No birthday rewards sent yet this month</p>
           </div>
@@ -138,14 +138,14 @@ export default function RewardsPage() {
         {/* Edit Modal */}
         {modal && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-[#1A1A1F] rounded-2xl border border-[#2A2A30] w-full max-w-md mx-4 shadow-2xl">
-              <div className="flex items-center justify-between p-6 border-b border-[#2A2A30]">
-                <h3 className="text-lg font-semibold text-[#F5F5F7]">
+            <div className="bg-[bg-onyx-bg-secondary] rounded-2xl border border-[border-onyx-border] w-full max-w-md mx-4 shadow-2xl">
+              <div className="flex items-center justify-between p-6 border-b border-[border-onyx-border]">
+                <h3 className="text-lg font-semibold text-[text-onyx-text-primary]">
                   Configure Birthday Rewards
                 </h3>
                 <button
                   onClick={() => setModal(false)}
-                  className="p-2 text-[#6E6E78] hover:text-[#F5F5F7] hover:bg-[#222228] rounded-lg transition-colors"
+                  className="p-2 text-[text-onyx-text-muted] hover:text-[text-onyx-text-primary] hover:bg-[bg-onyx-bg-tertiary] rounded-lg transition-colors"
                 >
                   <X size={18} />
                 </button>
@@ -154,27 +154,27 @@ export default function RewardsPage() {
               <div className="p-6 space-y-4">
                 {/* Reward Name */}
                 <div>
-                  <label className="block text-xs font-medium text-[#6E6E78] uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-medium text-[text-onyx-text-muted] uppercase tracking-wider mb-2">
                     Reward Name
                   </label>
                   <input
                     type="text"
                     value={config.name}
                     onChange={(e) => setConfig({ ...config, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#222228] border border-[#2A2A30] rounded-xl text-[#F5F5F7] focus:outline-none focus:border-[#5BA0FF] transition-colors"
+                    className="w-full px-4 py-3 bg-[bg-onyx-bg-tertiary] border border-[border-onyx-border] rounded-xl text-[text-onyx-text-primary] focus:outline-none focus:border-[onyx-blue] transition-colors"
                     placeholder="e.g., Birthday Gift"
                   />
                 </div>
 
                 {/* Reward Type */}
                 <div>
-                  <label className="block text-xs font-medium text-[#6E6E78] uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-medium text-[text-onyx-text-muted] uppercase tracking-wider mb-2">
                     Reward Type
                   </label>
                   <select
                     value={config.rewardType}
                     onChange={(e) => setConfig({ ...config, rewardType: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#222228] border border-[#2A2A30] rounded-xl text-[#F5F5F7] focus:outline-none focus:border-[#5BA0FF] transition-colors"
+                    className="w-full px-4 py-3 bg-[bg-onyx-bg-tertiary] border border-[border-onyx-border] rounded-xl text-[text-onyx-text-primary] focus:outline-none focus:border-[onyx-blue] transition-colors"
                   >
                     <option value="points">Points</option>
                     <option value="discount">Discount %</option>
@@ -184,21 +184,21 @@ export default function RewardsPage() {
 
                 {/* Value */}
                 <div>
-                  <label className="block text-xs font-medium text-[#6E6E78] uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-medium text-[text-onyx-text-muted] uppercase tracking-wider mb-2">
                     Reward Value
                   </label>
                   <input
                     type="number"
                     value={config.value}
                     onChange={(e) => setConfig({ ...config, value: parseInt(e.target.value) })}
-                    className="w-full px-4 py-3 bg-[#222228] border border-[#2A2A30] rounded-xl text-[#F5F5F7] focus:outline-none focus:border-[#5BA0FF] transition-colors"
+                    className="w-full px-4 py-3 bg-[bg-onyx-bg-tertiary] border border-[border-onyx-border] rounded-xl text-[text-onyx-text-primary] focus:outline-none focus:border-[onyx-blue] transition-colors"
                     min="0"
                   />
                 </div>
 
                 {/* Active Toggle */}
-                <div className="flex items-center justify-between p-4 bg-[#222228] border border-[#2A2A30] rounded-xl">
-                  <label className="text-sm font-medium text-[#F5F5F7]">
+                <div className="flex items-center justify-between p-4 bg-[bg-onyx-bg-tertiary] border border-[border-onyx-border] rounded-xl">
+                  <label className="text-sm font-medium text-[text-onyx-text-primary]">
                     Enable Birthday Rewards
                   </label>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -208,23 +208,23 @@ export default function RewardsPage() {
                       onChange={(e) => setConfig({ ...config, isActive: e.target.checked })}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-[#2A2A30] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[#6E6E78] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#4ADE80] peer-checked:after:bg-white"></div>
+                    <div className="w-11 h-6 bg-[border-onyx-border] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[text-onyx-text-muted] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#4ADE80] peer-checked:after:bg-white"></div>
                   </label>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 p-6 border-t border-[#2A2A30]">
+              <div className="flex gap-3 p-6 border-t border-[border-onyx-border]">
                 <button
                   onClick={() => setModal(false)}
-                  className="flex-1 px-4 py-2.5 border border-[#2A2A30] text-[#9A9AA3] rounded-xl hover:bg-[#222228] hover:text-[#F5F5F7] transition-colors"
+                  className="flex-1 px-4 py-2.5 border border-[border-onyx-border] text-[text-onyx-text-secondary] rounded-xl hover:bg-[bg-onyx-bg-tertiary] hover:text-[text-onyx-text-primary] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={loading}
-                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#5BA0FF] to-[#3D82E0] text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition-opacity"
+                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[onyx-blue] to-[#3D82E0] text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition-opacity"
                 >
                   {loading ? 'Saving...' : 'Save Configuration'}
                 </button>

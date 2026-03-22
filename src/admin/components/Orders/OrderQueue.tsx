@@ -33,23 +33,23 @@ interface OrderQueueProps {
 export default function OrderQueue({ orders, loading = false, onOrderClick }: OrderQueueProps) {
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      pending: 'bg-[#FFD666]/20 text-[#FFD666]',
-      ready: 'bg-[#5BA0FF]/20 text-[#5BA0FF]',
+      pending: 'bg-[onyx-gold]/20 text-[onyx-gold]',
+      ready: 'bg-[onyx-blue]/20 text-[onyx-blue]',
       completed: 'bg-[#4ADE80]/20 text-[#4ADE80]',
       cancelled: 'bg-[#FF6B6B]/20 text-[#FF6B6B]',
-      refunded: 'bg-[#9A9AA3]/20 text-[#9A9AA3]',
+      refunded: 'bg-[text-onyx-text-secondary]/20 text-[text-onyx-text-secondary]',
     };
-    return colors[status] || 'bg-[#222228] text-[#9A9AA3]';
+    return colors[status] || 'bg-[bg-onyx-bg-tertiary] text-[text-onyx-text-secondary]';
   };
 
   const getPaymentColor = (status: string) => {
     const colors: Record<string, string> = {
       paid: 'bg-[#4ADE80]/20 text-[#4ADE80]',
-      pending: 'bg-[#FFD666]/20 text-[#FFD666]',
+      pending: 'bg-[onyx-gold]/20 text-[onyx-gold]',
       failed: 'bg-[#FF6B6B]/20 text-[#FF6B6B]',
-      refunded: 'bg-[#9A9AA3]/20 text-[#9A9AA3]',
+      refunded: 'bg-[text-onyx-text-secondary]/20 text-[text-onyx-text-secondary]',
     };
-    return colors[status] || 'bg-[#222228] text-[#9A9AA3]';
+    return colors[status] || 'bg-[bg-onyx-bg-tertiary] text-[text-onyx-text-secondary]';
   };
 
   const columns: Column<Order>[] = [
@@ -58,7 +58,7 @@ export default function OrderQueue({ orders, loading = false, onOrderClick }: Or
       label: 'Order #',
       sortable: true,
       render: (value) => (
-        <span className="font-mono font-semibold text-[#5BA0FF]">{value}</span>
+        <span className="font-mono font-semibold text-[onyx-blue]">{value}</span>
       ),
     },
     {
@@ -66,7 +66,7 @@ export default function OrderQueue({ orders, loading = false, onOrderClick }: Or
       label: 'Customer',
       sortable: true,
       render: (value) => (
-        <span className="text-[#F5F5F7] font-medium">{value}</span>
+        <span className="text-[text-onyx-text-primary] font-medium">{value}</span>
       ),
     },
     {
@@ -74,7 +74,7 @@ export default function OrderQueue({ orders, loading = false, onOrderClick }: Or
       label: 'Total',
       sortable: true,
       render: (value) => (
-        <span className="font-semibold text-[#FFD666]">
+        <span className="font-semibold text-[onyx-gold]">
           ${(value / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </span>
       ),
@@ -103,7 +103,7 @@ export default function OrderQueue({ orders, loading = false, onOrderClick }: Or
       key: 'createdAt',
       label: 'Time',
       render: (value) => (
-        <span className="flex items-center gap-1.5 text-[#9A9AA3] text-sm">
+        <span className="flex items-center gap-1.5 text-[text-onyx-text-secondary] text-sm">
           <Clock size={14} />
           {new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </span>
@@ -117,19 +117,19 @@ export default function OrderQueue({ orders, loading = false, onOrderClick }: Or
 
   if (orders.length === 0) {
     return (
-      <div className="bg-[#1A1A1F] p-12 rounded-xl border border-[#2A2A30] flex flex-col items-center justify-center">
-        <ShoppingBag size={48} className="text-[#6E6E78] mb-4" />
-        <p className="text-[#9A9AA3] font-medium">No orders in queue</p>
-        <p className="text-sm text-[#6E6E78]">Orders will appear here as they come in</p>
+      <div className="bg-[bg-onyx-bg-secondary] p-12 rounded-xl border border-[border-onyx-border] flex flex-col items-center justify-center">
+        <ShoppingBag size={48} className="text-[text-onyx-text-muted] mb-4" />
+        <p className="text-[text-onyx-text-secondary] font-medium">No orders in queue</p>
+        <p className="text-sm text-[text-onyx-text-muted]">Orders will appear here as they come in</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#1A1A1F] p-6 rounded-xl border border-[#2A2A30]">
+    <div className="bg-[bg-onyx-bg-secondary] p-6 rounded-xl border border-[border-onyx-border]">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-[#F5F5F7]">Order Queue</h3>
-        <span className="text-xs font-medium text-[#6E6E78] bg-[#222228] px-3 py-1 rounded-full">
+        <h3 className="text-lg font-semibold text-[text-onyx-text-primary]">Order Queue</h3>
+        <span className="text-xs font-medium text-[text-onyx-text-muted] bg-[bg-onyx-bg-tertiary] px-3 py-1 rounded-full">
           {orders.length} orders
         </span>
       </div>

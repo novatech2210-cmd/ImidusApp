@@ -54,12 +54,12 @@ export default function CampaignsPage() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      draft: 'bg-[#6E6E78]/20 text-[#9A9AA3]',
-      scheduled: 'bg-[#5BA0FF]/20 text-[#5BA0FF]',
+      draft: 'bg-[text-onyx-text-muted]/20 text-[text-onyx-text-secondary]',
+      scheduled: 'bg-[onyx-blue]/20 text-[onyx-blue]',
       sent: 'bg-[#4ADE80]/20 text-[#4ADE80]',
-      paused: 'bg-[#FFD666]/20 text-[#FFD666]',
+      paused: 'bg-[onyx-gold]/20 text-[onyx-gold]',
     };
-    return colors[status] || 'bg-[#222228] text-[#9A9AA3]';
+    return colors[status] || 'bg-[bg-onyx-bg-tertiary] text-[text-onyx-text-secondary]';
   };
 
   return (
@@ -68,17 +68,17 @@ export default function CampaignsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-[#FFD666]/10 rounded-xl">
-              <Megaphone size={24} className="text-[#FFD666]" />
+            <div className="p-3 bg-[onyx-gold]/10 rounded-xl">
+              <Megaphone size={24} className="text-[onyx-gold]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-[#F5F5F7]">Campaigns</h1>
-              <p className="text-sm text-[#6E6E78]">Create and manage marketing campaigns</p>
+              <h1 className="text-2xl font-bold text-[text-onyx-text-primary]">Campaigns</h1>
+              <p className="text-sm text-[text-onyx-text-muted]">Create and manage marketing campaigns</p>
             </div>
           </div>
           <button
             onClick={() => setShowBuilder(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#FFD666] to-[#E5B84D] text-[#1A1A1F] font-semibold rounded-xl hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[onyx-gold] to-[#E5B84D] text-[bg-onyx-bg-secondary] font-semibold rounded-xl hover:opacity-90 transition-opacity"
           >
             <Plus size={20} />
             New Campaign
@@ -86,8 +86,8 @@ export default function CampaignsPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-[#1A1A1F] p-4 rounded-xl border border-[#2A2A30] space-y-4">
-          <div className="flex items-center gap-2 text-sm font-medium text-[#9A9AA3]">
+        <div className="bg-[bg-onyx-bg-secondary] p-4 rounded-xl border border-[border-onyx-border] space-y-4">
+          <div className="flex items-center gap-2 text-sm font-medium text-[text-onyx-text-secondary]">
             <Filter size={16} />
             Filters
           </div>
@@ -95,13 +95,13 @@ export default function CampaignsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Status Filter */}
             <div>
-              <label className="block text-xs font-medium text-[#6E6E78] uppercase tracking-wider mb-2">
+              <label className="block text-xs font-medium text-[text-onyx-text-muted] uppercase tracking-wider mb-2">
                 Status
               </label>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-4 py-2.5 bg-[#222228] border border-[#2A2A30] rounded-xl text-[#F5F5F7] text-sm focus:outline-none focus:border-[#5BA0FF] transition-colors"
+                className="w-full px-4 py-2.5 bg-[bg-onyx-bg-tertiary] border border-[border-onyx-border] rounded-xl text-[text-onyx-text-primary] text-sm focus:outline-none focus:border-[onyx-blue] transition-colors"
               >
                 <option value="">All Statuses</option>
                 <option value="draft">Draft</option>
@@ -115,7 +115,7 @@ export default function CampaignsPage() {
             <div className="flex items-end">
               <button
                 onClick={() => setStatusFilter('')}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-[#2A2A30] text-[#9A9AA3] rounded-xl hover:bg-[#222228] hover:text-[#F5F5F7] transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-[border-onyx-border] text-[text-onyx-text-secondary] rounded-xl hover:bg-[bg-onyx-bg-tertiary] hover:text-[text-onyx-text-primary] transition-colors"
               >
                 <RotateCcw size={16} />
                 Reset
@@ -126,7 +126,7 @@ export default function CampaignsPage() {
 
         {/* Campaign List */}
         {isLoading && !campaignsData.length ? (
-          <div className="flex items-center justify-center h-64 bg-[#1A1A1F] rounded-xl border border-[#2A2A30]">
+          <div className="flex items-center justify-center h-64 bg-[bg-onyx-bg-secondary] rounded-xl border border-[border-onyx-border]">
             <Spinner text="Loading campaigns..." />
           </div>
         ) : (
@@ -140,39 +140,39 @@ export default function CampaignsPage() {
 
         {/* Selected Campaign Details */}
         {selectedCampaign && (
-          <div className="bg-[#1A1A1F] p-6 rounded-xl border border-[#2A2A30] space-y-4">
+          <div className="bg-[bg-onyx-bg-secondary] p-6 rounded-xl border border-[border-onyx-border] space-y-4">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-[#F5F5F7]">{selectedCampaign.name}</h3>
-                <p className="text-sm text-[#6E6E78]">
+                <h3 className="text-lg font-semibold text-[text-onyx-text-primary]">{selectedCampaign.name}</h3>
+                <p className="text-sm text-[text-onyx-text-muted]">
                   Created {new Date(selectedCampaign.createdAt).toLocaleDateString()}
                 </p>
               </div>
               <button
                 onClick={() => setSelectedCampaign(null)}
-                className="p-2 text-[#6E6E78] hover:text-[#F5F5F7] hover:bg-[#222228] rounded-lg transition-colors"
+                className="p-2 text-[text-onyx-text-muted] hover:text-[text-onyx-text-primary] hover:bg-[bg-onyx-bg-tertiary] rounded-lg transition-colors"
               >
                 <X size={18} />
               </button>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 bg-[#222228] rounded-xl">
-                <p className="text-xs text-[#6E6E78] uppercase tracking-wider mb-1">Type</p>
-                <p className="text-sm font-semibold text-[#F5F5F7] capitalize">{selectedCampaign.type}</p>
+              <div className="p-4 bg-[bg-onyx-bg-tertiary] rounded-xl">
+                <p className="text-xs text-[text-onyx-text-muted] uppercase tracking-wider mb-1">Type</p>
+                <p className="text-sm font-semibold text-[text-onyx-text-primary] capitalize">{selectedCampaign.type}</p>
               </div>
-              <div className="p-4 bg-[#222228] rounded-xl">
-                <p className="text-xs text-[#6E6E78] uppercase tracking-wider mb-1">Status</p>
+              <div className="p-4 bg-[bg-onyx-bg-tertiary] rounded-xl">
+                <p className="text-xs text-[text-onyx-text-muted] uppercase tracking-wider mb-1">Status</p>
                 <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(selectedCampaign.status)}`}>
                   {selectedCampaign.status}
                 </span>
               </div>
-              <div className="p-4 bg-[#222228] rounded-xl">
-                <p className="text-xs text-[#6E6E78] uppercase tracking-wider mb-1">Target Audience</p>
-                <p className="text-sm font-semibold text-[#5BA0FF]">{selectedCampaign.targetAudience.toLocaleString()}</p>
+              <div className="p-4 bg-[bg-onyx-bg-tertiary] rounded-xl">
+                <p className="text-xs text-[text-onyx-text-muted] uppercase tracking-wider mb-1">Target Audience</p>
+                <p className="text-sm font-semibold text-[onyx-blue]">{selectedCampaign.targetAudience.toLocaleString()}</p>
               </div>
-              <div className="p-4 bg-[#222228] rounded-xl">
-                <p className="text-xs text-[#6E6E78] uppercase tracking-wider mb-1">Sent</p>
+              <div className="p-4 bg-[bg-onyx-bg-tertiary] rounded-xl">
+                <p className="text-xs text-[text-onyx-text-muted] uppercase tracking-wider mb-1">Sent</p>
                 <p className="text-sm font-semibold text-[#4ADE80]">{selectedCampaign.sent.toLocaleString()}</p>
               </div>
             </div>
@@ -182,7 +182,7 @@ export default function CampaignsPage() {
                 <button
                   onClick={handleSendCampaign}
                   disabled={isSending}
-                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#5BA0FF] to-[#3D82E0] text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition-opacity"
+                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[onyx-blue] to-[#3D82E0] text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition-opacity"
                 >
                   {isSending ? 'Sending...' : 'Send Campaign'}
                 </button>

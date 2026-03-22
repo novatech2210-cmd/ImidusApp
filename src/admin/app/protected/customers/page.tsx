@@ -133,8 +133,8 @@ export default function CustomersPage() {
               <Users size={24} className="text-[#4ADE80]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-[#F5F5F7]">Customers</h1>
-              <p className="text-sm text-[#6E6E78]">
+              <h1 className="text-2xl font-bold text-[text-onyx-text-primary]">Customers</h1>
+              <p className="text-sm text-[text-onyx-text-muted]">
                 {segments.total.toLocaleString()} total customers from POS
               </p>
             </div>
@@ -149,14 +149,14 @@ export default function CustomersPage() {
 
             <button
               onClick={() => setShowSearchModal(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#9A9AA3] bg-[#1A1A1F] border border-[#2A2A30] rounded-xl hover:bg-[#222228] hover:text-[#F5F5F7] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[text-onyx-text-secondary] bg-[bg-onyx-bg-secondary] border border-[border-onyx-border] rounded-xl hover:bg-[bg-onyx-bg-tertiary] hover:text-[text-onyx-text-primary] transition-colors"
             >
               <Search size={16} />
               Quick Search
             </button>
             <button
               onClick={handleExport}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#9A9AA3] bg-[#1A1A1F] border border-[#2A2A30] rounded-xl hover:bg-[#222228] hover:text-[#F5F5F7] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[text-onyx-text-secondary] bg-[bg-onyx-bg-secondary] border border-[border-onyx-border] rounded-xl hover:bg-[bg-onyx-bg-tertiary] hover:text-[text-onyx-text-primary] transition-colors"
             >
               <Download size={16} />
               Export
@@ -166,7 +166,7 @@ export default function CustomersPage() {
 
         {/* RFM Segment Chart */}
         {isLoadingSegments ? (
-          <div className="flex items-center justify-center h-64 bg-[#1A1A1F] rounded-xl border border-[#2A2A30]">
+          <div className="flex items-center justify-center h-64 bg-[bg-onyx-bg-secondary] rounded-xl border border-[border-onyx-border]">
             <Spinner text="Loading segments..." />
           </div>
         ) : (
@@ -178,9 +178,9 @@ export default function CustomersPage() {
         )}
 
         {/* Segment Filter Tabs */}
-        <div className="bg-[#1A1A1F] rounded-xl border border-[#2A2A30] p-4">
+        <div className="bg-[bg-onyx-bg-secondary] rounded-xl border border-[border-onyx-border] p-4">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="flex items-center gap-2 text-sm font-medium text-[#9A9AA3] mr-2">
+            <span className="flex items-center gap-2 text-sm font-medium text-[text-onyx-text-secondary] mr-2">
               <Filter size={16} />
               Filter:
             </span>
@@ -190,8 +190,8 @@ export default function CustomersPage() {
                 onClick={() => setSegmentFilter(tab.key)}
                 className={`px-4 py-2 text-sm font-medium rounded-xl transition-all ${
                   segmentFilter === tab.key
-                    ? 'bg-gradient-to-r from-[#5BA0FF] to-[#3D82E0] text-white'
-                    : 'bg-[#222228] text-[#9A9AA3] hover:bg-[#2A2A30] hover:text-[#F5F5F7]'
+                    ? 'bg-gradient-to-r from-[onyx-blue] to-[#3D82E0] text-white'
+                    : 'bg-[bg-onyx-bg-tertiary] text-[text-onyx-text-secondary] hover:bg-[border-onyx-border] hover:text-[text-onyx-text-primary]'
                 }`}
               >
                 {tab.label}
@@ -202,7 +202,7 @@ export default function CustomersPage() {
             {(segmentFilter || searchTerm) && (
               <button
                 onClick={clearFilters}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-[#6E6E78] hover:text-[#FF6B6B] transition-colors"
+                className="flex items-center gap-1 px-3 py-2 text-sm text-[text-onyx-text-muted] hover:text-[#FF6B6B] transition-colors"
               >
                 <X size={14} />
                 Clear
@@ -213,8 +213,8 @@ export default function CustomersPage() {
           {/* Active filter indicator */}
           {segmentFilter && (
             <div className="mt-3 flex items-center gap-2">
-              <span className="text-sm text-[#6E6E78]">Active filter:</span>
-              <span className="px-3 py-1 text-xs font-medium bg-[#5BA0FF]/10 text-[#5BA0FF] rounded-full border border-[#5BA0FF]/30">
+              <span className="text-sm text-[text-onyx-text-muted]">Active filter:</span>
+              <span className="px-3 py-1 text-xs font-medium bg-[onyx-blue]/10 text-[onyx-blue] rounded-full border border-[onyx-blue]/30">
                 {SEGMENT_TABS.find(t => t.key === segmentFilter)?.label || segmentFilter}
               </span>
             </div>
@@ -223,7 +223,7 @@ export default function CustomersPage() {
 
         {/* Customer List */}
         {isLoadingCustomers && !customersData.length ? (
-          <div className="flex items-center justify-center h-64 bg-[#1A1A1F] rounded-xl border border-[#2A2A30]">
+          <div className="flex items-center justify-center h-64 bg-[bg-onyx-bg-secondary] rounded-xl border border-[border-onyx-border]">
             <Spinner text="Loading customers..." />
           </div>
         ) : (
