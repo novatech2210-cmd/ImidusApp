@@ -272,3 +272,26 @@ export function useUpdateBirthdayRewardConfig() {
     },
   });
 }
+
+// Campaign Hooks
+export function useCreateCampaign() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) =>
+      campaignAPI.create(data).then((res) => res.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+    },
+  });
+}
+
+export function useSendCampaign(campaignId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      campaignAPI.send(campaignId).then((res) => res.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+    },
+  });
+}

@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Gift, Toggle2, AlertCircle } from 'lucide-react';
-import { Spinner } from '@/components/Loading/Spinner';
+import { Gift, ToggleRight, AlertCircle } from 'lucide-react';
+import Spinner from '@/components/Loading/Spinner';
 
 interface BirthdayRewardConfig {
   rewardPoints: number;
@@ -152,7 +152,7 @@ export default function BirthdayRewardSettings() {
                   : 'bg-onyx-bg-tertiary border border-onyx-border'
               }`}
             >
-              <Toggle2 size={18} className={enabled ? 'text-onyx-gold' : 'text-onyx-text-muted'} />
+              <ToggleRight size={18} className={enabled ? 'text-onyx-gold' : 'text-onyx-text-muted'} />
               <span className={`font-medium ${enabled ? 'text-onyx-gold' : 'text-onyx-text-secondary'}`}>
                 {enabled ? 'Enabled' : 'Disabled'}
               </span>
@@ -181,7 +181,7 @@ export default function BirthdayRewardSettings() {
           >
             {saving ? (
               <>
-                <Spinner size="sm" className="text-onyx-bg-secondary" />
+                <Spinner size="sm" />
                 Saving...
               </>
             ) : (
