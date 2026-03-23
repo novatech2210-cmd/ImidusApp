@@ -20,7 +20,7 @@ const apiClient = axios.create({
 
 // Request interceptor - attach JWT token and idempotency key to requests
 apiClient.interceptors.request.use(
-  async (config) => {
+  async config => {
     const token = await tokenStorage.getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -29,20 +29,20 @@ apiClient.interceptors.request.use(
     // Add Idempotency-Key header for POST, PUT, PATCH requests
     const method = config.method?.toLowerCase() || '';
     if (['post', 'put', 'patch'].includes(method)) {
-      config.headers['Idempotency-Key'] = generateIdempotencyKey();
+      config.headers['X-Idempotency-Key'] = generateIdempotencyKey();
     }
 
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor - handle 401 errors (token expired/invalid)
 apiClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  response => response,
+  async error => {
     const originalRequest = error.config;
 
     // If 401 and not already retried, clear tokens and reject
@@ -53,7 +53,7 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 // Log API URL in development

@@ -95,14 +95,16 @@ const AppNavigator = () => {
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {!isAuthenticated ? (
           <>
-            <Stack.Screen name="Menu" component={MenuScreen} />
+            {/* Unauthenticated: start at Login, can browse menu as guest */}
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Menu" component={MenuScreen} />
             <Stack.Screen name="ItemDetail" component={ItemDetailScreen} />
             <Stack.Screen name="Cart" component={CartScreen} />
           </>
         ) : (
           <>
+            {/* Authenticated: full access */}
             <Stack.Screen name="Menu" component={MenuScreen} />
             <Stack.Screen name="ItemDetail" component={ItemDetailScreen} />
             <Stack.Screen name="Cart" component={CartScreen} />
@@ -117,6 +119,8 @@ const AppNavigator = () => {
             />
             <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
           </>
         )}
       </Stack.Navigator>

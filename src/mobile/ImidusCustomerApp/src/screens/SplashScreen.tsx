@@ -1,5 +1,5 @@
-import React, {useEffect, useRef} from 'react';
-import {Animated, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {useEffect, useRef} from 'react';
+import {Animated, Image, StatusBar, StyleSheet, Text, View} from 'react-native';
 import {Colors, Spacing} from '../theme';
 
 const SplashScreen = () => {
@@ -78,7 +78,11 @@ const SplashScreen = () => {
             transform: [{scale: scaleAnim}],
           },
         ]}>
-        <Text style={styles.brandName}>IMIDUS</Text>
+        <Image
+          source={require('../assets/images/imidus_logo.png')}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
         <View style={styles.taglineContainer}>
           <View style={styles.dot} />
           <Text style={styles.tagline}>Order</Text>
@@ -143,14 +147,10 @@ const styles = StyleSheet.create({
   logoSection: {
     alignItems: 'center',
   },
-  brandName: {
-    fontSize: 56,
-    fontWeight: '800',
-    color: Colors.textPrimary,
-    letterSpacing: 8,
-    textShadowColor: Colors.glassShadow,
-    textShadowOffset: {width: 0, height: 4},
-    textShadowRadius: 20,
+  logoImage: {
+    width: 220,
+    height: 180,
+    marginBottom: 8,
   },
   taglineContainer: {
     flexDirection: 'row',

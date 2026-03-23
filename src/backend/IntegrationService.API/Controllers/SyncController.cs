@@ -6,6 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration; // Add this
+using Microsoft.Data.SqlClient; // Add this
+using Dapper; // Add this
 using IntegrationService.Core.Interfaces;
 
 namespace IntegrationService.API.Controllers
@@ -16,12 +19,14 @@ namespace IntegrationService.API.Controllers
     {
         private readonly IPosRepository _posRepo;
         private readonly ILogger<SyncController> _logger;
+        private readonly string _backendConnectionString; // Add this
         private static DateTime? _lastSuccessfulSync;
 
-        public SyncController(IPosRepository posRepository, ILogger<SyncController> logger)
+        public SyncController(IPosRepository posRepository, IConfiguration configuration, ILogger<SyncController> logger)
         {
             _posRepo = posRepository;
             _logger = logger;
+            _backendConnectionString = configuration.GetConnectionString("BackendDatabase") ?? string.Empty;
         }
 
         [HttpGet("status")]
@@ -161,6 +166,47 @@ namespace IntegrationService.API.Controllers
         public async Task<IActionResult> ForceCheck()
         {
             return await GetStatus();
+        }
+
+        [HttpGet("diag")]
+        public async Task<IActionResult> GetDiagnostics()
+        {
+            if (string.IsNullOrEmpty(_backendConnectionString))
+                return BadRequest("Backend connection string not found");
+
+            try
+            {
+                using var connection = new SqlConnection(_backendConnectionString);
+                await connection.OpenAsync();
+                
+                var tables = await connection.QueryAsync<string>(
+                    "SELECT name FROM sys.tables");
+                
+                var usersCount = 0;
+                IEnumerable<string> emails = Enumerable.Empty<string>();
+                bool usersTableExists = tables.Contains("Users");
+                
+                if (usersTableExists)
+                {
+                    usersCount = await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Users");
+                    emails = await connection.QueryAsync<string>("SELECT Email FROM Users");
+                }
+
+                return Ok(new
+                {
+                    database = "IntegrationService",
+                    connected = true,
+                    tablesFound = tables,
+                    usersTableExists = usersTableExists,
+                    usersCount = usersCount,
+                    emails = emails,
+                    serverTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
         }
     }
 

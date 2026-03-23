@@ -26,4 +26,14 @@ namespace IntegrationService.Core.Models
         public string? Tastes { get; set; }
         public string? SideDishes { get; set; }
     }
+
+    public class Customer
+    {
+        public int CustomerID { get; set; }
+        public string? FName { get; set; }
+        public string? LName { get; set; }
+        public string? Phone { get; set; }
+        public string? Email { get; set; }
+        public int EarnedPoints { get; set; }
+    }
 }

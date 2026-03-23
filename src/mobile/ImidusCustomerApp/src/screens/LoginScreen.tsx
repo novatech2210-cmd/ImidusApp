@@ -1,7 +1,10 @@
+import {Colors, Spacing} from '@/theme';
+import {useIsFocused} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -15,7 +18,6 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../store';
 import {clearError, loginUser} from '../store/authSlice';
-import {Colors, Spacing} from '@/theme';
 
 interface LoginScreenProps {
   navigation: any;
@@ -30,6 +32,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
   const [phoneOrEmail, setPhoneOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
+  const isFocused = useIsFocused();
 
   // Navigate to Menu if authenticated
   useEffect(() => {
@@ -40,12 +43,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
 
   // Show error alert
   useEffect(() => {
-    if (error) {
+    if (error && isFocused) {
       Alert.alert('Login Failed', error, [
         {text: 'OK', onPress: () => dispatch(clearError())},
       ]);
     }
-  }, [error, dispatch]);
+  }, [error, dispatch, isFocused]);
 
   const handleLogin = async () => {
     if (!phoneOrEmail.trim()) {
@@ -82,7 +85,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
           style={styles.inner}>
           {/* Logo Section */}
           <View style={styles.logoSection}>
-            <Text style={styles.brandName}>IMIDUS</Text>
+            <Image
+              source={require('../assets/images/imidus_logo.png')}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
             <Text style={styles.tagline}>Order · Track · Earn</Text>
           </View>
 
@@ -155,7 +162,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
 
             <TouchableOpacity
               style={styles.registerButton}
-              onPress={() => navigation.navigate('Register')}
+              onPress={() => {
+                dispatch(clearError());
+                navigation.navigate('Register');
+              }}
               disabled={isLoading}>
               <Text style={styles.registerButtonText}>Create Account</Text>
             </TouchableOpacity>
@@ -164,7 +174,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
           {/* Guest Option */}
           <TouchableOpacity
             style={styles.guestButton}
-            onPress={() => navigation.navigate('Menu')}
+            onPress={() => {
+              dispatch(clearError());
+              navigation.navigate('Menu');
+            }}
             disabled={isLoading}>
             <Text style={styles.guestButtonText}>Continue as Guest</Text>
             <Text style={styles.guestArrow}>→</Text>
@@ -192,11 +205,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing.xl,
   },
-  brandName: {
-    fontSize: 48,
-    fontWeight: '800',
-    color: Colors.textPrimary,
-    letterSpacing: 4,
+  logoImage: {
+    width: 200,
+    height: 160,
+    marginBottom: 4,
   },
   tagline: {
     fontSize: 14,

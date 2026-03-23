@@ -1,7 +1,10 @@
+import {Colors, Spacing} from '@/theme';
+import {useIsFocused} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -16,7 +19,6 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../store';
 import {clearError, registerUser} from '../store/authSlice';
-import {Colors, Spacing} from '@/theme';
 
 interface RegisterScreenProps {
   navigation: any;
@@ -38,6 +40,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
+  const isFocused = useIsFocused();
 
   // Navigate to Menu if authenticated
   useEffect(() => {
@@ -48,12 +51,12 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
 
   // Show error alert
   useEffect(() => {
-    if (error) {
+    if (error && isFocused) {
       Alert.alert('Registration Failed', error, [
         {text: 'OK', onPress: () => dispatch(clearError())},
       ]);
     }
-  }, [error, dispatch]);
+  }, [error, dispatch, isFocused]);
 
   // Format phone number as (XXX) XXX-XXXX
   const formatPhoneNumber = (text: string) => {
@@ -65,7 +68,9 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
     } else if (limited.length <= 6) {
       return `(${limited.slice(0, 3)}) ${limited.slice(3)}`;
     } else {
-      return `(${limited.slice(0, 3)}) ${limited.slice(3, 6)}-${limited.slice(6)}`;
+      return `(${limited.slice(0, 3)}) ${limited.slice(3, 6)}-${limited.slice(
+        6,
+      )}`;
     }
   };
 
@@ -155,9 +160,15 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
             keyboardShouldPersistTaps="handled">
             {/* Header */}
             <View style={styles.headerWrapper}>
-              <Text style={styles.brandName}>IMIDUS</Text>
+              <Image
+                source={require('../assets/images/imidus_logo.png')}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
               <Text style={styles.title}>Create Account</Text>
-              <Text style={styles.subtitle}>Join and start earning rewards</Text>
+              <Text style={styles.subtitle}>
+                Join and start earning rewards
+              </Text>
             </View>
 
             {/* Form Card */}
@@ -169,7 +180,9 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
                   <TextInput
                     style={[
                       styles.input,
-                      focusedInput === 'firstName' ? styles.inputFocused : undefined,
+                      focusedInput === 'firstName'
+                        ? styles.inputFocused
+                        : undefined,
                       errors.firstName ? styles.inputError : undefined,
                     ]}
                     placeholder="John"
@@ -190,7 +203,9 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
                   <TextInput
                     style={[
                       styles.input,
-                      focusedInput === 'lastName' ? styles.inputFocused : undefined,
+                      focusedInput === 'lastName'
+                        ? styles.inputFocused
+                        : undefined,
                       errors.lastName ? styles.inputError : undefined,
                     ]}
                     placeholder="Doe"
@@ -259,7 +274,9 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
                   <TextInput
                     style={[
                       styles.passwordInput,
-                      focusedInput === 'password' ? styles.inputFocused : undefined,
+                      focusedInput === 'password'
+                        ? styles.inputFocused
+                        : undefined,
                       errors.password ? styles.inputError : undefined,
                     ]}
                     placeholder="Min 8 characters"
@@ -290,7 +307,9 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
                   <TextInput
                     style={[
                       styles.passwordInput,
-                      focusedInput === 'confirmPassword' ? styles.inputFocused : undefined,
+                      focusedInput === 'confirmPassword'
+                        ? styles.inputFocused
+                        : undefined,
                       errors.confirmPassword ? styles.inputError : undefined,
                     ]}
                     placeholder="Re-enter password"
@@ -303,7 +322,9 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
                   />
                   <TouchableOpacity
                     style={styles.eyeButton}
-                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+                    onPress={() =>
+                      setShowConfirmPassword(!showConfirmPassword)
+                    }>
                     <Text style={styles.eyeButtonText}>
                       {showConfirmPassword ? 'Hide' : 'Show'}
                     </Text>
@@ -327,7 +348,9 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
                   {isLoading ? (
                     <ActivityIndicator color={Colors.textOnGold} />
                   ) : (
-                    <Text style={styles.registerButtonText}>Create Account</Text>
+                    <Text style={styles.registerButtonText}>
+                      Create Account
+                    </Text>
                   )}
                 </LinearGradient>
               </TouchableOpacity>
@@ -336,7 +359,10 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
             {/* Login Link */}
             <TouchableOpacity
               style={styles.loginLink}
-              onPress={() => navigation.navigate('Login')}>
+              onPress={() => {
+                dispatch(clearError());
+                navigation.navigate('Login');
+              }}>
               <Text style={styles.loginLinkText}>
                 Already have an account?{' '}
                 <Text style={styles.loginLinkHighlight}>Sign In</Text>
@@ -368,11 +394,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing.xl,
   },
-  brandName: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: Colors.textPrimary,
-    letterSpacing: 4,
+  logoImage: {
+    width: 180,
+    height: 145,
     marginBottom: Spacing.sm,
   },
   title: {

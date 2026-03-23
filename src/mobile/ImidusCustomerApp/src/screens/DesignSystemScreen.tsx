@@ -18,10 +18,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { Colors, TextStyles, Spacing, BorderRadius, Elevation, TouchTarget, Images } from '@/theme';
-import MenuItemCard from '../components/MenuItemCard';
+import { MenuItemCard } from '../components/MenuItemCard';
 import ImidusHeader from '../components/common/ImidusHeader';
 import LoyaltyCard from '../components/common/LoyaltyCard';
-import SkeletonMenuCard from '../components/SkeletonMenuCard';
+import { SkeletonMenuCard } from '../components/SkeletonMenuCard';
 import FloatingCartButton from '../components/FloatingCartButton';
 
 const DesignSystemScreen = ({ navigation }: any) => {

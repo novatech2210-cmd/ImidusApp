@@ -1411,7 +1411,7 @@ namespace IntegrationService.Infrastructure.Data
             const string sql = @"
                 SELECT
                     ID, FName, LName, Phone, Address,
-                    CustomerNum, EarnedPoints, PointsManaged, Gender
+                    CustomerNum, EarnedPoints, PointsManaged
                 FROM dbo.tblCustomer
                 WHERE Phone = @Phone";
 
@@ -1420,18 +1420,21 @@ namespace IntegrationService.Infrastructure.Data
         }
 
         /// <summary>
-        /// Get customer by email address
+        /// Get customer by phone (note: email lookup via IntegrationService.Users table instead)
         /// </summary>
         public async Task<PosCustomer?> GetCustomerByEmailAsync(string email)
         {
+            // Email is stored in IntegrationService.Users table, not in POS tblCustomer
+            // This method looks up by phone from the User record (placeholder for legacy compatibility)
             const string sql = @"
                 SELECT TOP 1
                     ID, FName, LName, Phone, Address,
-                    CustomerNum, EarnedPoints, PointsManaged, Gender
+                    CustomerNum, EarnedPoints, PointsManaged
                 FROM dbo.tblCustomer
                 WHERE Phone = @Phone";
 
             using var connection = CreateConnection();
+            // If email is passed, try to use it as phone (legacy behavior)
             return await connection.QueryFirstOrDefaultAsync<PosCustomer>(sql, new { Phone = email });
         }
 
@@ -1443,7 +1446,7 @@ namespace IntegrationService.Infrastructure.Data
             const string sql = @"
                 SELECT
                     ID, FName, LName, Phone, Address,
-                    CustomerNum, EarnedPoints, PointsManaged, Gender
+                    CustomerNum, EarnedPoints, PointsManaged
                 FROM dbo.tblCustomer
                 WHERE ID = @Id";
 
