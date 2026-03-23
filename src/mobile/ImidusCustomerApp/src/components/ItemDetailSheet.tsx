@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
   },
   sizeChipSelected: {
     borderColor: Colors.brandGold,
-    backgroundColor: 'rgba(255, 214, 102, 0.1)',
+    backgroundColor: Colors.lightGold,
   },
   sizeChipText: {
     fontSize: 16,

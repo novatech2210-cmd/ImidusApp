@@ -11,8 +11,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch} from 'react-redux';
 import {addToCart} from '../store/cartSlice';
-import {Colors} from '../theme/colors';
-import {Spacing, Elevation} from '../theme/spacing';
+import {Colors, Spacing, Elevation} from '@/theme';
 import {MenuItem, MenuItemSize} from '../types/menu.types';
 
 const ItemDetailScreen = ({route, navigation}: any) => {
@@ -276,7 +275,7 @@ const styles = StyleSheet.create({
   },
   selectedSizeButton: {
     borderColor: Colors.brandGold,
-    backgroundColor: 'rgba(255, 214, 102, 0.1)',
+    backgroundColor: Colors.lightGold,
   },
   sizeText: {
     fontSize: 16,

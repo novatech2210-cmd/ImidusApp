@@ -264,7 +264,7 @@ export default function PaymentForm({onSubmit, loading, error}: PaymentFormProps
           colors={
             loading
               ? [Colors.surfaceContainerHigh, Colors.surfaceContainerHigh]
-              : [Colors.success, '#2DA066']
+              : [Colors.success, Colors.success]
           }
           style={styles.button}
           start={{x: 0, y: 0}}

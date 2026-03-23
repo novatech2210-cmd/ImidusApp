@@ -20,9 +20,7 @@ import { fetchOrderHistory, fetchOrderDetails, clearSelectedOrder } from '../sto
 import { addToCart } from '../store/cartSlice';
 import { OrderHistoryItem, OrderDetail } from '../types/orderHistory.types';
 import { getReorderItems, formatOrderDate, formatCurrency } from '../services/orderHistoryService';
-import { Colors } from '../theme/colors';
-import { TextStyles } from '../theme/typography';
-import { Spacing, BorderRadius, Elevation, TouchTarget } from '../theme/spacing';
+import { Colors, TextStyles, Spacing, BorderRadius, Elevation, TouchTarget } from '@/theme';
 
 interface OrderHistoryScreenProps {
   navigation: any;

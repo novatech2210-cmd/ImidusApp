@@ -20,8 +20,7 @@ import {completePayment} from '../services/orderService';
 import {validateCardData, detectCardType} from '../services/paymentService';
 import useAuthorizeNetTokenization from '../hooks/useAuthorizeNetTokenization';
 import {RootState} from '../store';
-import {Colors} from '../theme/colors';
-import {Spacing, Elevation} from '../theme/spacing';
+import {Colors, Spacing, Elevation} from '@/theme';
 import {CardData} from '../types/payment.types';
 
 type RootStackParamList = {

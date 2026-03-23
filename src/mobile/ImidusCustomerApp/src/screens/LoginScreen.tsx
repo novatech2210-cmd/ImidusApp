@@ -15,8 +15,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../store';
 import {clearError, loginUser} from '../store/authSlice';
-import {Colors} from '../theme/colors';
-import {Spacing} from '../theme/spacing';
+import {Colors, Spacing} from '@/theme';
 
 interface LoginScreenProps {
   navigation: any;

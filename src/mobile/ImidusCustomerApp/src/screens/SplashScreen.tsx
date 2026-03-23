@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: Colors.textPrimary,
     letterSpacing: 8,
-    textShadowColor: 'rgba(91, 160, 255, 0.3)',
+    textShadowColor: Colors.glassShadow,
     textShadowOffset: {width: 0, height: 4},
     textShadowRadius: 20,
   },

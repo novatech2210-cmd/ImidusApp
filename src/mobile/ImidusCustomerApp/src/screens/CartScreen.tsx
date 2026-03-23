@@ -13,8 +13,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {createOrder} from '../services/orderService';
 import {RootState} from '../store';
 import {removeFromCart, updateQuantity} from '../store/cartSlice';
-import {Colors} from '../theme/colors';
-import {Spacing, Elevation} from '../theme/spacing';
+import {Colors, Spacing, Elevation} from '@/theme';
 
 const CartScreen = ({navigation}: any) => {
   const cartItems = useSelector((state: RootState) => state.cart.items);

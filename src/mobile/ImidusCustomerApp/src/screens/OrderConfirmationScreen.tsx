@@ -10,8 +10,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {Colors} from '../theme/colors';
-import {Spacing, Elevation} from '../theme/spacing';
+import {Colors, Spacing, Elevation} from '@/theme';
 
 type RootStackParamList = {
   Menu: undefined;

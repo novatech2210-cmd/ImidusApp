@@ -47,8 +47,8 @@
                                 <rect key="frame" x="96.5" y="209.5" width="200" height="433"/>
                             </imageView>
                         </subviews>
-                        <!-- Brand blue background -->
-                        <color key="backgroundColor" red="0.118" green="0.353" blue="0.659" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <!-- Imperial Onyx brand blue background -->
+                        <color key="backgroundColor" red="0.039" green="0.122" blue="0.239" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <viewLayoutGuide key="safeAreaLayoutGuide" id="Bcu-3y-fUS"/>
                         <constraints>
                             <!-- Centre splash image horizontally and vertically -->

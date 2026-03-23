@@ -9,9 +9,9 @@
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Brand blue background fill -->
+    <!-- Imperial Onyx brand blue background fill -->
     <item>
-        <color android:color="#1E5AA8" />
+        <color android:color="#0A1F3D" />
     </item>
 
     <!-- Centred splash logo -->
