@@ -1,13 +1,18 @@
-import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { ApiResponse } from '@/types/api';
+import { ApiResponse } from "@/types/api";
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  InternalAxiosRequestConfig,
+} from "axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://10.0.0.26:5004';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://10.0.0.26:5004";
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   withCredentials: true, // Include cookies
 });
@@ -15,7 +20,7 @@ const apiClient: AxiosInstance = axios.create({
 // Request interceptor - add JWT token
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('adminToken');
+    const token = localStorage.getItem("adminToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -23,7 +28,7 @@ apiClient.interceptors.request.use(
   },
   (error: AxiosError) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor - handle errors
@@ -32,11 +37,11 @@ apiClient.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       // Token expired or invalid
-      localStorage.removeItem('adminToken');
-      window.location.href = '/auth/login';
+      localStorage.removeItem("adminToken");
+      window.location.href = "/auth/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // Dashboard APIs
@@ -46,7 +51,7 @@ export const dashboardAPI = {
       params: { startDate, endDate },
     }),
 
-  getSalesChart: (startDate: string, endDate: string, groupBy = 'day') =>
+  getSalesChart: (startDate: string, endDate: string, groupBy = "day") =>
     apiClient.get<ApiResponse<any>>(`/api/admin/dashboard/sales-chart`, {
       params: { startDate, endDate, groupBy },
     }),
@@ -85,10 +90,16 @@ export const orderAPI = {
     apiClient.get<ApiResponse<any>>(`/api/admin/orders/${salesId}`),
 
   refund: (salesId: number, data: any) =>
-    apiClient.post<ApiResponse<any>>(`/api/admin/orders/${salesId}/refund`, data),
+    apiClient.post<ApiResponse<any>>(
+      `/api/admin/orders/${salesId}/refund`,
+      data,
+    ),
 
   cancel: (salesId: number, data: any) =>
-    apiClient.post<ApiResponse<any>>(`/api/admin/orders/${salesId}/cancel`, data),
+    apiClient.post<ApiResponse<any>>(
+      `/api/admin/orders/${salesId}/cancel`,
+      data,
+    ),
 };
 
 // Customer List Filter interface
@@ -116,32 +127,37 @@ export const customerAPI = {
     apiClient.get<ApiResponse<any>>(`/api/admin/customers/${customerId}`),
 
   getLoyalty: (customerId: number, limit?: number) =>
-    apiClient.get<ApiResponse<any>>(`/api/admin/customers/${customerId}/loyalty`, {
-      params: { limit: limit || 50 },
-    }),
+    apiClient.get<ApiResponse<any>>(
+      `/api/admin/customers/${customerId}/loyalty`,
+      {
+        params: { limit: limit || 50 },
+      },
+    ),
 
   getHistory: (customerId: number) =>
-    apiClient.get<ApiResponse<any>>(`/api/admin/customers/${customerId}/history`),
+    apiClient.get<ApiResponse<any>>(
+      `/api/admin/customers/${customerId}/history`,
+    ),
 };
 
 // Campaign APIs
 export const campaignAPI = {
   getList: (status?: string) =>
-    apiClient.get<ApiResponse<any>>(`/api/admin/campaigns`, {
+    apiClient.get<ApiResponse<any>>(`/api/Campaigns`, {
       params: { status },
     }),
 
   create: (data: any) =>
-    apiClient.post<ApiResponse<any>>(`/api/admin/campaigns`, data),
+    apiClient.post<ApiResponse<any>>(`/api/Campaigns`, data),
 
   update: (id: number, data: any) =>
     apiClient.put<ApiResponse<any>>(`/api/admin/campaigns/${id}`, data),
 
   send: (id: number) =>
-    apiClient.post<ApiResponse<any>>(`/api/admin/campaigns/${id}/send`, {}),
+    apiClient.post<ApiResponse<any>>(`/api/Campaigns/${id}/send`, {}),
 
   getTargetAudience: (filter: any) =>
-    apiClient.post<ApiResponse<any>>(`/api/admin/campaigns/target-audience`, filter),
+    apiClient.post<ApiResponse<any>>(`/api/Campaigns/preview`, filter),
 };
 
 // Menu APIs
@@ -150,7 +166,10 @@ export const menuAPI = {
     apiClient.get<ApiResponse<any>>(`/api/admin/menu/overrides`),
 
   updateOverride: (itemId: number, data: any) =>
-    apiClient.put<ApiResponse<any>>(`/api/admin/menu/overrides/${itemId}`, data),
+    apiClient.put<ApiResponse<any>>(
+      `/api/admin/menu/overrides/${itemId}`,
+      data,
+    ),
 
   getInventory: () =>
     apiClient.get<ApiResponse<any>>(`/api/admin/menu/inventory`),
@@ -181,22 +200,28 @@ export const terminalBridgeAPI = {
     }),
 
   createRequest: (data: any) =>
-    apiClient.post<ApiResponse<any>>(`/api/admin/terminal-bridge/requests`, data),
+    apiClient.post<ApiResponse<any>>(
+      `/api/admin/terminal-bridge/requests`,
+      data,
+    ),
 
   getResponse: (requestId: string) =>
-    apiClient.get<ApiResponse<any>>(`/api/admin/terminal-bridge/requests/${requestId}/response`),
+    apiClient.get<ApiResponse<any>>(
+      `/api/admin/terminal-bridge/requests/${requestId}/response`,
+    ),
 };
 
 // Auth APIs
 export const authAPI = {
   login: (email: string, password: string) =>
-    apiClient.post<ApiResponse<any>>(`/api/auth/admin-login`, { email, password }),
+    apiClient.post<ApiResponse<any>>(`/api/auth/admin-login`, {
+      email,
+      password,
+    }),
 
-  logout: () =>
-    apiClient.post<ApiResponse<any>>(`/api/auth/admin-logout`, {}),
+  logout: () => apiClient.post<ApiResponse<any>>(`/api/auth/admin-logout`, {}),
 
-  refreshToken: () =>
-    apiClient.post<ApiResponse<any>>(`/api/auth/refresh`, {}),
+  refreshToken: () => apiClient.post<ApiResponse<any>>(`/api/auth/refresh`, {}),
 };
 
 export default apiClient;

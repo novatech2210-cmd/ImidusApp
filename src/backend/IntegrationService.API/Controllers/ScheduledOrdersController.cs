@@ -1,188 +1,319 @@
-using System;
-using System.Text.Json;
-using System.Threading.Tasks;
-using IntegrationService.Core.Domain.Entities;
+using IntegrationService.API.DTOs;
+using IntegrationService.Core.Entities;
 using IntegrationService.Core.Interfaces;
-using IntegrationService.Infrastructure.Services;
+using IntegrationService.Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace IntegrationService.API.Controllers
 {
     /// <summary>
-    /// API for managing scheduled future orders
+    /// Scheduled Orders API
+    /// Allows customers to place orders for future pickup
+    /// Orders stored in IntegrationService DB until release time, then written to POS
+    /// SSOT Compliant: Never modifies INI_Restaurant schema
     /// </summary>
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
     public class ScheduledOrdersController : ControllerBase
     {
         private readonly IScheduledOrderRepository _scheduledOrderRepo;
+        private readonly IPosRepository _posRepository;
+        private readonly IIdempotencyRepository _idempotencyRepo;
+        private readonly IPaymentService _paymentService;
         private readonly ILogger<ScheduledOrdersController> _logger;
 
         public ScheduledOrdersController(
             IScheduledOrderRepository scheduledOrderRepo,
+            IPosRepository posRepository,
+            IIdempotencyRepository idempotencyRepo,
+            IPaymentService paymentService,
             ILogger<ScheduledOrdersController> logger)
         {
             _scheduledOrderRepo = scheduledOrderRepo;
+            _posRepository = posRepository;
+            _idempotencyRepo = idempotencyRepo;
+            _paymentService = paymentService;
             _logger = logger;
         }
 
         /// <summary>
-        /// Get scheduled orders for a customer
-        /// </summary>
-        [HttpGet("customer/{customerId}")]
-        public async Task<IActionResult> GetCustomerScheduledOrders(int customerId)
-        {
-            var orders = await _scheduledOrderRepo.GetByCustomerIdAsync(customerId);
-            return Ok(new { data = orders });
-        }
-
-        /// <summary>
-        /// Get scheduled order by ID
-        /// </summary>
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetScheduledOrder(int id)
-        {
-            var order = await _scheduledOrderRepo.GetByIdAsync(id);
-            if (order == null)
-                return NotFound(new { error = "Scheduled order not found" });
-
-            return Ok(new { data = order });
-        }
-
-        /// <summary>
         /// Create a new scheduled order
+        /// Stores in IntegrationService DB, releases to POS at scheduled time
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> CreateScheduledOrder([FromBody] CreateScheduledOrderRequest request)
+        public async Task<ActionResult<CreateScheduledOrderResponse>> Create(
+            [FromBody] CreateScheduledOrderRequest request)
         {
-            // Validate target time is in the future
-            if (request.TargetDateTime <= DateTime.Now.AddMinutes(30))
+            try
             {
-                return BadRequest(new { error = "Target time must be at least 30 minutes in the future" });
-            }
-
-            // Serialize order items to JSON
-            var orderData = new ScheduledOrderData
-            {
-                Items = request.Items,
-                SpecialInstructions = request.SpecialInstructions,
-                IsTakeout = request.IsTakeout
-            };
-
-            var order = new ScheduledOrder
-            {
-                CustomerId = request.CustomerId,
-                IdempotencyKey = request.IdempotencyKey ?? Guid.NewGuid().ToString(),
-                OrderJson = JsonSerializer.Serialize(orderData),
-                SubTotal = request.SubTotal,
-                TaxAmount = request.TaxAmount,
-                TotalAmount = request.TotalAmount,
-                PaymentToken = request.PaymentToken,
-                CardType = request.CardType,
-                Last4 = request.Last4,
-                TargetDateTime = request.TargetDateTime,
-                PrepTimeMinutes = request.PrepTimeMinutes ?? 30
-            };
-
-            var id = await _scheduledOrderRepo.CreateAsync(order);
-            order.Id = id;
-
-            _logger.LogInformation("Created scheduled order {Id} for customer {CustomerId}, target: {Target}",
-                id, request.CustomerId, request.TargetDateTime);
-
-            return CreatedAtAction(nameof(GetScheduledOrder), new { id }, new
-            {
-                data = new
+                // Check if idempotency key exists
+                var existingRecord = await _idempotencyRepo.GetByKeyAsync(request.IdempotencyKey);
+                if (existingRecord != null)
                 {
-                    order.Id,
-                    order.CustomerId,
-                    order.TargetDateTime,
-                    order.TotalAmount,
-                    order.Status,
-                    order.InjectionTime
+                    var existingOrder = await _scheduledOrderRepo.GetByIdempotencyKeyAsync(request.IdempotencyKey);
+                    if (existingOrder != null)
+                    {
+                        return Ok(new CreateScheduledOrderResponse
+                        {
+                            Success = true,
+                            Message = "Order already exists (idempotency key matched)",
+                            ScheduledOrderId = existingOrder.Id,
+                            ConfirmationCode = $"SCH-{existingOrder.Id:D6}",
+                            ScheduledDateTime = existingOrder.ScheduledDateTime,
+                            TotalAmount = existingOrder.TotalAmount
+                        });
+                    }
                 }
-            });
-        }
 
-        /// <summary>
-        /// Cancel a scheduled order
-        /// </summary>
-        [HttpPost("{id}/cancel")]
-        public async Task<IActionResult> CancelScheduledOrder(int id)
-        {
-            var order = await _scheduledOrderRepo.GetByIdAsync(id);
-            if (order == null)
-                return NotFound(new { error = "Scheduled order not found" });
-
-            if (order.Status != "pending")
-                return BadRequest(new { error = "Can only cancel pending scheduled orders" });
-
-            // Check if it's too late to cancel (within prep time)
-            if (DateTime.Now >= order.InjectionTime)
-                return BadRequest(new { error = "Too late to cancel - order is being prepared" });
-
-            var cancelled = await _scheduledOrderRepo.CancelAsync(id);
-            if (!cancelled)
-                return BadRequest(new { error = "Failed to cancel order" });
-
-            _logger.LogInformation("Cancelled scheduled order {Id}", id);
-            return Ok(new { success = true });
-        }
-
-        /// <summary>
-        /// Get available pickup times
-        /// </summary>
-        [HttpGet("available-times")]
-        public IActionResult GetAvailablePickupTimes([FromQuery] DateTime? date = null)
-        {
-            var targetDate = date ?? DateTime.Today;
-            var now = DateTime.Now;
-
-            // Generate available slots (every 15 minutes from 30 min ahead to closing)
-            var slots = new System.Collections.Generic.List<AvailableTimeSlot>();
-            var startTime = targetDate.Date == now.Date
-                ? now.AddMinutes(30).Date.AddHours(now.AddMinutes(30).Hour).AddMinutes((now.AddMinutes(30).Minute / 15) * 15 + 15)
-                : targetDate.Date.AddHours(10); // 10 AM opening
-
-            var endTime = targetDate.Date.AddHours(21); // 9 PM closing
-
-            for (var time = startTime; time <= endTime; time = time.AddMinutes(15))
-            {
-                slots.Add(new AvailableTimeSlot
+                // Validate scheduled time (must be in future, at least 30 min lead time)
+                var minLeadTime = DateTime.UtcNow.AddMinutes(30);
+                if (request.ScheduledDateTime <= minLeadTime)
                 {
-                    DateTime = time,
-                    DisplayTime = time.ToString("h:mm tt")
+                    return BadRequest(new { error = "Scheduled time must be at least 30 minutes in the future" });
+                }
+
+                // Get customer info from POS database
+                var customer = await _posRepository.GetCustomerByIdAsync(request.CustomerId);
+                if (customer == null)
+                {
+                    return BadRequest(new { error = "Customer not found" });
+                }
+
+                // Calculate totals
+                var subtotal = request.Items.Sum(i => i.UnitPrice * i.Quantity);
+                var tax = subtotal * 0.06m; // 6% GST
+                var total = subtotal + tax + request.TipAmount;
+
+                // Create scheduled order
+                var scheduledOrder = new ScheduledOrder
+                {
+                    PosCustomerId = request.CustomerId,
+                    CustomerFirstName = customer.FName ?? "",
+                    CustomerLastName = customer.LName ?? "",
+                    CustomerPhone = customer.Phone,
+                    ScheduledDateTime = request.ScheduledDateTime,
+                    Status = "pending",
+                    ItemsJson = JsonSerializer.Serialize(request.Items),
+                    Subtotal = subtotal,
+                    TaxAmount = tax,
+                    TotalAmount = total,
+                    PaymentAuthorizationNo = request.PaymentAuthorizationNo,
+                    PaymentBatchNo = request.PaymentBatchNo ?? "1",
+                    PaymentTypeId = request.PaymentTypeId,
+                    TipAmount = request.TipAmount,
+                    SpecialInstructions = request.SpecialInstructions,
+                    IdempotencyKey = request.IdempotencyKey,
+                    CreatedBy = User.Identity?.Name ?? "system"
+                };
+
+                // Record idempotency
+                var idempotencyRecord = new IntegrationService.Core.Domain.Entities.IdempotencyRecord
+                {
+                    IdempotencyKey = request.IdempotencyKey,
+                    RequestHash = JsonSerializer.Serialize(request),
+                    ResponseJson = null,
+                    StatusCode = 0,
+                    CreatedAt = DateTime.UtcNow,
+                    ExpiresAt = DateTime.UtcNow.AddHours(24)
+                };
+                await _idempotencyRepo.StoreAsync(idempotencyRecord);
+
+                // Save to IntegrationService database (overlay)
+                var orderId = await _scheduledOrderRepo.CreateAsync(scheduledOrder);
+
+                _logger.LogInformation(
+                    "Scheduled order {OrderId} created for customer {CustomerId}, pickup at {PickupTime}",
+                    orderId, request.CustomerId, request.ScheduledDateTime);
+
+                return Ok(new CreateScheduledOrderResponse
+                {
+                    Success = true,
+                    Message = "Order scheduled successfully",
+                    ScheduledOrderId = orderId,
+                    ConfirmationCode = $"SCH-{orderId:D6}",
+                    ScheduledDateTime = request.ScheduledDateTime,
+                    TotalAmount = total
                 });
             }
-
-            return Ok(new { data = slots });
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating scheduled order");
+                return StatusCode(500, new { error = "Failed to schedule order", details = ex.Message });
+            }
         }
-    }
 
-    public class CreateScheduledOrderRequest
-    {
-        public int CustomerId { get; set; }
-        public string? IdempotencyKey { get; set; }
-        public System.Collections.Generic.List<ScheduledOrderItem> Items { get; set; } = new();
-        public string? SpecialInstructions { get; set; }
-        public bool IsTakeout { get; set; } = true;
+        /// <summary>
+        /// Get customer's scheduled orders
+        /// </summary>
+        [HttpGet("customer/{customerId}")]
+        public async Task<ActionResult> GetByCustomer(int customerId)
+        {
+            try
+            {
+                var orders = await _scheduledOrderRepo.GetByCustomerIdAsync(customerId);
+                
+                var dtos = orders.Select(o => new ScheduledOrderDto
+                {
+                    Id = o.Id,
+                    CustomerId = o.PosCustomerId,
+                    CustomerName = $"{o.CustomerFirstName} {o.CustomerLastName}",
+                    ScheduledDateTime = o.ScheduledDateTime,
+                    Status = o.Status,
+                    Items = JsonSerializer.Deserialize<ScheduledOrderItemDto[]>(o.ItemsJson)?.ToList() ?? new(),
+                    Subtotal = o.Subtotal,
+                    TaxAmount = o.TaxAmount,
+                    TotalAmount = o.TotalAmount,
+                    SpecialInstructions = o.SpecialInstructions,
+                    ConfirmationCode = $"SCH-{o.Id:D6}",
+                    ReleasedDateTime = o.ReleasedDateTime,
+                    PosOrderNumber = o.PosOrderNumber,
+                    CreatedAt = o.CreatedAt,
+                    CanCancel = o.Status == "pending" && o.ScheduledDateTime > DateTime.UtcNow.AddHours(1)
+                });
 
-        public decimal SubTotal { get; set; }
-        public decimal TaxAmount { get; set; }
-        public decimal TotalAmount { get; set; }
+                return Ok(dtos);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving scheduled orders for customer {CustomerId}", customerId);
+                return StatusCode(500, new { error = "Failed to retrieve orders" });
+            }
+        }
 
-        public string? PaymentToken { get; set; }
-        public string? CardType { get; set; }
-        public string? Last4 { get; set; }
+        /// <summary>
+        /// Cancel a scheduled order (only if status is pending and >2 hours before pickup)
+        /// Attempts void first (same-day), then refund (if settled)
+        /// </summary>
+        [HttpPost("{id}/cancel")]
+        public async Task<ActionResult> Cancel(int id, [FromBody] CancelRequest? request)
+        {
+            try
+            {
+                var order = await _scheduledOrderRepo.GetByIdAsync(id);
+                if (order == null)
+                {
+                    return NotFound(new { error = "Order not found" });
+                }
 
-        public DateTime TargetDateTime { get; set; }
-        public int? PrepTimeMinutes { get; set; }
-    }
+                // Validate ownership (from JWT claims)
+                var customerId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                if (order.PosCustomerId != customerId)
+                {
+                    return Forbid();
+                }
 
-    public class AvailableTimeSlot
-    {
-        public DateTime DateTime { get; set; }
-        public string DisplayTime { get; set; } = string.Empty;
+                // Validate status
+                if (order.Status != "pending")
+                {
+                    return BadRequest(new { error = $"Cannot cancel order with status: {order.Status}" });
+                }
+
+                // Validate cutoff (2 hours before pickup - LOCKED DECISION)
+                var cutoffTime = order.ScheduledDateTime.AddHours(-2);
+                if (DateTime.UtcNow >= cutoffTime)
+                {
+                    return BadRequest(new { error = "Cannot cancel orders within 2 hours of pickup time." });
+                }
+
+                // Process refund - try void first (same-day), then refund (settled)
+                var refunded = false;
+                if (!string.IsNullOrEmpty(order.PaymentAuthorizationNo))
+                {
+                    refunded = await _paymentService.VoidTransactionAsync(order.PaymentAuthorizationNo);
+                    if (!refunded)
+                    {
+                        _logger.LogWarning("Void failed for order {OrderId}, attempting refund", id);
+                        refunded = await _paymentService.RefundTransactionAsync(
+                            order.PaymentAuthorizationNo,
+                            order.TotalAmount);
+                    }
+
+                    if (!refunded)
+                    {
+                        _logger.LogCritical("Both void and refund failed for order {OrderId} - requires manual intervention", id);
+                    }
+                }
+
+                // Update status to cancelled (even if refund failed - track separately)
+                var reason = request?.Reason ?? "Customer requested";
+                await _scheduledOrderRepo.CancelAsync(id, reason);
+
+                _logger.LogInformation("Scheduled order {OrderId} cancelled: {Reason}, Refunded: {Refunded}", id, reason, refunded);
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Order cancelled successfully",
+                    refunded = refunded,
+                    refundNote = refunded
+                        ? "Full refund processed"
+                        : "Refund pending - contact support if not received within 3-5 business days"
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error cancelling scheduled order {OrderId}", id);
+                return StatusCode(500, new { error = "Failed to cancel order" });
+            }
+        }
+
+        /// <summary>
+        /// Get available time slots for a specific date
+        /// </summary>
+        [HttpGet("timeslots")]
+        [AllowAnonymous]
+        public async Task<ActionResult<AvailableTimeSlotsResponse>> GetTimeSlots(
+            [FromQuery] DateTime date,
+            [FromQuery] int leadTimeMinutes = 30)
+        {
+            try
+            {
+                // Generate time slots from 11:00 AM to 9:00 PM
+                var slots = new System.Collections.Generic.List<TimeSlotDto>();
+                var startTime = new TimeSpan(11, 0, 0);
+                var endTime = new TimeSpan(21, 0, 0);
+                var interval = TimeSpan.FromMinutes(15);
+
+                var currentTime = startTime;
+                var minTime = DateTime.UtcNow.AddMinutes(leadTimeMinutes);
+
+                while (currentTime <= endTime)
+                {
+                    var slotDateTime = date.Date + currentTime;
+                    var isAvailable = slotDateTime > minTime && slotDateTime > DateTime.UtcNow;
+
+                    slots.Add(new TimeSlotDto
+                    {
+                        Time = currentTime.ToString(@"hh\:mm"),
+                        DisplayText = DateTime.Today.Add(currentTime).ToString("h:mm tt"),
+                        IsAvailable = isAvailable
+                    });
+
+                    currentTime = currentTime.Add(interval);
+                }
+
+                return Ok(new AvailableTimeSlotsResponse
+                {
+                    Date = date.Date,
+                    AvailableSlots = slots.Where(s => s.IsAvailable).ToList(),
+                    RestaurantOpenTime = "11:00 AM",
+                    RestaurantCloseTime = "9:00 PM",
+                    LeadTimeMinutes = leadTimeMinutes
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating time slots");
+                return StatusCode(500, new { error = "Failed to generate time slots" });
+            }
+        }
     }
 }

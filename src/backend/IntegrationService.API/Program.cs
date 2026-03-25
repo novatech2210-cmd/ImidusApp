@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using IntegrationService.API.Services;
+using SendGrid.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,10 +55,18 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowWebApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000", "http://localhost:3001") // Add Admin Portal origin
+            policy.WithOrigins("http://localhost:3000", "http://localhost:3001")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
-                  .AllowCredentials(); // Allow cookies for authentication
+                  .AllowCredentials();
+        });
+    
+    options.AddPolicy("AllowMobileApp",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
         });
 });
 
@@ -154,36 +164,76 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IIdempotencyRepository, IdempotencyRepository>();
 builder.Services.AddScoped<IOrderNumberRepository, OrderNumberRepository>();
 builder.Services.AddScoped<IDeviceTokenRepository, DeviceTokenRepository>();
-builder.Services.AddScoped<NotificationLogRepository>();
-builder.Services.AddScoped<OnlineOrderStatusRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IMenuRepository, MenuRepository>();
-builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
-builder.Services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
+builder.Services.AddScoped<IMiscRepository, MiscRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<INotificationLogRepository, NotificationLogRepository>();
+builder.Services.AddScoped<IOnlineOrderStatusRepository, OnlineOrderStatusRepository>();
 
-// Enterprise Feature Repositories
-builder.Services.AddScoped<ICampaignRepository, CampaignRepository>();
-builder.Services.AddScoped<IScheduledOrderRepository, ScheduledOrderRepository>();
-builder.Services.AddScoped<IMenuOverlayRepository, MenuOverlayRepository>();
-builder.Services.AddScoped<ICustomerAnalyticsRepository, CustomerAnalyticsRepository>();
+// Milestone 4 Admin Portal Repositories
+builder.Services.AddScoped<IActivityLogRepository>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    var logger = provider.GetRequiredService<ILogger<ActivityLogRepository>>();
+    var connectionString = configuration.GetConnectionString("BackendDatabase")
+        ?? throw new ArgumentNullException("BackendDatabase connection string not found");
+    return new ActivityLogRepository(connectionString, logger);
+});
 
-// Service Registrations
+// ScheduledOrderRepository with factory to provide connection string
+builder.Services.AddScoped<IScheduledOrderRepository>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    var logger = provider.GetRequiredService<ILogger<ScheduledOrderRepository>>();
+    var connectionString = configuration.GetConnectionString("BackendDatabase")
+        ?? throw new ArgumentNullException("BackendDatabase connection string not found");
+    return new ScheduledOrderRepository(connectionString, logger);
+});
+
+// MarketingRuleRepository with factory to provide connection string
+builder.Services.AddScoped<IMarketingRuleRepository>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    var logger = provider.GetRequiredService<ILogger<MarketingRuleRepository>>();
+    var connectionString = configuration.GetConnectionString("BackendDatabase")
+        ?? throw new ArgumentNullException("BackendDatabase connection string not found");
+    return new MarketingRuleRepository(connectionString, logger);
+});
+
+// Core Services
+builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<IOrderProcessingService, OrderProcessingService>();
 builder.Services.AddScoped<ILoyaltyService, LoyaltyService>();
 builder.Services.AddScoped<IUpsellService, UpsellService>();
-builder.Services.AddBirthdayRewardService();
-builder.Services.AddScoped<IRFMSegmentationService, RFMSegmentationService>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<BirthdayRewardService>();
+builder.Services.AddHostedService<BirthdayRewardBackgroundService>();
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddScoped<IPaymentService, MockPaymentService>();
+}
+else
+{
+    builder.Services.AddScoped<IPaymentService, PaymentService>();
+}
 builder.Services.AddScoped<INotificationService, FcmNotificationService>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
-// Enterprise Feature Services
-builder.Services.AddSingleton<ICampaignService, CampaignService>();
-builder.Services.AddHostedService(sp => (CampaignService)sp.GetRequiredService<ICampaignService>());
-builder.Services.AddHostedService<ScheduledOrderService>();
+// Milestone 4 Admin Portal Service
+builder.Services.AddScoped<AdminPortalService>();
+
+// Add SendGrid
+builder.Services.AddSendGrid(options =>
+{
+    options.ApiKey = builder.Configuration["SendGrid:ApiKey"];
+});
+
+// Add Email Service
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Background Services
 builder.Services.AddHostedService<OrderStatusPollingService>();
+builder.Services.AddHostedService<ScheduledOrderReleaseService>();
 
 var app = builder.Build();
 
@@ -195,7 +245,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowWebApp");
-app.UseHttpsRedirection();
+app.UseCors("AllowMobileApp");
+// app.UseHttpsRedirection();
+
+Log.Information("Content Root: {ContentRoot}", app.Environment.ContentRootPath);
+Log.Information("Web Root: {WebRoot}", app.Environment.WebRootPath);
+
+app.UseStaticFiles(); // Enable static file serving (for menu item images)
+
 app.UseRouting();
 app.UseMiddleware<IdempotencyMiddleware>();
 app.UseAuthentication(); // Add JWT authentication middleware
@@ -207,5 +264,106 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
+
+// Database Initialization (Overlay Store)
+using (var scope = app.Services.CreateScope())
+{
+    var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+    var backendDb = configuration.GetConnectionString("BackendDatabase");
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    
+    if (!string.IsNullOrEmpty(backendDb))
+    {
+        try 
+        {
+            using var conn = new Microsoft.Data.SqlClient.SqlConnection(backendDb);
+            await conn.OpenAsync();
+            
+            // NotificationLogs
+            var notificationLogsExists = await Dapper.SqlMapper.ExecuteScalarAsync<int>(conn, "SELECT COUNT(*) FROM sys.tables WHERE name = 'NotificationLogs'");
+            if (notificationLogsExists == 0)
+            {
+                await Dapper.SqlMapper.ExecuteAsync(conn, @"
+                    CREATE TABLE NotificationLogs (
+                        Id INT IDENTITY(1,1) PRIMARY KEY,
+                        CustomerId INT NOT NULL,
+                        DeviceTokenId INT NULL,
+                        NotificationType NVARCHAR(50) NOT NULL,
+                        Title NVARCHAR(200) NOT NULL,
+                        Body NVARCHAR(1000) NOT NULL,
+                        Status NVARCHAR(50) NOT NULL,
+                        FcmResponse NVARCHAR(MAX) NULL,
+                        CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE()
+                    )");
+                logger.LogInformation("Created NotificationLogs table in IntegrationService database");
+            }
+
+            // ScheduledOrders
+            var scheduledOrdersExists = await Dapper.SqlMapper.ExecuteScalarAsync<int>(conn, "SELECT COUNT(*) FROM sys.tables WHERE name = 'ScheduledOrders'");
+            if (scheduledOrdersExists == 0)
+            {
+                await Dapper.SqlMapper.ExecuteAsync(conn, @"
+                    CREATE TABLE ScheduledOrders (
+                        Id INT IDENTITY(1,1) PRIMARY KEY,
+                        PosCustomerId INT NOT NULL,
+                        CustomerFirstName NVARCHAR(100) NULL,
+                        CustomerLastName NVARCHAR(100) NULL,
+                        CustomerPhone NVARCHAR(20) NULL,
+                        ScheduledDateTime DATETIME2 NOT NULL,
+                        Status NVARCHAR(50) NOT NULL DEFAULT 'pending',
+                        ItemsJson NVARCHAR(MAX) NOT NULL,
+                        Subtotal DECIMAL(18,2) NOT NULL DEFAULT 0,
+                        TaxAmount DECIMAL(18,2) NOT NULL DEFAULT 0,
+                        TotalAmount DECIMAL(18,2) NOT NULL DEFAULT 0,
+                        PaymentAuthorizationNo NVARCHAR(100) NULL,
+                        PaymentBatchNo NVARCHAR(100) NULL,
+                        PaymentTypeId INT NULL,
+                        TipAmount DECIMAL(18,2) NOT NULL DEFAULT 0,
+                        SpecialInstructions NVARCHAR(500) NULL,
+                        IdempotencyKey NVARCHAR(100) NOT NULL UNIQUE,
+                        PosSalesId INT NULL,
+                        PosOrderNumber NVARCHAR(50) NULL,
+                        ReleasedDateTime DATETIME2 NULL,
+                        ReleaseRetryCount INT NOT NULL DEFAULT 0,
+                        ReleaseErrorMessage NVARCHAR(MAX) NULL,
+                        CreatedBy NVARCHAR(100) NULL,
+                        CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+                        UpdatedAt DATETIME2 NULL
+                    )");
+                logger.LogInformation("Created ScheduledOrders table in IntegrationService database");
+            }
+
+            // Users table
+            var usersExists = await Dapper.SqlMapper.ExecuteScalarAsync<int>(conn, "SELECT COUNT(*) FROM sys.tables WHERE name = 'Users'");
+            if (usersExists == 0)
+            {
+                await Dapper.SqlMapper.ExecuteAsync(conn, @"
+                    CREATE TABLE Users (
+                        ID INT IDENTITY(1,1) PRIMARY KEY,
+                        CustomerID INT NULL,
+                        Email NVARCHAR(256) NOT NULL UNIQUE,
+                        EmailConfirmed BIT NOT NULL DEFAULT 0,
+                        PasswordHash NVARCHAR(MAX) NULL,
+                        SecurityStamp NVARCHAR(MAX) NULL,
+                        PhoneNumber NVARCHAR(50) NULL,
+                        PhoneConfirmed BIT NOT NULL DEFAULT 0,
+                        TwoFactorEnabled BIT NOT NULL DEFAULT 0,
+                        LockoutEnd DATETIMEOFFSET(7) NULL,
+                        LockoutEnabled BIT NOT NULL DEFAULT 1,
+                        AccessFailedCount INT NOT NULL DEFAULT 0,
+                        CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+                        UpdatedAt DATETIME NULL,
+                        LastLoginAt DATETIME NULL,
+                        IsActive BIT NOT NULL DEFAULT 1
+                    )");
+                logger.LogInformation("Created Users table in IntegrationService database");
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to initialize IntegrationService database tables");
+        }
+    }
+}
 
 app.Run();

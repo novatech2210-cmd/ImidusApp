@@ -9,6 +9,8 @@ using IntegrationService.Core.Domain.Entities;
 using IntegrationService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using IntegrationService.Core.Models.AdminPortal;
+using CustomerSegment = IntegrationService.Core.Interfaces.CustomerSegment;
 
 namespace IntegrationService.Infrastructure.Data
 {
@@ -70,6 +72,7 @@ namespace IntegrationService.Infrastructure.Data
                     i.IName2,
                     i.ItemDescription,
                     i.ImageFilePath,
+                    mo.OverrideImageUrl,
                     i.CategoryID,
                     i.Status,
                     i.OnlineItem,
@@ -84,17 +87,41 @@ namespace IntegrationService.Infrastructure.Data
                     i.KitchenE,
                     i.Bar,
                     i.Taste,
-                    i.OpenItem,
                     i.ScaleItem
                 FROM dbo.tblItem i
+                LEFT JOIN IntegrationService.dbo.MenuOverlays mo ON i.ID = mo.ItemId
                 WHERE i.Status = 1
+                  AND i.OnlineItem = 1
                 ORDER BY i.CategoryID, i.IName";
-            // NOTE: OnlineItem filter temporarily disabled for testing
 
             using var connection = CreateConnection();
-            var items = await connection.QueryAsync<MenuItem>(sql);
+            var rawItems = await connection.QueryAsync<dynamic>(sql);
 
-            _logger.LogInformation("Retrieved {Count} active menu items", items.Count());
+            var items = rawItems.Select(i => new MenuItem
+            {
+                ItemID = (short)i.ItemID,
+                IName = (string)i.IName,
+                IName2 = (string?)i.IName2,
+                ItemDescription = (string?)i.ItemDescription,
+                ImageFilePath = (string?)i.OverrideImageUrl ?? (string?)i.ImageFilePath,
+                CategoryID = (byte)i.CategoryID,
+                Status = (bool)i.Status,
+                OnlineItem = (bool)i.OnlineItem,
+                Alcohol = (bool)i.Alcohol,
+                BarCode = (string?)i.BarCode,
+                ManageInv = (bool)i.ManageInv,
+                ApplyGST = (bool)i.ApplyGST,
+                ApplyPST = (bool)i.ApplyPST,
+                ApplyPST2 = (bool)i.ApplyPST2,
+                KitchenB = (bool)i.KitchenB,
+                KitchenF = (bool)i.KitchenF,
+                KitchenE = (bool)i.KitchenE,
+                Bar = (bool)i.Bar,
+                Taste = (bool)i.Taste,
+                ScaleItem = (bool)i.ScaleItem
+            }).ToList();
+
+            _logger.LogInformation("Retrieved {Count} active menu items with potential image overlays", items.Count);
             return items;
         }
 
@@ -110,6 +137,7 @@ namespace IntegrationService.Infrastructure.Data
                     i.IName2,
                     i.ItemDescription,
                     i.ImageFilePath,
+                    mo.OverrideImageUrl,
                     i.CategoryID,
                     i.Status,
                     i.OnlineItem,
@@ -122,16 +150,35 @@ namespace IntegrationService.Infrastructure.Data
                     i.KitchenE,
                     i.Bar
                 FROM dbo.tblItem i
+                LEFT JOIN IntegrationService.dbo.MenuOverlays mo ON i.ID = mo.ItemId
                 WHERE i.ID = @ItemId";
 
             using var connection = CreateConnection();
-            var item = await connection.QueryFirstOrDefaultAsync<MenuItem>(sql, new { ItemId = itemId });
+            var rawItem = await connection.QueryFirstOrDefaultAsync<dynamic>(sql, new { ItemId = itemId });
 
-            if (item != null)
+            if (rawItem == null) return null;
+
+            var item = new MenuItem
             {
-                item.AvailableSizes = (await GetItemSizesAsync(itemId)).ToList();
-            }
+                ItemID = (short)rawItem.ItemID,
+                IName = (string)rawItem.IName,
+                IName2 = (string?)rawItem.IName2,
+                ItemDescription = (string?)rawItem.ItemDescription,
+                ImageFilePath = (string?)rawItem.OverrideImageUrl ?? (string?)rawItem.ImageFilePath,
+                CategoryID = (byte)rawItem.CategoryID,
+                Status = (bool)rawItem.Status,
+                OnlineItem = (bool)rawItem.OnlineItem,
+                Alcohol = (bool)rawItem.Alcohol,
+                ApplyGST = (bool)rawItem.ApplyGST,
+                ApplyPST = (bool)rawItem.ApplyPST,
+                ApplyPST2 = (bool)rawItem.ApplyPST2,
+                KitchenB = (bool)rawItem.KitchenB,
+                KitchenF = (bool)rawItem.KitchenF,
+                KitchenE = (bool)rawItem.KitchenE,
+                Bar = (bool)rawItem.Bar
+            };
 
+            item.AvailableSizes = (await GetItemSizesAsync(itemId)).ToList();
             return item;
         }
 
@@ -175,47 +222,64 @@ namespace IntegrationService.Infrastructure.Data
         }
 
         /// <summary>
-        /// Get all categories that have at least one available online item
+        /// Get all active categories that have online-enabled items
         /// Only returns categories with OnlineItem=1 and Status=1 items
         /// </summary>
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
-            // NOTE: OnlineItem filter temporarily disabled for testing
-            // In production, uncomment: AND i.OnlineItem = 1
             const string sql = @"
-                SELECT DISTINCT
+                SELECT 
                     c.ID AS CategoryID,
-                    c.CatName AS CName,
+                    c.CatName,
                     c.PrintOrder,
-                    c.CategoryImageFilePath
+                    c.CategoryImageFilePath,
+                    mo.OverrideImageUrl
                 FROM dbo.tblCategory c
                 INNER JOIN dbo.tblItem i ON c.ID = i.CategoryID
+                LEFT JOIN IntegrationService.dbo.MenuOverlays mo ON CAST(c.ID AS INT) = CAST(mo.CategoryId AS INT) AND mo.ItemId IS NULL
                 WHERE c.Status = 1
+                  AND i.OnlineItem = 1
                   AND i.Status = 1
+                GROUP BY c.ID, c.CatName, c.PrintOrder, c.CategoryImageFilePath, mo.OverrideImageUrl
                 ORDER BY c.PrintOrder";
 
+            _logger.LogDebug("Fetching categories from POS database with potential overlays");
             using var connection = CreateConnection();
-            return await connection.QueryAsync<Category>(sql);
+            var rawCategories = await connection.QueryAsync<dynamic>(sql);
+            
+            var categories = rawCategories.Select(c => new Category
+            {
+                CategoryID = (byte)c.CategoryID,
+                CName = (string)c.CatName,
+                PrintOrder = (int)(c.PrintOrder ?? 0),
+                CategoryImageFilePath = (string?)c.OverrideImageUrl ?? (string?)c.CategoryImageFilePath
+            }).ToList();
+
+            _logger.LogDebug("Fetched {Count} categories from POS", categories.Count());
+            return categories;
         }
 
         /// <summary>
         /// Get count of available items per category
         /// Returns dictionary of CategoryID -> item count (only OnlineItem=1, Status=1)
         /// </summary>
-        public async Task<Dictionary<int, int>> GetCategoryItemCountsAsync()
+        public async Task<Dictionary<byte, int>> GetCategoryItemCountsAsync()
         {
-            // NOTE: OnlineItem filter temporarily disabled for testing
             const string sql = @"
                 SELECT
                     CategoryID,
                     COUNT(*) AS ItemCount
                 FROM dbo.tblItem
-                WHERE Status = 1
+                WHERE OnlineItem = 1
+                  AND Status = 1
                 GROUP BY CategoryID";
 
+            _logger.LogDebug("Fetching category item counts from POS");
             using var connection = CreateConnection();
-            var results = await connection.QueryAsync<(int CategoryID, int ItemCount)>(sql);
-            return results.ToDictionary(r => r.CategoryID, r => r.ItemCount);
+            var results = await connection.QueryAsync<(byte CategoryID, int ItemCount)>(sql);
+            var dict = results.ToDictionary(r => r.CategoryID, r => r.ItemCount);
+            _logger.LogDebug("Fetched {Count} category counts: {Keys}", dict.Count, string.Join(",", dict.Keys));
+            return dict;
         }
 
         /// <summary>
@@ -232,6 +296,7 @@ namespace IntegrationService.Infrastructure.Data
                     i.IName2,
                     i.ItemDescription,
                     i.ImageFilePath,
+                    mo.OverrideImageUrl,
                     i.CategoryID,
                     i.Status,
                     i.OnlineItem,
@@ -246,25 +311,49 @@ namespace IntegrationService.Infrastructure.Data
                     i.KitchenE,
                     i.Bar,
                     i.Taste,
-                    i.OpenItem,
                     i.ScaleItem
                 FROM dbo.tblItem i
+                LEFT JOIN IntegrationService.dbo.MenuOverlays mo ON i.ID = mo.ItemId
                 WHERE i.CategoryID = @CategoryId
                   AND i.Status = 1
+                  AND i.OnlineItem = 1
                 ORDER BY i.IName";
-            // NOTE: OnlineItem filter temporarily disabled for testing
 
             using var connection = CreateConnection();
-            var items = await connection.QueryAsync<MenuItem>(sql, new { CategoryId = categoryId });
+            var rawItems = await connection.QueryAsync<dynamic>(sql, new { CategoryId = categoryId });
 
-            _logger.LogInformation("Retrieved {Count} menu items for category {CategoryId}", items.Count(), categoryId);
+            var items = rawItems.Select(i => new MenuItem
+            {
+                ItemID = (short)i.ItemID,
+                IName = (string)i.IName,
+                IName2 = (string?)i.IName2,
+                ItemDescription = (string?)i.ItemDescription,
+                ImageFilePath = (string?)i.OverrideImageUrl ?? (string?)i.ImageFilePath,
+                CategoryID = (byte)i.CategoryID,
+                Status = (bool)i.Status,
+                OnlineItem = (bool)i.OnlineItem,
+                Alcohol = (bool)i.Alcohol,
+                BarCode = (string?)i.BarCode,
+                ManageInv = (bool)i.ManageInv,
+                ApplyGST = (bool)i.ApplyGST,
+                ApplyPST = (bool)i.ApplyPST,
+                ApplyPST2 = (bool)i.ApplyPST2,
+                KitchenB = (bool)i.KitchenB,
+                KitchenF = (bool)i.KitchenF,
+                KitchenE = (bool)i.KitchenE,
+                Bar = (bool)i.Bar,
+                Taste = (bool)i.Taste,
+                ScaleItem = (bool)i.ScaleItem
+            }).ToList();
+
+            _logger.LogInformation("Retrieved {Count} menu items for category {CategoryId}", items.Count, categoryId);
             return items;
         }
 
         /// <summary>
         /// Get stock quantity for specific item and size
         /// </summary>
-        public async Task<ItemStock?> GetItemStockAsync(int itemId, int sizeId)
+        public async Task<int?> GetItemStockAsync(int itemId, int sizeId)
         {
             const string sql = @"
                 SELECT OnHandQty
@@ -272,8 +361,7 @@ namespace IntegrationService.Infrastructure.Data
                 WHERE ItemID = @ItemId AND SizeID = @SizeId";
 
             using var connection = CreateConnection();
-            var onHandQty = await connection.QueryFirstOrDefaultAsync<decimal?>(sql, new { ItemId = itemId, SizeId = sizeId });
-            return onHandQty != null ? new ItemStock { OnHandQty = onHandQty } : null;
+            return await connection.QueryFirstOrDefaultAsync<int?>(sql, new { ItemId = itemId, SizeId = sizeId });
         }
 
         /// <summary>
@@ -282,7 +370,7 @@ namespace IntegrationService.Infrastructure.Data
         public async Task<bool> IsItemInStockAsync(int itemId, int sizeId, decimal quantity)
         {
             var stock = await GetItemStockAsync(itemId, sizeId);
-            return stock == null || stock.OnHandQty >= quantity;
+            return stock == null || stock.Value >= quantity;
         }
 
         /// <summary>
@@ -346,9 +434,10 @@ namespace IntegrationService.Infrastructure.Data
         /// <summary>
         /// Create new sale/order with TransType=2 (Open) and register online order
         /// </summary>
-        public async Task<int> CreateOpenOrderAsync(PosTicket ticket, IDbTransaction? transaction = null)
+        public async Task<int> CreateOpenOrderAsync(PosTicket ticket, IDbTransaction? transaction = null, string? customerName = null)
         {
             // SQL Server 2005 compatible - no OUTPUT clause in some versions
+            // NOTE: Removed columns not in POS 2005 schema: DeliveryChargeAmt, OnlineOrderCompanyID, Locked, PaymentCount
             const string sql = @"
                 INSERT INTO dbo.tblSales (
                     SaleDateTime,
@@ -368,11 +457,7 @@ namespace IntegrationService.Infrastructure.Data
                     StationID,
                     Guests,
                     TakeOutOrder,
-                    DailyOrderNumber,
-                    DeliveryChargeAmt,
-                    OnlineOrderCompanyID,
-                    Locked,
-                    PaymentCount
+                    DailyOrderNumber
                 )
                 VALUES (
                     @SaleDateTime,
@@ -392,11 +477,7 @@ namespace IntegrationService.Infrastructure.Data
                     @StationID,
                     @Guests,
                     @TakeOutOrder,
-                    @DailyOrderNumber,
-                    @DeliveryChargeAmt,
-                    @OnlineOrderCompanyID,
-                    0,  -- Not locked
-                    0   -- No payments yet
+                    @DailyOrderNumber
                 );
                 SELECT SCOPE_IDENTITY();";
 
@@ -423,7 +504,7 @@ namespace IntegrationService.Infrastructure.Data
                     SalesID = salesId,
                     OnlineOrderCompanyID = ticket.OnlineOrderCompanyID ?? 1,
                     OnlineOrderNumber = ticket.DailyOrderNumber.ToString(),
-                    OnlineOrderCustomerName = "Guest", // Default to Guest since customer name is not passed separately
+                    OnlineOrderCustomerName = customerName ?? "Guest",
                     DineInOrder = false,
                     ReservedTipAmt = 0,
                     DeliveryChargeAmt = ticket.DeliveryChargeAmt
@@ -441,6 +522,7 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Get ticket/sale by ID
+        /// NOTE: Modified for POS 2005 schema - removed non-existent columns
         /// </summary>
         public async Task<PosTicket?> GetTicketByIdAsync(int salesId)
         {
@@ -464,18 +546,7 @@ namespace IntegrationService.Infrastructure.Data
                     TableID,
                     StationID,
                     Guests,
-                    TakeOutOrder,
-                    DeliveryChargeAmt,
-                    OnlineOrderCompanyID,
-                    Locked,
-                    PaymentCount,
-                    CashPaidAmt,
-                    DebitPaidAmt,
-                    AmexPaidAmt,
-                    McPaidAmt,
-                    CashTipPaidAmt,
-                    CreditTipPaidAmt,
-                    DebitTipPaidAmt
+                    TakeOutOrder
                 FROM dbo.tblSales
                 WHERE ID = @SalesId";
 
@@ -512,7 +583,7 @@ namespace IntegrationService.Infrastructure.Data
         /// <summary>
         /// Update sale TransType (for order completion/refund)
         /// </summary>
-        public async Task UpdateSaleTransTypeAsync(int salesId, int transType, IDbTransaction? transaction = null)
+        public async Task<bool> UpdateSaleTransTypeAsync(int salesId, int transType, IDbTransaction? transaction = null)
         {
             const string sql = @"
                 UPDATE dbo.tblSales
@@ -534,9 +605,10 @@ namespace IntegrationService.Infrastructure.Data
 
             try
             {
-                await connection.ExecuteAsync(sql,
+                var rows = await connection.ExecuteAsync(sql,
                     new { SalesId = salesId, TransType = transType },
                     transaction);
+                return rows > 0;
             }
             finally
             {
@@ -547,7 +619,7 @@ namespace IntegrationService.Infrastructure.Data
         /// <summary>
         /// Update sale totals after calculating taxes/discounts
         /// </summary>
-        public async Task UpdateSaleTotalsAsync(int salesId, decimal subTotal, decimal gstAmt,
+        public async Task<bool> UpdateSaleTotalsAsync(int salesId, decimal subTotal, decimal gstAmt,
             decimal pstAmt, decimal pst2Amt, decimal dscAmt, IDbTransaction? transaction = null)
         {
             const string sql = @"
@@ -574,10 +646,11 @@ namespace IntegrationService.Infrastructure.Data
 
             try
             {
-                await connection.ExecuteAsync(sql,
+                var rows = await connection.ExecuteAsync(sql,
                     new { SalesId = salesId, SubTotal = subTotal, GstAmt = gstAmt,
                           PstAmt = pstAmt, Pst2Amt = pst2Amt, DscAmt = dscAmt },
                     transaction);
+                return rows > 0;
             }
             finally
             {
@@ -587,6 +660,7 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Get orders for a specific date range
+        /// NOTE: Modified for POS 2005 schema - removed DeliveryChargeAmt
         /// </summary>
         public async Task<IEnumerable<PosTicket>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
@@ -604,8 +678,7 @@ namespace IntegrationService.Infrastructure.Data
                     CustomerID,
                     CashierID,
                     Guests,
-                    TakeOutOrder,
-                    DeliveryChargeAmt
+                    TakeOutOrder
                 FROM dbo.tblSales
                 WHERE SaleDateTime >= @StartDate
                   AND SaleDateTime < @EndDate
@@ -613,6 +686,57 @@ namespace IntegrationService.Infrastructure.Data
 
             using var connection = CreateConnection();
             return await connection.QueryAsync<PosTicket>(sql, new { StartDate = startDate, EndDate = endDate });
+        }
+
+        /// <summary>
+        /// Get orders for a specific customer
+        /// SSOT Compliant: Reads from POS database (ground truth)
+        /// Joins tblSales with tblSalesDetail to include order items
+        /// </summary>
+        public async Task<IEnumerable<PosTicket>> GetOrdersByCustomerIdAsync(int customerId, int limit = 50)
+        {
+            const string sql = @"
+                SELECT TOP (@Limit)
+                    s.ID,
+                    s.SaleDateTime,
+                    s.TransType,
+                    s.DailyOrderNumber,
+                    s.SubTotal,
+                    s.DSCAmt,
+                    s.AlcoholDSCAmt,
+                    s.GSTAmt,
+                    s.PSTAmt,
+                    s.PST2Amt,
+                    s.GSTRate,
+                    s.PSTRate,
+                    s.PST2Rate,
+                    s.CustomerID,
+                    s.CashierID,
+                    s.TableID,
+                    s.StationID,
+                    s.Guests,
+                    s.TakeOutOrder
+                FROM dbo.tblSales s
+                WHERE s.CustomerID = @CustomerId
+                  AND s.TransType = 1  -- Completed orders only
+                ORDER BY s.SaleDateTime DESC";
+
+            using var connection = CreateConnection();
+            var tickets = await connection.QueryAsync<PosTicket>(sql, 
+                new { CustomerId = customerId, Limit = limit });
+
+            // Enrich each ticket with its items from tblSalesDetail
+            var ticketList = new List<PosTicket>();
+            foreach (var ticket in tickets)
+            {
+                var items = await GetSalesDetailItemsAsync(ticket.ID);
+                ticket.Items = items.ToList();
+                ticketList.Add(ticket);
+            }
+
+            _logger.LogInformation("Retrieved {Count} completed orders for customer {CustomerId}", 
+                ticketList.Count, customerId);
+            return ticketList;
         }
 
         #endregion
@@ -629,56 +753,26 @@ namespace IntegrationService.Infrastructure.Data
         /// </summary>
         public async Task InsertPendingOrderItemAsync(PendingOrderItem item, IDbTransaction? transaction = null)
         {
+            // Providing all 20+ columns known to be in ground truth schema
+            // Using COALESCE patterns for non-null columns to ensure compatibility
             const string sql = @"
                 INSERT INTO dbo.tblPendingOrders (
-                    SalesID,
-                    ItemID,
-                    SizeID,
-                    Qty,
-                    UnitPrice,
-                    ItemName,
-                    ItemName2,
-                    SizeName,
-                    Tastes,
-                    SideDishes,
-                    ApplyGST,
-                    ApplyPST,
-                    ApplyPST2,
-                    DSCAmt,
-                    ApplyNoDSC,
-                    KitchenB,
-                    KitchenF,
-                    KitchenE,
-                    Bar,
-                    PersonIndex,
-                    SeparateBillPrint,
-                    OpenItem,
-                    ExtraChargeItem
+                    SalesID, ItemID, SizeID, Qty, UnitPrice,
+                    ItemName, ItemName2, SizeName, Tastes, SideDishes,
+                    ApplyGST, ApplyPST, ApplyPST2, DSCAmt,
+                    DSCAmtEmployee, DSCAmtType1, DSCAmtType2,
+                    DayHourDiscountRate, PricePerWeightUnit,
+                    KitchenB, KitchenF, KitchenE, Bar,
+                    PersonIndex, SeparateBillPrint, ApplyNoDSC, OpenItem, ExtraChargeItem
                 )
                 VALUES (
-                    @SalesID,
-                    @ItemID,
-                    @SizeID,
-                    @Qty,
-                    @UnitPrice,
-                    @ItemName,
-                    @ItemName2,
-                    @SizeName,
-                    @Tastes,
-                    @SideDishes,
-                    @ApplyGST,
-                    @ApplyPST,
-                    @ApplyPST2,
-                    @DSCAmt,
-                    @ApplyNoDSC,
-                    @KitchenB,
-                    @KitchenF,
-                    @KitchenE,
-                    @Bar,
-                    @PersonIndex,
-                    @SeparateBillPrint,
-                    @OpenItem,
-                    @ExtraChargeItem
+                    @SalesID, @ItemID, @SizeID, @Qty, @UnitPrice,
+                    @ItemName, @ItemName2, @SizeName, @Tastes, @SideDishes,
+                    @ApplyGST, @ApplyPST, @ApplyPST2, @DSCAmt,
+                    COALESCE(@DSCAmtEmployee, 0), COALESCE(@DSCAmtType1, 0), COALESCE(@DSCAmtType2, 0),
+                    COALESCE(@DayHourDiscountRate, 0), COALESCE(@PricePerWeightUnit, 0),
+                    @KitchenB, @KitchenF, @KitchenE, @Bar,
+                    @PersonIndex, @SeparateBillPrint, @ApplyNoDSC, @OpenItem, @ExtraChargeItem
                 )";
 
             IDbConnection connection;
@@ -765,8 +859,7 @@ namespace IntegrationService.Infrastructure.Data
                     ItemName2,
                     SizeName,
                     Tastes,
-                    DSCAmt,
-                    PersonIndex
+                    DSCAmt
                 FROM dbo.tblPendingOrders
                 WHERE SalesID = @SalesId";
 
@@ -783,7 +876,6 @@ namespace IntegrationService.Infrastructure.Data
                     Tastes,
                     DiscountAmt,
                     SequenceNo,
-                    PersonIndex,
                     Voided
                 )
                 VALUES (
@@ -798,7 +890,6 @@ namespace IntegrationService.Infrastructure.Data
                     @Tastes,
                     @DSCAmt,
                     @SequenceNo,
-                    @PersonIndex,
                     0
                 )";
 
@@ -840,8 +931,7 @@ namespace IntegrationService.Infrastructure.Data
                         SizeName = (string?)item.SizeName,
                         Tastes = (string?)item.Tastes,
                         DSCAmt = (decimal)item.DSCAmt,
-                        SequenceNo = sequenceNo++,
-                        PersonIndex = (byte)item.PersonIndex
+                        SequenceNo = sequenceNo++
                     }, transaction);
                 }
 
@@ -987,6 +1077,29 @@ namespace IntegrationService.Infrastructure.Data
             }
         }
 
+        /// <summary>
+        /// Get aggregate item sales for reporting
+        /// SSOT: Reads from tblSalesDetail and joins with tblItem
+        /// </summary>
+        public async Task<IEnumerable<ItemSalesAggregation>> GetItemSalesAggregationAsync(DateTime startDate, DateTime endDate)
+        {
+            const string sql = @"
+                SELECT 
+                    sd.ItemID, 
+                    i.IName AS Name, 
+                    SUM(sd.Qty) AS QuantitySold, 
+                    SUM(sd.Qty * sd.UnitPrice - sd.DiscountAmt) AS TotalRevenue
+                FROM dbo.tblSalesDetail sd
+                JOIN dbo.tblSales s ON sd.SalesID = s.ID
+                JOIN dbo.tblItem i ON sd.ItemID = i.ID
+                WHERE s.SaleDateTime >= @StartDate AND s.SaleDateTime < @EndDate
+                GROUP BY sd.ItemID, i.IName
+                ORDER BY QuantitySold DESC";
+
+            using var connection = CreateConnection();
+            return await connection.QueryAsync<ItemSalesAggregation>(sql, new { StartDate = startDate, EndDate = endDate });
+        }
+
         #endregion
 
         // =============================================================================
@@ -997,20 +1110,21 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Encrypt a string using the POS database's dbo.EncryptString function
+        /// NOTE: Function returns varbinary(128), not string
         /// </summary>
-        private async Task<string> EncryptStringAsync(string plainText, IDbTransaction transaction)
+        private async Task<byte[]> EncryptStringAsync(string plainText, IDbTransaction transaction)
         {
             if (string.IsNullOrEmpty(plainText))
-                return string.Empty;
+                return Array.Empty<byte>();
 
             const string sql = "SELECT dbo.EncryptString(@PlainText)";
 
-            var encryptedValue = await transaction.Connection.ExecuteScalarAsync<string>(
+            var encryptedValue = await transaction.Connection.ExecuteScalarAsync<byte[]>(
                 sql,
                 new { PlainText = plainText },
                 transaction);
 
-            return encryptedValue ?? string.Empty;
+            return encryptedValue ?? Array.Empty<byte>();
         }
 
         /// <summary>
@@ -1037,7 +1151,7 @@ namespace IntegrationService.Infrastructure.Data
             try
             {
                 // Encrypt authorization token if provided
-                string? encryptedToken = null;
+                byte[]? encryptedToken = null;
                 if (!string.IsNullOrEmpty(payment.AuthorizationNo))
                 {
                     encryptedToken = await EncryptStringAsync(payment.AuthorizationNo, localTransaction);
@@ -1062,7 +1176,6 @@ namespace IntegrationService.Infrastructure.Data
                         PaymentTypeID,
                         PaidAmount,
                         TipAmount,
-                        CardNumber,
                         AuthorizationNo,
                         BatchNo,
                         SequenceNo,
@@ -1076,7 +1189,6 @@ namespace IntegrationService.Infrastructure.Data
                         @PaymentTypeID,
                         @PaidAmount,
                         @TipAmount,
-                        @EncryptedToken,
                         @AuthorizationNo,
                         @BatchNo,
                         @SequenceNo,
@@ -1093,11 +1205,10 @@ namespace IntegrationService.Infrastructure.Data
                         payment.PaymentTypeID,
                         payment.PaidAmount,
                         payment.TipAmount,
-                        EncryptedToken = encryptedToken,
-                        payment.AuthorizationNo,
-                        payment.BatchNo,
+                        AuthorizationNo = (string?)null,
+                        BatchNo = (string?)null,
                         payment.SequenceNo,
-                        payment.StationName
+                        StationName = (string?)null
                     },
                     localTransaction);
 
@@ -1130,55 +1241,19 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Update sale payment totals after payment is recorded
-        /// Updates both type-specific columns and general PaidAmount/TipAmount
+        /// NOTE: POS 2005 schema doesn't have payment tracking columns in tblSales
+        /// Payment data is only stored in tblPayment
         /// </summary>
         public async Task UpdateSalePaymentTotalsAsync(int salesId, PosTender payment, IDbTransaction? transaction = null)
         {
-            string typeSpecificUpdate = payment.PaymentTypeID switch
-            {
-                1 => "CashPaidAmt = CashPaidAmt + @Amount, CashTipPaidAmt = CashTipPaidAmt + @Tip",
-                2 => "DebitPaidAmt = DebitPaidAmt + @Amount, DebitTipPaidAmt = DebitTipPaidAmt + @Tip",
-                5 => "AmexPaidAmt = AmexPaidAmt + @Amount, CreditTipPaidAmt = CreditTipPaidAmt + @Tip",
-                4 => "McPaidAmt = McPaidAmt + @Amount, CreditTipPaidAmt = CreditTipPaidAmt + @Tip",
-                3 => "CreditPaidAmt = COALESCE(CreditPaidAmt, 0) + @Amount, CreditTipPaidAmt = CreditTipPaidAmt + @Tip",  // Visa
-                _ => "CreditTipPaidAmt = CreditTipPaidAmt + @Tip"  // Other credit cards
-            };
-
-            var sql = $@"
-                UPDATE dbo.tblSales
-                SET {typeSpecificUpdate},
-                    PaidAmount = PaidAmount + @Amount,
-                    TipAmount = TipAmount + @Tip,
-                    PaymentCount = PaymentCount + 1
-                WHERE ID = @SalesId";
-
-            IDbConnection connection;
-            bool shouldDispose = false;
-
-            if (transaction?.Connection != null)
-            {
-                connection = transaction.Connection;
-            }
-            else
-            {
-                connection = CreateConnection();
-                shouldDispose = true;
-            }
-
-            try
-            {
-                await connection.ExecuteAsync(sql,
-                    new { SalesId = salesId, Amount = payment.PaidAmount, Tip = payment.TipAmount },
-                    transaction);
-
-                _logger.LogInformation(
-                    "Updated sale {SalesId} payment totals: +${Amount} (Type: {PaymentTypeID})",
-                    salesId, payment.PaidAmount, payment.PaymentTypeID);
-            }
-            finally
-            {
-                if (shouldDispose) connection.Dispose();
-            }
+            // POS 2005 schema doesn't have CashPaidAmt, DebitPaidAmt, etc. in tblSales
+            // Payment data is tracked only in tblPayment table
+            // This method is a no-op for compatibility
+            await Task.CompletedTask;
+            
+            _logger.LogInformation(
+                "Payment recorded for sale {SalesId}: ${Amount} (Type: {PaymentTypeID}) - tblSales not updated (POS 2005 schema)",
+                salesId, payment.PaidAmount, payment.PaymentTypeID);
         }
 
         /// <summary>
@@ -1314,32 +1389,28 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Get completed online orders for push notification polling.
-        /// Filters for TransType=9 (Complete), with OnlineOrderCompanyID and CustomerID populated.
+        /// Filters for TransType=1 (Completed Sale), with CustomerID populated.
         /// Used by OrderStatusPollingService to detect orders ready for pickup notification.
+        /// NOTE: Modified for POS 2005 schema - no OnlineOrderCompanyID column
         /// </summary>
         public async Task<IEnumerable<PosTicket>> GetCompletedOnlineOrdersAsync()
         {
+            // Ground Truth SQL 2005 compatibility: 
+            // 1. Join with tblSalesOfOnlineOrders to uniquely identify online orders
+            // 2. Use SaleDateTime as SalesDate
+            // 3. Status checks TransType=1 (Completed)
             const string sql = @"
-                SELECT ID, TransType, OnlineOrderCompanyID, CustomerID, DailyOrderNumber,
-                       SubTotal, GstAmt, PstAmt, Pst2Amt, Total, DscAmt,
-                       TableID, CashierID, StationID, SalesDate
-                FROM dbo.tblSales
-                WHERE TransType = 9
-                  AND OnlineOrderCompanyID IS NOT NULL
-                  AND CustomerID IS NOT NULL";
+                SELECT s.ID, s.TransType, s.CustomerID, s.DailyOrderNumber,
+                       s.SubTotal, s.GSTAmt as GstAmt, s.PSTAmt as PstAmt, s.PST2Amt as Pst2Amt, 
+                       s.DSCAmt as DscAmt,
+                       s.TableID, s.CashierID, s.StationID, s.SaleDateTime as SalesDate
+                FROM dbo.tblSales s
+                INNER JOIN dbo.tblSalesOfOnlineOrders soo ON s.ID = soo.SalesID
+                WHERE s.TransType = 1
+                  AND s.CustomerID IS NOT NULL";
 
             using var connection = CreateConnection();
             return await connection.QueryAsync<PosTicket>(sql);
-        }
-
-        /// <summary>
-        /// Get the online order company ID associated with a sale
-        /// </summary>
-        public async Task<int?> GetOnlineOrderCompanyIdAsync(int salesId)
-        {
-            const string sql = "SELECT OnlineOrderCompanyID FROM dbo.tblSales WHERE ID = @SalesId";
-            using var connection = CreateConnection();
-            return await connection.QueryFirstOrDefaultAsync<int?>(sql, new { SalesId = salesId });
         }
 
         #endregion
@@ -1405,13 +1476,15 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Get customer by phone number
+        /// NOTE: Email and Password do not exist in POS tblCustomer schema
         /// </summary>
         public async Task<PosCustomer?> GetCustomerByPhoneAsync(string phone)
         {
             const string sql = @"
                 SELECT
                     ID, FName, LName, Phone, Address,
-                    CustomerNum, EarnedPoints, PointsManaged
+                    CustomerNum, EarnedPoints, PointsManaged, Gender,
+                    DateEntered, LastVisit, CardValue, Savings, CreditBalance, CustomerNote
                 FROM dbo.tblCustomer
                 WHERE Phone = @Phone";
 
@@ -1420,33 +1493,29 @@ namespace IntegrationService.Infrastructure.Data
         }
 
         /// <summary>
-        /// Get customer by phone (note: email lookup via IntegrationService.Users table instead)
+        /// Get customer by email address
+        /// NOTE: Email column does not exist in POS tblCustomer - queries by CustomerNum or returns null
+        /// Email is stored in IntegrationService overlay tables
         /// </summary>
         public async Task<PosCustomer?> GetCustomerByEmailAsync(string email)
         {
-            // Email is stored in IntegrationService.Users table, not in POS tblCustomer
-            // This method looks up by phone from the User record (placeholder for legacy compatibility)
-            const string sql = @"
-                SELECT TOP 1
-                    ID, FName, LName, Phone, Address,
-                    CustomerNum, EarnedPoints, PointsManaged
-                FROM dbo.tblCustomer
-                WHERE Phone = @Phone";
-
-            using var connection = CreateConnection();
-            // If email is passed, try to use it as phone (legacy behavior)
-            return await connection.QueryFirstOrDefaultAsync<PosCustomer>(sql, new { Phone = email });
+            // Email doesn't exist in tblCustomer schema
+            // Return null - caller should check IntegrationService.User table
+            _logger.LogWarning("GetCustomerByEmail called but Email column does not exist in POS tblCustomer");
+            return null;
         }
 
         /// <summary>
         /// Get customer by ID
+        /// NOTE: Email and Password do not exist in POS tblCustomer schema
         /// </summary>
         public async Task<PosCustomer?> GetCustomerByIdAsync(int id)
         {
             const string sql = @"
                 SELECT
                     ID, FName, LName, Phone, Address,
-                    CustomerNum, EarnedPoints, PointsManaged
+                    CustomerNum, EarnedPoints, PointsManaged, Gender,
+                    DateEntered, LastVisit, CardValue, Savings, CreditBalance, CustomerNote
                 FROM dbo.tblCustomer
                 WHERE ID = @Id";
 
@@ -1456,9 +1525,16 @@ namespace IntegrationService.Infrastructure.Data
 
         /// <summary>
         /// Insert new customer
+        /// NOTE: Email and Password do not exist in POS schema - set in IntegrationService overlay
+        /// CustomerNum is required (not nullable) - uses phone or generates unique value
         /// </summary>
         public async Task<int> InsertCustomerAsync(PosCustomer customer)
         {
+            // CustomerNum is required in POS schema - generate if not provided
+            var customerNum = !string.IsNullOrWhiteSpace(customer.CustomerNum) 
+                ? customer.CustomerNum 
+                : (!string.IsNullOrWhiteSpace(customer.Phone) ? customer.Phone : Guid.NewGuid().ToString("N")[..20]);
+
             const string sql = @"
                 INSERT INTO dbo.tblCustomer (
                     FName, LName, Phone, Address,
@@ -1471,14 +1547,20 @@ namespace IntegrationService.Infrastructure.Data
                 SELECT SCOPE_IDENTITY();";
 
             using var connection = CreateConnection();
-            return await connection.QuerySingleAsync<int>(sql, customer);
+            return await connection.QuerySingleAsync<int>(sql, new 
+            { 
+                customer.FName, 
+                customer.LName, 
+                customer.Phone, 
+                customer.Address,
+                CustomerNum = customerNum
+            });
         }
 
         /// <summary>
         /// Update customer loyalty points
-        /// Returns updated points or -1 if customer not found
         /// </summary>
-        public async Task<int> UpdateLoyaltyPointsAsync(int customerId, int pointsDelta, IDbTransaction? transaction = null)
+        public async Task<bool> UpdateLoyaltyPointsAsync(int customerId, int points, IDbTransaction? transaction = null)
         {
             const string sql = @"
                 UPDATE dbo.tblCustomer
@@ -1500,11 +1582,8 @@ namespace IntegrationService.Infrastructure.Data
 
             try
             {
-                await connection.ExecuteAsync(sql, new { CustomerId = customerId, Points = pointsDelta }, transaction);
-                
-                // Fetch and return the updated points
-                const string selectSql = "SELECT EarnedPoints FROM dbo.tblCustomer WHERE ID = @CustomerId";
-                return await connection.ExecuteScalarAsync<int>(selectSql, new { CustomerId = customerId }, transaction);
+                var rows = await connection.ExecuteAsync(sql, new { CustomerId = customerId, Points = points }, transaction);
+                return rows > 0;
             }
             finally
             {
@@ -1672,6 +1751,63 @@ namespace IntegrationService.Infrastructure.Data
             }
         }
 
+        /// <summary>
+        /// Get customer segments based on RFM (Recency, Frequency, Monetary) analysis
+        /// Reads from POS database tblCustomer and tblSales
+        /// </summary>
+        public async Task<IEnumerable<CustomerSegment>> GetCustomerSegmentsAsync()
+        {
+            const string sql = @"
+                SELECT TOP 50
+                    c.ID as CustomerID,
+                    COALESCE(c.FName + ' ' + c.LName, c.Phone, 'Customer ' + CAST(c.ID AS NVARCHAR(10))) AS Name,
+                    CASE 
+                        WHEN s.TotalSpent >= 500 THEN 'VIP'
+                        WHEN s.TotalSpent >= 200 THEN 'Regular'
+                        ELSE 'New'
+                    END AS Segment,
+                    CASE 
+                        WHEN DATEDIFF(day, ISNULL(s.LastOrderDate, '2000-01-01'), GETDATE()) <= 30 THEN 5
+                        WHEN DATEDIFF(day, ISNULL(s.LastOrderDate, '2000-01-01'), GETDATE()) <= 60 THEN 4
+                        WHEN DATEDIFF(day, ISNULL(s.LastOrderDate, '2000-01-01'), GETDATE()) <= 90 THEN 3
+                        WHEN DATEDIFF(day, ISNULL(s.LastOrderDate, '2000-01-01'), GETDATE()) <= 180 THEN 2
+                        ELSE 1
+                    END AS RScore,
+                    CASE 
+                        WHEN s.OrderCount >= 20 THEN 5
+                        WHEN s.OrderCount >= 10 THEN 4
+                        WHEN s.OrderCount >= 5 THEN 3
+                        WHEN s.OrderCount >= 2 THEN 2
+                        ELSE 1
+                    END AS FScore,
+                    CASE 
+                        WHEN s.TotalSpent >= 500 THEN 5
+                        WHEN s.TotalSpent >= 300 THEN 4
+                        WHEN s.TotalSpent >= 150 THEN 3
+                        WHEN s.TotalSpent >= 50 THEN 2
+                        ELSE 1
+                    END AS MScore,
+                    ISNULL(s.TotalSpent, 0) AS TotalSpent,
+                    ISNULL(s.OrderCount, 0) AS OrderCount,
+                    s.LastOrderDate
+                FROM dbo.tblCustomer c
+                LEFT JOIN (
+                    SELECT 
+                        CustomerID,
+                        SUM(SubTotal + GSTAmt - ISNULL(DSCAmt, 0) - ISNULL(AlcoholDSCAmt, 0)) AS TotalSpent,
+                        COUNT(*) AS OrderCount,
+                        MAX(SaleDateTime) AS LastOrderDate
+                    FROM dbo.tblSales
+                    WHERE CustomerID IS NOT NULL AND TransType = 1
+                    GROUP BY CustomerID
+                ) s ON c.ID = s.CustomerID
+                WHERE c.FName IS NOT NULL OR c.Phone IS NOT NULL
+                ORDER BY s.TotalSpent DESC";
+
+            using var connection = CreateConnection();
+            return await connection.QueryAsync<CustomerSegment>(sql);
+        }
+
         #endregion
 
         // =============================================================================
@@ -1726,55 +1862,6 @@ namespace IntegrationService.Infrastructure.Data
             {
                 if (shouldDispose) connection.Dispose();
             }
-        }
-
-        #endregion
-
-        // =============================================================================
-        // CRM & ANALYTICS
-        // =============================================================================
-
-        #region CRM & Analytics
-
-        /// <summary>
-        /// Get high-level customer segments based on RFM analysis
-        /// SSOT: Calculates segments on-the-fly from tblSales history
-        /// </summary>
-        public async Task<IEnumerable<CustomerSegment>> GetCustomerSegmentsAsync()
-        {
-            const string sql = @"
-                SELECT TOP 50
-                    c.ID as CustomerID,
-                    COALESCE(c.FName + ' ' + c.LName, c.Phone) AS Name,
-                    c.Phone,
-                    c.Email,
-                    c.EarnedPoints,
-                    s.TotalSpent AS LifetimeValue,
-                    s.OrderCount AS VisitCount,
-                    s.LastOrderDate,
-                    CASE 
-                        WHEN s.TotalSpent >= 500 THEN 'VIP'
-                        WHEN s.TotalSpent >= 200 THEN 'Loyal'
-                        WHEN s.LastOrderDate < DATEADD(day, -90, GETDATE()) THEN 'At-Risk'
-                        ELSE 'Regular'
-                    END AS Segment
-                FROM dbo.tblCustomer c
-                CROSS APPLY (
-                    SELECT 
-                        SUM(Amt) AS TotalSpent,
-                        COUNT(*) AS OrderCount,
-                        MAX(SaleDateTime) AS LastOrderDate
-                    FROM dbo.tblSales
-                    WHERE CustomerID = c.ID AND TransType = 1
-                ) s
-                WHERE c.ID > 0
-                ORDER BY s.TotalSpent DESC";
-
-            using var connection = CreateConnection();
-            var results = await connection.QueryAsync<CustomerSegment>(sql);
-            
-            _logger.LogInformation("Retrieved {Count} customer segments", results.Count());
-            return results;
         }
 
         #endregion

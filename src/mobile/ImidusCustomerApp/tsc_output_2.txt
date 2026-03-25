@@ -1,0 +1,4 @@
+src/web-stubs/react-native-webview.tsx(87,5): error TS2345: Argument of type '{ container: { flex: number; overflow: "hidden"; }; iframe: { width: "100%"; height: "100%"; border: string; }; }' is not assignable to parameter of type '{ container: { flex: number; overflow: "hidden"; }; iframe: { width: "100%"; height: "100%"; border: string; }; } & NamedStyles<any>'.
+  Property 'iframe' is incompatible with index signature.
+    Type '{ width: "100%"; height: "100%"; border: string; }' is not assignable to type 'TextStyle | ViewStyle | ImageStyle'.
+      Object literal may only specify known properties, and 'border' does not exist in type 'TextStyle | ViewStyle | ImageStyle'.

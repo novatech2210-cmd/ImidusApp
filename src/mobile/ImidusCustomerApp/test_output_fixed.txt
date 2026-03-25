@@ -1,0 +1,117 @@
+
+> com.imidus.customer@0.0.1 test
+> jest --watchAll=false
+
+PASS __tests__/Debug.test.tsx
+  ● Console
+
+    console.log
+      Animated: true
+
+      at Object.log (__tests__/Debug.test.tsx:5:13)
+
+    console.log
+      Animated.spring: true
+
+      at Object.log (__tests__/Debug.test.tsx:7:15)
+
+    console.log
+      Animated.timing: true
+
+      at Object.log (__tests__/Debug.test.tsx:8:15)
+
+    console.log
+      Animated.Value: true
+
+      at Object.log (__tests__/Debug.test.tsx:9:15)
+
+
+ReferenceError: You are trying to `import` a file after the Jest environment has been torn down. From __tests__/App.test.tsx.
+
+      13 |     Animated.parallel([
+      14 |       Animated.timing(fadeAnim, {
+    > 15 |         toValue: 1,
+         |                  ^
+      16 |         duration: 800,
+      17 |         useNativeDriver: true,
+      18 |       }),
+
+      at Object.get Animated [as Animated] (node_modules/react-native/index.js:97:12)
+      at src/screens/SplashScreen.tsx:15:18
+      at commitHookEffectListMount (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:12999:26)
+      at commitPassiveMountOnFiber (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14422:11)
+      at commitPassiveMountEffects_complete (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14382:9)
+      at commitPassiveMountEffects_begin (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14369:7)
+      at commitPassiveMountEffects (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14357:3)
+      at flushPassiveEffectsImpl (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16248:3)
+      at flushPassiveEffects (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16197:14)
+      at node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16012:9
+      at workLoop (node_modules/react-test-renderer/node_modules/scheduler/cjs/scheduler.development.js:266:34)
+      at flushWork (node_modules/react-test-renderer/node_modules/scheduler/cjs/scheduler.development.js:239:14)
+      at Immediate.performWorkUntilDeadline [as _onImmediate] (node_modules/react-test-renderer/node_modules/scheduler/cjs/scheduler.development.js:533:21)
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "The above error occurred in the <SplashScreen> component:
+
+        at SplashScreen (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/screens/SplashScreen.tsx:10:67)
+        at AppNavigator (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/navigation/AppNavigator.tsx:23:31)
+        at Provider (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-redux/src/components/connect.tsx:693:13)
+        at App
+
+    Consider adding an error boundary to your tree to customize error handling behavior.
+    Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.".
+
+       8 |   const scaleAnim = useRef(new Animated.Value(0.9)).current;
+       9 |   const glowAnim = useRef(new Animated.Value(0.3)).current;
+    > 10 |
+         | ^
+      11 |   useEffect(() => {
+      12 |     // Fade and scale in content
+      13 |     Animated.parallel([
+
+      at SplashScreen (src/screens/SplashScreen.tsx:10:67)
+      at AppNavigator (src/navigation/AppNavigator.tsx:23:31)
+      at Provider (node_modules/react-redux/src/components/connect.tsx:693:13)
+          at App
+      Consider adding an error boundary to your tree to customize error handling behavior.
+      Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.".
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+      at logCapturedError (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:8661:23)
+      at update.callback (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:8694:5)
+      at callCallback (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:4092:12)
+      at commitUpdateQueue (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:4113:9)
+      at commitLayoutEffectOnFiber (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13232:13)
+      at commitLayoutMountEffects_complete (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14330:9)
+      at commitLayoutEffects_begin (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14316:7)
+      at commitLayoutEffects (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14301:3)
+      at commitRootImpl (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16062:5)
+      at commitRoot (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15933:5)
+      at performSyncWorkOnRoot (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15454:3)
+      at flushSyncCallbacks (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2597:22)
+      at flushPassiveEffectsImpl (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16261:3)
+      at flushPassiveEffects (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16197:14)
+      at node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16012:9
+      at workLoop (node_modules/react-test-renderer/node_modules/scheduler/cjs/scheduler.development.js:266:34)
+      at flushWork (node_modules/react-test-renderer/node_modules/scheduler/cjs/scheduler.development.js:239:14)
+      at Immediate.performWorkUntilDeadline [as _onImmediate] (node_modules/react-test-renderer/node_modules/scheduler/cjs/scheduler.development.js:533:21)
+
+/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2611
+      throw error;
+      ^
+
+TypeError: Cannot read properties of undefined (reading 'parallel')
+    at /home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/screens/SplashScreen.tsx:15:27
+    at commitHookEffectListMount (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:12999:26)
+    at commitPassiveMountOnFiber (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14422:11)
+    at commitPassiveMountEffects_complete (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14382:9)
+    at commitPassiveMountEffects_begin (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14369:7)
+    at commitPassiveMountEffects (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14357:3)
+    at flushPassiveEffectsImpl (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16248:3)
+    at flushPassiveEffects (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16197:14)
+    at /home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16012:9
+    at workLoop (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/node_modules/scheduler/cjs/scheduler.development.js:266:34)
+    at flushWork (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/node_modules/scheduler/cjs/scheduler.development.js:239:14)
+    at Immediate.performWorkUntilDeadline (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/node_modules/scheduler/cjs/scheduler.development.js:533:21)
+    at processImmediate (node:internal/timers:504:21)
+
+Node.js v25.8.1

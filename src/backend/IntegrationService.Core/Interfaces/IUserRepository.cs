@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using IntegrationService.Core.Domain.Entities;
+using IntegrationService.Core.Models.AdminPortal;
 
 namespace IntegrationService.Core.Interfaces
 {
@@ -67,5 +68,15 @@ namespace IntegrationService.Core.Interfaces
         /// Soft delete user
         /// </summary>
         Task<bool> DeactivateAsync(int userId);
+
+        /// <summary>
+        /// Get admin user by email from AdminUsers table
+        /// </summary>
+        Task<AdminUser?> GetAdminByEmailAsync(string email);
+
+        /// <summary>
+        /// Update admin user last login and reset failed attempts
+        /// </summary>
+        Task<bool> UpdateAdminLastLoginAsync(int adminUserId);
     }
 }

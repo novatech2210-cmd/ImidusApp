@@ -68,7 +68,9 @@ function KPICard({
         >
           {isPositive ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
           <span>{Math.abs(change).toFixed(1)}%</span>
-          <span className="text-onyx-text-muted font-normal">vs last period</span>
+          <span className="text-onyx-text-muted font-normal">
+            vs last period
+          </span>
         </div>
       )}
     </div>
@@ -109,7 +111,7 @@ export default function DashboardSummary({
       />
       <KPICard
         title="Revenue"
-        value={`$${(summary.totalRevenue / 100).toLocaleString("en-US", { maximumFractionDigits: 2 })}`}
+        value={`$${summary.totalRevenue.toLocaleString("en-US", { maximumFractionDigits: 2 })}`}
         change={
           typeof summary.revenueGrowth === "number" ? summary.revenueGrowth : 0
         }

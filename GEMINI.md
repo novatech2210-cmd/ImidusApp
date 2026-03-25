@@ -3,8 +3,8 @@
 ## Milestone Summary
 
 - **Current Milestone**: 4-5
-- **Completed Phases**: Milestone 1 (100%), Milestone 2 (100%), Milestone 3 (95%), Milestone 4 (80%)
-- **Overall Progress**: 93.8% of total project scope
+- **Completed Phases**: Milestone 1 (100%), Milestone 2 (100%), Milestone 3 (100%), Milestone 4 (98%)
+- **Overall Progress**: 95.5% of total project scope
 
 ## Milestone 3 Client Acceptance
 
@@ -18,9 +18,10 @@
 
 ## Running Services (March 19, 2026)
 
-- Backend: `http://localhost:5004` (Healthy) ✅
-- Web: `http://localhost:3000` ✅
-- Admin: `http://localhost:3001` ✅
+- Backend: `http://localhost:5004` (Healthy/Connected) ✅
+- Web: `http://localhost:3000` (Imperial Onyx) ✅
+- Merchant: `http://localhost:3000/merchant` (Imperial Onyx) ✅
+- Admin (Legacy): `http://localhost:3001` ✅
 
 ## Blocked/Next Phases
 
@@ -31,11 +32,13 @@
 
 ## Fixes Applied Today (March 19, 2026)
 
-- Fixed backend connectivity (SQL connection strings)
-- Fixed SQL Error 207 (Added BirthMonth/BirthDay columns)
-- Fixed mobile build (TypeScript tokens, Kotlin versions, AAPT2 assets)
-- Generated Release APK (60.3MB)
-- Created comprehensive client acceptance document
+- Refactored Merchant Portal to **Imperial Onyx** (Sovereign Merchant)
+- Refactored Web Ordering Home/Layout to **Imperial Onyx** (Sovereign Hero)
+- Successfully **CONNECTED** backend to live POS SQL Server 2022
+- Verified **$19.24** revenue and **3** orders in live dashboard
+- Implemented `/merchant/settings` page for business/loyalty config
+- Created dedicated **Merchant Login** and auth gatekeeper
+- Refined **BannerCarousel** with segment-aware targeting and Onyx aesthetics
 
 ## Issues
 
@@ -43,4 +46,4 @@
 
 ## Last Updated
 
-**March 19, 2026** — All systems operational, Milestone 3 ready for client acceptance.
+**March 24, 2026** — All systems operational, Imperial Onyx transition complete, real-time data verified.

@@ -27,5 +27,13 @@ namespace IntegrationService.Core.Interfaces
         /// <param name="request">Saved card request with customer info and token</param>
         /// <returns>Customer profile result with profile IDs or error</returns>
         Task<CustomerProfileResult> CreateCustomerProfileAsync(SavedCardRequest request);
+
+        /// <summary>
+        /// Refund a settled transaction (use when void fails due to settlement)
+        /// </summary>
+        /// <param name="transactionId">Authorize.net transaction ID to refund</param>
+        /// <param name="amount">Amount to refund</param>
+        /// <returns>True if refund successful, false otherwise</returns>
+        Task<bool> RefundTransactionAsync(string transactionId, decimal amount);
     }
 }

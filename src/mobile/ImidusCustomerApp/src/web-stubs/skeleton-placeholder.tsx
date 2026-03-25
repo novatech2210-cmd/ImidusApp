@@ -2,7 +2,7 @@
  * Web stub for react-native-skeleton-placeholder
  */
 import React from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import {DimensionValue, StyleSheet, View, ViewStyle} from 'react-native';
 
 interface SkeletonPlaceholderProps {
   backgroundColor?: string;
@@ -12,20 +12,16 @@ interface SkeletonPlaceholderProps {
 }
 
 interface SkeletonItemProps {
-  width?: number | string;
-  height?: number | string;
+  width?: DimensionValue;
+  height?: DimensionValue;
   borderRadius?: number;
   style?: ViewStyle;
 }
 
 const SkeletonPlaceholder: React.FC<SkeletonPlaceholderProps> & {
   Item: React.FC<SkeletonItemProps>;
-} = ({ backgroundColor = '#E1E9EE', children }) => {
-  return (
-    <View style={[styles.container, { backgroundColor }]}>
-      {children}
-    </View>
-  );
+} = ({backgroundColor = '#E1E9EE', children}) => {
+  return <View style={[styles.container, {backgroundColor}]}>{children}</View>;
 };
 
 const SkeletonItem: React.FC<SkeletonItemProps> = ({

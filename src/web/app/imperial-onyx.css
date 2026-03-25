@@ -1,670 +1,183 @@
 /*
  * Imperial Onyx × IMIDUS Design System
- * Enhanced Web Ordering Platform Theme
- * Version 2.0 - March 2026
- *
  * "The Sovereign Merchant" - Luxury restaurant commerce experience
  */
 
-.imperial-onyx {
+:root {
   /* ═══════════════════════════════════════════════════════════════════════════
-   * IMPERIAL ONYX × IMIDUS COLOR SYSTEM
+   * IMPERIAL ONYX COLOR SYSTEM
    * ═══════════════════════════════════════════════════════════════════════════ */
+  --primary-navy: #0a1f3d; /* Midnight Navy - Brand Anchor */
+  --imperial-gold: #d4af37; /* Imperial Gold - Premium Accent */
+  --surface-canvas: #ffffff; /* Pure White Surface */
 
-  /* Primary Brand - Imperial Authority */
-  --primary: #1E5AA8;
-  --primary-dark: #0A1F3D;        /* Midnight Navy */
-  --primary-light: #2E6AB8;
+  /* Surface Hierarchy */
+  --surface-low: #f8f9fa; /* Surface Container Low */
+  --surface-high: #e2e8f0; /* Surface Container Highest */
 
-  /* Secondary - Imperial Gold */
-  --gold: #D4AF37;
-  --gold-light: #E8C55B;
-  --gold-dark: #B8941F;
+  /* Text System */
+  --text-on-light: #0a1f3d;
+  --text-on-dark: #ffffff;
+  --text-muted: rgba(10, 31, 61, 0.6);
 
-  /* Dark Foundation */
-  --dark: #1A1A2E;
-
-  /* Imperial Onyx Surfaces */
-  --surface: #FFFFFF;
-  --surface-container-low: #F5F5F5;
-  --surface-container: #E5E5E5;
-  --surface-container-highest: #DDDDDD;
-
-  /* Text Hierarchy - Imperial Onyx Authority */
-  --text-slate-900: #0F172A;     /* Primary text - high contrast */
-  --text-slate-600: #475569;     /* Muted text - secondary */
-  --text-white: #FFFFFF;
-
-  /* Glass Effect */
-  --glass-bg: rgba(255, 255, 255, 0.80);
-  --glass-bg-dark: rgba(26, 26, 46, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.2);
+  /* Glass Effects */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-bg-dark: rgba(10, 31, 61, 0.8);
   --glass-blur: blur(24px);
+  --glass-border: rgba(10, 31, 61, 0.1);
 
-  /* Status Colors */
-  --success: #2E7D32;
-  --error: #C62828;
-  --warning: #E65100;
+  /* Spacing and Radius */
+  --radius-xl: 1rem; /* 16px signature radius */
+  --touch-target: 44px;
+}
 
-  /* ═══════════════════════════════════════════════════════════════════════════
-   * IMPERIAL ONYX ELEVATION SYSTEM
-   * Ambient shadows with brand blue tint for studio lighting effect
-   * ═══════════════════════════════════════════════════════════════════════════ */
-
-  /* Level 1 - Interactive Cards */
-  --elevation-1: 0 1px 3px rgba(30, 90, 168, 0.08);
-
-  /* Level 2 - Hover State */
-  --elevation-2: 0 4px 6px rgba(30, 90, 168, 0.10);
-
-  /* Level 3 - Primary CTA, Floating Panels */
-  --elevation-3: 0 10px 20px rgba(30, 90, 168, 0.12);
-
-  /* Level 4 - Persistent Navigation, Modals */
-  --elevation-4: 0 20px 40px rgba(30, 90, 168, 0.15);
-
-  /* ═══════════════════════════════════════════════════════════════════════════
-   * TYPOGRAPHY SYSTEM - Imperial Onyx Scale
-   * ═══════════════════════════════════════════════════════════════════════════ */
-
-  --font-primary: 'Montserrat', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-mono: 'Courier New', Courier, monospace;
-  --font-display: Georgia, 'Times New Roman', serif;
-
-  /* Display - Impact Numbers & Hero Headlines (48px / 900 / -0.05em) */
-  --text-display-size: 3rem;
-  --text-display-weight: 900;
-  --text-display-tracking: -0.05em;
-  --text-display-leading: 1.1;
-
-  /* Headline - Section Titles (24px / 700 / -0.02em) */
-  --text-headline-size: 1.5rem;
-  --text-headline-weight: 700;
-  --text-headline-tracking: -0.02em;
-  --text-headline-leading: 1.3;
-
-  /* Title - Card Headers (18px / 600 / -0.01em) */
-  --text-title-size: 1.125rem;
-  --text-title-weight: 600;
-  --text-title-tracking: -0.01em;
-  --text-title-leading: 1.4;
-
-  /* Body - Readable Content (14px / 500 / 0 / 1.625 leading) */
-  --text-body-size: 0.875rem;
-  --text-body-weight: 500;
-  --text-body-tracking: 0;
-  --text-body-leading: 1.625;
-
-  /* Label - Form Labels & Tags (12px / 600 / 0.1em / UPPERCASE) */
-  --text-label-size: 0.75rem;
-  --text-label-weight: 600;
-  --text-label-tracking: 0.1em;
-
-  /* Micro-Label - Imperial Signature (11px / 700 / 0.25rem / UPPERCASE) */
-  --text-micro-size: 0.6875rem;
-  --text-micro-weight: 700;
-  --text-micro-tracking: 0.25rem;
-
-  /* ═══════════════════════════════════════════════════════════════════════════
-   * SPACING & RADIUS
-   * ═══════════════════════════════════════════════════════════════════════════ */
-
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --space-2xl: 48px;
-
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
-
-  /* Touch Targets (UX Pro Max) */
-  --touch-minimum: 44px;
-  --touch-comfortable: 48px;
-  --touch-large: 56px;
-  --touch-spacing: 8px;
-
-  /* ═══════════════════════════════════════════════════════════════════════════
-   * TRANSITIONS
-   * ═══════════════════════════════════════════════════════════════════════════ */
-
-  --transition-fast: 150ms ease;
-  --transition-base: 200ms ease;
-  --transition-slow: 300ms ease;
-  --transition-morph: 500ms cubic-bezier(0.4, 0.0, 0.2, 1);
-
-  /* Apply Base */
-  font-family: var(--font-primary);
-  color: var(--text-slate-900);
-  background: var(--surface);
+.imperial-onyx {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  color: var(--text-on-light);
+  background: var(--surface-canvas);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * FLOATING NAVIGATION - Imperial Onyx Glassmorphism
- * ═══════════════════════════════════════════════════════════════════════════ */
-
-.nav-glass {
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
-  right: 1rem;
-  z-index: 100;
-
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-
-  box-shadow: var(--elevation-4);
-
-  padding: var(--space-md) var(--space-lg);
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  transition: all var(--transition-base);
-
-  /* Performance optimization */
-  will-change: backdrop-filter;
-  transform: translateZ(0);
-}
-
-.nav-glass-dark {
-  background: var(--glass-bg-dark);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Respect Motion Preferences */
-@media (prefers-reduced-motion: reduce) {
-  .nav-glass {
-    backdrop-filter: none;
-    background: rgba(255, 255, 255, 0.95);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * HERO SECTION - Blue Container (Imperial Onyx Signature)
- * ═══════════════════════════════════════════════════════════════════════════ */
-
-.hero-blue-container {
-  background: var(--primary);
-  border: 10px solid rgba(255, 255, 255, 0.1);
-  color: var(--text-white);
-
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: var(--space-2xl);
-  text-align: center;
-}
-
-.hero-title {
-  font-size: var(--text-display-size);
-  font-weight: var(--text-display-weight);
-  letter-spacing: var(--text-display-tracking);
-  line-height: var(--text-display-leading);
-  margin-bottom: var(--space-md);
-}
-
-.hero-tagline {
-  font-size: var(--text-headline-size);
-  font-weight: 300;
-  letter-spacing: 0.05em;
-  opacity: 0.9;
-  margin-bottom: var(--space-xl);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * TYPOGRAPHY CLASSES - Imperial Onyx Scale
+ * TYPOGRAPHY - The Precision Hierarchy
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 .text-display {
-  font-size: var(--text-display-size);
-  font-weight: var(--text-display-weight);
-  letter-spacing: var(--text-display-tracking);
-  line-height: var(--text-display-leading);
-  color: var(--text-slate-900);
+  font-size: 3rem; /* 48px */
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 1;
 }
 
 .text-headline {
-  font-size: var(--text-headline-size);
-  font-weight: var(--text-headline-weight);
-  letter-spacing: var(--text-headline-tracking);
-  line-height: var(--text-headline-leading);
-  color: var(--primary);
-}
-
-.text-title {
-  font-size: var(--text-title-size);
-  font-weight: var(--text-title-weight);
-  letter-spacing: var(--text-title-tracking);
-  line-height: var(--text-title-leading);
-  color: var(--text-slate-900);
+  font-size: 1.5rem; /* 24px */
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .text-body {
-  font-size: var(--text-body-size);
-  font-weight: var(--text-body-weight);
-  letter-spacing: var(--text-body-tracking);
-  line-height: var(--text-body-leading);
-  color: var(--text-slate-900);
-  max-width: 65ch; /* Optimal line length */
-}
-
-.text-label {
-  font-size: var(--text-label-size);
-  font-weight: var(--text-label-weight);
-  letter-spacing: var(--text-label-tracking);
-  text-transform: uppercase;
-  color: var(--text-slate-600);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  line-height: 1.625;
 }
 
 .text-micro {
-  font-size: var(--text-micro-size);
-  font-weight: var(--text-micro-weight);
-  letter-spacing: var(--text-micro-tracking);
+  font-size: 0.625rem; /* 10px */
+  font-weight: 800;
+  letter-spacing: 0.25rem;
   text-transform: uppercase;
-  color: var(--text-slate-600);
-}
-
-.text-price {
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--gold);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * BUTTONS - Imperial Onyx Style
+ * CONTAINERS - Sectioning via blocks, not lines
  * ═══════════════════════════════════════════════════════════════════════════ */
 
-.btn-imperial {
-  background: var(--primary);
-  color: var(--text-white);
+/* The Blue Container */
+.container-blue {
+  background: var(--primary-navy);
+  color: var(--text-on-dark);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xl);
+}
 
-  padding: 12px 32px;
-  border-radius: var(--radius-sm);
+.container-low {
+  background: var(--surface-low);
+  border-radius: var(--radius-xl);
+}
 
-  font-size: var(--text-body-size);
+.container-high {
+  background: var(--surface-high);
+  border-radius: var(--radius-xl);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * INTERACTIVES
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Primary Button - Imperial Authority */
+.btn-primary-onyx {
+  background: var(--primary-navy);
+  color: var(--text-on-dark);
+  padding: 0.75rem 2rem;
+  border-radius: 4px; /* Crisp edges for authority */
+  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.25rem;
   text-transform: uppercase;
-
-  box-shadow: var(--elevation-3);
-
-  transition: all var(--transition-base);
-
-  cursor: pointer;
-  border: none;
-
-  /* Touch Target */
-  min-height: var(--touch-minimum);
-  min-width: var(--touch-minimum);
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(10, 31, 61, 0.1);
 }
 
-.btn-imperial:hover {
-  background: var(--primary-light);
-  box-shadow: var(--elevation-4);
+.btn-primary-onyx:hover {
   transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(10, 31, 61, 0.15);
+  background: #142e54;
 }
 
-.btn-imperial:active {
-  transform: translateY(0);
-}
-
-.btn-imperial:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-/* Gold CTA Button - Shimmer Effect */
-.btn-gold {
-  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-  color: var(--dark);
-
-  padding: 12px 32px;
-  border-radius: var(--radius-sm);
-
-  font-size: var(--text-body-size);
-  font-weight: 700;
+/* Secondary Gold Shimmer */
+.btn-gold-shimmer {
+  background: linear-gradient(135deg, var(--imperial-gold) 0%, #f4d03f 100%);
+  color: var(--primary-navy);
+  padding: 0.75rem 2rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 800;
   letter-spacing: 0.25rem;
   text-transform: uppercase;
-
-  box-shadow: var(--elevation-2);
-
-  transition: all var(--transition-base);
-
-  cursor: pointer;
-  border: none;
-
-  min-height: var(--touch-minimum);
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
-}
-
-.btn-gold:hover {
-  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-  box-shadow: var(--elevation-3);
-  transform: translateY(-2px);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * CARDS - Imperial Onyx Elevation
- * ═══════════════════════════════════════════════════════════════════════════ */
-
-.card-imperial {
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  box-shadow: var(--elevation-1);
-  transition: box-shadow var(--transition-base);
-
-  /* No borders - Imperial Onyx "No-Line" rule */
-  border: none;
-}
-
-.card-imperial:hover {
-  box-shadow: var(--elevation-2);
-  cursor: pointer;
-}
-
-/* Metric Card - Navy Anchor */
-.card-metric {
-  background: var(--primary);
-  color: var(--text-white);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  box-shadow: var(--elevation-3);
-}
-
-/* Unselected State - Low Container */
-.card-unselected {
-  background: var(--surface-container-low);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  opacity: 0.7;
-  transition: all var(--transition-base);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * INPUTS - Borderless Imperial Onyx Style
- * ═══════════════════════════════════════════════════════════════════════════ */
-
-.input-imperial {
-  background: var(--surface-container);
-  border: none;
-  border-radius: var(--radius-sm);
-
-  padding: 12px 16px;
-
-  font-size: var(--text-body-size);
-  font-weight: 500;
-  color: var(--text-slate-900);
-
-  transition: all var(--transition-base);
-
-  outline: none;
-
-  width: 100%;
-}
-
-.input-imperial:focus {
-  background: var(--surface);
-  box-shadow: 0 0 0 3px rgba(30, 90, 168, 0.2);
-}
-
-.input-imperial::placeholder {
-  color: var(--text-slate-600);
-  opacity: 0.5;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * PROGRESS INDICATORS - Minimalist
- * ═══════════════════════════════════════════════════════════════════════════ */
-
-.progress-bar {
-  width: 100%;
-  height: 4px;
-  background: var(--surface-container);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: var(--primary);
-  transition: width var(--transition-slow);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * MENU ITEM CARD - Restaurant Style
- * ═══════════════════════════════════════════════════════════════════════════ */
-
-.menu-item-card {
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--elevation-1);
-
-  display: flex;
-  overflow: hidden;
-
-  min-height: var(--touch-large);
-
-  transition: all var(--transition-base);
-  cursor: pointer;
-}
-
-.menu-item-card:hover {
-  box-shadow: var(--elevation-2);
-  transform: translateY(-2px);
-}
-
-.menu-item-image {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  background: var(--surface-container-low);
-}
-
-.menu-item-content {
-  flex: 1;
-  padding: var(--space-md);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.menu-item-name {
-  font-size: var(--text-title-size);
-  font-weight: var(--text-title-weight);
-  letter-spacing: var(--text-title-tracking);
-  color: var(--text-slate-900);
-  margin-bottom: 4px;
-}
-
-.menu-item-description {
-  font-size: var(--text-body-size);
-  line-height: var(--text-body-leading);
-  color: var(--text-slate-600);
-  margin-bottom: var(--space-xs);
-}
-
-.menu-item-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: var(--space-xs);
-}
-
-.menu-item-price {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--gold);
-}
-
-.menu-item-badge {
-  font-size: var(--text-micro-size);
-  font-weight: var(--text-micro-weight);
-  letter-spacing: var(--text-micro-tracking);
-  text-transform: uppercase;
-  color: var(--text-slate-600);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * PHONE FRAME PREVIEW - Grounded in Reality
- * ═══════════════════════════════════════════════════════════════════════════ */
-
-.phone-frame {
+  transition: all 0.3s ease;
   position: relative;
-  width: 375px;
-  height: 812px;
-
-  background: var(--dark);
-  border-radius: 40px;
-  padding: 12px;
-
-  box-shadow:
-    0 0 0 2px #333,
-    0 50px 100px rgba(15, 23, 42, 0.4);
-}
-
-.phone-screen {
-  width: 100%;
-  height: 100%;
-  background: white;
-  border-radius: 32px;
   overflow: hidden;
 }
 
-.phone-notch {
+.btn-gold-shimmer::after {
+  content: "";
   position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(45deg);
+  transition: all 0.6s ease;
+  opacity: 0;
+}
 
-  width: 120px;
-  height: 24px;
-  background: var(--dark);
-  border-radius: 0 0 16px 16px;
+.btn-gold-shimmer:hover::after {
+  left: 100%;
+  top: 100%;
+  opacity: 1;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * ACCESSIBILITY
+ * UTILITIES
  * ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Visible Focus Ring */
-*:focus-visible {
-  outline: 3px solid var(--gold);
-  outline-offset: 2px;
+.bg-onyx-navy {
+  background-color: var(--primary-navy);
+}
+.text-onyx-gold {
+  color: var(--imperial-gold);
+}
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
 }
 
-.btn-imperial:focus-visible,
-.btn-gold:focus-visible {
-  outline: 3px solid var(--gold);
-  outline-offset: 4px;
+.glass-panel-dark {
+  background: var(--glass-bg-dark);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Skip to Main Content */
-.skip-link {
-  position: absolute;
-  top: -40px;
-  left: 0;
-  background: var(--primary);
-  color: white;
-  padding: 8px 16px;
-  text-decoration: none;
-  z-index: 100;
+.shadow-studio {
+  box-shadow:
+    0 20px 40px rgba(10, 31, 61, 0.08),
+    0 1px 2px rgba(10, 31, 61, 0.05);
 }
-
-.skip-link:focus {
-  top: 0;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * RESPONSIVE DESIGN
- * ═══════════════════════════════════════════════════════════════════════════ */
-
-@media (max-width: 768px) {
-  .hero-blue-container {
-    padding: var(--space-xl);
-  }
-
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .hero-tagline {
-    font-size: 1.125rem;
-  }
-
-  .nav-glass {
-    top: 0.5rem;
-    left: 0.5rem;
-    right: 0.5rem;
-    padding: var(--space-sm) var(--space-md);
-  }
-
-  .text-display {
-    font-size: 2rem;
-  }
-
-  .text-headline {
-    font-size: 1.25rem;
-  }
-
-  .text-micro {
-    letter-spacing: 0.15rem; /* Reduce extreme tracking on mobile */
-  }
-
-  body {
-    font-size: 16px; /* Minimum for mobile readability */
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * MOTION PREFERENCES
- * ═══════════════════════════════════════════════════════════════════════════ */
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-
-  .nav-glass {
-    backdrop-filter: none;
-    background: rgba(255, 255, 255, 0.95);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * Z-INDEX SCALE
- * ═══════════════════════════════════════════════════════════════════════════ */
-
-.z-base { z-index: 0; }
-.z-dropdown { z-index: 10; }
-.z-sticky { z-index: 20; }
-.z-overlay { z-index: 30; }
-.z-modal { z-index: 40; }
-.z-toast { z-index: 50; }

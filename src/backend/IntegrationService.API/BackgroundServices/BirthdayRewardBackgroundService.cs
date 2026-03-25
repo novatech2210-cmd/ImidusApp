@@ -1,142 +1,52 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using IntegrationService.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using IntegrationService.Infrastructure.Services;
 
-namespace IntegrationService.API.BackgroundServices
+namespace IntegrationService.API.BackgroundServices;
+
+public class BirthdayRewardBackgroundService : BackgroundService
 {
-    /// <summary>
-    /// Background service that runs daily birthday reward processing
-    /// Executes at 2:00 AM UTC every day
-    /// </summary>
-    public class BirthdayRewardBackgroundService : BackgroundService
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<BirthdayRewardBackgroundService> _logger;
+
+    public BirthdayRewardBackgroundService(
+        IServiceProvider serviceProvider,
+        ILogger<BirthdayRewardBackgroundService> logger)
     {
-        private readonly ILogger<BirthdayRewardBackgroundService> _logger;
-        private readonly IServiceProvider _serviceProvider;
-        private const int ScheduledHour = 2;  // 2:00 AM UTC
-        private const int ScheduledMinute = 0;
+        _serviceProvider = serviceProvider;
+        _logger = logger;
+    }
 
-        public BirthdayRewardBackgroundService(
-            ILogger<BirthdayRewardBackgroundService> logger,
-            IServiceProvider serviceProvider)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _logger.LogInformation("Birthday Reward Background Service is starting.");
+
+        while (!stoppingToken.IsCancellationRequested)
         {
-            _logger = logger;
-            _serviceProvider = serviceProvider;
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            _logger.LogInformation("Birthday Reward Background Service started");
-
             try
             {
-                while (!stoppingToken.IsCancellationRequested)
+                _logger.LogInformation("Checking for birthdays at {time}", DateTimeOffset.Now);
+
+                using (var scope = _serviceProvider.CreateScope())
                 {
-                    try
-                    {
-                        // Calculate next run time
-                        var now = DateTime.UtcNow;
-                        var nextRun = CalculateNextRunTime(now);
-                        var delayMs = (long)(nextRun - now).TotalMilliseconds;
-
-                        _logger.LogInformation($"Next birthday reward processing scheduled for: {nextRun:O}");
-
-                        // Wait until next scheduled time
-                        if (delayMs > 0)
-                        {
-                            await Task.Delay((int)Math.Min(delayMs, int.MaxValue), stoppingToken);
-                        }
-
-                        if (!stoppingToken.IsCancellationRequested)
-                        {
-                            await ProcessBirthdaysAsync(stoppingToken);
-                        }
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        _logger.LogInformation("Birthday Reward Background Service cancellation requested");
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error in birthday reward background service");
-                        // Continue running despite errors
-                        await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
-                    }
+                    var birthdayService = scope.ServiceProvider.GetRequiredService<BirthdayRewardService>();
+                    await birthdayService.ProcessTodayBirthdaysAsync();
+                    _logger.LogInformation("Successfully processed today's birthday rewards.");
                 }
-            }
-            finally
-            {
-                _logger.LogInformation("Birthday Reward Background Service stopped");
-            }
-        }
 
-        /// <summary>
-        /// Calculate the next scheduled run time (2:00 AM UTC)
-        /// </summary>
-        private DateTime CalculateNextRunTime(DateTime now)
-        {
-            var nextRun = now.Date.AddHours(ScheduledHour).AddMinutes(ScheduledMinute);
-
-            // If the scheduled time has already passed today, schedule for tomorrow
-            if (nextRun <= now)
-            {
-                nextRun = nextRun.AddDays(1);
-            }
-
-            return nextRun;
-        }
-
-        /// <summary>
-        /// Execute birthday reward processing
-        /// Uses scoped service to ensure clean database connections
-        /// </summary>
-        private async Task ProcessBirthdaysAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                _logger.LogInformation("Processing birthday rewards...");
-
-                using var scope = _serviceProvider.CreateScope();
-                var birthdayService = scope.ServiceProvider.GetRequiredService<IBirthdayRewardService>();
-
-                var startTime = DateTime.UtcNow;
-                await birthdayService.ProcessBirthdaysAsync();
-                var duration = DateTime.UtcNow - startTime;
-
-                _logger.LogInformation($"Birthday reward processing completed successfully in {duration.TotalSeconds:F2} seconds");
+                // Wait until midnight for the next run
+                var now = DateTime.Now;
+                var nextRunTime = now.Date.AddDays(1);
+                var delay = nextRunTime - now;
+                
+                await Task.Delay(delay, stoppingToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error processing birthday rewards");
-                throw;
+                _logger.LogError(ex, "Error occurred while processing birthday rewards.");
+                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken); // Retry after 5 mins
             }
-        }
-
-        /// <summary>
-        /// Override to ensure graceful shutdown
-        /// </summary>
-        public override async Task StopAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Birthday Reward Background Service is shutting down");
-            await base.StopAsync(cancellationToken);
-        }
-    }
-
-    /// <summary>
-    /// Extension methods for dependency injection
-    /// Usage in Program.cs: services.AddBirthdayRewardService();
-    /// </summary>
-    public static class BirthdayRewardServiceExtensions
-    {
-        public static IServiceCollection AddBirthdayRewardService(this IServiceCollection services)
-        {
-            services.AddScoped<IBirthdayRewardService, BirthdayRewardService>();
-            services.AddHostedService<BirthdayRewardBackgroundService>();
-            return services;
         }
     }
 }

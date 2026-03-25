@@ -1,0 +1,878 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="cd3eb5f3-b778-4a68-b162-99d09a8e7c05" name="@kali 2026-03-12 15:49:58" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-03-12T15:49:58.0380772+02:00" queuing="2026-03-12T15:49:58.0380773+02:00" start="2026-03-12T15:49:57.4213186+02:00" finish="2026-03-12T15:50:46.0524668+02:00" />
+  <TestSettings name="default" id="478ee1ca-5217-4933-b2a6-5da32ccecb35">
+    <Deployment runDeploymentRoot="_kali_2026-03-12_15_49_58" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="030caa98-7cf2-4525-9427-d7c20b7dc0f5" testId="3603ef83-18a0-a455-045c-a99c06477bbd" testName="IntegrationService.Tests.Services.OrderStatusPollingServiceTests.CleanupDeletesOldLogs" computerName="kali" duration="00:00:00.0010000" startTime="2026-03-12T15:49:58.0510185+02:00" endTime="2026-03-12T15:49:58.0510186+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="030caa98-7cf2-4525-9427-d7c20b7dc0f5">
+      <Output>
+        <ErrorInfo>
+          <Message>System.NotSupportedException : Unsupported expression: x =&gt; x.CreateScope()&#xD;
+Extension methods (here: ServiceProviderServiceExtensions.CreateScope) may not be used in setup / verification expressions.</Message>
+          <StackTrace>   at Moq.Guard.IsOverridable(MethodInfo method, Expression expression) in /_/src/Moq/Guard.cs:line 87
+   at Moq.MethodExpectation..ctor(LambdaExpression expression, MethodInfo method, IReadOnlyList`1 arguments, Boolean exactGenericTypeArguments, Boolean skipMatcherInitialization, Boolean allowNonOverridable) in /_/src/Moq/MethodExpectation.cs:line 236
+   at Moq.ExpressionExtensions.&lt;Split&gt;g__Split|5_0(Expression e, Expression&amp; r, MethodExpectation&amp; p, Boolean assignment, Boolean allowNonOverridableLastProperty) in /_/src/Moq/ExpressionExtensions.cs:line 256
+   at Moq.ExpressionExtensions.Split(LambdaExpression expression, Boolean allowNonOverridableLastProperty) in /_/src/Moq/ExpressionExtensions.cs:line 170
+   at Moq.Mock.SetupRecursive[TSetup](Mock mock, LambdaExpression expression, Func`4 setupLast, Boolean allowNonOverridableLastProperty) in /_/src/Moq/Mock.cs:line 728
+   at Moq.Mock.Setup(Mock mock, LambdaExpression expression, Condition condition) in /_/src/Moq/Mock.cs:line 562
+   at Moq.Mock`1.Setup[TResult](Expression`1 expression) in /_/src/Moq/Mock`1.cs:line 645
+   at IntegrationService.Tests.Services.OrderStatusPollingServiceTests..ctor() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Services/OrderStatusPollingServiceTests.cs:line 69
+   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="2a1d1b1c-e7e5-464e-8b51-bb528fa13454" testId="94c7d230-6b13-3c7b-5c14-e776c69b2163" testName="IntegrationService.Tests.Integration.CustomerLookupTests.GetLoyaltyHistory_ReturnsTransactionList" computerName="kali" duration="00:00:00.0082016" startTime="2026-03-12T15:49:58.0519259+02:00" endTime="2026-03-12T15:49:58.0519260+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2a1d1b1c-e7e5-464e-8b51-bb528fa13454">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.IsType() Failure: Value is not the exact type
+Expected: typeof(System.Collections.Generic.List&lt;LoyaltyTransactionDto&gt;) (from System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e)
+Actual:   typeof(System.Collections.Generic.List&lt;LoyaltyTransactionDto&gt;) (from System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e)</Message>
+          <StackTrace>   at IntegrationService.Tests.Integration.CustomerLookupTests.GetLoyaltyHistory_ReturnsTransactionList() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Integration/CustomerLookupTests.cs:line 231
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="faa3b57a-4854-4f7d-8040-2d2229d0090e" testId="f3ed5559-87f8-a8b1-475e-eb37f3c1729f" testName="IntegrationService.Tests.Services.PaymentServiceTests.VoidTransactionAsync_WithInvalidTransactionId_ThrowsAfterRetries" computerName="kali" duration="00:00:15.0780730" startTime="2026-03-12T15:50:45.6630754+02:00" endTime="2026-03-12T15:50:45.6630767+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="faa3b57a-4854-4f7d-8040-2d2229d0090e" />
+    <UnitTestResult executionId="c436f630-ba16-4a5c-aa12-703373e173a1" testId="ecac197a-5c11-7075-6cdc-bbbc37625af4" testName="IntegrationService.Tests.Services.OrderStatusPollingServiceTests.SendsNotificationForNewCompletedOrder" computerName="kali" duration="00:00:00.0010000" startTime="2026-03-12T15:49:58.0515819+02:00" endTime="2026-03-12T15:49:58.0515820+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c436f630-ba16-4a5c-aa12-703373e173a1">
+      <Output>
+        <ErrorInfo>
+          <Message>System.NotSupportedException : Unsupported expression: x =&gt; x.CreateScope()&#xD;
+Extension methods (here: ServiceProviderServiceExtensions.CreateScope) may not be used in setup / verification expressions.</Message>
+          <StackTrace>   at Moq.Guard.IsOverridable(MethodInfo method, Expression expression) in /_/src/Moq/Guard.cs:line 87
+   at Moq.MethodExpectation..ctor(LambdaExpression expression, MethodInfo method, IReadOnlyList`1 arguments, Boolean exactGenericTypeArguments, Boolean skipMatcherInitialization, Boolean allowNonOverridable) in /_/src/Moq/MethodExpectation.cs:line 236
+   at Moq.ExpressionExtensions.&lt;Split&gt;g__Split|5_0(Expression e, Expression&amp; r, MethodExpectation&amp; p, Boolean assignment, Boolean allowNonOverridableLastProperty) in /_/src/Moq/ExpressionExtensions.cs:line 256
+   at Moq.ExpressionExtensions.Split(LambdaExpression expression, Boolean allowNonOverridableLastProperty) in /_/src/Moq/ExpressionExtensions.cs:line 170
+   at Moq.Mock.SetupRecursive[TSetup](Mock mock, LambdaExpression expression, Func`4 setupLast, Boolean allowNonOverridableLastProperty) in /_/src/Moq/Mock.cs:line 728
+   at Moq.Mock.Setup(Mock mock, LambdaExpression expression, Condition condition) in /_/src/Moq/Mock.cs:line 562
+   at Moq.Mock`1.Setup[TResult](Expression`1 expression) in /_/src/Moq/Mock`1.cs:line 645
+   at IntegrationService.Tests.Services.OrderStatusPollingServiceTests..ctor() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Services/OrderStatusPollingServiceTests.cs:line 69
+   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="3dad07ae-46d3-4736-96ee-cb19421f86e5" testId="81867bb2-5309-fad5-ed68-72c757ec392c" testName="IntegrationService.Tests.Integration.DatabaseConnectivityTests.CanQuery_tblAvailableSize_PricingData" computerName="kali" duration="00:00:00.0096448" startTime="2026-03-12T15:49:58.1823859+02:00" endTime="2026-03-12T15:49:58.1823860+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3dad07ae-46d3-4736-96ee-cb19421f86e5" />
+    <UnitTestResult executionId="6c5910e4-f1b4-4b5d-b5ba-ee17a1c38d98" testId="82a1b57a-a611-5513-5e9e-55795ad120cc" testName="IntegrationService.Tests.Controllers.NotificationsControllerTests.RegisterToken_NewToken_CreatesDeviceToken" computerName="kali" duration="00:00:00.0606469" startTime="2026-03-12T15:49:58.0801384+02:00" endTime="2026-03-12T15:49:58.0801384+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6c5910e4-f1b4-4b5d-b5ba-ee17a1c38d98" />
+    <UnitTestResult executionId="f92bf2cb-3da1-4835-bde7-05376e379ff3" testId="b52489ba-5657-0606-02ef-dd4fd4c43206" testName="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_OrderNotFound_ReturnsNotFound" computerName="kali" duration="00:00:00.0005304" startTime="2026-03-12T15:49:58.0575540+02:00" endTime="2026-03-12T15:49:58.0575542+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f92bf2cb-3da1-4835-bde7-05376e379ff3" />
+    <UnitTestResult executionId="ec9f6ba1-03fa-4ec6-bc61-05ec63018ab1" testId="a554954f-7b55-5a8c-7719-2e199a620ae4" testName="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests.InvokeAsync_DuplicateKey_ReturnsCachedResponse" computerName="kali" duration="00:00:00.0028734" startTime="2026-03-12T15:49:58.0658307+02:00" endTime="2026-03-12T15:49:58.0658308+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ec9f6ba1-03fa-4ec6-bc61-05ec63018ab1" />
+    <UnitTestResult executionId="0be14702-be2e-4b96-8bb8-d1227ac68f10" testId="226f3726-c59f-c650-aaf7-52fa4173a00c" testName="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_BothVoidAndRefundFail_ReturnsOkWithRefundedFalseAndOrderStillCancelled" computerName="kali" duration="00:00:00.0018005" startTime="2026-03-12T15:49:58.0564840+02:00" endTime="2026-03-12T15:49:58.0564841+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0be14702-be2e-4b96-8bb8-d1227ac68f10" />
+    <UnitTestResult executionId="df4672c9-26d4-4420-b41b-2fa62e9040a1" testId="28b01d73-c30b-859f-e4e2-3d7b5b20c27d" testName="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests.InvokeAsync_NewKey_StoresResponse" computerName="kali" duration="00:00:00.0050630" startTime="2026-03-12T15:49:58.0710031+02:00" endTime="2026-03-12T15:49:58.0710033+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="df4672c9-26d4-4420-b41b-2fa62e9040a1" />
+    <UnitTestResult executionId="b7925959-bfa9-4e52-8a76-29566c09ff8c" testId="7d88f174-dcd5-1f1f-2884-4f007f7f0990" testName="IntegrationService.Tests.Services.PaymentServiceTests.CreateCustomerProfileAsync_WithInvalidToken_ReturnsFailure" computerName="kali" duration="00:00:00.3130243" startTime="2026-03-12T15:50:45.9762334+02:00" endTime="2026-03-12T15:50:45.9762336+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b7925959-bfa9-4e52-8a76-29566c09ff8c" />
+    <UnitTestResult executionId="03e6cc49-ff89-4c33-980f-36b7fe1ed29d" testId="ebf82f0f-e4a3-e77e-750d-cce673c477d6" testName="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests.InvokeAsync_GetRequest_PassesThrough" computerName="kali" duration="00:00:00.0055368" startTime="2026-03-12T15:49:58.0600662+02:00" endTime="2026-03-12T15:49:58.0600664+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="03e6cc49-ff89-4c33-980f-36b7fe1ed29d" />
+    <UnitTestResult executionId="55fadffa-d01c-4153-bb75-777754162798" testId="a0e859a4-3c09-d7e8-77fa-961d288bb372" testName="IntegrationService.Tests.Services.OrderProcessingServiceTests.ProcessPaymentAndCompleteOrderAsync_VoidFails_LogsCritical" computerName="kali" duration="00:00:00.0043028" startTime="2026-03-12T15:49:58.0654107+02:00" endTime="2026-03-12T15:49:58.0654108+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="55fadffa-d01c-4153-bb75-777754162798" />
+    <UnitTestResult executionId="bb9682b9-c79e-4b22-8620-bc347ef878b6" testId="fdfdb822-9a50-80be-b534-331f3f99d8bb" testName="IntegrationService.Tests.Services.OrderProcessingServiceTests.PointsRecordingFails_OrderStillCompletes" computerName="kali" duration="00:00:00.1546538" startTime="2026-03-12T15:49:58.0487426+02:00" endTime="2026-03-12T15:49:58.0487426+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bb9682b9-c79e-4b22-8620-bc347ef878b6" />
+    <UnitTestResult executionId="f459d66e-a5dd-4915-84a3-60d70526a535" testId="a701b6e7-1afe-f635-f86c-4c2feb79423a" testName="IntegrationService.Tests.LoyaltyServiceTests.UpdatePointsAfterSale_ShouldAddPointsCorrectly" computerName="kali" duration="00:00:00.0739825" startTime="2026-03-12T15:49:57.9625218+02:00" endTime="2026-03-12T15:49:57.9625219+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f459d66e-a5dd-4915-84a3-60d70526a535" />
+    <UnitTestResult executionId="ebb52090-9a13-4b1b-9319-327af17bd706" testId="201ac145-d19e-78e7-6bcc-a3beb8a50970" testName="IntegrationService.Tests.Services.PaymentServiceTests.ChargeCardAsync_WithValidToken_ReturnsSuccess" computerName="kali" duration="00:00:00.0010000" startTime="2026-03-12T15:49:57.9071687+02:00" endTime="2026-03-12T15:49:57.9072034+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="NotExecuted" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ebb52090-9a13-4b1b-9319-327af17bd706">
+      <Output>
+        <ErrorInfo>
+          <Message>Requires valid Authorize.net sandbox credentials and network access</Message>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="465a0022-cf87-4b4b-b6a7-ec3d266dbc86" testId="8fc5f792-2390-b9b0-3a5d-88bf997275b8" testName="IntegrationService.Tests.Controllers.NotificationsControllerTests.RegisterToken_InactiveToken_ReactivatesToken" computerName="kali" duration="00:00:00.0027797" startTime="2026-03-12T15:49:58.0332862+02:00" endTime="2026-03-12T15:49:58.0332863+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="465a0022-cf87-4b4b-b6a7-ec3d266dbc86" />
+    <UnitTestResult executionId="0878f850-2b2a-4ddf-801d-a7b04943a6fe" testId="4dd4a27a-7497-fd95-fd4f-ceacc43b6ef0" testName="IntegrationService.Tests.Services.OrderProcessingServiceTests.ProcessPaymentAndCompleteOrderAsync_PaymentSuccessDbFailure_VoidsCharge" computerName="kali" duration="00:00:00.0027897" startTime="2026-03-12T15:49:58.0827670+02:00" endTime="2026-03-12T15:49:58.0827671+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0878f850-2b2a-4ddf-801d-a7b04943a6fe" />
+    <UnitTestResult executionId="d01bc6a7-8f9f-4730-af0e-ac3c96726284" testId="d4d57e15-d440-45f6-8ed4-509c04e3fb97" testName="IntegrationService.Tests.Integration.CustomerLookupTests.LookupByEmail_NoPhone_UsesEmailFallback" computerName="kali" duration="00:00:00.1249807" startTime="2026-03-12T15:49:58.0172409+02:00" endTime="2026-03-12T15:49:58.0172410+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d01bc6a7-8f9f-4730-af0e-ac3c96726284" />
+    <UnitTestResult executionId="df033419-2f7d-4805-8f3c-baaa44c0ee53" testId="fedf58e9-34da-1117-9cb8-4eef69e1564f" testName="IntegrationService.Tests.Integration.DatabaseConnectivityTests.CanConnect_ToDatabase" computerName="kali" duration="00:00:00.2604545" startTime="2026-03-12T15:49:58.1511014+02:00" endTime="2026-03-12T15:49:58.1511015+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="df033419-2f7d-4805-8f3c-baaa44c0ee53" />
+    <UnitTestResult executionId="1f695359-927e-4401-bbba-ea5b6f49c508" testId="560a5680-e528-77d3-3a28-22a96c930e1e" testName="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_FirstOrderOfDay_ReturnsOne" computerName="kali" duration="00:00:00.0024581" startTime="2026-03-12T15:49:58.2296799+02:00" endTime="2026-03-12T15:49:58.2296800+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1f695359-927e-4401-bbba-ea5b6f49c508">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : Invalid column name 'OrderDate'.</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+   at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.CleanupTestDataAsync() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs:line 178
+   at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_FirstOrderOfDay_ReturnsOne() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs:line 76
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="240de20f-dfbc-4731-b0a7-1dfe2fb659ee" testId="3886a68d-ce3a-5f64-78dd-4f5b281bf9a2" testName="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_ConcurrentRequests_NoDuplicates" computerName="kali" duration="00:00:00.0035789" startTime="2026-03-12T15:49:58.2266355+02:00" endTime="2026-03-12T15:49:58.2266355+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="240de20f-dfbc-4731-b0a7-1dfe2fb659ee">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : Invalid column name 'OrderDate'.</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+   at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.CleanupTestDataAsync() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs:line 178
+   at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_ConcurrentRequests_NoDuplicates() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs:line 128
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="2063e769-d323-4be3-95ea-6375e8d7155d" testId="2ccfda7b-0fd8-9bf8-9f7e-2e8433d095c1" testName="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_StatusNotPending_ReturnsBadRequest" computerName="kali" duration="00:00:00.1177081" startTime="2026-03-12T15:49:58.0171926+02:00" endTime="2026-03-12T15:49:58.0171926+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2063e769-d323-4be3-95ea-6375e8d7155d" />
+    <UnitTestResult executionId="602c166c-f726-4db8-9e54-f5de47d78892" testId="27fc8652-4c0b-005d-b066-f8210df0f4d8" testName="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests.InvokeAsync_PutRequest_PassesThrough" computerName="kali" duration="00:00:00.0027335" startTime="2026-03-12T15:49:58.0628893+02:00" endTime="2026-03-12T15:49:58.0628894+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="602c166c-f726-4db8-9e54-f5de47d78892" />
+    <UnitTestResult executionId="0d8b6216-e128-4e9e-b04d-6e8fef4fa2d9" testId="367f07ae-4014-0e19-9c65-3a91f2fb241f" testName="IntegrationService.Tests.Services.OrderProcessingServiceTests.OrderWithPointsRedemption_AppliesDiscount" computerName="kali" duration="00:00:00.0070852" startTime="2026-03-12T15:49:58.0754796+02:00" endTime="2026-03-12T15:49:58.0754797+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0d8b6216-e128-4e9e-b04d-6e8fef4fa2d9" />
+    <UnitTestResult executionId="4dfce47a-e1c6-4ed3-a9c9-25b8c7e62535" testId="83748e6f-79e9-b6a0-4932-637e01922f8d" testName="IntegrationService.Tests.Services.OrderServiceTests.PlaceOrderAsync_ItemNotAvailableOnline_ReturnsError" computerName="kali" duration="00:00:00.0016014" startTime="2026-03-12T15:49:58.0583142+02:00" endTime="2026-03-12T15:49:58.0583143+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4dfce47a-e1c6-4ed3-a9c9-25b8c7e62535" />
+    <UnitTestResult executionId="d69cb20e-2ec8-4cd6-903a-b0cabd82bd00" testId="f9e5fc8b-39a3-db31-80b1-37192af8be33" testName="IntegrationService.Tests.Integration.DatabaseConnectivityTests.CanQuery_tblCategory_WithCorrectAliases" computerName="kali" duration="00:00:00.0030881" startTime="2026-03-12T15:49:58.1856219+02:00" endTime="2026-03-12T15:49:58.1856220+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d69cb20e-2ec8-4cd6-903a-b0cabd82bd00" />
+    <UnitTestResult executionId="0e5907bf-2eba-4c5e-9e81-fc68faca8b63" testId="6109cd45-1be9-6c9d-4a16-94609879cbc4" testName="IntegrationService.Tests.Services.PaymentServiceTests.RefundTransactionAsync_WithValidSettledTransaction_ReturnsTrue" computerName="kali" duration="00:00:00.0010000" startTime="2026-03-12T15:49:57.9097894+02:00" endTime="2026-03-12T15:49:57.9097894+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="NotExecuted" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0e5907bf-2eba-4c5e-9e81-fc68faca8b63">
+      <Output>
+        <ErrorInfo>
+          <Message>Requires valid Authorize.net sandbox credentials and settled transaction</Message>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="41cd00ec-29c1-407d-bcc4-f1341f312d0d" testId="cdbbfb56-d8de-46f2-a2d7-b88aab05b762" testName="IntegrationService.Tests.Controllers.NotificationsControllerTests.RegisterToken_DuplicateActiveToken_UpdatesLastActive" computerName="kali" duration="00:00:00.0115528" startTime="2026-03-12T15:49:58.0173240+02:00" endTime="2026-03-12T15:49:58.0173241+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="41cd00ec-29c1-407d-bcc4-f1341f312d0d" />
+    <UnitTestResult executionId="4b4f5732-cb31-482d-90c1-a8fa7c8de485" testId="7f43b95b-0f69-f843-138a-067ff26f295e" testName="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests.InvokeAsync_MissingHeader_Returns400BadRequest" computerName="kali" duration="00:00:00.0028526" startTime="2026-03-12T15:49:58.0739738+02:00" endTime="2026-03-12T15:49:58.0739740+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4b4f5732-cb31-482d-90c1-a8fa7c8de485" />
+    <UnitTestResult executionId="5ac959db-ca3d-498f-a66d-c5d24f35241c" testId="0405d2cf-f926-d228-0204-1cac193100c4" testName="IntegrationService.Tests.Integration.CustomerLookupTests.LookupByPhone_FormattedPhone_StripsNonDigits" computerName="kali" duration="00:00:00.0193567" startTime="2026-03-12T15:49:58.0353683+02:00" endTime="2026-03-12T15:49:58.0353684+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5ac959db-ca3d-498f-a66d-c5d24f35241c" />
+    <UnitTestResult executionId="a6347802-1b2a-439e-9f6c-daceef0bd3f5" testId="ea1b1b0a-3745-25b0-8b72-b329eb5b3366" testName="IntegrationService.Tests.Services.PaymentServiceTests.VoidTransactionAsync_WithSettledTransaction_LogsCritical" computerName="kali" duration="00:00:00.0010000" startTime="2026-03-12T15:49:57.9101073+02:00" endTime="2026-03-12T15:49:57.9101074+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="NotExecuted" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a6347802-1b2a-439e-9f6c-daceef0bd3f5">
+      <Output>
+        <ErrorInfo>
+          <Message>Requires valid settled transaction ID and manual verification</Message>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="d4ea0cce-50cf-44c6-9998-4b2ae9561032" testId="5dd9e7c9-aefe-a3d7-6411-eb6efd0daec8" testName="IntegrationService.Tests.Integration.CustomerLookupTests.GetLoyaltyHistory_CustomerNotFound_Returns404" computerName="kali" duration="00:00:00.0015306" startTime="2026-03-12T15:49:58.0542324+02:00" endTime="2026-03-12T15:49:58.0542324+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d4ea0cce-50cf-44c6-9998-4b2ae9561032" />
+    <UnitTestResult executionId="e8734bae-977f-4159-bbd5-53b4d0eeabf2" testId="40f5c472-4d93-4c6f-8b1e-c3abca384446" testName="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_VoidSucceeds_ReturnsOkWithRefundedTrue" computerName="kali" duration="00:00:00.0450888" startTime="2026-03-12T15:49:58.0520500+02:00" endTime="2026-03-12T15:49:58.0520500+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e8734bae-977f-4159-bbd5-53b4d0eeabf2" />
+    <UnitTestResult executionId="044dcafa-8778-4bda-a1dd-4f087d579d78" testId="f758100c-d573-fd6b-30f8-c53c3c302fd0" testName="IntegrationService.Tests.Services.OrderProcessingServiceTests.ProcessPaymentAndCompleteOrderAsync_NotificationFails_OrderStillCompletes" computerName="kali" duration="00:00:00.0096735" startTime="2026-03-12T15:49:58.0543008+02:00" endTime="2026-03-12T15:49:58.0543008+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="044dcafa-8778-4bda-a1dd-4f087d579d78" />
+    <UnitTestResult executionId="fac1e9cb-a9bd-4215-a78b-a0c10f7d813a" testId="62aeb1bb-c5d7-33a3-7d95-4afc35d2147c" testName="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_WithinTwoHoursOfPickup_ReturnsBadRequest" computerName="kali" duration="00:00:00.0006546" startTime="2026-03-12T15:49:58.0569724+02:00" endTime="2026-03-12T15:49:58.0569726+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fac1e9cb-a9bd-4215-a78b-a0c10f7d813a" />
+    <UnitTestResult executionId="5d6c6625-c258-4954-95c7-bec9266bc941" testId="e3ad94d3-1687-f7dc-c3f4-81f9c98f714b" testName="IntegrationService.Tests.Services.PaymentServiceTests.ChargeCardAsync_LogsTransactionAttempt" computerName="kali" duration="00:00:02.0953316" startTime="2026-03-12T15:49:59.9840198+02:00" endTime="2026-03-12T15:49:59.9840200+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5d6c6625-c258-4954-95c7-bec9266bc941" />
+    <UnitTestResult executionId="57dc182b-7c96-4b5a-8c92-3e6503a5493c" testId="02173cfb-2249-3243-39b2-dea620848879" testName="IntegrationService.Tests.Services.OrderStatusPollingServiceTests.GetCompletedOnlineOrdersAsync_FiltersCorrectly" computerName="kali" duration="00:00:00.0010000" startTime="2026-03-12T15:49:58.0499599+02:00" endTime="2026-03-12T15:49:58.0499600+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="57dc182b-7c96-4b5a-8c92-3e6503a5493c">
+      <Output>
+        <ErrorInfo>
+          <Message>System.NotSupportedException : Unsupported expression: x =&gt; x.CreateScope()&#xD;
+Extension methods (here: ServiceProviderServiceExtensions.CreateScope) may not be used in setup / verification expressions.</Message>
+          <StackTrace>   at Moq.Guard.IsOverridable(MethodInfo method, Expression expression) in /_/src/Moq/Guard.cs:line 87
+   at Moq.MethodExpectation..ctor(LambdaExpression expression, MethodInfo method, IReadOnlyList`1 arguments, Boolean exactGenericTypeArguments, Boolean skipMatcherInitialization, Boolean allowNonOverridable) in /_/src/Moq/MethodExpectation.cs:line 236
+   at Moq.ExpressionExtensions.&lt;Split&gt;g__Split|5_0(Expression e, Expression&amp; r, MethodExpectation&amp; p, Boolean assignment, Boolean allowNonOverridableLastProperty) in /_/src/Moq/ExpressionExtensions.cs:line 256
+   at Moq.ExpressionExtensions.Split(LambdaExpression expression, Boolean allowNonOverridableLastProperty) in /_/src/Moq/ExpressionExtensions.cs:line 170
+   at Moq.Mock.SetupRecursive[TSetup](Mock mock, LambdaExpression expression, Func`4 setupLast, Boolean allowNonOverridableLastProperty) in /_/src/Moq/Mock.cs:line 728
+   at Moq.Mock.Setup(Mock mock, LambdaExpression expression, Condition condition) in /_/src/Moq/Mock.cs:line 562
+   at Moq.Mock`1.Setup[TResult](Expression`1 expression) in /_/src/Moq/Mock`1.cs:line 645
+   at IntegrationService.Tests.Services.OrderStatusPollingServiceTests..ctor() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Services/OrderStatusPollingServiceTests.cs:line 69
+   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="95eb0013-5acb-4d2b-88a9-302ce678d0a1" testId="0f5822df-4565-81d0-4b4d-9f5e9ad1f8d9" testName="IntegrationService.Tests.Services.OrderProcessingServiceTests.ProcessPaymentAndCompleteOrderAsync_PaymentDeclined_ReturnsError" computerName="kali" duration="00:00:00.0030484" startTime="2026-03-12T15:49:58.0559757+02:00" endTime="2026-03-12T15:49:58.0559757+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="95eb0013-5acb-4d2b-88a9-302ce678d0a1" />
+    <UnitTestResult executionId="60a14c85-6f28-4d2a-a19b-22529682ce58" testId="79e15c4f-5a89-58cf-155e-42b6aca02cd6" testName="IntegrationService.Tests.Services.OrderStatusPollingServiceTests.SkipsAlreadyNotifiedOrders" computerName="kali" duration="00:00:00.0010000" startTime="2026-03-12T15:49:58.0504290+02:00" endTime="2026-03-12T15:49:58.0504291+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="60a14c85-6f28-4d2a-a19b-22529682ce58">
+      <Output>
+        <ErrorInfo>
+          <Message>System.NotSupportedException : Unsupported expression: x =&gt; x.CreateScope()&#xD;
+Extension methods (here: ServiceProviderServiceExtensions.CreateScope) may not be used in setup / verification expressions.</Message>
+          <StackTrace>   at Moq.Guard.IsOverridable(MethodInfo method, Expression expression) in /_/src/Moq/Guard.cs:line 87
+   at Moq.MethodExpectation..ctor(LambdaExpression expression, MethodInfo method, IReadOnlyList`1 arguments, Boolean exactGenericTypeArguments, Boolean skipMatcherInitialization, Boolean allowNonOverridable) in /_/src/Moq/MethodExpectation.cs:line 236
+   at Moq.ExpressionExtensions.&lt;Split&gt;g__Split|5_0(Expression e, Expression&amp; r, MethodExpectation&amp; p, Boolean assignment, Boolean allowNonOverridableLastProperty) in /_/src/Moq/ExpressionExtensions.cs:line 256
+   at Moq.ExpressionExtensions.Split(LambdaExpression expression, Boolean allowNonOverridableLastProperty) in /_/src/Moq/ExpressionExtensions.cs:line 170
+   at Moq.Mock.SetupRecursive[TSetup](Mock mock, LambdaExpression expression, Func`4 setupLast, Boolean allowNonOverridableLastProperty) in /_/src/Moq/Mock.cs:line 728
+   at Moq.Mock.Setup(Mock mock, LambdaExpression expression, Condition condition) in /_/src/Moq/Mock.cs:line 562
+   at Moq.Mock`1.Setup[TResult](Expression`1 expression) in /_/src/Moq/Mock`1.cs:line 645
+   at IntegrationService.Tests.Services.OrderStatusPollingServiceTests..ctor() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Services/OrderStatusPollingServiceTests.cs:line 69
+   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="cb4904db-c603-447a-9cf4-02c0520e8e45" testId="96357d8a-1768-2e58-9fa4-f02d579d4c7d" testName="IntegrationService.Tests.Services.OrderProcessingServiceTests.ProcessPaymentAndCompleteOrderAsync_CompleteOrderFailsConcurrency_RollsBack" computerName="kali" duration="00:00:00.0042746" startTime="2026-03-12T15:49:58.0798961+02:00" endTime="2026-03-12T15:49:58.0798962+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cb4904db-c603-447a-9cf4-02c0520e8e45" />
+    <UnitTestResult executionId="0d674ff8-6497-4b6a-9ebd-10974b1c2298" testId="2565162e-1332-b3bd-22af-9a6148543f3d" testName="IntegrationService.Tests.Controllers.NotificationsControllerTests.RegisterToken_InvalidCustomerId_ReturnsBadRequest" computerName="kali" duration="00:00:00.0011989" startTime="2026-03-12T15:49:58.0043420+02:00" endTime="2026-03-12T15:49:58.0043421+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0d674ff8-6497-4b6a-9ebd-10974b1c2298" />
+    <UnitTestResult executionId="e076b5eb-b2af-405a-b4d6-758819e09002" testId="64458122-2dfb-9766-6f9a-e7d498bdcd80" testName="IntegrationService.Tests.Services.PaymentServiceTests.PaymentService_SandboxConfiguration_SetsIsSandboxTrue" computerName="kali" duration="00:00:00.0002777" startTime="2026-03-12T15:49:59.9843464+02:00" endTime="2026-03-12T15:49:59.9843465+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e076b5eb-b2af-405a-b4d6-758819e09002" />
+    <UnitTestResult executionId="6581c31b-149f-4b19-b3ef-59ec3b20fd21" testId="dd03fb41-0ae6-f1f2-8a2e-e99f31cc8c51" testName="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_NoPaymentInfo_ReturnsOkWithRefundedFalse" computerName="kali" duration="00:00:00.0023436" startTime="2026-03-12T15:49:58.0543715+02:00" endTime="2026-03-12T15:49:58.0543715+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6581c31b-149f-4b19-b3ef-59ec3b20fd21" />
+    <UnitTestResult executionId="7759bbd0-6f07-44f2-9a43-6f774f61f666" testId="88d673eb-0fff-9e08-10a9-f94886cb6c8b" testName="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_NewDay_ResetsToOne" computerName="kali" duration="00:00:00.0024067" startTime="2026-03-12T15:49:58.2323598+02:00" endTime="2026-03-12T15:49:58.2323598+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7759bbd0-6f07-44f2-9a43-6f774f61f666">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : Invalid column name 'OrderDate'.</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+   at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.CleanupTestDataAsync() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs:line 178
+   at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_NewDay_ResetsToOne() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs:line 107
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="5ae5fbf8-750b-4ded-b5a3-eb30e0ccbf02" testId="60378532-e889-2292-7e25-71ae39f3581f" testName="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests.InvokeAsync_KeyCollision_Returns409Conflict" computerName="kali" duration="00:00:00.1659807" startTime="2026-03-12T15:49:58.0544260+02:00" endTime="2026-03-12T15:49:58.0544260+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5ae5fbf8-750b-4ded-b5a3-eb30e0ccbf02" />
+    <UnitTestResult executionId="ac2a98bd-d0b2-41c8-9743-47fec8582acf" testId="12a3c9ef-d3aa-9909-6a50-accdf3766b36" testName="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_MultipleCallsSameDay_IncrementsProperly" computerName="kali" duration="00:00:00.0344871" startTime="2026-03-12T15:49:58.2229388+02:00" endTime="2026-03-12T15:49:58.2229390+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ac2a98bd-d0b2-41c8-9743-47fec8582acf">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : Invalid column name 'OrderDate'.</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+   at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.CleanupTestDataAsync() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs:line 178
+   at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_MultipleCallsSameDay_IncrementsProperly() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs:line 157
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="0038f717-0111-45b0-b555-110ad71490fe" testId="adbbe612-5d2a-f5b2-c6ed-11b908ce44fb" testName="IntegrationService.Tests.Services.OrderServiceTests.PlaceOrderAsync_OutOfStockSize_ReturnsError" computerName="kali" duration="00:00:00.1308843" startTime="2026-03-12T15:49:58.0193176+02:00" endTime="2026-03-12T15:49:58.0193177+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0038f717-0111-45b0-b555-110ad71490fe" />
+    <UnitTestResult executionId="3717dcb6-73a1-46c4-8ef5-5e3165927bd7" testId="ca970c93-e14a-dce3-bd24-be9acb047d6e" testName="IntegrationService.Tests.Services.PaymentServiceTests.PaymentService_ProductionConfiguration_SetsIsSandboxFalse" computerName="kali" duration="00:00:00.0002653" startTime="2026-03-12T15:50:45.9782971+02:00" endTime="2026-03-12T15:50:45.9782973+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3717dcb6-73a1-46c4-8ef5-5e3165927bd7" />
+    <UnitTestResult executionId="5422a90a-b826-46b6-8fcc-67ea2d15ac45" testId="cd01f063-03ed-9368-1d53-9e2551402bb5" testName="IntegrationService.Tests.Services.OrderServiceTests.PlaceOrderAsync_TaxCalculation_RoundsCorrectly" computerName="kali" duration="00:00:00.0239714" startTime="2026-03-12T15:49:58.0487966+02:00" endTime="2026-03-12T15:49:58.0487966+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5422a90a-b826-46b6-8fcc-67ea2d15ac45" />
+    <UnitTestResult executionId="6e909b48-069d-40da-bb9c-907c58df2aae" testId="b955450c-75f3-9bb2-cd2e-dcb88fd8bbd9" testName="IntegrationService.Tests.UnitTest1.Test1" computerName="kali" duration="00:00:00.0026369" startTime="2026-03-12T15:49:57.9106043+02:00" endTime="2026-03-12T15:49:57.9106044+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6e909b48-069d-40da-bb9c-907c58df2aae" />
+    <UnitTestResult executionId="ec74d309-0581-4fc2-85d2-1bd602ddffc4" testId="be725755-47a7-14d3-50d7-a99f6531b888" testName="IntegrationService.Tests.Services.OrderProcessingServiceTests.OrderWithoutCustomerId_SkipsPointsRecording" computerName="kali" duration="00:00:00.0028920" startTime="2026-03-12T15:49:58.0683632+02:00" endTime="2026-03-12T15:49:58.0683633+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ec74d309-0581-4fc2-85d2-1bd602ddffc4" />
+    <UnitTestResult executionId="9973ae3e-e299-469f-a3bb-772f9f51ba58" testId="b13b0228-430c-7c44-4609-ad5fe260edca" testName="IntegrationService.Tests.Services.OrderProcessingServiceTests.OrderWithCustomerId_RecordsPointsEarned" computerName="kali" duration="00:00:00.0049456" startTime="2026-03-12T15:49:58.0609791+02:00" endTime="2026-03-12T15:49:58.0609792+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9973ae3e-e299-469f-a3bb-772f9f51ba58" />
+    <UnitTestResult executionId="45c548d3-289a-4d27-a002-a780f26d661c" testId="300fa427-0a1d-d011-16a5-225c4f02154f" testName="IntegrationService.Tests.Integration.DatabaseConnectivityTests.CanQuery_tblSize_WithCorrectAliases" computerName="kali" duration="00:00:00.0035478" startTime="2026-03-12T15:49:58.1704715+02:00" endTime="2026-03-12T15:49:58.1704716+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="45c548d3-289a-4d27-a002-a780f26d661c" />
+    <UnitTestResult executionId="12f54c78-bb91-4b29-9130-29dca43ab15d" testId="012d148a-d1f3-c6ef-0285-63decf99c7e9" testName="IntegrationService.Tests.Services.PaymentServiceTests.RefundTransactionAsync_LogsCriticalOnFinalFailure" computerName="kali" duration="00:00:15.1054765" startTime="2026-03-12T15:50:15.0901327+02:00" endTime="2026-03-12T15:50:15.0901328+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="12f54c78-bb91-4b29-9130-29dca43ab15d" />
+    <UnitTestResult executionId="53354055-3a09-4075-8645-7b6a0901a9b8" testId="5cb7e430-527e-d749-50a4-ebc36f85e944" testName="IntegrationService.Tests.Integration.CustomerLookupTests.GetLoyaltyHistory_InvalidCustomerId_ReturnsBadRequest" computerName="kali" duration="00:00:00.0024666" startTime="2026-03-12T15:49:58.0172798+02:00" endTime="2026-03-12T15:49:58.0172799+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="53354055-3a09-4075-8645-7b6a0901a9b8" />
+    <UnitTestResult executionId="e8b3d96a-5fb6-4429-b314-7f518732f899" testId="e11e181b-99ff-8702-1e24-561b9075f51e" testName="IntegrationService.Tests.Services.OrderProcessingServiceTests.ProcessPaymentAndCompleteOrderAsync_SuccessfulPayment_CompletesOrder" computerName="kali" duration="00:00:00.0123103" startTime="2026-03-12T15:49:58.0952100+02:00" endTime="2026-03-12T15:49:58.0952102+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e8b3d96a-5fb6-4429-b314-7f518732f899" />
+    <UnitTestResult executionId="95782049-0727-4fbf-a540-6b0bfe3a51e5" testId="23ed9caa-0ee7-9c3e-67dd-e74adf4d63a4" testName="IntegrationService.Tests.Integration.CustomerLookupTests.LookupByPhone_ExistingCustomer_ReturnsProfile" computerName="kali" duration="00:00:00.0016106" startTime="2026-03-12T15:49:58.0373505+02:00" endTime="2026-03-12T15:49:58.0373506+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="95782049-0727-4fbf-a540-6b0bfe3a51e5" />
+    <UnitTestResult executionId="c72f1cd8-af4c-48c7-aafd-675bdc7e07f4" testId="486998f7-19dc-b4dd-522b-5f0c712bfd8f" testName="IntegrationService.Tests.Integration.DatabaseConnectivityTests.CanQuery_tblItem_WithCorrectAliases" computerName="kali" duration="00:00:00.0138235" startTime="2026-03-12T15:49:58.1667309+02:00" endTime="2026-03-12T15:49:58.1667310+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c72f1cd8-af4c-48c7-aafd-675bdc7e07f4" />
+    <UnitTestResult executionId="5e5a154c-b898-4677-92d2-f2924ce5977e" testId="7db17bcc-ff8c-342d-fb21-c1eeacd1c7d1" testName="IntegrationService.Tests.Integration.CustomerLookupTests.LookupNotFound_AutoCreatesProfile" computerName="kali" duration="00:00:00.0036810" startTime="2026-03-12T15:49:58.0520040+02:00" endTime="2026-03-12T15:49:58.0520040+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5e5a154c-b898-4677-92d2-f2924ce5977e" />
+    <UnitTestResult executionId="4474401d-9b05-47d0-9739-3f96086e01bb" testId="88287a25-28c9-8197-8d2d-b71a29e7a86c" testName="IntegrationService.Tests.Services.OrderStatusPollingServiceTests.CleanupDeletesStaleTokens" computerName="kali" duration="00:00:00.0010000" startTime="2026-03-12T15:49:58.0484578+02:00" endTime="2026-03-12T15:49:58.0484579+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4474401d-9b05-47d0-9739-3f96086e01bb">
+      <Output>
+        <ErrorInfo>
+          <Message>System.NotSupportedException : Unsupported expression: x =&gt; x.CreateScope()&#xD;
+Extension methods (here: ServiceProviderServiceExtensions.CreateScope) may not be used in setup / verification expressions.</Message>
+          <StackTrace>   at Moq.Guard.IsOverridable(MethodInfo method, Expression expression) in /_/src/Moq/Guard.cs:line 87
+   at Moq.MethodExpectation..ctor(LambdaExpression expression, MethodInfo method, IReadOnlyList`1 arguments, Boolean exactGenericTypeArguments, Boolean skipMatcherInitialization, Boolean allowNonOverridable) in /_/src/Moq/MethodExpectation.cs:line 236
+   at Moq.ExpressionExtensions.&lt;Split&gt;g__Split|5_0(Expression e, Expression&amp; r, MethodExpectation&amp; p, Boolean assignment, Boolean allowNonOverridableLastProperty) in /_/src/Moq/ExpressionExtensions.cs:line 256
+   at Moq.ExpressionExtensions.Split(LambdaExpression expression, Boolean allowNonOverridableLastProperty) in /_/src/Moq/ExpressionExtensions.cs:line 170
+   at Moq.Mock.SetupRecursive[TSetup](Mock mock, LambdaExpression expression, Func`4 setupLast, Boolean allowNonOverridableLastProperty) in /_/src/Moq/Mock.cs:line 728
+   at Moq.Mock.Setup(Mock mock, LambdaExpression expression, Condition condition) in /_/src/Moq/Mock.cs:line 562
+   at Moq.Mock`1.Setup[TResult](Expression`1 expression) in /_/src/Moq/Mock`1.cs:line 645
+   at IntegrationService.Tests.Services.OrderStatusPollingServiceTests..ctor() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Services/OrderStatusPollingServiceTests.cs:line 69
+   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="f9b1d335-c493-4a2c-8858-54c4f2c2496a" testId="e3550d28-3319-e24e-0cf2-532cd12b1240" testName="IntegrationService.Tests.Integration.CustomerLookupTests.LookupCustomer_BothParametersMissing_ReturnsBadRequest" computerName="kali" duration="00:00:00.0011538" startTime="2026-03-12T15:49:58.0543495+02:00" endTime="2026-03-12T15:49:58.0543495+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f9b1d335-c493-4a2c-8858-54c4f2c2496a" />
+    <UnitTestResult executionId="1aea2ff1-32ae-46d6-8189-69505c581837" testId="e7332c34-c94c-e965-ab7d-9a9c5677c30a" testName="IntegrationService.Tests.Controllers.NotificationsControllerTests.RegisterToken_EmptyToken_ReturnsBadRequest" computerName="kali" duration="00:00:00.1145757" startTime="2026-03-12T15:49:58.0030498+02:00" endTime="2026-03-12T15:49:58.0030499+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1aea2ff1-32ae-46d6-8189-69505c581837" />
+    <UnitTestResult executionId="a5789260-a0da-4450-a967-2d86abee7b6a" testId="05387d88-5de9-6236-d1c1-b9b97f692dd2" testName="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_SequentialOrders_IncrementsCorrectly" computerName="kali" duration="00:00:00.0023983" startTime="2026-03-12T15:49:58.2352629+02:00" endTime="2026-03-12T15:49:58.2352629+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a5789260-a0da-4450-a967-2d86abee7b6a">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : Invalid column name 'OrderDate'.</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+   at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.CleanupTestDataAsync() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs:line 178
+   at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_SequentialOrders_IncrementsCorrectly() in /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs:line 91
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="d4ad44a0-a05d-4f99-a108-5a2ad67d9081" testId="798aa528-a78b-f843-674c-b6f8e84948f8" testName="IntegrationService.Tests.Services.PaymentServiceTests.RefundTransactionAsync_WithInvalidTransactionId_ThrowsAfterRetries" computerName="kali" duration="00:00:15.2224607" startTime="2026-03-12T15:50:30.3126405+02:00" endTime="2026-03-12T15:50:30.3126407+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d4ad44a0-a05d-4f99-a108-5a2ad67d9081" />
+    <UnitTestResult executionId="a34b09a9-dfa3-44d0-afee-18a8aff3523b" testId="3703d074-be75-19a9-0831-4848e8228f0a" testName="IntegrationService.Tests.Controllers.NotificationsControllerTests.RegisterToken_InvalidPlatform_ReturnsBadRequest" computerName="kali" duration="00:00:00.0005946" startTime="2026-03-12T15:49:58.0171333+02:00" endTime="2026-03-12T15:49:58.0171334+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a34b09a9-dfa3-44d0-afee-18a8aff3523b" />
+    <UnitTestResult executionId="abc87abf-5029-4386-9398-8e067383c25c" testId="c1b8a229-1135-95af-cb9c-c5c23e5815af" testName="IntegrationService.Tests.Integration.DatabaseConnectivityTests.CanQuery_tblMisc_TaxRates" computerName="kali" duration="00:00:00.0018868" startTime="2026-03-12T15:49:58.1725627+02:00" endTime="2026-03-12T15:49:58.1725634+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="abc87abf-5029-4386-9398-8e067383c25c" />
+    <UnitTestResult executionId="9399666c-9644-4e67-b20f-85f94248c595" testId="ee357423-c0c1-3fd4-e754-7be8be3b6bd5" testName="IntegrationService.Tests.Services.OrderServiceTests.PlaceOrderAsync_ValidRequest_CreatesOpenOrder" computerName="kali" duration="00:00:00.0132216" startTime="2026-03-12T15:49:58.0566314+02:00" endTime="2026-03-12T15:49:58.0566315+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9399666c-9644-4e67-b20f-85f94248c595" />
+    <UnitTestResult executionId="b4a6f1b2-0548-4391-8ca1-ffaa225bc4c5" testId="739c4f74-6646-3884-5a72-afb4ad624121" testName="IntegrationService.Tests.Services.PaymentServiceTests.ChargeCardAsync_WithInvalidToken_ReturnsFailure" computerName="kali" duration="00:00:00.2719787" startTime="2026-03-12T15:50:30.5848126+02:00" endTime="2026-03-12T15:50:30.5848128+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b4a6f1b2-0548-4391-8ca1-ffaa225bc4c5" />
+    <UnitTestResult executionId="5b2c801e-b8a3-4864-b1da-117441f8373c" testId="147433ef-0737-06fe-2462-73c66fc79937" testName="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_VoidFailsRefundSucceeds_ReturnsOkWithRefundedTrue" computerName="kali" duration="00:00:00.0012583" startTime="2026-03-12T15:49:58.0588541+02:00" endTime="2026-03-12T15:49:58.0588542+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5b2c801e-b8a3-4864-b1da-117441f8373c" />
+    <UnitTestResult executionId="0f14e7df-9bff-41fd-b89e-31d135e4c756" testId="6b1fb4f3-0358-5c33-dd1b-db3f08fdb575" testName="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_WrongCustomer_ReturnsForbid" computerName="kali" duration="00:00:00.0006782" startTime="2026-03-12T15:49:58.0544582+02:00" endTime="2026-03-12T15:49:58.0544583+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0f14e7df-9bff-41fd-b89e-31d135e4c756" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="IntegrationService.Tests.Services.PaymentServiceTests.ChargeCardAsync_WithValidToken_ReturnsSuccess" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="201ac145-d19e-78e7-6bcc-a3beb8a50970">
+      <Execution id="ebb52090-9a13-4b1b-9319-327af17bd706" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.PaymentServiceTests" name="ChargeCardAsync_WithValidToken_ReturnsSuccess" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderProcessingServiceTests.OrderWithCustomerId_RecordsPointsEarned" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="b13b0228-430c-7c44-4609-ad5fe260edca">
+      <Execution id="9973ae3e-e299-469f-a3bb-772f9f51ba58" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderProcessingServiceTests" name="OrderWithCustomerId_RecordsPointsEarned" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.PaymentServiceTests.PaymentService_ProductionConfiguration_SetsIsSandboxFalse" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="ca970c93-e14a-dce3-bd24-be9acb047d6e">
+      <Execution id="3717dcb6-73a1-46c4-8ef5-5e3165927bd7" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.PaymentServiceTests" name="PaymentService_ProductionConfiguration_SetsIsSandboxFalse" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Integration.CustomerLookupTests.GetLoyaltyHistory_InvalidCustomerId_ReturnsBadRequest" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="5cb7e430-527e-d749-50a4-ebc36f85e944">
+      <Execution id="53354055-3a09-4075-8645-7b6a0901a9b8" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Integration.CustomerLookupTests" name="GetLoyaltyHistory_InvalidCustomerId_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.PaymentServiceTests.CreateCustomerProfileAsync_WithInvalidToken_ReturnsFailure" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="7d88f174-dcd5-1f1f-2884-4f007f7f0990">
+      <Execution id="b7925959-bfa9-4e52-8a76-29566c09ff8c" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.PaymentServiceTests" name="CreateCustomerProfileAsync_WithInvalidToken_ReturnsFailure" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.PaymentServiceTests.VoidTransactionAsync_WithSettledTransaction_LogsCritical" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="ea1b1b0a-3745-25b0-8b72-b329eb5b3366">
+      <Execution id="a6347802-1b2a-439e-9f6c-daceef0bd3f5" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.PaymentServiceTests" name="VoidTransactionAsync_WithSettledTransaction_LogsCritical" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderServiceTests.PlaceOrderAsync_ItemNotAvailableOnline_ReturnsError" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="83748e6f-79e9-b6a0-4932-637e01922f8d">
+      <Execution id="4dfce47a-e1c6-4ed3-a9c9-25b8c7e62535" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderServiceTests" name="PlaceOrderAsync_ItemNotAvailableOnline_ReturnsError" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderServiceTests.PlaceOrderAsync_ValidRequest_CreatesOpenOrder" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="ee357423-c0c1-3fd4-e754-7be8be3b6bd5">
+      <Execution id="9399666c-9644-4e67-b20f-85f94248c595" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderServiceTests" name="PlaceOrderAsync_ValidRequest_CreatesOpenOrder" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.PaymentServiceTests.RefundTransactionAsync_LogsCriticalOnFinalFailure" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="012d148a-d1f3-c6ef-0285-63decf99c7e9">
+      <Execution id="12f54c78-bb91-4b29-9130-29dca43ab15d" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.PaymentServiceTests" name="RefundTransactionAsync_LogsCriticalOnFinalFailure" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.PaymentServiceTests.RefundTransactionAsync_WithInvalidTransactionId_ThrowsAfterRetries" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="798aa528-a78b-f843-674c-b6f8e84948f8">
+      <Execution id="d4ad44a0-a05d-4f99-a108-5a2ad67d9081" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.PaymentServiceTests" name="RefundTransactionAsync_WithInvalidTransactionId_ThrowsAfterRetries" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderProcessingServiceTests.ProcessPaymentAndCompleteOrderAsync_CompleteOrderFailsConcurrency_RollsBack" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="96357d8a-1768-2e58-9fa4-f02d579d4c7d">
+      <Execution id="cb4904db-c603-447a-9cf4-02c0520e8e45" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderProcessingServiceTests" name="ProcessPaymentAndCompleteOrderAsync_CompleteOrderFailsConcurrency_RollsBack" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderProcessingServiceTests.PointsRecordingFails_OrderStillCompletes" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="fdfdb822-9a50-80be-b534-331f3f99d8bb">
+      <Execution id="bb9682b9-c79e-4b22-8620-bc347ef878b6" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderProcessingServiceTests" name="PointsRecordingFails_OrderStillCompletes" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Integration.DatabaseConnectivityTests.CanQuery_tblAvailableSize_PricingData" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="81867bb2-5309-fad5-ed68-72c757ec392c">
+      <Execution id="3dad07ae-46d3-4736-96ee-cb19421f86e5" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Integration.DatabaseConnectivityTests" name="CanQuery_tblAvailableSize_PricingData" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderStatusPollingServiceTests.GetCompletedOnlineOrdersAsync_FiltersCorrectly" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="02173cfb-2249-3243-39b2-dea620848879">
+      <Execution id="57dc182b-7c96-4b5a-8c92-3e6503a5493c" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderStatusPollingServiceTests" name="GetCompletedOnlineOrdersAsync_FiltersCorrectly" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_FirstOrderOfDay_ReturnsOne" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="560a5680-e528-77d3-3a28-22a96c930e1e">
+      <Execution id="1f695359-927e-4401-bbba-ea5b6f49c508" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests" name="GetNextDailyOrderNumberAsync_FirstOrderOfDay_ReturnsOne" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.UnitTest1.Test1" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="b955450c-75f3-9bb2-cd2e-dcb88fd8bbd9">
+      <Execution id="6e909b48-069d-40da-bb9c-907c58df2aae" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.UnitTest1" name="Test1" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_NoPaymentInfo_ReturnsOkWithRefundedFalse" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="dd03fb41-0ae6-f1f2-8a2e-e99f31cc8c51">
+      <Execution id="6581c31b-149f-4b19-b3ef-59ec3b20fd21" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests" name="Cancel_NoPaymentInfo_ReturnsOkWithRefundedFalse" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Integration.CustomerLookupTests.LookupByPhone_ExistingCustomer_ReturnsProfile" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="23ed9caa-0ee7-9c3e-67dd-e74adf4d63a4">
+      <Execution id="95782049-0727-4fbf-a540-6b0bfe3a51e5" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Integration.CustomerLookupTests" name="LookupByPhone_ExistingCustomer_ReturnsProfile" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Integration.DatabaseConnectivityTests.CanQuery_tblItem_WithCorrectAliases" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="486998f7-19dc-b4dd-522b-5f0c712bfd8f">
+      <Execution id="c72f1cd8-af4c-48c7-aafd-675bdc7e07f4" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Integration.DatabaseConnectivityTests" name="CanQuery_tblItem_WithCorrectAliases" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_OrderNotFound_ReturnsNotFound" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="b52489ba-5657-0606-02ef-dd4fd4c43206">
+      <Execution id="f92bf2cb-3da1-4835-bde7-05376e379ff3" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests" name="Cancel_OrderNotFound_ReturnsNotFound" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_BothVoidAndRefundFail_ReturnsOkWithRefundedFalseAndOrderStillCancelled" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="226f3726-c59f-c650-aaf7-52fa4173a00c">
+      <Execution id="0be14702-be2e-4b96-8bb8-d1227ac68f10" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests" name="Cancel_BothVoidAndRefundFail_ReturnsOkWithRefundedFalseAndOrderStillCancelled" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderStatusPollingServiceTests.CleanupDeletesOldLogs" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="3603ef83-18a0-a455-045c-a99c06477bbd">
+      <Execution id="030caa98-7cf2-4525-9427-d7c20b7dc0f5" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderStatusPollingServiceTests" name="CleanupDeletesOldLogs" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests.InvokeAsync_GetRequest_PassesThrough" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="ebf82f0f-e4a3-e77e-750d-cce673c477d6">
+      <Execution id="03e6cc49-ff89-4c33-980f-36b7fe1ed29d" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests" name="InvokeAsync_GetRequest_PassesThrough" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests.InvokeAsync_NewKey_StoresResponse" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="28b01d73-c30b-859f-e4e2-3d7b5b20c27d">
+      <Execution id="df4672c9-26d4-4420-b41b-2fa62e9040a1" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests" name="InvokeAsync_NewKey_StoresResponse" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderServiceTests.PlaceOrderAsync_TaxCalculation_RoundsCorrectly" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="cd01f063-03ed-9368-1d53-9e2551402bb5">
+      <Execution id="5422a90a-b826-46b6-8fcc-67ea2d15ac45" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderServiceTests" name="PlaceOrderAsync_TaxCalculation_RoundsCorrectly" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_WithinTwoHoursOfPickup_ReturnsBadRequest" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="62aeb1bb-c5d7-33a3-7d95-4afc35d2147c">
+      <Execution id="fac1e9cb-a9bd-4215-a78b-a0c10f7d813a" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests" name="Cancel_WithinTwoHoursOfPickup_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_VoidSucceeds_ReturnsOkWithRefundedTrue" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="40f5c472-4d93-4c6f-8b1e-c3abca384446">
+      <Execution id="e8734bae-977f-4159-bbd5-53b4d0eeabf2" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests" name="Cancel_VoidSucceeds_ReturnsOkWithRefundedTrue" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Controllers.NotificationsControllerTests.RegisterToken_InvalidPlatform_ReturnsBadRequest" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="3703d074-be75-19a9-0831-4848e8228f0a">
+      <Execution id="a34b09a9-dfa3-44d0-afee-18a8aff3523b" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Controllers.NotificationsControllerTests" name="RegisterToken_InvalidPlatform_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderStatusPollingServiceTests.SendsNotificationForNewCompletedOrder" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="ecac197a-5c11-7075-6cdc-bbbc37625af4">
+      <Execution id="c436f630-ba16-4a5c-aa12-703373e173a1" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderStatusPollingServiceTests" name="SendsNotificationForNewCompletedOrder" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests.InvokeAsync_PutRequest_PassesThrough" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="27fc8652-4c0b-005d-b066-f8210df0f4d8">
+      <Execution id="602c166c-f726-4db8-9e54-f5de47d78892" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests" name="InvokeAsync_PutRequest_PassesThrough" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests.InvokeAsync_KeyCollision_Returns409Conflict" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="60378532-e889-2292-7e25-71ae39f3581f">
+      <Execution id="5ae5fbf8-750b-4ded-b5a3-eb30e0ccbf02" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests" name="InvokeAsync_KeyCollision_Returns409Conflict" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderProcessingServiceTests.ProcessPaymentAndCompleteOrderAsync_PaymentSuccessDbFailure_VoidsCharge" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="4dd4a27a-7497-fd95-fd4f-ceacc43b6ef0">
+      <Execution id="0878f850-2b2a-4ddf-801d-a7b04943a6fe" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderProcessingServiceTests" name="ProcessPaymentAndCompleteOrderAsync_PaymentSuccessDbFailure_VoidsCharge" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.LoyaltyServiceTests.UpdatePointsAfterSale_ShouldAddPointsCorrectly" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="a701b6e7-1afe-f635-f86c-4c2feb79423a">
+      <Execution id="f459d66e-a5dd-4915-84a3-60d70526a535" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.LoyaltyServiceTests" name="UpdatePointsAfterSale_ShouldAddPointsCorrectly" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderProcessingServiceTests.OrderWithPointsRedemption_AppliesDiscount" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="367f07ae-4014-0e19-9c65-3a91f2fb241f">
+      <Execution id="0d8b6216-e128-4e9e-b04d-6e8fef4fa2d9" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderProcessingServiceTests" name="OrderWithPointsRedemption_AppliesDiscount" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Integration.CustomerLookupTests.GetLoyaltyHistory_CustomerNotFound_Returns404" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="5dd9e7c9-aefe-a3d7-6411-eb6efd0daec8">
+      <Execution id="d4ea0cce-50cf-44c6-9998-4b2ae9561032" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Integration.CustomerLookupTests" name="GetLoyaltyHistory_CustomerNotFound_Returns404" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Integration.CustomerLookupTests.GetLoyaltyHistory_ReturnsTransactionList" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="94c7d230-6b13-3c7b-5c14-e776c69b2163">
+      <Execution id="2a1d1b1c-e7e5-464e-8b51-bb528fa13454" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Integration.CustomerLookupTests" name="GetLoyaltyHistory_ReturnsTransactionList" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Controllers.NotificationsControllerTests.RegisterToken_InactiveToken_ReactivatesToken" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="8fc5f792-2390-b9b0-3a5d-88bf997275b8">
+      <Execution id="465a0022-cf87-4b4b-b6a7-ec3d266dbc86" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Controllers.NotificationsControllerTests" name="RegisterToken_InactiveToken_ReactivatesToken" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Integration.CustomerLookupTests.LookupCustomer_BothParametersMissing_ReturnsBadRequest" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="e3550d28-3319-e24e-0cf2-532cd12b1240">
+      <Execution id="f9b1d335-c493-4a2c-8858-54c4f2c2496a" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Integration.CustomerLookupTests" name="LookupCustomer_BothParametersMissing_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Integration.CustomerLookupTests.LookupByPhone_FormattedPhone_StripsNonDigits" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="0405d2cf-f926-d228-0204-1cac193100c4">
+      <Execution id="5ac959db-ca3d-498f-a66d-c5d24f35241c" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Integration.CustomerLookupTests" name="LookupByPhone_FormattedPhone_StripsNonDigits" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Controllers.NotificationsControllerTests.RegisterToken_DuplicateActiveToken_UpdatesLastActive" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="cdbbfb56-d8de-46f2-a2d7-b88aab05b762">
+      <Execution id="41cd00ec-29c1-407d-bcc4-f1341f312d0d" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Controllers.NotificationsControllerTests" name="RegisterToken_DuplicateActiveToken_UpdatesLastActive" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderServiceTests.PlaceOrderAsync_OutOfStockSize_ReturnsError" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="adbbe612-5d2a-f5b2-c6ed-11b908ce44fb">
+      <Execution id="0038f717-0111-45b0-b555-110ad71490fe" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderServiceTests" name="PlaceOrderAsync_OutOfStockSize_ReturnsError" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.PaymentServiceTests.RefundTransactionAsync_WithValidSettledTransaction_ReturnsTrue" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="6109cd45-1be9-6c9d-4a16-94609879cbc4">
+      <Execution id="0e5907bf-2eba-4c5e-9e81-fc68faca8b63" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.PaymentServiceTests" name="RefundTransactionAsync_WithValidSettledTransaction_ReturnsTrue" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderProcessingServiceTests.OrderWithoutCustomerId_SkipsPointsRecording" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="be725755-47a7-14d3-50d7-a99f6531b888">
+      <Execution id="ec74d309-0581-4fc2-85d2-1bd602ddffc4" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderProcessingServiceTests" name="OrderWithoutCustomerId_SkipsPointsRecording" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests.InvokeAsync_DuplicateKey_ReturnsCachedResponse" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="a554954f-7b55-5a8c-7719-2e199a620ae4">
+      <Execution id="ec9f6ba1-03fa-4ec6-bc61-05ec63018ab1" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests" name="InvokeAsync_DuplicateKey_ReturnsCachedResponse" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderProcessingServiceTests.ProcessPaymentAndCompleteOrderAsync_VoidFails_LogsCritical" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="a0e859a4-3c09-d7e8-77fa-961d288bb372">
+      <Execution id="55fadffa-d01c-4153-bb75-777754162798" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderProcessingServiceTests" name="ProcessPaymentAndCompleteOrderAsync_VoidFails_LogsCritical" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Integration.CustomerLookupTests.LookupNotFound_AutoCreatesProfile" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="7db17bcc-ff8c-342d-fb21-c1eeacd1c7d1">
+      <Execution id="5e5a154c-b898-4677-92d2-f2924ce5977e" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Integration.CustomerLookupTests" name="LookupNotFound_AutoCreatesProfile" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Integration.CustomerLookupTests.LookupByEmail_NoPhone_UsesEmailFallback" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="d4d57e15-d440-45f6-8ed4-509c04e3fb97">
+      <Execution id="d01bc6a7-8f9f-4730-af0e-ac3c96726284" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Integration.CustomerLookupTests" name="LookupByEmail_NoPhone_UsesEmailFallback" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_StatusNotPending_ReturnsBadRequest" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="2ccfda7b-0fd8-9bf8-9f7e-2e8433d095c1">
+      <Execution id="2063e769-d323-4be3-95ea-6375e8d7155d" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests" name="Cancel_StatusNotPending_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Controllers.NotificationsControllerTests.RegisterToken_InvalidCustomerId_ReturnsBadRequest" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="2565162e-1332-b3bd-22af-9a6148543f3d">
+      <Execution id="0d674ff8-6497-4b6a-9ebd-10974b1c2298" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Controllers.NotificationsControllerTests" name="RegisterToken_InvalidCustomerId_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_NewDay_ResetsToOne" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="88d673eb-0fff-9e08-10a9-f94886cb6c8b">
+      <Execution id="7759bbd0-6f07-44f2-9a43-6f774f61f666" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests" name="GetNextDailyOrderNumberAsync_NewDay_ResetsToOne" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.PaymentServiceTests.ChargeCardAsync_LogsTransactionAttempt" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="e3ad94d3-1687-f7dc-c3f4-81f9c98f714b">
+      <Execution id="5d6c6625-c258-4954-95c7-bec9266bc941" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.PaymentServiceTests" name="ChargeCardAsync_LogsTransactionAttempt" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.PaymentServiceTests.ChargeCardAsync_WithInvalidToken_ReturnsFailure" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="739c4f74-6646-3884-5a72-afb4ad624121">
+      <Execution id="b4a6f1b2-0548-4391-8ca1-ffaa225bc4c5" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.PaymentServiceTests" name="ChargeCardAsync_WithInvalidToken_ReturnsFailure" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Integration.DatabaseConnectivityTests.CanQuery_tblCategory_WithCorrectAliases" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="f9e5fc8b-39a3-db31-80b1-37192af8be33">
+      <Execution id="d69cb20e-2ec8-4cd6-903a-b0cabd82bd00" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Integration.DatabaseConnectivityTests" name="CanQuery_tblCategory_WithCorrectAliases" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Integration.DatabaseConnectivityTests.CanConnect_ToDatabase" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="fedf58e9-34da-1117-9cb8-4eef69e1564f">
+      <Execution id="df033419-2f7d-4805-8f3c-baaa44c0ee53" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Integration.DatabaseConnectivityTests" name="CanConnect_ToDatabase" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderProcessingServiceTests.ProcessPaymentAndCompleteOrderAsync_SuccessfulPayment_CompletesOrder" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="e11e181b-99ff-8702-1e24-561b9075f51e">
+      <Execution id="e8b3d96a-5fb6-4429-b314-7f518732f899" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderProcessingServiceTests" name="ProcessPaymentAndCompleteOrderAsync_SuccessfulPayment_CompletesOrder" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_VoidFailsRefundSucceeds_ReturnsOkWithRefundedTrue" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="147433ef-0737-06fe-2462-73c66fc79937">
+      <Execution id="5b2c801e-b8a3-4864-b1da-117441f8373c" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests" name="Cancel_VoidFailsRefundSucceeds_ReturnsOkWithRefundedTrue" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderStatusPollingServiceTests.SkipsAlreadyNotifiedOrders" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="79e15c4f-5a89-58cf-155e-42b6aca02cd6">
+      <Execution id="60a14c85-6f28-4d2a-a19b-22529682ce58" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderStatusPollingServiceTests" name="SkipsAlreadyNotifiedOrders" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.PaymentServiceTests.VoidTransactionAsync_WithInvalidTransactionId_ThrowsAfterRetries" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="f3ed5559-87f8-a8b1-475e-eb37f3c1729f">
+      <Execution id="faa3b57a-4854-4f7d-8040-2d2229d0090e" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.PaymentServiceTests" name="VoidTransactionAsync_WithInvalidTransactionId_ThrowsAfterRetries" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests.InvokeAsync_MissingHeader_Returns400BadRequest" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="7f43b95b-0f69-f843-138a-067ff26f295e">
+      <Execution id="4b4f5732-cb31-482d-90c1-a8fa7c8de485" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Middleware.IdempotencyMiddlewareTests" name="InvokeAsync_MissingHeader_Returns400BadRequest" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderStatusPollingServiceTests.CleanupDeletesStaleTokens" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="88287a25-28c9-8197-8d2d-b71a29e7a86c">
+      <Execution id="4474401d-9b05-47d0-9739-3f96086e01bb" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderStatusPollingServiceTests" name="CleanupDeletesStaleTokens" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderProcessingServiceTests.ProcessPaymentAndCompleteOrderAsync_NotificationFails_OrderStillCompletes" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="f758100c-d573-fd6b-30f8-c53c3c302fd0">
+      <Execution id="044dcafa-8778-4bda-a1dd-4f087d579d78" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderProcessingServiceTests" name="ProcessPaymentAndCompleteOrderAsync_NotificationFails_OrderStillCompletes" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.PaymentServiceTests.PaymentService_SandboxConfiguration_SetsIsSandboxTrue" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="64458122-2dfb-9766-6f9a-e7d498bdcd80">
+      <Execution id="e076b5eb-b2af-405a-b4d6-758819e09002" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.PaymentServiceTests" name="PaymentService_SandboxConfiguration_SetsIsSandboxTrue" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_MultipleCallsSameDay_IncrementsProperly" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="12a3c9ef-d3aa-9909-6a50-accdf3766b36">
+      <Execution id="ac2a98bd-d0b2-41c8-9743-47fec8582acf" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests" name="GetNextDailyOrderNumberAsync_MultipleCallsSameDay_IncrementsProperly" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Integration.DatabaseConnectivityTests.CanQuery_tblMisc_TaxRates" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="c1b8a229-1135-95af-cb9c-c5c23e5815af">
+      <Execution id="abc87abf-5029-4386-9398-8e067383c25c" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Integration.DatabaseConnectivityTests" name="CanQuery_tblMisc_TaxRates" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Integration.DatabaseConnectivityTests.CanQuery_tblSize_WithCorrectAliases" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="300fa427-0a1d-d011-16a5-225c4f02154f">
+      <Execution id="45c548d3-289a-4d27-a002-a780f26d661c" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Integration.DatabaseConnectivityTests" name="CanQuery_tblSize_WithCorrectAliases" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_ConcurrentRequests_NoDuplicates" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="3886a68d-ce3a-5f64-78dd-4f5b281bf9a2">
+      <Execution id="240de20f-dfbc-4731-b0a7-1dfe2fb659ee" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests" name="GetNextDailyOrderNumberAsync_ConcurrentRequests_NoDuplicates" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Controllers.NotificationsControllerTests.RegisterToken_EmptyToken_ReturnsBadRequest" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="e7332c34-c94c-e965-ab7d-9a9c5677c30a">
+      <Execution id="1aea2ff1-32ae-46d6-8189-69505c581837" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Controllers.NotificationsControllerTests" name="RegisterToken_EmptyToken_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_SequentialOrders_IncrementsCorrectly" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="05387d88-5de9-6236-d1c1-b9b97f692dd2">
+      <Execution id="a5789260-a0da-4450-a967-2d86abee7b6a" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests" name="GetNextDailyOrderNumberAsync_SequentialOrders_IncrementsCorrectly" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Services.OrderProcessingServiceTests.ProcessPaymentAndCompleteOrderAsync_PaymentDeclined_ReturnsError" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="0f5822df-4565-81d0-4b4d-9f5e9ad1f8d9">
+      <Execution id="95eb0013-5acb-4d2b-88a9-302ce678d0a1" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Services.OrderProcessingServiceTests" name="ProcessPaymentAndCompleteOrderAsync_PaymentDeclined_ReturnsError" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests.Cancel_WrongCustomer_ReturnsForbid" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="6b1fb4f3-0358-5c33-dd1b-db3f08fdb575">
+      <Execution id="0f14e7df-9bff-41fd-b89e-31d135e4c756" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Controllers.ScheduledOrdersControllerTests" name="Cancel_WrongCustomer_ReturnsForbid" />
+    </UnitTest>
+    <UnitTest name="IntegrationService.Tests.Controllers.NotificationsControllerTests.RegisterToken_NewToken_CreatesDeviceToken" storage="/home/kali/desktop/toast/src/backend/integrationservice.tests/bin/debug/net9.0/integrationservice.tests.dll" id="82a1b57a-a611-5513-5e9e-55795ad120cc">
+      <Execution id="6c5910e4-f1b4-4b5d-b5ba-ee17a1c38d98" />
+      <TestMethod codeBase="/home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/bin/Debug/net9.0/IntegrationService.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="IntegrationService.Tests.Controllers.NotificationsControllerTests" name="RegisterToken_NewToken_CreatesDeviceToken" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="3603ef83-18a0-a455-045c-a99c06477bbd" executionId="030caa98-7cf2-4525-9427-d7c20b7dc0f5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="94c7d230-6b13-3c7b-5c14-e776c69b2163" executionId="2a1d1b1c-e7e5-464e-8b51-bb528fa13454" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f3ed5559-87f8-a8b1-475e-eb37f3c1729f" executionId="faa3b57a-4854-4f7d-8040-2d2229d0090e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ecac197a-5c11-7075-6cdc-bbbc37625af4" executionId="c436f630-ba16-4a5c-aa12-703373e173a1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="81867bb2-5309-fad5-ed68-72c757ec392c" executionId="3dad07ae-46d3-4736-96ee-cb19421f86e5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="82a1b57a-a611-5513-5e9e-55795ad120cc" executionId="6c5910e4-f1b4-4b5d-b5ba-ee17a1c38d98" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b52489ba-5657-0606-02ef-dd4fd4c43206" executionId="f92bf2cb-3da1-4835-bde7-05376e379ff3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a554954f-7b55-5a8c-7719-2e199a620ae4" executionId="ec9f6ba1-03fa-4ec6-bc61-05ec63018ab1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="226f3726-c59f-c650-aaf7-52fa4173a00c" executionId="0be14702-be2e-4b96-8bb8-d1227ac68f10" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="28b01d73-c30b-859f-e4e2-3d7b5b20c27d" executionId="df4672c9-26d4-4420-b41b-2fa62e9040a1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7d88f174-dcd5-1f1f-2884-4f007f7f0990" executionId="b7925959-bfa9-4e52-8a76-29566c09ff8c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ebf82f0f-e4a3-e77e-750d-cce673c477d6" executionId="03e6cc49-ff89-4c33-980f-36b7fe1ed29d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a0e859a4-3c09-d7e8-77fa-961d288bb372" executionId="55fadffa-d01c-4153-bb75-777754162798" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fdfdb822-9a50-80be-b534-331f3f99d8bb" executionId="bb9682b9-c79e-4b22-8620-bc347ef878b6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a701b6e7-1afe-f635-f86c-4c2feb79423a" executionId="f459d66e-a5dd-4915-84a3-60d70526a535" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="201ac145-d19e-78e7-6bcc-a3beb8a50970" executionId="ebb52090-9a13-4b1b-9319-327af17bd706" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8fc5f792-2390-b9b0-3a5d-88bf997275b8" executionId="465a0022-cf87-4b4b-b6a7-ec3d266dbc86" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4dd4a27a-7497-fd95-fd4f-ceacc43b6ef0" executionId="0878f850-2b2a-4ddf-801d-a7b04943a6fe" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d4d57e15-d440-45f6-8ed4-509c04e3fb97" executionId="d01bc6a7-8f9f-4730-af0e-ac3c96726284" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fedf58e9-34da-1117-9cb8-4eef69e1564f" executionId="df033419-2f7d-4805-8f3c-baaa44c0ee53" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="560a5680-e528-77d3-3a28-22a96c930e1e" executionId="1f695359-927e-4401-bbba-ea5b6f49c508" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3886a68d-ce3a-5f64-78dd-4f5b281bf9a2" executionId="240de20f-dfbc-4731-b0a7-1dfe2fb659ee" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2ccfda7b-0fd8-9bf8-9f7e-2e8433d095c1" executionId="2063e769-d323-4be3-95ea-6375e8d7155d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="27fc8652-4c0b-005d-b066-f8210df0f4d8" executionId="602c166c-f726-4db8-9e54-f5de47d78892" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="367f07ae-4014-0e19-9c65-3a91f2fb241f" executionId="0d8b6216-e128-4e9e-b04d-6e8fef4fa2d9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="83748e6f-79e9-b6a0-4932-637e01922f8d" executionId="4dfce47a-e1c6-4ed3-a9c9-25b8c7e62535" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f9e5fc8b-39a3-db31-80b1-37192af8be33" executionId="d69cb20e-2ec8-4cd6-903a-b0cabd82bd00" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6109cd45-1be9-6c9d-4a16-94609879cbc4" executionId="0e5907bf-2eba-4c5e-9e81-fc68faca8b63" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cdbbfb56-d8de-46f2-a2d7-b88aab05b762" executionId="41cd00ec-29c1-407d-bcc4-f1341f312d0d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7f43b95b-0f69-f843-138a-067ff26f295e" executionId="4b4f5732-cb31-482d-90c1-a8fa7c8de485" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0405d2cf-f926-d228-0204-1cac193100c4" executionId="5ac959db-ca3d-498f-a66d-c5d24f35241c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ea1b1b0a-3745-25b0-8b72-b329eb5b3366" executionId="a6347802-1b2a-439e-9f6c-daceef0bd3f5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5dd9e7c9-aefe-a3d7-6411-eb6efd0daec8" executionId="d4ea0cce-50cf-44c6-9998-4b2ae9561032" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="40f5c472-4d93-4c6f-8b1e-c3abca384446" executionId="e8734bae-977f-4159-bbd5-53b4d0eeabf2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f758100c-d573-fd6b-30f8-c53c3c302fd0" executionId="044dcafa-8778-4bda-a1dd-4f087d579d78" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="62aeb1bb-c5d7-33a3-7d95-4afc35d2147c" executionId="fac1e9cb-a9bd-4215-a78b-a0c10f7d813a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e3ad94d3-1687-f7dc-c3f4-81f9c98f714b" executionId="5d6c6625-c258-4954-95c7-bec9266bc941" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="02173cfb-2249-3243-39b2-dea620848879" executionId="57dc182b-7c96-4b5a-8c92-3e6503a5493c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0f5822df-4565-81d0-4b4d-9f5e9ad1f8d9" executionId="95eb0013-5acb-4d2b-88a9-302ce678d0a1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="79e15c4f-5a89-58cf-155e-42b6aca02cd6" executionId="60a14c85-6f28-4d2a-a19b-22529682ce58" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="96357d8a-1768-2e58-9fa4-f02d579d4c7d" executionId="cb4904db-c603-447a-9cf4-02c0520e8e45" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2565162e-1332-b3bd-22af-9a6148543f3d" executionId="0d674ff8-6497-4b6a-9ebd-10974b1c2298" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="64458122-2dfb-9766-6f9a-e7d498bdcd80" executionId="e076b5eb-b2af-405a-b4d6-758819e09002" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="dd03fb41-0ae6-f1f2-8a2e-e99f31cc8c51" executionId="6581c31b-149f-4b19-b3ef-59ec3b20fd21" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="88d673eb-0fff-9e08-10a9-f94886cb6c8b" executionId="7759bbd0-6f07-44f2-9a43-6f774f61f666" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="60378532-e889-2292-7e25-71ae39f3581f" executionId="5ae5fbf8-750b-4ded-b5a3-eb30e0ccbf02" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="12a3c9ef-d3aa-9909-6a50-accdf3766b36" executionId="ac2a98bd-d0b2-41c8-9743-47fec8582acf" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="adbbe612-5d2a-f5b2-c6ed-11b908ce44fb" executionId="0038f717-0111-45b0-b555-110ad71490fe" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ca970c93-e14a-dce3-bd24-be9acb047d6e" executionId="3717dcb6-73a1-46c4-8ef5-5e3165927bd7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cd01f063-03ed-9368-1d53-9e2551402bb5" executionId="5422a90a-b826-46b6-8fcc-67ea2d15ac45" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b955450c-75f3-9bb2-cd2e-dcb88fd8bbd9" executionId="6e909b48-069d-40da-bb9c-907c58df2aae" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="be725755-47a7-14d3-50d7-a99f6531b888" executionId="ec74d309-0581-4fc2-85d2-1bd602ddffc4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b13b0228-430c-7c44-4609-ad5fe260edca" executionId="9973ae3e-e299-469f-a3bb-772f9f51ba58" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="300fa427-0a1d-d011-16a5-225c4f02154f" executionId="45c548d3-289a-4d27-a002-a780f26d661c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="012d148a-d1f3-c6ef-0285-63decf99c7e9" executionId="12f54c78-bb91-4b29-9130-29dca43ab15d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5cb7e430-527e-d749-50a4-ebc36f85e944" executionId="53354055-3a09-4075-8645-7b6a0901a9b8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e11e181b-99ff-8702-1e24-561b9075f51e" executionId="e8b3d96a-5fb6-4429-b314-7f518732f899" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="23ed9caa-0ee7-9c3e-67dd-e74adf4d63a4" executionId="95782049-0727-4fbf-a540-6b0bfe3a51e5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="486998f7-19dc-b4dd-522b-5f0c712bfd8f" executionId="c72f1cd8-af4c-48c7-aafd-675bdc7e07f4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7db17bcc-ff8c-342d-fb21-c1eeacd1c7d1" executionId="5e5a154c-b898-4677-92d2-f2924ce5977e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="88287a25-28c9-8197-8d2d-b71a29e7a86c" executionId="4474401d-9b05-47d0-9739-3f96086e01bb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e3550d28-3319-e24e-0cf2-532cd12b1240" executionId="f9b1d335-c493-4a2c-8858-54c4f2c2496a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e7332c34-c94c-e965-ab7d-9a9c5677c30a" executionId="1aea2ff1-32ae-46d6-8189-69505c581837" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="05387d88-5de9-6236-d1c1-b9b97f692dd2" executionId="a5789260-a0da-4450-a967-2d86abee7b6a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="798aa528-a78b-f843-674c-b6f8e84948f8" executionId="d4ad44a0-a05d-4f99-a108-5a2ad67d9081" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3703d074-be75-19a9-0831-4848e8228f0a" executionId="a34b09a9-dfa3-44d0-afee-18a8aff3523b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c1b8a229-1135-95af-cb9c-c5c23e5815af" executionId="abc87abf-5029-4386-9398-8e067383c25c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ee357423-c0c1-3fd4-e754-7be8be3b6bd5" executionId="9399666c-9644-4e67-b20f-85f94248c595" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="739c4f74-6646-3884-5a72-afb4ad624121" executionId="b4a6f1b2-0548-4391-8ca1-ffaa225bc4c5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="147433ef-0737-06fe-2462-73c66fc79937" executionId="5b2c801e-b8a3-4864-b1da-117441f8373c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6b1fb4f3-0358-5c33-dd1b-db3f08fdb575" executionId="0f14e7df-9bff-41fd-b89e-31d135e4c756" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="71" executed="68" passed="57" failed="11" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 9.0.13)
+[xUnit.net 00:00:00.06]   Discovering: IntegrationService.Tests
+[xUnit.net 00:00:00.09]   Discovered:  IntegrationService.Tests
+[xUnit.net 00:00:00.10]   Starting:    IntegrationService.Tests
+[xUnit.net 00:00:00.16]       Requires valid Authorize.net sandbox credentials and network access
+[xUnit.net 00:00:00.16]       Requires valid Authorize.net sandbox credentials and settled transaction
+[xUnit.net 00:00:00.16]       Requires valid settled transaction ID and manual verification
+Test 'IntegrationService.Tests.Services.PaymentServiceTests.ChargeCardAsync_WithValidToken_ReturnsSuccess' was skipped in the test run.
+Test 'IntegrationService.Tests.Services.PaymentServiceTests.RefundTransactionAsync_WithValidSettledTransaction_ReturnsTrue' was skipped in the test run.
+Test 'IntegrationService.Tests.Services.PaymentServiceTests.VoidTransactionAsync_WithSettledTransaction_LogsCritical' was skipped in the test run.
+[xUnit.net 00:00:00.30]       System.NotSupportedException : Unsupported expression: x =&gt; x.CreateScope()&#xD;
+[xUnit.net 00:00:00.30]       Extension methods (here: ServiceProviderServiceExtensions.CreateScope) may not be used in setup / verification expressions.
+[xUnit.net 00:00:00.30]       Stack Trace:
+[xUnit.net 00:00:00.30]         /_/src/Moq/Guard.cs(87,0): at Moq.Guard.IsOverridable(MethodInfo method, Expression expression)
+[xUnit.net 00:00:00.30]         /_/src/Moq/MethodExpectation.cs(236,0): at Moq.MethodExpectation..ctor(LambdaExpression expression, MethodInfo method, IReadOnlyList`1 arguments, Boolean exactGenericTypeArguments, Boolean skipMatcherInitialization, Boolean allowNonOverridable)
+[xUnit.net 00:00:00.30]         /_/src/Moq/ExpressionExtensions.cs(256,0): at Moq.ExpressionExtensions.&lt;Split&gt;g__Split|5_0(Expression e, Expression&amp; r, MethodExpectation&amp; p, Boolean assignment, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/ExpressionExtensions.cs(170,0): at Moq.ExpressionExtensions.Split(LambdaExpression expression, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock.cs(728,0): at Moq.Mock.SetupRecursive[TSetup](Mock mock, LambdaExpression expression, Func`4 setupLast, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock.cs(562,0): at Moq.Mock.Setup(Mock mock, LambdaExpression expression, Condition condition)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock`1.cs(645,0): at Moq.Mock`1.Setup[TResult](Expression`1 expression)
+[xUnit.net 00:00:00.30]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Services/OrderStatusPollingServiceTests.cs(69,0): at IntegrationService.Tests.Services.OrderStatusPollingServiceTests..ctor()
+[xUnit.net 00:00:00.30]            at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)
+[xUnit.net 00:00:00.30]       System.NotSupportedException : Unsupported expression: x =&gt; x.CreateScope()&#xD;
+[xUnit.net 00:00:00.30]       Extension methods (here: ServiceProviderServiceExtensions.CreateScope) may not be used in setup / verification expressions.
+[xUnit.net 00:00:00.30]       Stack Trace:
+[xUnit.net 00:00:00.30]         /_/src/Moq/Guard.cs(87,0): at Moq.Guard.IsOverridable(MethodInfo method, Expression expression)
+[xUnit.net 00:00:00.30]         /_/src/Moq/MethodExpectation.cs(236,0): at Moq.MethodExpectation..ctor(LambdaExpression expression, MethodInfo method, IReadOnlyList`1 arguments, Boolean exactGenericTypeArguments, Boolean skipMatcherInitialization, Boolean allowNonOverridable)
+[xUnit.net 00:00:00.30]         /_/src/Moq/ExpressionExtensions.cs(256,0): at Moq.ExpressionExtensions.&lt;Split&gt;g__Split|5_0(Expression e, Expression&amp; r, MethodExpectation&amp; p, Boolean assignment, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/ExpressionExtensions.cs(170,0): at Moq.ExpressionExtensions.Split(LambdaExpression expression, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock.cs(728,0): at Moq.Mock.SetupRecursive[TSetup](Mock mock, LambdaExpression expression, Func`4 setupLast, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock.cs(562,0): at Moq.Mock.Setup(Mock mock, LambdaExpression expression, Condition condition)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock`1.cs(645,0): at Moq.Mock`1.Setup[TResult](Expression`1 expression)
+[xUnit.net 00:00:00.30]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Services/OrderStatusPollingServiceTests.cs(69,0): at IntegrationService.Tests.Services.OrderStatusPollingServiceTests..ctor()
+[xUnit.net 00:00:00.30]            at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)
+[xUnit.net 00:00:00.30]       System.NotSupportedException : Unsupported expression: x =&gt; x.CreateScope()&#xD;
+[xUnit.net 00:00:00.30]       Extension methods (here: ServiceProviderServiceExtensions.CreateScope) may not be used in setup / verification expressions.
+[xUnit.net 00:00:00.30]       Stack Trace:
+[xUnit.net 00:00:00.30]         /_/src/Moq/Guard.cs(87,0): at Moq.Guard.IsOverridable(MethodInfo method, Expression expression)
+[xUnit.net 00:00:00.30]         /_/src/Moq/MethodExpectation.cs(236,0): at Moq.MethodExpectation..ctor(LambdaExpression expression, MethodInfo method, IReadOnlyList`1 arguments, Boolean exactGenericTypeArguments, Boolean skipMatcherInitialization, Boolean allowNonOverridable)
+[xUnit.net 00:00:00.30]         /_/src/Moq/ExpressionExtensions.cs(256,0): at Moq.ExpressionExtensions.&lt;Split&gt;g__Split|5_0(Expression e, Expression&amp; r, MethodExpectation&amp; p, Boolean assignment, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/ExpressionExtensions.cs(170,0): at Moq.ExpressionExtensions.Split(LambdaExpression expression, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock.cs(728,0): at Moq.Mock.SetupRecursive[TSetup](Mock mock, LambdaExpression expression, Func`4 setupLast, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock.cs(562,0): at Moq.Mock.Setup(Mock mock, LambdaExpression expression, Condition condition)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock`1.cs(645,0): at Moq.Mock`1.Setup[TResult](Expression`1 expression)
+[xUnit.net 00:00:00.30]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Services/OrderStatusPollingServiceTests.cs(69,0): at IntegrationService.Tests.Services.OrderStatusPollingServiceTests..ctor()
+[xUnit.net 00:00:00.30]            at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)
+[xUnit.net 00:00:00.30]       System.NotSupportedException : Unsupported expression: x =&gt; x.CreateScope()&#xD;
+[xUnit.net 00:00:00.30]       Extension methods (here: ServiceProviderServiceExtensions.CreateScope) may not be used in setup / verification expressions.
+[xUnit.net 00:00:00.30]       Stack Trace:
+[xUnit.net 00:00:00.30]         /_/src/Moq/Guard.cs(87,0): at Moq.Guard.IsOverridable(MethodInfo method, Expression expression)
+[xUnit.net 00:00:00.30]         /_/src/Moq/MethodExpectation.cs(236,0): at Moq.MethodExpectation..ctor(LambdaExpression expression, MethodInfo method, IReadOnlyList`1 arguments, Boolean exactGenericTypeArguments, Boolean skipMatcherInitialization, Boolean allowNonOverridable)
+[xUnit.net 00:00:00.30]         /_/src/Moq/ExpressionExtensions.cs(256,0): at Moq.ExpressionExtensions.&lt;Split&gt;g__Split|5_0(Expression e, Expression&amp; r, MethodExpectation&amp; p, Boolean assignment, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/ExpressionExtensions.cs(170,0): at Moq.ExpressionExtensions.Split(LambdaExpression expression, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock.cs(728,0): at Moq.Mock.SetupRecursive[TSetup](Mock mock, LambdaExpression expression, Func`4 setupLast, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock.cs(562,0): at Moq.Mock.Setup(Mock mock, LambdaExpression expression, Condition condition)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock`1.cs(645,0): at Moq.Mock`1.Setup[TResult](Expression`1 expression)
+[xUnit.net 00:00:00.30]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Services/OrderStatusPollingServiceTests.cs(69,0): at IntegrationService.Tests.Services.OrderStatusPollingServiceTests..ctor()
+[xUnit.net 00:00:00.30]            at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)
+[xUnit.net 00:00:00.30]       System.NotSupportedException : Unsupported expression: x =&gt; x.CreateScope()&#xD;
+[xUnit.net 00:00:00.30]       Extension methods (here: ServiceProviderServiceExtensions.CreateScope) may not be used in setup / verification expressions.
+[xUnit.net 00:00:00.30]       Stack Trace:
+[xUnit.net 00:00:00.30]         /_/src/Moq/Guard.cs(87,0): at Moq.Guard.IsOverridable(MethodInfo method, Expression expression)
+[xUnit.net 00:00:00.30]         /_/src/Moq/MethodExpectation.cs(236,0): at Moq.MethodExpectation..ctor(LambdaExpression expression, MethodInfo method, IReadOnlyList`1 arguments, Boolean exactGenericTypeArguments, Boolean skipMatcherInitialization, Boolean allowNonOverridable)
+[xUnit.net 00:00:00.30]         /_/src/Moq/ExpressionExtensions.cs(256,0): at Moq.ExpressionExtensions.&lt;Split&gt;g__Split|5_0(Expression e, Expression&amp; r, MethodExpectation&amp; p, Boolean assignment, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/ExpressionExtensions.cs(170,0): at Moq.ExpressionExtensions.Split(LambdaExpression expression, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock.cs(728,0): at Moq.Mock.SetupRecursive[TSetup](Mock mock, LambdaExpression expression, Func`4 setupLast, Boolean allowNonOverridableLastProperty)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock.cs(562,0): at Moq.Mock.Setup(Mock mock, LambdaExpression expression, Condition condition)
+[xUnit.net 00:00:00.30]         /_/src/Moq/Mock`1.cs(645,0): at Moq.Mock`1.Setup[TResult](Expression`1 expression)
+[xUnit.net 00:00:00.30]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Services/OrderStatusPollingServiceTests.cs(69,0): at IntegrationService.Tests.Services.OrderStatusPollingServiceTests..ctor()
+[xUnit.net 00:00:00.30]            at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)
+[xUnit.net 00:00:00.30]       Assert.IsType() Failure: Value is not the exact type
+[xUnit.net 00:00:00.30]       Expected: typeof(System.Collections.Generic.List&lt;LoyaltyTransactionDto&gt;) (from System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e)
+[xUnit.net 00:00:00.30]       Actual:   typeof(System.Collections.Generic.List&lt;LoyaltyTransactionDto&gt;) (from System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e)
+[xUnit.net 00:00:00.30]       Stack Trace:
+[xUnit.net 00:00:00.30]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Integration/CustomerLookupTests.cs(231,0): at IntegrationService.Tests.Integration.CustomerLookupTests.GetLoyaltyHistory_ReturnsTransactionList()
+[xUnit.net 00:00:00.30]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.47]       Microsoft.Data.SqlClient.SqlException : Invalid column name 'OrderDate'.
+[xUnit.net 00:00:00.47]       Stack Trace:
+[xUnit.net 00:00:00.47]            at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+[xUnit.net 00:00:00.47]            at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+[xUnit.net 00:00:00.47]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+[xUnit.net 00:00:00.47]            at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)
+[xUnit.net 00:00:00.47]            at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+[xUnit.net 00:00:00.47]            at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+[xUnit.net 00:00:00.47]            at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+[xUnit.net 00:00:00.47]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.47]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.47]            at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__193_1(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.47]            at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+[xUnit.net 00:00:00.47]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.47]         /_/Dapper/SqlMapper.Async.cs(662,0): at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param)
+[xUnit.net 00:00:00.47]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs(178,0): at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.CleanupTestDataAsync()
+[xUnit.net 00:00:00.47]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs(157,0): at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_MultipleCallsSameDay_IncrementsProperly()
+[xUnit.net 00:00:00.47]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.48]       Microsoft.Data.SqlClient.SqlException : Invalid column name 'OrderDate'.
+[xUnit.net 00:00:00.48]       Stack Trace:
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__193_1(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.48]            at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+[xUnit.net 00:00:00.48]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.48]         /_/Dapper/SqlMapper.Async.cs(662,0): at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param)
+[xUnit.net 00:00:00.48]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs(178,0): at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.CleanupTestDataAsync()
+[xUnit.net 00:00:00.48]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs(128,0): at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_ConcurrentRequests_NoDuplicates()
+[xUnit.net 00:00:00.48]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.48]       Microsoft.Data.SqlClient.SqlException : Invalid column name 'OrderDate'.
+[xUnit.net 00:00:00.48]       Stack Trace:
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__193_1(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.48]            at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+[xUnit.net 00:00:00.48]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.48]         /_/Dapper/SqlMapper.Async.cs(662,0): at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param)
+[xUnit.net 00:00:00.48]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs(178,0): at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.CleanupTestDataAsync()
+[xUnit.net 00:00:00.48]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs(76,0): at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_FirstOrderOfDay_ReturnsOne()
+[xUnit.net 00:00:00.48]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.48]       Microsoft.Data.SqlClient.SqlException : Invalid column name 'OrderDate'.
+[xUnit.net 00:00:00.48]       Stack Trace:
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.48]            at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__193_1(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.48]            at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+[xUnit.net 00:00:00.48]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.48]         /_/Dapper/SqlMapper.Async.cs(662,0): at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param)
+[xUnit.net 00:00:00.48]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs(178,0): at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.CleanupTestDataAsync()
+[xUnit.net 00:00:00.48]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs(107,0): at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_NewDay_ResetsToOne()
+[xUnit.net 00:00:00.48]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.49]       Microsoft.Data.SqlClient.SqlException : Invalid column name 'OrderDate'.
+[xUnit.net 00:00:00.49]       Stack Trace:
+[xUnit.net 00:00:00.49]            at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+[xUnit.net 00:00:00.49]            at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+[xUnit.net 00:00:00.49]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+[xUnit.net 00:00:00.49]            at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)
+[xUnit.net 00:00:00.49]            at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+[xUnit.net 00:00:00.49]            at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+[xUnit.net 00:00:00.49]            at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+[xUnit.net 00:00:00.49]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.49]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.49]            at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__193_1(IAsyncResult asyncResult)
+[xUnit.net 00:00:00.49]            at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+[xUnit.net 00:00:00.49]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.49]         /_/Dapper/SqlMapper.Async.cs(662,0): at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param)
+[xUnit.net 00:00:00.49]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs(178,0): at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.CleanupTestDataAsync()
+[xUnit.net 00:00:00.49]         /home/kali/Desktop/TOAST/src/backend/IntegrationService.Tests/Infrastructure/OrderNumberRepositoryTests.cs(91,0): at IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_SequentialOrders_IncrementsCorrectly()
+[xUnit.net 00:00:00.49]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:48.23]   Finished:    IntegrationService.Tests
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="kali" outcome="Warning" timestamp="2026-03-12T15:49:57.9183614+02:00">
+        <Text>[xUnit.net 00:00:00.16]     IntegrationService.Tests.Services.PaymentServiceTests.ChargeCardAsync_WithValidToken_ReturnsSuccess [SKIP]</Text>
+      </RunInfo>
+      <RunInfo computerName="kali" outcome="Warning" timestamp="2026-03-12T15:49:57.9184508+02:00">
+        <Text>[xUnit.net 00:00:00.16]     IntegrationService.Tests.Services.PaymentServiceTests.RefundTransactionAsync_WithValidSettledTransaction_ReturnsTrue [SKIP]</Text>
+      </RunInfo>
+      <RunInfo computerName="kali" outcome="Warning" timestamp="2026-03-12T15:49:57.9184689+02:00">
+        <Text>[xUnit.net 00:00:00.16]     IntegrationService.Tests.Services.PaymentServiceTests.VoidTransactionAsync_WithSettledTransaction_LogsCritical [SKIP]</Text>
+      </RunInfo>
+      <RunInfo computerName="kali" outcome="Error" timestamp="2026-03-12T15:49:58.0461700+02:00">
+        <Text>[xUnit.net 00:00:00.30]     IntegrationService.Tests.Services.OrderStatusPollingServiceTests.CleanupDeletesStaleTokens [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="kali" outcome="Error" timestamp="2026-03-12T15:49:58.0686309+02:00">
+        <Text>[xUnit.net 00:00:00.30]     IntegrationService.Tests.Services.OrderStatusPollingServiceTests.GetCompletedOnlineOrdersAsync_FiltersCorrectly [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="kali" outcome="Error" timestamp="2026-03-12T15:49:58.0688249+02:00">
+        <Text>[xUnit.net 00:00:00.30]     IntegrationService.Tests.Services.OrderStatusPollingServiceTests.SkipsAlreadyNotifiedOrders [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="kali" outcome="Error" timestamp="2026-03-12T15:49:58.0689695+02:00">
+        <Text>[xUnit.net 00:00:00.30]     IntegrationService.Tests.Services.OrderStatusPollingServiceTests.CleanupDeletesOldLogs [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="kali" outcome="Error" timestamp="2026-03-12T15:49:58.0690985+02:00">
+        <Text>[xUnit.net 00:00:00.30]     IntegrationService.Tests.Services.OrderStatusPollingServiceTests.SendsNotificationForNewCompletedOrder [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="kali" outcome="Error" timestamp="2026-03-12T15:49:58.0692374+02:00">
+        <Text>[xUnit.net 00:00:00.30]     IntegrationService.Tests.Integration.CustomerLookupTests.GetLoyaltyHistory_ReturnsTransactionList [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="kali" outcome="Error" timestamp="2026-03-12T15:49:58.2224271+02:00">
+        <Text>[xUnit.net 00:00:00.47]     IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_MultipleCallsSameDay_IncrementsProperly [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="kali" outcome="Error" timestamp="2026-03-12T15:49:58.2263364+02:00">
+        <Text>[xUnit.net 00:00:00.48]     IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_ConcurrentRequests_NoDuplicates [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="kali" outcome="Error" timestamp="2026-03-12T15:49:58.2292573+02:00">
+        <Text>[xUnit.net 00:00:00.48]     IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_FirstOrderOfDay_ReturnsOne [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="kali" outcome="Error" timestamp="2026-03-12T15:49:58.2320184+02:00">
+        <Text>[xUnit.net 00:00:00.48]     IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_NewDay_ResetsToOne [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="kali" outcome="Error" timestamp="2026-03-12T15:49:58.2348136+02:00">
+        <Text>[xUnit.net 00:00:00.49]     IntegrationService.Tests.Infrastructure.OrderNumberRepositoryTests.GetNextDailyOrderNumberAsync_SequentialOrders_IncrementsCorrectly [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

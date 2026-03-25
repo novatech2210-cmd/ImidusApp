@@ -33,8 +33,7 @@ namespace IntegrationService.Infrastructure.Data
         public async Task<bool> UpdateLoyaltyPointsAsync(int customerId, decimal points)
         {
             // Convert decimal to int for the underlying repository
-            var result = await _posRepo.UpdateLoyaltyPointsAsync(customerId, (int)points, null);
-            return result >= 0; // If it returned points, it was successful
+            return await _posRepo.UpdateLoyaltyPointsAsync(customerId, (int)points, null);
         }
     }
 }

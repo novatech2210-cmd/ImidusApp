@@ -1,135 +1,234 @@
+using Dapper;
+using IntegrationService.Core.Entities;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Dapper;
-using IntegrationService.Core.Domain.Entities;
-using IntegrationService.Core.Interfaces;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace IntegrationService.Infrastructure.Data
 {
     /// <summary>
-    /// Repository for scheduled future orders
-    /// Uses IntegrationService database (overlay)
+    /// Repository for ScheduledOrders - stored in IntegrationService database (overlay)
+    /// NOT in INI_Restaurant database (source of truth) - SSOT compliant
     /// </summary>
+    public interface IScheduledOrderRepository
+    {
+        Task<ScheduledOrder> GetByIdAsync(int id);
+        Task<ScheduledOrder> GetByIdempotencyKeyAsync(string idempotencyKey);
+        Task<IEnumerable<ScheduledOrder>> GetByCustomerIdAsync(int customerId);
+        Task<IEnumerable<ScheduledOrder>> GetPendingOrdersAsync();
+        Task<IEnumerable<ScheduledOrder>> GetOrdersReadyForReleaseAsync();
+        Task<int> CreateAsync(ScheduledOrder order);
+        Task<bool> UpdateAsync(ScheduledOrder order);
+        Task<bool> CancelAsync(int id, string reason);
+        Task<bool> MarkAsReleasedAsync(int id, int posSalesId, string posOrderNumber);
+        Task<bool> MarkAsFailedAsync(int id, string errorMessage);
+    }
+
     public class ScheduledOrderRepository : IScheduledOrderRepository
     {
         private readonly string _connectionString;
         private readonly ILogger<ScheduledOrderRepository> _logger;
 
-        public ScheduledOrderRepository(IConfiguration configuration, ILogger<ScheduledOrderRepository> logger)
+        public ScheduledOrderRepository(string connectionString, ILogger<ScheduledOrderRepository> logger)
         {
-            _connectionString = configuration.GetConnectionString("BackendDatabase")
-                ?? throw new ArgumentNullException("BackendDatabase connection string not found");
+            _connectionString = connectionString;
             _logger = logger;
         }
 
-        private IDbConnection CreateConnection() => new SqlConnection(_connectionString);
-
-        public async Task<int> CreateAsync(ScheduledOrder order)
+        public async Task<ScheduledOrder> GetByIdAsync(int id)
         {
+            using var connection = new SqlConnection(_connectionString);
             const string sql = @"
-                INSERT INTO ScheduledOrders (
-                    CustomerId, IdempotencyKey, OrderJson,
-                    SubTotal, TaxAmount, TotalAmount,
-                    PaymentToken, CardType, Last4,
-                    TargetDateTime, PrepTimeMinutes, Status, CreatedAt
-                )
-                VALUES (
-                    @CustomerId, @IdempotencyKey, @OrderJson,
-                    @SubTotal, @TaxAmount, @TotalAmount,
-                    @PaymentToken, @CardType, @Last4,
-                    @TargetDateTime, @PrepTimeMinutes, 'pending', GETDATE()
-                );
-                SELECT SCOPE_IDENTITY();";
-
-            using var connection = CreateConnection();
-            var id = await connection.QuerySingleAsync<int>(sql, order);
-            _logger.LogInformation("Created scheduled order {Id} for customer {CustomerId}, target time: {Target}",
-                id, order.CustomerId, order.TargetDateTime);
-            return id;
-        }
-
-        public async Task<ScheduledOrder?> GetByIdAsync(int id)
-        {
-            const string sql = @"
-                SELECT Id, CustomerId, IdempotencyKey, OrderJson,
-                       SubTotal, TaxAmount, TotalAmount,
-                       PaymentToken, CardType, Last4,
-                       TargetDateTime, PrepTimeMinutes, Status,
-                       SalesId, ErrorMessage, CreatedAt, InjectedAt
-                FROM ScheduledOrders
+                SELECT * FROM ScheduledOrders 
                 WHERE Id = @Id";
 
-            using var connection = CreateConnection();
-            return await connection.QueryFirstOrDefaultAsync<ScheduledOrder>(sql, new { Id = id });
+            var result = await connection.QueryFirstOrDefaultAsync<ScheduledOrder>(sql, new { Id = id });
+            return result;
         }
 
-        public async Task<IEnumerable<ScheduledOrder>> GetPendingOrdersForInjectionAsync(DateTime asOf)
+        public async Task<ScheduledOrder> GetByIdempotencyKeyAsync(string idempotencyKey)
         {
-            // Get orders where InjectionTime (TargetDateTime - PrepTimeMinutes) <= asOf
+            using var connection = new SqlConnection(_connectionString);
             const string sql = @"
-                SELECT Id, CustomerId, IdempotencyKey, OrderJson,
-                       SubTotal, TaxAmount, TotalAmount,
-                       PaymentToken, CardType, Last4,
-                       TargetDateTime, PrepTimeMinutes, Status,
-                       SalesId, ErrorMessage, CreatedAt, InjectedAt
-                FROM ScheduledOrders
-                WHERE Status = 'pending'
-                  AND DATEADD(minute, -PrepTimeMinutes, TargetDateTime) <= @AsOf
-                ORDER BY TargetDateTime";
+                SELECT * FROM ScheduledOrders 
+                WHERE IdempotencyKey = @IdempotencyKey";
 
-            using var connection = CreateConnection();
-            return await connection.QueryAsync<ScheduledOrder>(sql, new { AsOf = asOf });
+            var result = await connection.QueryFirstOrDefaultAsync<ScheduledOrder>(sql, new { IdempotencyKey = idempotencyKey });
+            return result;
         }
 
         public async Task<IEnumerable<ScheduledOrder>> GetByCustomerIdAsync(int customerId)
         {
+            using var connection = new SqlConnection(_connectionString);
             const string sql = @"
-                SELECT Id, CustomerId, IdempotencyKey, OrderJson,
-                       SubTotal, TaxAmount, TotalAmount,
-                       PaymentToken, CardType, Last4,
-                       TargetDateTime, PrepTimeMinutes, Status,
-                       SalesId, ErrorMessage, CreatedAt, InjectedAt
-                FROM ScheduledOrders
-                WHERE CustomerId = @CustomerId
-                ORDER BY TargetDateTime DESC";
+                SELECT * FROM ScheduledOrders 
+                WHERE PosCustomerId = @CustomerId 
+                ORDER BY ScheduledDateTime DESC";
 
-            using var connection = CreateConnection();
-            return await connection.QueryAsync<ScheduledOrder>(sql, new { CustomerId = customerId });
+            var results = await connection.QueryAsync<ScheduledOrder>(sql, new { CustomerId = customerId });
+            return results;
         }
 
-        public async Task UpdateStatusAsync(int id, string status, int? salesId = null, string? errorMessage = null)
+        public async Task<IEnumerable<ScheduledOrder>> GetPendingOrdersAsync()
         {
-            var sql = "UPDATE ScheduledOrders SET Status = @Status";
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"
+                SELECT * FROM ScheduledOrders 
+                WHERE Status = 'pending'
+                ORDER BY ScheduledDateTime ASC";
 
-            if (salesId.HasValue)
-                sql += ", SalesId = @SalesId";
-            if (errorMessage != null)
-                sql += ", ErrorMessage = @ErrorMessage";
-            if (status == "injected")
-                sql += ", InjectedAt = GETDATE()";
-
-            sql += " WHERE Id = @Id";
-
-            using var connection = CreateConnection();
-            await connection.ExecuteAsync(sql, new { Id = id, Status = status, SalesId = salesId, ErrorMessage = errorMessage });
-            _logger.LogInformation("Updated scheduled order {Id} status to {Status}", id, status);
+            var results = await connection.QueryAsync<ScheduledOrder>(sql);
+            return results;
         }
 
-        public async Task<bool> CancelAsync(int id)
+        public async Task<IEnumerable<ScheduledOrder>> GetOrdersReadyForReleaseAsync()
         {
+            using var connection = new SqlConnection(_connectionString);
+            // Release orders 90 minutes BEFORE pickup time (LOCKED DECISION)
+            // ScheduledDateTime is the PICKUP time
+            // Release when (PickupTime - 90min) <= Now
+            // Also respect exponential backoff for retries:
+            //   RetryCount 0: immediate
+            //   RetryCount 1: wait 1 min since UpdatedAt
+            //   RetryCount 2: wait 2 min since UpdatedAt
+            //   (max 3 retries)
             const string sql = @"
-                UPDATE ScheduledOrders
-                SET Status = 'cancelled'
+                SELECT * FROM ScheduledOrders
+                WHERE Status = 'pending'
+                AND DATEADD(minute, -90, ScheduledDateTime) <= @Now
+                AND ReleasedDateTime IS NULL
+                AND ReleaseRetryCount < 3
+                AND (
+                    ReleaseRetryCount = 0
+                    OR DATEADD(minute, POWER(2, ReleaseRetryCount - 1), UpdatedAt) <= @Now
+                )
+                ORDER BY ScheduledDateTime ASC";
+
+            var results = await connection.QueryAsync<ScheduledOrder>(sql, new { Now = DateTime.UtcNow });
+            return results;
+        }
+
+        public async Task<int> CreateAsync(ScheduledOrder order)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"
+                INSERT INTO ScheduledOrders (
+                    PosCustomerId, CustomerFirstName, CustomerLastName, CustomerPhone,
+                    ScheduledDateTime, Status, ItemsJson, Subtotal, TaxAmount, TotalAmount,
+                    PaymentAuthorizationNo, PaymentBatchNo, PaymentTypeId, TipAmount,
+                    SpecialInstructions, IdempotencyKey, CreatedAt, CreatedBy
+                ) VALUES (
+                    @PosCustomerId, @CustomerFirstName, @CustomerLastName, @CustomerPhone,
+                    @ScheduledDateTime, @Status, @ItemsJson, @Subtotal, @TaxAmount, @TotalAmount,
+                    @PaymentAuthorizationNo, @PaymentBatchNo, @PaymentTypeId, @TipAmount,
+                    @SpecialInstructions, @IdempotencyKey, @CreatedAt, @CreatedBy
+                );
+                SELECT CAST(SCOPE_IDENTITY() as int);";
+
+            order.CreatedAt = DateTime.UtcNow;
+
+            var id = await connection.ExecuteScalarAsync<int>(sql, order);
+            return id;
+        }
+
+        public async Task<bool> UpdateAsync(ScheduledOrder order)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"
+                UPDATE ScheduledOrders SET
+                    ScheduledDateTime = @ScheduledDateTime,
+                    Status = @Status,
+                    ItemsJson = @ItemsJson,
+                    Subtotal = @Subtotal,
+                    TaxAmount = @TaxAmount,
+                    TotalAmount = @TotalAmount,
+                    SpecialInstructions = @SpecialInstructions,
+                    UpdatedAt = @UpdatedAt
+                WHERE Id = @Id";
+
+            order.UpdatedAt = DateTime.UtcNow;
+
+            var rows = await connection.ExecuteAsync(sql, order);
+            return rows > 0;
+        }
+
+        public async Task<bool> CancelAsync(int id, string reason)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"
+                UPDATE ScheduledOrders SET
+                    Status = 'cancelled',
+                    UpdatedAt = @UpdatedAt,
+                    ReleaseErrorMessage = @Reason
                 WHERE Id = @Id AND Status = 'pending'";
 
-            using var connection = CreateConnection();
-            var rows = await connection.ExecuteAsync(sql, new { Id = id });
+            var rows = await connection.ExecuteAsync(sql, new 
+            { 
+                Id = id, 
+                UpdatedAt = DateTime.UtcNow,
+                Reason = reason 
+            });
+
             return rows > 0;
+        }
+
+        public async Task<bool> MarkAsReleasedAsync(int id, int posSalesId, string posOrderNumber)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = @"
+                UPDATE ScheduledOrders SET
+                    Status = 'released',
+                    ReleasedDateTime = @ReleasedDateTime,
+                    PosSalesId = @PosSalesId,
+                    PosOrderNumber = @PosOrderNumber,
+                    UpdatedAt = @UpdatedAt
+                WHERE Id = @Id";
+
+            var rows = await connection.ExecuteAsync(sql, new 
+            { 
+                Id = id, 
+                ReleasedDateTime = DateTime.UtcNow,
+                PosSalesId = posSalesId,
+                PosOrderNumber = posOrderNumber,
+                UpdatedAt = DateTime.UtcNow
+            });
+
+            return rows > 0;
+        }
+
+        public async Task<bool> MarkAsFailedAsync(int id, string errorMessage)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            // Only mark as 'failed' after 3 attempts (ReleaseRetryCount reaches 3)
+            // Keep as 'pending' during retries so it gets picked up again
+            const string sql = @"
+                UPDATE ScheduledOrders SET
+                    Status = CASE WHEN ReleaseRetryCount >= 2 THEN 'failed' ELSE 'pending' END,
+                    ReleaseErrorMessage = @ErrorMessage,
+                    ReleaseRetryCount = ReleaseRetryCount + 1,
+                    UpdatedAt = @UpdatedAt
+                WHERE Id = @Id";
+
+            var rows = await connection.ExecuteAsync(sql, new
+            {
+                Id = id,
+                ErrorMessage = errorMessage,
+                UpdatedAt = DateTime.UtcNow
+            });
+
+            return rows > 0;
+        }
+
+        public async Task<ScheduledOrder?> GetByIdForRetryCheckAsync(int id)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = "SELECT * FROM ScheduledOrders WHERE Id = @Id";
+            return await connection.QueryFirstOrDefaultAsync<ScheduledOrder>(sql, new { Id = id });
         }
     }
 }

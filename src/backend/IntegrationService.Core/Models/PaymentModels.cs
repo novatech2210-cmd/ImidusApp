@@ -1,79 +1,143 @@
 namespace IntegrationService.Core.Models
 {
     /// <summary>
-    /// Represents a payment request, including amount, token, and customer information.
+    /// Request to charge a credit card using an opaque payment token
     /// </summary>
     public class PaymentRequest
     {
-        public OpaqueDataType Token { get; set; } = new(); // This should be an OpaqueDataType or similar
+        /// <summary>
+        /// Opaque payment token from mobile tokenization
+        /// </summary>
+        public PaymentToken Token { get; set; } = null!;
+
+        /// <summary>
+        /// Amount to charge in dollars
+        /// </summary>
         public decimal Amount { get; set; }
+
+        /// <summary>
+        /// POS Sales ID for transaction linkage
+        /// </summary>
         public int SalesId { get; set; }
+
+        /// <summary>
+        /// Customer ID (optional, for saved cards and loyalty points)
+        /// </summary>
         public int? CustomerId { get; set; }
-        public int PointsToRedeem { get; set; } = 0;
-        public int? DailyOrderNumber { get; set; } // For logging/reference
-        public decimal TipAmount { get; set; } = 0;
-        public int PaymentTypeID { get; set; }
-        public string? PaymentAuthCode { get; set; } // For recorded payments
-        public int? PaymentBatchNo { get; set; } // For recorded payments
+
+        /// <summary>
+        /// Loyalty points to redeem for discount (100 points = $1)
+        /// </summary>
+        public int PointsToRedeem { get; set; }
+
+        /// <summary>
+        /// Daily order number for invoice reference
+        /// </summary>
+        public int DailyOrderNumber { get; set; }
     }
 
     /// <summary>
-    /// Represents the result of a payment transaction.
+    /// Opaque data token from Authorize.net Accept.js
+    /// Single-use token with 15-minute expiration
+    /// </summary>
+    public class PaymentToken
+    {
+        /// <summary>
+        /// Token descriptor (typically "COMMON.ACCEPT.INAPP.PAYMENT")
+        /// </summary>
+        public string DataDescriptor { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Opaque token value (actual encrypted payment data)
+        /// </summary>
+        public string DataValue { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Result of a payment transaction
     /// </summary>
     public class PaymentResult
     {
+        /// <summary>
+        /// True if payment was successfully authorized and captured
+        /// </summary>
         public bool Success { get; set; }
+
+        /// <summary>
+        /// Authorize.net transaction ID (required for voids/refunds)
+        /// </summary>
         public string? TransactionId { get; set; }
+
+        /// <summary>
+        /// Authorization code from card processor
+        /// </summary>
         public string? AuthorizationCode { get; set; }
-        public string? Last4Digits { get; set; } // From tokenized card
-        public string? CardType { get; set; }    // e.g., Visa, MasterCard
+
+        /// <summary>
+        /// Last 4 digits of card (masked)
+        /// </summary>
+        public string? Last4Digits { get; set; }
+
+        /// <summary>
+        /// Card type (Visa, MasterCard, Amex, Discover)
+        /// </summary>
+        public string? CardType { get; set; }
+
+        /// <summary>
+        /// Error message if transaction failed
+        /// </summary>
         public string? ErrorMessage { get; set; }
+
+        /// <summary>
+        /// Error code if transaction failed
+        /// </summary>
         public string? ErrorCode { get; set; }
     }
 
     /// <summary>
-    /// Represents a tokenized payment method for saving a card.
+    /// Request to save a card as a customer profile for future charges
     /// </summary>
     public class SavedCardRequest
     {
-        public OpaqueDataType PaymentToken { get; set; } = new();
+        /// <summary>
+        /// Customer ID from POS system
+        /// </summary>
         public int CustomerId { get; set; }
+
+        /// <summary>
+        /// Opaque payment token from mobile tokenization
+        /// </summary>
+        public PaymentToken PaymentToken { get; set; } = null!;
+
+        /// <summary>
+        /// Customer email address
+        /// </summary>
         public string Email { get; set; } = string.Empty;
     }
 
     /// <summary>
-    /// Represents the result of creating a customer payment profile.
+    /// Result of creating a customer payment profile
     /// </summary>
     public class CustomerProfileResult
     {
+        /// <summary>
+        /// True if profile was created successfully
+        /// </summary>
         public bool Success { get; set; }
+
+        /// <summary>
+        /// Authorize.net customer profile ID
+        /// </summary>
         public string? ProfileId { get; set; }
+
+        /// <summary>
+        /// Authorize.net payment profile ID
+        /// </summary>
         public string? PaymentProfileId { get; set; }
-        public string? ErrorMessage { get; set; }
-    }
 
-    /// <summary>
-    /// Represents the result of completing an order after payment.
-    /// </summary>
-    public class OrderCompletionResult
-    {
-        public bool Success { get; set; }
-        public string? TransactionId { get; set; } // Authorize.net transaction ID
-        public int TicketId { get; set; }        // POS SalesID
-        public int? DailyOrderNumber { get; set; } // POS Daily Order Number
+        /// <summary>
+        /// Error message if profile creation failed
+        /// </summary>
         public string? ErrorMessage { get; set; }
-    }
-
-    // Placeholder for Authorize.Net's OpaqueDataType if it's not directly available in SDK
-    // In a real scenario, you'd ensure the AuthorizeNet SDK provides this or define it.
-    // For now, we'll use a simple string for simplicity in this example, but it should be structured.
-    // The SDK uses a complex object, so this is a simplification for demonstration.
-    // If the SDK is correctly referenced, it should provide opaqueDataType.
-    // For the purpose of this example, let's assume `PaymentRequest.Token` and `SavedCardRequest.PaymentToken`
-    // are represented by a structure that holds these two properties.
-    public class OpaqueDataType
-    {
-        public string DataDescriptor { get; set; } = string.Empty;
-        public string DataValue { get; set; } = string.Empty;
     }
 }

@@ -3,8 +3,9 @@ using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
 using IntegrationService.Core.Domain.Entities;
-using IntegrationService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
+
+using IntegrationService.Core.Interfaces;
 
 namespace IntegrationService.Infrastructure.Data;
 
@@ -19,7 +20,7 @@ public class OnlineOrderStatusRepository : IOnlineOrderStatusRepository
     public OnlineOrderStatusRepository(IConfiguration configuration)
     {
         _connectionString = configuration.GetConnectionString("BackendDatabase")
-            ?? throw new ArgumentNullException("BackendDatabase connection string not found");
+            ?? "Server=localhost;Database=IntegrationService;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;";
     }
 
     private IDbConnection CreateConnection()

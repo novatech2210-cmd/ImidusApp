@@ -2,7 +2,7 @@
  * Web stub for @react-native-community/slider
  */
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
 interface SliderProps {
   value?: number;
@@ -30,7 +30,7 @@ const Slider: React.FC<SliderProps> = ({
   disabled = false,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseFloat(e.target.value);
+    const newValue = parseFloat((e.target as HTMLInputElement).value);
     onValueChange?.(newValue);
   };
 

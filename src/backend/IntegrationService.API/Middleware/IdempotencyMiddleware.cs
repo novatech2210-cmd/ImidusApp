@@ -40,18 +40,26 @@ namespace IntegrationService.API.Middleware
                 return;
             }
 
-            // Skip idempotency for auth endpoints (login, logout, refresh)
-            _logger.LogInformation("Checking idempotency for: {Path}", context.Request.Path);
-            if (context.Request.Path.Value?.StartsWith("/api/auth", StringComparison.OrdinalIgnoreCase) ?? false)
+            // Exclude Auth endpoints (login, register, admin-login)
+            var path = context.Request.Path.Value?.ToLower() ?? "";
+            if (path.Contains("/api/auth/"))
             {
-                _logger.LogInformation("Skipping idempotency for auth endpoint: {Path}", context.Request.Path);
                 await _next(context);
                 return;
             }
 
-            // Extract Idempotency-Key header
-            if (!context.Request.Headers.TryGetValue("Idempotency-Key", out var idempotencyKey) ||
-                string.IsNullOrWhiteSpace(idempotencyKey))
+            // Extract Idempotency-Key header (accept both X-Idempotency-Key and Idempotency-Key)
+            string? idempotencyKey = null;
+            if (context.Request.Headers.TryGetValue("X-Idempotency-Key", out var xKey) && !string.IsNullOrWhiteSpace(xKey))
+            {
+                idempotencyKey = xKey.ToString();
+            }
+            else if (context.Request.Headers.TryGetValue("Idempotency-Key", out var headerKey) && !string.IsNullOrWhiteSpace(headerKey))
+            {
+                idempotencyKey = headerKey.ToString();
+            }
+
+            if (string.IsNullOrWhiteSpace(idempotencyKey))
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsJsonAsync(new

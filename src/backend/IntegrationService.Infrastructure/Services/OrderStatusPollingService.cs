@@ -69,7 +69,7 @@ public class OrderStatusPollingService : BackgroundService
             using var scope = _services.CreateScope();
 
             var posRepo = scope.ServiceProvider.GetRequiredService<IPosRepository>();
-            var statusRepo = scope.ServiceProvider.GetRequiredService<OnlineOrderStatusRepository>();
+            var statusRepo = scope.ServiceProvider.GetRequiredService<IOnlineOrderStatusRepository>();
             var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
 
             // Query completed orders from POS database (TransType=9)
@@ -148,7 +148,7 @@ public class OrderStatusPollingService : BackgroundService
             using var scope = _services.CreateScope();
 
             var deviceTokenRepo = scope.ServiceProvider.GetRequiredService<IDeviceTokenRepository>();
-            var notificationLogRepo = scope.ServiceProvider.GetRequiredService<NotificationLogRepository>();
+            var notificationLogRepo = scope.ServiceProvider.GetRequiredService<INotificationLogRepository>();
 
             // Delete inactive tokens older than 30 days
             var staleTokensDeleted = await deviceTokenRepo.DeleteStaleTokensAsync(30);

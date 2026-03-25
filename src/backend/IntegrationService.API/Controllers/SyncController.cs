@@ -1,244 +1,199 @@
+using Microsoft.AspNetCore.Mvc;
+using IntegrationService.Core.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration; // Add this
-using Microsoft.Data.SqlClient; // Add this
-using Dapper; // Add this
-using IntegrationService.Core.Interfaces;
 
 namespace IntegrationService.API.Controllers
 {
+    /// <summary>
+    /// Health and sync status API
+    /// Provides real-time connectivity status for the web frontend
+    /// SSOT Compliant: Read-only endpoint, queries POS database for status
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class SyncController : ControllerBase
     {
         private readonly IPosRepository _posRepo;
         private readonly ILogger<SyncController> _logger;
-        private readonly string _backendConnectionString; // Add this
-        private static DateTime? _lastSuccessfulSync;
 
-        public SyncController(IPosRepository posRepository, IConfiguration configuration, ILogger<SyncController> logger)
+        public SyncController(
+            IPosRepository posRepository,
+            ILogger<SyncController> logger)
         {
             _posRepo = posRepository;
             _logger = logger;
-            _backendConnectionString = configuration.GetConnectionString("BackendDatabase") ?? string.Empty;
         }
 
+        /// <summary>
+        /// Get overall system health and sync status
+        /// Used by web frontend for real-time sync indicator
+        /// Polls POS database to verify connectivity (SSOT - read only)
+        /// </summary>
         [HttpGet("status")]
         [ProducesResponseType(typeof(SyncStatusResponse), 200)]
-        public async Task<IActionResult> GetStatus()
+        public async Task<IActionResult> GetSyncStatus()
         {
-            var stopwatch = Stopwatch.StartNew();
-            string posDatabaseStatus = "unknown";
-            string? posDatabaseError = null;
-            int? posDatabaseLatency = null;
+            var status = new SyncStatusResponse
+            {
+                Timestamp = DateTime.UtcNow,
+                ServerTime = DateTime.Now
+            };
 
             try
             {
+                // Check POS database connectivity by fetching categories
+                // This is a lightweight read-only operation (SSOT compliant)
                 var startTime = DateTime.UtcNow;
                 var categories = await _posRepo.GetCategoriesAsync();
-                stopwatch.Stop();
-                posDatabaseLatency = (int)stopwatch.ElapsedMilliseconds;
-                posDatabaseStatus = "connected";
+                var latency = (DateTime.UtcNow - startTime).TotalMilliseconds;
 
-                _lastSuccessfulSync = DateTime.UtcNow;
-
-                var itemCounts = await _posRepo.GetCategoryItemCountsAsync();
-                var categoriesAvailable = itemCounts.Values.Sum();
-
-                var response = new SyncStatusResponse
+                if (categories != null && categories.Any())
                 {
-                    Status = "healthy",
-                    IsHealthy = true,
-                    Message = "POS database connected successfully",
-                    Timestamp = DateTime.UtcNow.ToString("o"),
-                    ServerTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                    LastSuccessfulSync = _lastSuccessfulSync?.ToString("o"),
-                    PosDatabaseStatus = posDatabaseStatus,
-                    PosDatabaseLatency = posDatabaseLatency,
-                    PosDatabaseError = posDatabaseError,
-                    CategoriesAvailable = categoriesAvailable
-                };
-
-                _logger.LogInformation("Sync status check: Healthy, latency={Latency}ms, categories={Categories}", 
-                    posDatabaseLatency, categoriesAvailable);
-
-                return Ok(response);
+                    status.PosDatabaseStatus = "connected";
+                    status.PosDatabaseLatency = latency;
+                    status.CategoriesAvailable = categories.Count();
+                    status.IsHealthy = true;
+                    status.Status = "online";
+                    status.Message = "POS Connected";
+                    status.LastSuccessfulSync = DateTime.UtcNow;
+                }
+                else
+                {
+                    status.PosDatabaseStatus = "empty";
+                    status.Status = "warning";
+                    status.IsHealthy = false;
+                    status.Message = "POS database returned no categories";
+                }
             }
             catch (Exception ex)
             {
-                stopwatch.Stop();
-                posDatabaseLatency = (int)stopwatch.ElapsedMilliseconds;
-                posDatabaseStatus = "disconnected";
-                posDatabaseError = ex.Message;
-
-                _logger.LogError(ex, "Sync status check failed");
-
-                var response = new SyncStatusResponse
-                {
-                    Status = "unhealthy",
-                    IsHealthy = false,
-                    Message = $"POS database connection failed: {ex.Message}",
-                    Timestamp = DateTime.UtcNow.ToString("o"),
-                    ServerTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                    LastSuccessfulSync = _lastSuccessfulSync?.ToString("o"),
-                    PosDatabaseStatus = posDatabaseStatus,
-                    PosDatabaseLatency = posDatabaseLatency,
-                    PosDatabaseError = posDatabaseError,
-                    CategoriesAvailable = 0
-                };
-
-                return StatusCode(503, response);
+                _logger.LogError(ex, "POS database connectivity check failed");
+                status.PosDatabaseStatus = "error";
+                status.PosDatabaseError = ex.Message;
+                status.Status = "offline";
+                status.IsHealthy = false;
+                status.Message = "POS Database Unavailable";
             }
+
+            return Ok(status);
         }
 
+        /// <summary>
+        /// Get lightweight health check (for frequent polling)
+        /// Minimal overhead, just returns 200 if backend is up
+        /// </summary>
         [HttpGet("health")]
-        [ProducesResponseType(typeof(HealthCheckResponse), 200)]
-        public async Task<IActionResult> HealthCheck()
+        public IActionResult HealthCheck()
         {
-            try
-            {
-                var startTime = DateTime.UtcNow;
-                var categories = await _posRepo.GetCategoriesAsync();
-                var elapsed = (DateTime.UtcNow - startTime).TotalMilliseconds;
-
-                return Ok(new HealthCheckResponse
-                {
-                    Status = "healthy",
-                    Timestamp = DateTime.UtcNow.ToString("o")
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Health check failed");
-                return StatusCode(503, new HealthCheckResponse
-                {
-                    Status = "unhealthy",
-                    Timestamp = DateTime.UtcNow.ToString("o")
-                });
-            }
+            return Ok(new 
+            { 
+                status = "healthy", 
+                timestamp = DateTime.UtcNow,
+                serverTime = DateTime.Now
+            });
         }
 
+        /// <summary>
+        /// Get POS database statistics
+        /// For admin dashboards and monitoring - SSOT read-only
+        /// </summary>
         [HttpGet("stats")]
         [ProducesResponseType(typeof(SyncStatsResponse), 200)]
-        public async Task<IActionResult> GetStats()
+        public async Task<IActionResult> GetSyncStats()
         {
             try
             {
-                var today = DateTime.Today;
-                var orders = await _posRepo.GetOrdersByDateRangeAsync(today, today.AddDays(1));
-                var categories = await _posRepo.GetCategoriesAsync();
-                var menuItems = await _posRepo.GetActiveMenuItemsAsync();
-
-                var totalRevenue = orders.Sum(o => o.TotalAmount);
-
-                return Ok(new SyncStatsResponse
+                var stats = new SyncStatsResponse
                 {
-                    Timestamp = DateTime.UtcNow.ToString("o"),
-                    DatabaseStatus = "connected",
-                    LastCheckTime = _lastSuccessfulSync?.ToString("o"),
-                    TotalOrdersToday = orders.Count(),
-                    TotalRevenueToday = totalRevenue,
-                    AverageOrderValue = orders.Any() ? (double)orders.Average(o => o.TotalAmount) : 0,
-                    TotalCategories = categories.Count(),
-                    TotalMenuItems = menuItems.Count()
-                });
+                    Timestamp = DateTime.UtcNow
+                };
+
+                // Get today's orders from POS (SSOT read)
+                var today = DateTime.Today;
+                var todayOrders = await _posRepo.GetOrdersByDateRangeAsync(today, today.AddDays(1));
+                stats.TotalOrdersToday = todayOrders?.Count() ?? 0;
+                stats.TotalRevenueToday = todayOrders?.Sum(o => o.TotalAmount) ?? 0;
+
+                // Calculate average order value
+                if (stats.TotalOrdersToday > 0)
+                {
+                    stats.AverageOrderValue = stats.TotalRevenueToday / stats.TotalOrdersToday;
+                }
+
+                // Get menu statistics
+                var categories = await _posRepo.GetCategoriesAsync();
+                stats.TotalCategories = categories?.Count() ?? 0;
+
+                var menuItems = await _posRepo.GetActiveMenuItemsAsync();
+                stats.TotalMenuItems = menuItems?.Count() ?? 0;
+
+                stats.DatabaseStatus = "connected";
+                stats.LastCheckTime = DateTime.UtcNow;
+
+                return Ok(stats);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to get sync stats");
+                _logger.LogError(ex, "Failed to get sync statistics");
                 return StatusCode(500, new SyncStatsResponse
                 {
-                    Timestamp = DateTime.UtcNow.ToString("o"),
                     DatabaseStatus = "error",
+                    Timestamp = DateTime.UtcNow,
                     ErrorMessage = ex.Message
                 });
             }
         }
 
+        /// <summary>
+        /// Force a sync check (for manual refresh)
+        /// Still read-only, just refreshes cached data from POS
+        /// </summary>
         [HttpPost("check")]
-        [ProducesResponseType(typeof(SyncStatusResponse), 200)]
-        public async Task<IActionResult> ForceCheck()
+        public async Task<IActionResult> ForceSyncCheck()
         {
-            return await GetStatus();
-        }
-
-        [HttpGet("diag")]
-        public async Task<IActionResult> GetDiagnostics()
-        {
-            if (string.IsNullOrEmpty(_backendConnectionString))
-                return BadRequest("Backend connection string not found");
-
-            try
-            {
-                using var connection = new SqlConnection(_backendConnectionString);
-                await connection.OpenAsync();
-                
-                var tables = await connection.QueryAsync<string>(
-                    "SELECT name FROM sys.tables");
-                
-                var usersCount = 0;
-                IEnumerable<string> emails = Enumerable.Empty<string>();
-                bool usersTableExists = tables.Contains("Users");
-                
-                if (usersTableExists)
-                {
-                    usersCount = await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Users");
-                    emails = await connection.QueryAsync<string>("SELECT Email FROM Users");
-                }
-
-                return Ok(new
-                {
-                    database = "IntegrationService",
-                    connected = true,
-                    tablesFound = tables,
-                    usersTableExists = usersTableExists,
-                    usersCount = usersCount,
-                    emails = emails,
-                    serverTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { error = ex.Message });
-            }
+            _logger.LogInformation("Manual sync check triggered from {IP}", HttpContext.Connection.RemoteIpAddress);
+            return await GetSyncStatus();
         }
     }
 
+    /// <summary>
+    /// Sync status response model for real-time indicator
+    /// </summary>
     public class SyncStatusResponse
     {
-        public string Status { get; set; } = string.Empty;
+        public string Status { get; set; } = "unknown"; // online, offline, warning, error
         public bool IsHealthy { get; set; }
-        public string Message { get; set; } = string.Empty;
-        public string Timestamp { get; set; } = string.Empty;
-        public string ServerTime { get; set; } = string.Empty;
-        public string? LastSuccessfulSync { get; set; }
-        public string PosDatabaseStatus { get; set; } = string.Empty;
-        public int? PosDatabaseLatency { get; set; }
-        public string? PosDatabaseError { get; set; }
+        public string Message { get; set; } = "";
+        public DateTime Timestamp { get; set; }
+        public DateTime ServerTime { get; set; }
+        public DateTime? LastSuccessfulSync { get; set; }
+        
+        // POS Database (INI_Restaurant) - Ground Truth
+        public string PosDatabaseStatus { get; set; } = "unknown"; // connected, error, empty
+        public double? PosDatabaseLatency { get; set; } // milliseconds
+        public string PosDatabaseError { get; set; }
         public int CategoriesAvailable { get; set; }
     }
 
-    public class HealthCheckResponse
-    {
-        public string Status { get; set; } = string.Empty;
-        public string Timestamp { get; set; } = string.Empty;
-    }
-
+    /// <summary>
+    /// Sync statistics response model
+    /// </summary>
     public class SyncStatsResponse
     {
-        public string Timestamp { get; set; } = string.Empty;
-        public string DatabaseStatus { get; set; } = string.Empty;
-        public string? ErrorMessage { get; set; }
-        public string? LastCheckTime { get; set; }
+        public DateTime Timestamp { get; set; }
+        public string DatabaseStatus { get; set; } = "unknown";
+        public string ErrorMessage { get; set; }
+        public DateTime? LastCheckTime { get; set; }
+        
+        // Order Statistics (from POS - SSOT)
         public int TotalOrdersToday { get; set; }
         public decimal TotalRevenueToday { get; set; }
-        public double AverageOrderValue { get; set; }
+        public decimal AverageOrderValue { get; set; }
+        
+        // Menu Statistics
         public int TotalCategories { get; set; }
         public int TotalMenuItems { get; set; }
     }

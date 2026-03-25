@@ -1,0 +1,20 @@
+
+> ini-admin-portal@1.0.0 dev
+> next dev -p 3001 -p 3001
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3001
+  - Environments: .env.local
+
+ ✓ Starting...
+   Using tsconfig file: ./tsconfig.json
+ ✓ Ready in 1878ms
+ ○ Compiling /auth/login ...
+ ✓ Compiled /auth/login in 2.6s (830 modules)
+ GET /auth/login 200 in 2817ms
+ GET /auth/login 200 in 24ms
+ GET /auth/login 200 in 19ms
+ ✓ Compiled / in 321ms (839 modules)
+ GET / 307 in 432ms
+ GET /auth/login 200 in 66ms
+ GET /auth/login 200 in 32ms

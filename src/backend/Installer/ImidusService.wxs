@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Product Id="*" Name="Imidus POS Integration Service" Language="1033" Version="1.0.0.0" Manufacturer="Imidus Technologies" UpgradeCode="a1b2c3d4-e5f6-4a5b-bc6d-7e8f9a0b1c2d">
+        <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+        <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+        <MediaTemplate EmbedCab="yes" />
+
+        <Feature Id="ProductFeature" Title="Imidus POS Integration Service" Level="1">
+            <ComponentGroupRef Id="ProductComponents" />
+            <ComponentRef Id="ServiceInstaller" />
+        </Feature>
+
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFiles64Folder">
+                <Directory Id="INSTALLFOLDER" Name="ImidusTechnologies">
+                    <Directory Id="SERVICEFOLDER" Name="IntegrationService" />
+                </Directory>
+            </Directory>
+        </Directory>
+
+        <ComponentGroup Id="ProductComponents" Directory="SERVICEFOLDER">
+            <!-- This will be populated with the published files -->
+        </ComponentGroup>
+
+        <DirectoryRef Id="SERVICEFOLDER">
+            <Component Id="ServiceInstaller" Guid="*">
+                <File Id="ImidusApiExe" Source="$(var.PublishDir)\IntegrationService.API.exe" KeyPath="yes" />
+                <ServiceInstall Id="ServiceInstaller" 
+                                Type="ownProcess" 
+                                Name="ImidusIntegration" 
+                                DisplayName="Imidus POS Integration Service"
+                                Description="Bridges modern ordering apps to the INI POS database."
+                                Start="auto" 
+                                ErrorControl="normal" />
+                <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="ImidusIntegration" Wait="yes" />
+            </Component>
+        </DirectoryRef>
+
+        <UI>
+            <UIRef Id="WixUI_InstallDir" />
+        </UI>
+        <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    </Product>
+</Wix>

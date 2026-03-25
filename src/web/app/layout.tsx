@@ -1,19 +1,15 @@
-import { OrderPanel } from "@/components/OrderPanel";
-import { Sidebar } from "@/components/Sidebar";
-import { SyncIndicator } from "@/components/SyncIndicator";
-import { AuthProvider } from "@/context/AuthContext";
-import { CartProvider } from "@/context/CartContext";
-import { SyncProvider } from "@/context/SyncContext";
-import type { Metadata } from "next";
-import "./globals.css";
-import "./customer-theme.css";
-import "./imperial-onyx.css";
+"use client";
 
-export const metadata: Metadata = {
-  title: "IMIDUSAPP | The Digital Growth Engine for Restaurants",
-  description:
-    "Seamless Ordering. Real-Time Sync. Unified Loyalty. Order, track, and earn rewards with IMIDUS.",
-};
+import { AuthProvider } from "@/context/AuthContext";
+import { SyncProvider } from "@/context/SyncContext";
+import "@fontsource/plus-jakarta-sans/400.css";
+import "@fontsource/plus-jakarta-sans/500.css";
+import "@fontsource/plus-jakarta-sans/600.css";
+import "@fontsource/plus-jakarta-sans/700.css";
+import "@fontsource/plus-jakarta-sans/800.css";
+import "./customer-theme.css";
+import "./globals.css";
+import "./imperial-onyx.css";
 
 export default function RootLayout({
   children,
@@ -22,31 +18,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="customer-layout imperial-onyx">
+      <body className="antialiased font-sans bg-gray-950 text-white">
         <AuthProvider>
-          <CartProvider>
-            <SyncProvider pollingInterval={30000}>
-              <div className="imidus-container">
-                <Sidebar />
-                <main className="imidus-main">
-                  <header className="imidus-header">
-                    <div className="header-brand">
-                      <span className="logo-text">IMIDUS<span className="text-gradient">APP</span></span>
-                      <span className="tagline">Seamless Ordering. Real-Time Sync. Unified Loyalty.</span>
-                    </div>
-                    <div className="header-actions">
-                      <a href="/menu" className="header-cta">Start Ordering</a>
-                      <SyncIndicator />
-                    </div>
-                  </header>
-                  <div className="content-area">
-                    {children}
-                  </div>
-                </main>
-                <OrderPanel />
-              </div>
-            </SyncProvider>
-          </CartProvider>
+          <SyncProvider pollingInterval={30000}>{children}</SyncProvider>
         </AuthProvider>
       </body>
     </html>

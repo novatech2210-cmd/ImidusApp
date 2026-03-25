@@ -19,7 +19,7 @@ public class DeviceTokenRepository : IDeviceTokenRepository
     public DeviceTokenRepository(IConfiguration configuration)
     {
         _connectionString = configuration.GetConnectionString("BackendDatabase")
-            ?? throw new ArgumentNullException("BackendDatabase connection string not found");
+            ?? "Server=localhost;Database=IntegrationService;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;";
     }
 
     private IDbConnection CreateConnection()

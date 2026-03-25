@@ -1,54 +1,116 @@
-using IntegrationService.Core.Domain.Entities;
-
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using IntegrationService.Core.Domain.Entities;
+using IntegrationService.Core.Models.AdminPortal;
 
 namespace IntegrationService.Core.Interfaces
 {
+    /// <summary>
+    /// Repository interface for INI POS database operations
+    ///
+    /// ORDER LIFECYCLE:
+    /// 1. Create tblSales with TransType=2 (Open) via CreateOpenOrderAsync
+    /// 2. Insert items into tblPendingOrders via InsertPendingOrderItemAsync
+    /// 3. Process payment via InsertPaymentAsync
+    /// 4. Complete order via MovePendingOrdersToSalesDetailAsync + UpdateSaleTransTypeAsync
+    /// </summary>
     public interface IPosRepository
     {
+        // =============================================================================
+        // TRANSACTION MANAGEMENT
+        // =============================================================================
+
         Task<IDbTransaction> BeginTransactionAsync();
-        Task<int> CreateOpenOrderAsync(PosTicket sale, IDbTransaction? transaction = null);
+
+        // =============================================================================
+        // MENU ITEMS
+        // =============================================================================
+
+        Task<IEnumerable<MenuItem>> GetActiveMenuItemsAsync();
+        Task<MenuItem?> GetMenuItemByIdAsync(int itemId);
+        Task<IEnumerable<AvailableSize>> GetItemSizesAsync(int itemId);
+        Task<IEnumerable<Category>> GetCategoriesAsync();
+        Task<Dictionary<byte, int>> GetCategoryItemCountsAsync();
+        Task<IEnumerable<MenuItem>> GetMenuItemsByCategoryAsync(int categoryId);
+        Task<int?> GetItemStockAsync(int itemId, int sizeId);
+        Task<bool> IsItemInStockAsync(int itemId, int sizeId, decimal quantity);
+        Task<bool> DecreaseStockAsync(int itemId, int sizeId, decimal quantity, IDbTransaction? transaction = null);
+
+        // =============================================================================
+        // ORDERS (tblSales)
+        // =============================================================================
+
+        Task<int> GetNextDailyOrderNumberAsync();
+        Task<int> CreateOpenOrderAsync(PosTicket ticket, IDbTransaction? transaction = null, string? customerName = null);
+        Task<PosTicket?> GetTicketByIdAsync(int salesId);
         Task CompleteOrderAsync(int salesId, IDbTransaction transaction);
-        Task<IEnumerable<PosTicketItem>> GetSalesDetailItemsAsync(int salesId);
+        Task<bool> UpdateSaleTransTypeAsync(int salesId, int transType, IDbTransaction? transaction = null);
+        Task<bool> UpdateSaleTotalsAsync(int salesId, decimal subTotal, decimal gstAmt, decimal pstAmt, decimal pst2Amt, decimal dscAmt, IDbTransaction? transaction = null);
+        Task<IEnumerable<PosTicket>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<PosTicket>> GetOrdersByCustomerIdAsync(int customerId, int limit = 50);
+
+        // =============================================================================
+        // PENDING ORDERS (tblPendingOrders) - Active items in kitchen
+        // =============================================================================
+
+        Task InsertPendingOrderItemAsync(PendingOrderItem item, IDbTransaction? transaction = null);
         Task<IEnumerable<PendingOrderItem>> GetPendingOrderItemsAsync(int salesId);
         Task MovePendingOrdersToSalesDetailAsync(int salesId, IDbTransaction? transaction = null);
-        Task UpdateSaleTransTypeAsync(int salesId, int transType, IDbTransaction? transaction = null);
-        Task InsertPendingOrderItemAsync(PendingOrderItem item, IDbTransaction? transaction = null);
-        Task<int> GetNextDailyOrderNumberAsync();
-        Task<ItemStock?> GetItemStockAsync(int itemId, int sizeId);
-        Task<bool> DecreaseStockAsync(int itemId, int sizeId, decimal quantity, IDbTransaction? transaction = null);
-        Task<IEnumerable<AvailableSize>> GetItemSizesAsync(int itemId);
-        Task<IEnumerable<MenuItem>> GetActiveMenuItemsAsync();
-        Task<TaxRates> GetTaxRatesAsync();
-        Task<PosTicket?> GetTicketByIdAsync(int salesId);
-        Task<IEnumerable<PosTender>> GetPaymentsAsync(int salesId);
-        Task InsertPaymentAsync(PosTender tender, IDbTransaction? transaction = null);
-        Task UpdateSalePaymentTotalsAsync(int salesId, PosTender tender, IDbTransaction? transaction = null);
-        Task UpdateSaleTotalsAsync(int salesId, decimal subTotal, decimal gstAmt, decimal pstAmt, decimal pst2Amt, decimal dscAmt, IDbTransaction? transaction = null);
         Task DeletePendingOrderItemsAsync(int salesId, IDbTransaction? transaction = null);
-        Task InsertOnlineSalesLinkAsync(SalesOfOnlineOrder link, IDbTransaction? transaction = null);
-        Task<int?> GetOnlineOrderCompanyIdAsync(int salesId);
-        Task<bool> RecordPointsTransactionAsync(int salesId, int customerId, int pointsRedeemed, int pointsSaved, IDbTransaction? transaction = null);
-        Task<PosCustomer?> GetCustomerByIdAsync(int id);
-        Task<int> UpdateLoyaltyPointsAsync(int customerId, int pointsDelta, IDbTransaction? transaction = null);
-        Task<MenuItem?> GetMenuItemByIdAsync(int itemId);
-        Task<PosCustomer?> GetCustomerByPhoneAsync(string phone);
-        Task<decimal> GetTaxRateAsync(string taxCode);
-        Task<int> InsertCustomerAsync(PosCustomer customer);
-        Task<IEnumerable<PosTicket>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate);
+
+        // =============================================================================
+        // SALES DETAIL (tblSalesDetail) - Completed order items
+        // =============================================================================
+
+        Task<IEnumerable<PosTicketItem>> GetSalesDetailItemsAsync(int salesId);
         Task InsertSalesDetailItemAsync(PosTicketItem item, IDbTransaction? transaction = null);
-        Task<bool> IsItemInStockAsync(int itemId, int sizeId, decimal quantity);
+        Task<IEnumerable<ItemSalesAggregation>> GetItemSalesAggregationAsync(DateTime startDate, DateTime endDate);
+
+        // =============================================================================
+        // PAYMENTS (tblPayment)
+        // =============================================================================
+
+        Task InsertPaymentAsync(PosTender payment, IDbTransaction? transaction = null);
+        Task UpdateSalePaymentTotalsAsync(int salesId, PosTender payment, IDbTransaction? transaction = null);
+        Task<IEnumerable<PosTender>> GetPaymentsAsync(int salesId);
+        Task<bool> VoidPaymentAsync(int paymentId, IDbTransaction? transaction = null);
+
+        // =============================================================================
+        // ONLINE ORDERS
+        // =============================================================================
+
+        Task InsertOnlineSalesLinkAsync(SalesOfOnlineOrder link, IDbTransaction? transaction = null);
+        Task<IEnumerable<OnlineOrderCompany>> GetOnlineOrderCompaniesAsync();
         Task<IEnumerable<PosTicket>> GetCompletedOnlineOrdersAsync();
-        Task<IEnumerable<Category>> GetCategoriesAsync();
-        Task<Dictionary<int, int>> GetCategoryItemCountsAsync();
-        Task<IEnumerable<MenuItem>> GetMenuItemsByCategoryAsync(int categoryId);
+
+        // =============================================================================
+        // TAX CONFIGURATION
+        // =============================================================================
+
+        Task<decimal> GetTaxRateAsync(string taxCode);
+        Task<TaxRates> GetTaxRatesAsync();
+
+        // =============================================================================
+        // CUSTOMERS
+        // =============================================================================
+
+        Task<PosCustomer?> GetCustomerByPhoneAsync(string phone);
         Task<PosCustomer?> GetCustomerByEmailAsync(string email);
-        Task<IEnumerable<PointsDetail>> GetLoyaltyHistoryAsync(int customerId, int limit = 50);
+        Task<PosCustomer?> GetCustomerByIdAsync(int id);
+        Task<int> InsertCustomerAsync(PosCustomer customer);
+        Task<bool> UpdateLoyaltyPointsAsync(int customerId, int points, IDbTransaction? transaction = null);
+        Task InsertPointsDetailAsync(PointsDetail detail, IDbTransaction? transaction = null);
+        Task<IEnumerable<PointsDetail>> GetLoyaltyHistoryAsync(int customerId, int limit);
+        Task<bool> RecordPointsTransactionAsync(int salesId, int customerId, int pointsUsed, int pointsSaved, IDbTransaction? transaction = null);
         Task<IEnumerable<CustomerSegment>> GetCustomerSegmentsAsync();
+
+        // =============================================================================
+        // GIFT CARDS
+        // =============================================================================
+
+        Task<PrepaidCard?> GetPrepaidCardAsync(string barcode);
+        Task<bool> UpdatePrepaidCardBalanceAsync(int cardId, decimal amount, IDbTransaction? transaction = null);
     }
 }

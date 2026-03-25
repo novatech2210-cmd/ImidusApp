@@ -1,6 +1,6 @@
-using IntegrationService.Core.Domain.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using IntegrationService.Core.Domain.Entities;
 
 namespace IntegrationService.Core.Interfaces
 {

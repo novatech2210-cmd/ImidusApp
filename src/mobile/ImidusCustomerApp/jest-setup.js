@@ -1,45 +1,50 @@
 import 'react-native-gesture-handler/jestSetup';
 
-try {
-  console.log('DEBUG: react-native path:', require.resolve('react-native'));
-} catch (e) {
-  console.log('DEBUG: react-native resolution failed');
-}
-
-// Mock react-native to ensure Animated and other critical modules are available
+// Mock react-native
 jest.mock('react-native', () => {
   const RN = jest.requireActual('react-native');
-
-  // Fix for "Cannot read properties of undefined (reading 'spring')"
-  // We need to handle the getter
-  const originalAnimated = RN.Animated;
-  if (originalAnimated) {
-    if (!originalAnimated.spring) {
-      originalAnimated.spring = jest.fn(() => ({
-        start: jest.fn(cb => cb && cb({finished: true})),
-        stop: jest.fn(),
-      }));
-    }
-    if (!originalAnimated.timing) {
-      originalAnimated.timing = jest.fn(() => ({
-        start: jest.fn(cb => cb && cb({finished: true})),
-        stop: jest.fn(),
-      }));
-    }
-  }
-
+  const mockAnimation = () => ({
+    start: jest.fn((cb) => cb && cb({ finished: true })),
+    stop: jest.fn(),
+    interpolate: jest.fn(() => ({})),
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    removeAllListeners: jest.fn(),
+  });
+  const Animated = {
+    Value: jest.fn(() => mockAnimation()),
+    ValueXY: jest.fn(() => mockAnimation()),
+    timing: jest.fn(() => mockAnimation()),
+    spring: jest.fn(() => mockAnimation()),
+    parallel: jest.fn(() => mockAnimation()),
+    sequence: jest.fn(() => mockAnimation()),
+    loop: jest.fn(() => mockAnimation()),
+    event: jest.fn(),
+    createAnimatedComponent: jest.fn((component) => component),
+    View: RN.View,
+    Text: RN.Text,
+    Image: RN.Image,
+    ScrollView: RN.ScrollView,
+  };
+  const I18nManager = {
+    getConstants: jest.fn(() => ({ isRTL: false })),
+    allowRTL: jest.fn(),
+    forceRTL: jest.fn(),
+  };
+  Object.defineProperty(RN, 'Animated', { get: () => Animated });
+  Object.defineProperty(RN, 'I18nManager', { get: () => I18nManager });
   return RN;
 });
 
-// Mock InteractionManager
-jest.mock('react-native/Libraries/Interaction/InteractionManager', () => ({
-  createInteractionHandle: jest.fn(),
-  clearInteractionHandle: jest.fn(),
-  runAfterInteractions: jest.fn(callback => callback()),
-}));
-
-// Silence the warning: Animated: `useNativeDriver` is not supported because the native animated module is missing
-jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+// Mock WebView
+jest.mock('react-native-webview', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    WebView: (props) => React.createElement(View, props),
+    default: (props) => React.createElement(View, props),
+  };
+});
 
 // Mock Reanimated
 jest.mock('react-native-reanimated', () => {
@@ -53,7 +58,6 @@ jest.mock('@react-native-firebase/app', () => ({
   apps: [],
   initializeApp: jest.fn(),
 }));
-
 jest.mock('@react-native-firebase/messaging', () => ({
   __esModule: true,
   default: jest.fn(() => ({
@@ -68,18 +72,22 @@ jest.mock('@react-native-firebase/messaging', () => ({
 
 // Mock safe area context
 jest.mock('react-native-safe-area-context', () => {
+  const React = require('react');
   const inset = {top: 0, right: 0, bottom: 0, left: 0};
   const mockContext = {
-    Consumer: jest.fn(({children}) => children(inset)),
-    Provider: jest.fn(({children}) => children),
+    Consumer: ({children}) => children(inset),
+    Provider: ({children}) => children,
   };
   return {
-    SafeAreaProvider: jest.fn(({children}) => children),
-    SafeAreaView: jest.fn(({children}) => children),
-    useSafeAreaInsets: jest.fn(() => inset),
-    SafeAreaConsumer: jest.fn(({children}) => children(inset)),
-    SafeAreaContext: mockContext,
+    SafeAreaProvider: ({children}) => children,
+    SafeAreaView: ({children}) => children,
+    useSafeAreaInsets: () => inset,
     SafeAreaInsetsContext: mockContext,
+    SafeAreaContext: mockContext,
+    initialWindowMetrics: {
+      frame: { x: 0, y: 0, width: 0, height: 0 },
+      insets: inset,
+    },
   };
 });
 

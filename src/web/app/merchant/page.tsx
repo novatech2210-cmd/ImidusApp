@@ -2,21 +2,13 @@
 
 import { AdminAPI, DashboardSummary, OrderQueueItem } from "@/lib/api";
 import {
-    ArrowPathIcon,
-    BanknotesIcon,
-    BuildingStorefrontIcon,
-    ChartBarIcon,
-    CheckCircleIcon,
-    ClockIcon,
-    CreditCardIcon,
-    ExclamationCircleIcon,
-    EyeIcon,
-    MegaphoneIcon,
-    ReceiptRefundIcon,
-    ShoppingBagIcon,
-    ShoppingCartIcon,
-    StarIcon,
-    UsersIcon,
+  ArrowPathIcon,
+  BanknotesIcon,
+  ChartBarIcon,
+  MegaphoneIcon,
+  ShoppingCartIcon,
+  StarIcon,
+  UsersIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -41,7 +33,6 @@ export default function AdminDashboardPage() {
     try {
       setLoading(true);
 
-      // Fetch summary and recent orders in parallel
       const [summaryRes, ordersRes] = await Promise.all([
         AdminAPI.getDashboardSummary(),
         AdminAPI.getOrderQueue({ limit: 10 }),
@@ -62,29 +53,25 @@ export default function AdminDashboardPage() {
     switch (transType) {
       case 0:
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-900/50 text-red-400 border border-red-800">
-            <ReceiptRefundIcon className="w-3 h-3 mr-1" />
+          <span className="inline-flex items-center px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.15rem] bg-red-900/10 text-red-500">
             Refunded
           </span>
         );
       case 1:
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-900/50 text-green-400 border border-green-800">
-            <CheckCircleIcon className="w-3 h-3 mr-1" />
+          <span className="inline-flex items-center px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.15rem] bg-green-900/10 text-green-500">
             Completed
           </span>
         );
       case 2:
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-900/50 text-yellow-400 border border-yellow-800">
-            <ClockIcon className="w-3 h-3 mr-1" />
+          <span className="inline-flex items-center px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.15rem] bg-yellow-900/10 text-yellow-500">
             Open
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-900/50 text-gray-400 border border-gray-800">
-            <ExclamationCircleIcon className="w-3 h-3 mr-1" />
+          <span className="inline-flex items-center px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.15rem] bg-gray-900/10 text-gray-400">
             Unknown
           </span>
         );
@@ -101,324 +88,258 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      {/* Header */}
-      <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <BuildingStorefrontIcon className="w-8 h-8 text-blue-500" />
-              <h1 className="text-xl font-bold">Merchant Portal</h1>
-              <span className="text-xs text-gray-500 bg-gray-800 px-2 py-1 rounded">
-                POS Integration
+    <div className="p-10 space-y-12 imperial-onyx">
+      {/* Title & Controls */}
+      <div className="flex items-end justify-between">
+        <div>
+          <span className="text-micro text-[#D4AF37] mb-2 block">
+            Executive Insights
+          </span>
+          <h1 className="text-display leading-none text-white tracking-[-0.05em]">
+            Merchant{" "}
+            <span className="font-light italic text-[#D4AF37]">Presence</span>
+          </h1>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2rem] block">
+              Last Sync
+            </span>
+            <span className="text-[11px] font-bold text-white/80">
+              {lastUpdated.toLocaleTimeString()}
+            </span>
+          </div>
+          <button
+            onClick={fetchDashboardData}
+            className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
+          >
+            <ArrowPathIcon
+              className={`w-5 h-5 text-[#D4AF37] ${loading ? "animate-spin" : ""}`}
+            />
+          </button>
+        </div>
+      </div>
+
+      {/* KPI Cards - Sovereignty Blocks */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Total Sales */}
+        <div className="bg-white rounded-[1rem] p-8 shadow-studio transition-all hover:translate-y-[-4px]">
+          <div className="flex flex-col h-full">
+            <span className="text-micro text-[#0A1F3D]">Revenue Today</span>
+            <div className="mt-4 flex items-baseline gap-1">
+              <span className="text-[1.5rem] font-bold text-[#0A1F3D]">$</span>
+              <span className="text-[2.5rem] font-black text-[#0A1F3D] leading-none tracking-[-0.05em]">
+                {summary?.totalRevenue.toFixed(2).split(".")[0] || "0"}
+              </span>
+              <span className="text-[1.25rem] font-bold text-[#0A1F3D]">
+                .{summary?.totalRevenue.toFixed(2).split(".")[1] || "00"}
               </span>
             </div>
-
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm text-gray-400">
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                POS Connected
-              </div>
-              <div className="text-sm text-gray-500">
-                Last updated: {lastUpdated.toLocaleTimeString()}
-              </div>
-              <button
-                onClick={() => setAutoRefresh(!autoRefresh)}
-                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                  autoRefresh
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-700 text-gray-300"
-                }`}
-              >
-                Auto-refresh {autoRefresh ? "ON" : "OFF"}
-              </button>
-              <button
-                onClick={fetchDashboardData}
-                className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
-                title="Refresh data"
-              >
-                <ArrowPathIcon
-                  className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
-                />
-              </button>
+            <div className="mt-auto pt-6 flex items-center justify-between border-t border-[#0A1F3D]/5">
+              <span className="text-[10px] font-bold text-[#0A1F3D]/40 uppercase tracking-widest">
+                Live from POS
+              </span>
+              <BanknotesIcon className="w-5 h-5 text-[#D4AF37]" />
             </div>
           </div>
         </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Total Sales */}
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-green-900/30 rounded-lg">
-                <BanknotesIcon className="w-6 h-6 text-green-400" />
-              </div>
-              <span className="text-xs text-gray-500">Today's Sales</span>
+        {/* Total Orders */}
+        <div className="bg-white rounded-[1rem] p-8 shadow-studio transition-all hover:translate-y-[-4px]">
+          <div className="flex flex-col h-full">
+            <span className="text-micro text-[#0A1F3D]">Order Count</span>
+            <div className="mt-4">
+              <span className="text-[2.5rem] font-black text-[#0A1F3D] leading-none tracking-[-0.05em]">
+                {summary?.totalOrders || 0}
+              </span>
             </div>
-            <div className="text-2xl font-bold text-white">
-              ${summary?.totalRevenue.toFixed(2) || "0.00"}
+            <div className="mt-auto pt-6 flex items-center justify-between border-t border-[#0A1F3D]/5">
+              <span className="text-[10px] font-bold text-[#0A1F3D]/40 uppercase tracking-widest">
+                Volume Monitor
+              </span>
+              <ShoppingCartIcon className="w-5 h-5 text-[#D4AF37]" />
             </div>
-            <div className="text-sm text-gray-500 mt-1">
-              Revenue from POS database
-            </div>
-          </div>
-
-          {/* Order Count */}
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-blue-900/30 rounded-lg">
-                <ShoppingCartIcon className="w-6 h-6 text-blue-400" />
-              </div>
-              <span className="text-xs text-gray-500">Total Orders</span>
-            </div>
-            <div className="text-2xl font-bold text-white">
-              {summary?.totalOrders || 0}
-            </div>
-            <div className="text-sm text-gray-500 mt-1">
-              Orders from INI_Restaurant
-            </div>
-          </div>
-
-          {/* Average Order */}
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-purple-900/30 rounded-lg">
-                <ChartBarIcon className="w-6 h-6 text-purple-400" />
-              </div>
-              <span className="text-xs text-gray-500">Avg Ticket</span>
-            </div>
-            <div className="text-2xl font-bold text-white">
-              ${summary?.averageOrderValue.toFixed(2) || "0.00"}
-            </div>
-            <div className="text-sm text-gray-500 mt-1">Per order average</div>
-          </div>
-
-          {/* Customers */}
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-indigo-900/30 rounded-lg">
-                <UsersIcon className="w-6 h-6 text-indigo-400" />
-              </div>
-              <span className="text-xs text-gray-500">Total Customers</span>
-            </div>
-            <div className="text-2xl font-bold text-white">
-              {summary?.totalCustomers || 0}
-            </div>
-            <div className="text-sm text-gray-500 mt-1">CRM Profiles</div>
           </div>
         </div>
 
+        {/* Avg Ticket */}
+        <div className="bg-[#0A1F3D] rounded-[1rem] p-8 border border-white/10 shadow-studio transition-all hover:translate-y-[-4px] group">
+          <div className="flex flex-col h-full">
+            <span className="text-micro text-[#D4AF37]">Avg Ticket</span>
+            <div className="mt-4 text-white">
+              <span className="text-[1.5rem] font-bold">$</span>
+              <span className="text-[2.5rem] font-black leading-none tracking-[-0.05em]">
+                {Math.floor(summary?.averageOrderValue || 0)}
+              </span>
+              <span className="text-[1.25rem] font-bold">
+                .
+                {Math.round(((summary?.averageOrderValue || 0) % 1) * 100)
+                  .toString()
+                  .padStart(2, "0")}
+              </span>
+            </div>
+            <div className="mt-auto pt-6 flex items-center justify-between border-t border-white/5">
+              <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest group-hover:text-[#D4AF37] transition-colors">
+                Per Order
+              </span>
+              <ChartBarIcon className="w-5 h-5 text-[#D4AF37]" />
+            </div>
+          </div>
+        </div>
+
+        {/* Total Customers */}
+        <div className="bg-white rounded-[1rem] p-8 shadow-studio transition-all hover:translate-y-[-4px]">
+          <div className="flex flex-col h-full">
+            <span className="text-micro text-[#0A1F3D]">CRM Profiles</span>
+            <div className="mt-4">
+              <span className="text-[2.5rem] font-black text-[#0A1F3D] leading-none tracking-[-0.05em]">
+                {summary?.totalCustomers || 0}
+              </span>
+            </div>
+            <div className="mt-auto pt-6 flex items-center justify-between border-t border-[#0A1F3D]/5">
+              <span className="text-[10px] font-bold text-[#0A1F3D]/40 uppercase tracking-widest">
+                Loyalty Base
+              </span>
+              <UsersIcon className="w-5 h-5 text-[#D4AF37]" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tables and Grids */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Recent Orders Table */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-          <div className="p-6 border-b border-gray-800 flex items-center justify-between">
+        <div className="lg:col-span-2 bg-white rounded-[1rem] shadow-studio overflow-hidden">
+          <div className="px-8 py-6 border-b border-[#0A1F3D]/5 flex items-center justify-between bg-[#F8F9FA]">
             <div>
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <ShoppingBagIcon className="w-5 h-5 text-blue-400" />
-                Recent Orders
+              <h2 className="text-[14px] font-black text-[#0A1F3D] uppercase tracking-[0.25rem]">
+                Recent Transactions
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
-                Live data from INI_Restaurant POS database
+              <p className="text-[11px] font-bold text-[#0A1F3D]/40 mt-1 uppercase tracking-widest">
+                Ground Truth from POS
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <Link
-                href="/merchant/orders"
-                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors"
-              >
-                View All Orders
-              </Link>
-            </div>
+            <Link
+              href="/merchant/orders"
+              className="text-[10px] font-black text-[#D4AF37] uppercase tracking-[0.25rem] hover:opacity-80 transition-opacity underline-offset-4 underline"
+            >
+              View Ledger
+            </Link>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-950">
+          <table className="w-full text-[#0A1F3D]">
+            <thead>
+              <tr className="bg-[#0A1F3D]/5">
+                <th className="px-8 py-4 text-left text-micro font-black opacity-40">
+                  Ticket
+                </th>
+                <th className="px-8 py-4 text-left text-micro font-black opacity-40">
+                  Identity
+                </th>
+                <th className="px-8 py-4 text-left text-micro font-black opacity-40">
+                  Monetary
+                </th>
+                <th className="px-8 py-4 text-left text-micro font-black opacity-40">
+                  State
+                </th>
+                <th className="px-8 py-4 text-right text-micro font-black opacity-40">
+                  Temporal
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#0A1F3D]/5">
+              {recentOrders.length === 0 ? (
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    Order #
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    Customer
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    Total
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    Time
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
+                  <td colSpan={5} className="px-8 py-20 text-center">
+                    <span className="text-micro opacity-40">
+                      No entries in current session
+                    </span>
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-800">
-                {recentOrders.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={6}
-                      className="px-6 py-12 text-center text-gray-400"
-                    >
-                      <ShoppingBagIcon className="w-12 h-12 mx-auto mb-3 text-gray-600" />
-                      <p>No orders found</p>
-                      <p className="text-sm mt-1">
-                        Orders from POS will appear here
-                      </p>
+              ) : (
+                recentOrders.map((order) => (
+                  <tr
+                    key={order.id}
+                    className="hover:bg-[#F8F9FA] transition-colors group"
+                  >
+                    <td className="px-8 py-5">
+                      <span className="text-[11px] font-black uppercase tracking-widest">
+                        #{order.orderNumber}
+                      </span>
+                    </td>
+                    <td className="px-8 py-5">
+                      <span className="text-[12px] font-bold">
+                        {order.customerName || "Sovereign Guest"}
+                      </span>
+                    </td>
+                    <td className="px-8 py-5">
+                      <span className="text-[12px] font-black text-[#D4AF37]">
+                        ${(order.total / 100).toFixed(2)}
+                      </span>
+                    </td>
+                    <td className="px-8 py-5">
+                      {getStatusBadge(order.transType)}
+                    </td>
+                    <td className="px-8 py-5 text-right">
+                      <span className="text-[10px] font-bold opacity-40">
+                        {formatTime(order.createdAt)}
+                      </span>
                     </td>
                   </tr>
-                ) : (
-                  recentOrders.slice(0, 10).map((order) => (
-                    <tr
-                      key={order.id}
-                      className="hover:bg-gray-800/50 transition-colors"
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-mono font-bold text-white">
-                          #{order.orderNumber}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-white">
-                          {order.customerName || "Guest"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-bold text-white">
-                          ${(order.total / 100).toFixed(2)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatusBadge(order.transType)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-400">
-                          {formatTime(order.createdAt)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <Link
-                          href={`/merchant/orders?id=${order.id}`}
-                          className="text-blue-400 hover:text-blue-300 text-sm font-bold inline-flex items-center gap-1"
-                        >
-                          <EyeIcon className="w-4 h-4" />
-                          View
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Marketing Shortcuts */}
+        <div className="space-y-8">
+          <div className="bg-[#0A1F3D] rounded-[1rem] p-8 border border-white/10 shadow-studio relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-2 h-full bg-[#D4AF37] transition-all group-hover:w-4" />
+            <MegaphoneIcon className="w-12 h-12 text-[#D4AF37]/20 absolute top-[-1rem] right-[-1rem]" />
+
+            <span className="text-micro text-[#D4AF37] mb-2 block">
+              Campaigns
+            </span>
+            <h3 className="text-headline text-white mb-4">
+              Push <span className="text-[#D4AF37]">Presence</span>
+            </h3>
+            <p className="text-[12px] text-white/50 leading-relaxed mb-6">
+              Dispatch targeted mobile notifications to specific customer
+              segments with executive precision.
+            </p>
+            <Link
+              href="/merchant/marketing/campaigns"
+              className="btn-gold-shimmer w-full"
+            >
+              Invoke Campaign
+            </Link>
+          </div>
+
+          <div className="bg-white rounded-[1rem] p-8 shadow-studio border border-[#0A1F3D]/5 relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-2 h-full bg-[#0A1F3D] transition-all group-hover:w-4" />
+            <StarIcon className="w-12 h-12 text-[#0A1F3D]/5 absolute top-[-1rem] right-[-1rem]" />
+
+            <span className="text-micro text-[#0A1F3D]/40 mb-2 block">
+              Automations
+            </span>
+            <h3 className="text-headline text-[#0A1F3D] mb-4">
+              Birthday <span className="text-[#D4AF37]">Rewards</span>
+            </h3>
+            <p className="text-[12px] text-[#0A1F3D]/60 leading-relaxed mb-6">
+              Automated gifting logic triggered by customer profile milestones
+              observed in the ground truth database.
+            </p>
+            <Link
+              href="/merchant/marketing/rewards"
+              className="btn-primary-onyx w-full"
+            >
+              Manage Rewards
+            </Link>
           </div>
         </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-          <Link
-            href="/merchant/menu"
-            className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-colors group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-blue-900/30 rounded-lg group-hover:bg-blue-900/50 transition-colors">
-                <ShoppingBagIcon className="w-6 h-6 text-blue-400" />
-              </div>
-              <div>
-                <div className="font-bold text-white">Menu Management</div>
-                <div className="text-sm text-gray-500">View online items</div>
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            href="/merchant/customers"
-            className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-colors group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-purple-900/30 rounded-lg group-hover:bg-purple-900/50 transition-colors">
-                <UsersIcon className="w-6 h-6 text-purple-400" />
-              </div>
-              <div>
-                <div className="font-bold text-white">Customers</div>
-                <div className="text-sm text-gray-500">Loyalty & profiles</div>
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            href="/merchant/dashboard"
-            className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-colors group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-green-900/30 rounded-lg group-hover:bg-green-900/50 transition-colors">
-                <ChartBarIcon className="w-6 h-6 text-green-400" />
-              </div>
-              <div>
-                <div className="font-bold text-white">Intelligence</div>
-                <div className="text-sm text-gray-500">Sales analytics</div>
-              </div>
-            </div>
-          </Link>
-
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-yellow-900/30 rounded-lg">
-                <CreditCardIcon className="w-6 h-6 text-yellow-400" />
-              </div>
-              <div>
-                <div className="font-bold text-white">POS Status</div>
-                <div className="text-sm text-green-400 flex items-center gap-1">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  Connected
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Marketing Actions */}
-        <h3 className="text-sm font-black text-gray-500 uppercase tracking-widest mt-12 mb-6">
-          Marketing & Growth
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Link
-            href="/merchant/marketing/campaigns"
-            className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-colors group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-blue-900/30 rounded-lg group-hover:bg-blue-900/50 transition-colors">
-                <MegaphoneIcon className="w-6 h-6 text-blue-400" />
-              </div>
-              <div>
-                <div className="font-bold text-white">Push Campaigns</div>
-                <div className="text-sm text-gray-500">
-                  Targeted mobile notifications
-                </div>
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            href="/merchant/marketing/rewards"
-            className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-colors group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-pink-900/30 rounded-lg group-hover:bg-pink-900/50 transition-colors">
-                <StarIcon className="w-6 h-6 text-pink-400" />
-              </div>
-              <div>
-                <div className="font-bold text-white">Birthday Rewards</div>
-                <div className="text-sm text-gray-500">
-                  Automated loyalty gifts
-                </div>
-              </div>
-            </div>
-          </Link>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }

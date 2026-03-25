@@ -3,6 +3,7 @@ using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 using IntegrationService.Core.Domain.Entities;
+using IntegrationService.Core.Models.AdminPortal;
 using IntegrationService.Core.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -254,6 +255,66 @@ namespace IntegrationService.Infrastructure.Data
             if (rows > 0)
                 _logger.LogInformation("Deactivated user ID {UserId}", userId);
             
+            return rows > 0;
+        }
+
+        /// <summary>
+        /// Get admin user by email from AdminUsers table
+        /// </summary>
+        public async Task<AdminUser?> GetAdminByEmailAsync(string email)
+        {
+            const string sql = @"
+                SELECT u.*, r.Id as Role_Id, r.Name as Role_Name, r.Description as Role_Description, r.Permissions as Role_Permissions
+                FROM AdminUsers u
+                LEFT JOIN AdminRoles r ON u.RoleId = r.Id
+                WHERE u.Email = @Email AND u.IsActive = 1";
+
+            using var connection = CreateConnection();
+            var result = await connection.QueryAsync<dynamic>(sql, new { Email = email });
+            var row = result.FirstOrDefault();
+
+            if (row == null) return null;
+
+            return new AdminUser
+            {
+                Id = row.Id,
+                Email = row.Email,
+                PasswordHash = row.PasswordHash,
+                FirstName = row.FirstName,
+                LastName = row.LastName,
+                Phone = row.Phone,
+                RoleId = row.RoleId,
+                IsActive = row.IsActive,
+                LastLoginAt = row.LastLoginAt,
+                LastLoginIp = row.LastLoginIp,
+                FailedLoginAttempts = row.FailedLoginAttempts,
+                LockoutUntil = row.LockoutUntil,
+                CreatedAt = row.CreatedAt,
+                UpdatedAt = row.UpdatedAt,
+                Role = new AdminRole
+                {
+                    Id = row.Role_Id,
+                    Name = row.Role_Name,
+                    Description = row.Role_Description,
+                    Permissions = row.Role_Permissions
+                }
+            };
+        }
+
+        /// <summary>
+        /// Update admin user last login and reset failed attempts
+        /// </summary>
+        public async Task<bool> UpdateAdminLastLoginAsync(int adminUserId)
+        {
+            const string sql = @"
+                UPDATE AdminUsers
+                SET LastLoginAt = GETDATE(),
+                    FailedLoginAttempts = 0,
+                    LockoutUntil = NULL
+                WHERE Id = @AdminUserId";
+
+            using var connection = CreateConnection();
+            var rows = await connection.ExecuteAsync(sql, new { AdminUserId = adminUserId });
             return rows > 0;
         }
     }

@@ -3,10 +3,10 @@
  * Uses iframe for web preview
  */
 import React from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import {StyleSheet, View, ViewStyle} from 'react-native';
 
 interface WebViewProps {
-  source?: { uri?: string; html?: string };
+  source?: {uri?: string; html?: string};
   style?: ViewStyle;
   onMessage?: (event: any) => void;
   onLoadEnd?: () => void;
@@ -19,8 +19,15 @@ interface WebViewProps {
   incognito?: boolean;
 }
 
+// Web-specific iframe styles (not valid in standard StyleSheet.create)
+const iframeStyles = {
+  width: '100%',
+  height: '100%',
+  border: 'none',
+};
+
 export const WebView = React.forwardRef<any, WebViewProps>(
-  ({ source, style, onMessage, onLoadEnd, onError }, ref) => {
+  ({source, style, onMessage, onLoadEnd, onError}, ref) => {
     const iframeRef = React.useRef<HTMLIFrameElement>(null);
 
     React.useImperativeHandle(ref, () => ({
@@ -32,7 +39,7 @@ export const WebView = React.forwardRef<any, WebViewProps>(
     React.useEffect(() => {
       const handleMessage = (event: MessageEvent) => {
         if (onMessage) {
-          onMessage({ nativeEvent: { data: event.data } });
+          onMessage({nativeEvent: {data: event.data}});
         }
       };
       window.addEventListener('message', handleMessage);
@@ -45,7 +52,7 @@ export const WebView = React.forwardRef<any, WebViewProps>(
           <iframe
             ref={iframeRef}
             srcDoc={source.html}
-            style={styles.iframe as any}
+            style={iframeStyles as any}
             onLoad={onLoadEnd}
             onError={onError}
             sandbox="allow-scripts allow-same-origin allow-forms"
@@ -60,7 +67,7 @@ export const WebView = React.forwardRef<any, WebViewProps>(
           <iframe
             ref={iframeRef}
             src={source.uri}
-            style={styles.iframe as any}
+            style={iframeStyles as any}
             onLoad={onLoadEnd}
             onError={onError}
           />
@@ -69,22 +76,17 @@ export const WebView = React.forwardRef<any, WebViewProps>(
     }
 
     return <View style={style} />;
-  }
+  },
 );
 
 export type WebViewMessageEvent = {
-  nativeEvent: { data: string };
+  nativeEvent: {data: string};
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     overflow: 'hidden',
-  },
-  iframe: {
-    width: '100%',
-    height: '100%',
-    border: 'none',
   },
 });
 

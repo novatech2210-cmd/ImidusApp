@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, TouchEvent } from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
-import Image from "next/image";
 import { BannerSlide } from "@/lib/banner-config";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
+import Link from "next/link";
+import { TouchEvent, useCallback, useEffect, useRef, useState } from "react";
 
 interface BannerCarouselProps {
   slides: BannerSlide[];
@@ -18,7 +18,7 @@ const SWIPE_THRESHOLD = 50;
 export function BannerCarousel({
   slides,
   autoPlayInterval = 5000, // 5-second auto-rotate as per requirement
-  customerId
+  customerId,
 }: BannerCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -28,12 +28,15 @@ export function BannerCarousel({
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
 
-  const goToSlide = useCallback((index: number) => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setCurrentIndex(index);
-    setTimeout(() => setIsAnimating(false), 500);
-  }, [isAnimating]);
+  const goToSlide = useCallback(
+    (index: number) => {
+      if (isAnimating) return;
+      setIsAnimating(true);
+      setCurrentIndex(index);
+      setTimeout(() => setIsAnimating(false), 500);
+    },
+    [isAnimating],
+  );
 
   const nextSlide = useCallback(() => {
     goToSlide((currentIndex + 1) % slides.length);
@@ -97,11 +100,7 @@ export function BannerCarousel({
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-2xl shadow-xl"
-      style={{
-        boxShadow: "0 8px 32px rgba(30, 90, 168, 0.2)",
-        minHeight: "400px"
-      }}
+      className="relative w-full overflow-hidden rounded-[2rem] shadow-studio scale-95 hover:scale-100 transition-all duration-700"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -113,7 +112,7 @@ export function BannerCarousel({
     >
       {/* Slides Container */}
       <div
-        className="flex transition-transform duration-500 ease-out"
+        className="flex transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         aria-live="polite"
       >
@@ -121,7 +120,7 @@ export function BannerCarousel({
           <div
             key={slide.id}
             className="w-full flex-shrink-0 relative"
-            style={{ minHeight: "400px" }}
+            style={{ minHeight: "440px" }}
             role="group"
             aria-roledescription="slide"
             aria-label={`Slide ${index + 1} of ${slides.length}: ${slide.title}`}
@@ -138,27 +137,26 @@ export function BannerCarousel({
                   src={slide.imageUrl}
                   alt=""
                   fill
-                  className="object-cover opacity-30"
+                  className="object-cover opacity-20 mix-blend-overlay"
                   loading="lazy"
                   sizes="100vw"
                   priority={index === 0} // Priority load first slide
                 />
               )}
+              {/* Overlay Gradient for consistency */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#0A1F3D]/40 to-transparent" />
             </div>
 
             {/* Content */}
-            <div className="relative z-10 h-full flex flex-col items-center justify-center px-8 py-12 text-center min-h-[400px] md:min-h-[400px]">
+            <div className="relative z-10 h-full flex flex-col items-center justify-center px-12 py-16 text-center min-h-[440px]">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6">
-                <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
-                IMIDUSAPP Exclusive
+              <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-xl border border-white/10 text-white px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.25rem] mb-8">
+                <span className="w-2 h-2 rounded-full bg-[#D4AF37] shadow-[0_0_10px_#D4AF37]" />
+                Signature Selection
               </div>
 
               {/* Title */}
-              <h2
-                className="text-3xl sm:text-4xl lg:text-5xl font-black text-white uppercase tracking-tight leading-none mb-3"
-                style={{ textShadow: "0 2px 20px rgba(0,0,0,0.3)" }}
-              >
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white uppercase tracking-[-0.04em] leading-[0.9] mb-4">
                 {slide.title}
               </h2>
 
@@ -178,56 +176,51 @@ export function BannerCarousel({
               )}
 
               {/* CTA Button */}
-              <Link href={slide.ctaLink} tabIndex={index === currentIndex ? 0 : -1}>
-                <button
-                  className="px-6 sm:px-8 py-3 sm:py-4 bg-[#D4AF37] text-[#1A1A2E] font-bold rounded-xl transition-all hover:scale-105 hover:shadow-lg text-sm sm:text-base"
-                  style={{
-                    boxShadow: "0 4px 14px rgba(212, 175, 55, 0.4)",
-                    fontFamily: "var(--font-primary)"
-                  }}
-                >
+              <Link
+                href={slide.ctaLink}
+                tabIndex={index === currentIndex ? 0 : -1}
+              >
+                <button className="btn-primary-onyx !bg-[#D4AF37] !text-[#0A1F3D] !px-12 !py-5 shadow-[0_0_20px_rgba(212,175,55,0.2)] hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all">
                   {slide.ctaText}
                 </button>
               </Link>
             </div>
 
             {/* Decorative Elements */}
-            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/20 to-transparent" />
-            <div className="absolute top-4 right-4 w-32 h-32 rounded-full bg-white/5 blur-2xl" />
-            <div className="absolute bottom-4 left-4 w-24 h-24 rounded-full bg-white/5 blur-xl" />
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0A1F3D]/20 to-transparent" />
           </div>
         ))}
       </div>
 
-      {/* Navigation Arrows - hidden on mobile, visible on larger screens */}
+      {/* Navigation Arrows */}
       {slides.length > 1 && (
         <>
           <button
             onClick={prevSlide}
-            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white hover:bg-white/30 transition-all z-20 opacity-0 sm:opacity-100 group-hover:opacity-100"
+            className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all z-20 opacity-0 group-hover:opacity-100"
             aria-label="Previous slide"
           >
-            <ChevronLeftIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+            <ChevronLeftIcon className="w-6 h-6" />
           </button>
 
           <button
             onClick={nextSlide}
-            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white hover:bg-white/30 transition-all z-20 opacity-0 sm:opacity-100 group-hover:opacity-100"
+            className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all z-20 opacity-0 group-hover:opacity-100"
             aria-label="Next slide"
           >
-            <ChevronRightIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+            <ChevronRightIcon className="w-6 h-6" />
           </button>
 
           {/* Dots Indicator */}
-          <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 z-20">
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
             {slides.map((_, index) => (
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`h-2 sm:h-2.5 rounded-full transition-all ${
+                className={`h-1.5 rounded-full transition-all duration-500 ${
                   index === currentIndex
-                    ? "bg-[#D4AF37] w-6 sm:w-8"
-                    : "bg-white/50 hover:bg-white/70 w-2 sm:w-2.5"
+                    ? "bg-[#D4AF37] w-12 shadow-[0_0_10px_#D4AF37]"
+                    : "bg-white/30 hover:bg-white/50 w-2"
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
                 aria-current={index === currentIndex ? "true" : "false"}

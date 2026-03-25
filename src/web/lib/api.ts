@@ -65,6 +65,7 @@ export interface MenuItem {
 export interface Category {
   categoryId: number;
   name: string;
+  imageUrl?: string;
   displayOrder: number;
 }
 
@@ -592,6 +593,13 @@ export interface MenuOverride {
 }
 
 export const AdminAPI = {
+  // Auth
+  login: (data: LoginRequest) =>
+    apiClient("/Auth/admin-login", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
   // Dashboard
   getDashboardSummary: (
     startDate?: string,

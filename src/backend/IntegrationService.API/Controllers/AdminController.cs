@@ -1,415 +1,412 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using IntegrationService.Core.Domain.Entities;
-using IntegrationService.Core.Interfaces;
-using IntegrationService.Infrastructure.Services;
+using IntegrationService.Core.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
+using IntegrationService.Core.Models.AdminPortal;
+
+using CampaignRequest = IntegrationService.Core.Services.CampaignRequest;
+using MenuOverrideRequest = IntegrationService.Core.Services.MenuOverrideRequest;
 
 namespace IntegrationService.API.Controllers
 {
-    [Route("api/admin")]
+    /// <summary>
+    /// Admin Portal API Controller
+    /// Provides endpoints for merchant dashboard, order management, and analytics
+    /// </summary>
     [ApiController]
+    [Route("api/[controller]")]
+    [Authorize] // Added for security
     public class AdminController : ControllerBase
     {
-        private readonly IPosRepository _posRepository;
-        private readonly IActivityLogRepository _activityRepo;
-        private readonly ICustomerAnalyticsRepository _analyticsRepo;
-        private readonly IMenuOverlayRepository _menuOverlayRepo;
-        private readonly IRFMSegmentationService _rfmService;
-        private readonly IBirthdayRewardService _birthdayService;
+        private readonly AdminPortalService _adminService;
         private readonly ILogger<AdminController> _logger;
 
-        public AdminController(
-            IPosRepository posRepository,
-            IActivityLogRepository activityRepo,
-            ICustomerAnalyticsRepository analyticsRepo,
-            IMenuOverlayRepository menuOverlayRepo,
-            IRFMSegmentationService rfmService,
-            IBirthdayRewardService birthdayService,
-            ILogger<AdminController> logger)
+        public AdminController(AdminPortalService adminService, ILogger<AdminController> logger)
         {
-            _posRepository = posRepository;
-            _activityRepo = activityRepo;
-            _analyticsRepo = analyticsRepo;
-            _menuOverlayRepo = menuOverlayRepo;
-            _rfmService = rfmService;
-            _birthdayService = birthdayService;
+            _adminService = adminService;
             _logger = logger;
         }
 
-        [HttpGet("customers/segments")]
-        public async Task<IActionResult> GetCustomerSegments()
-        {
-            try
-            {
-                _logger.LogInformation("Retrieving customer segments for admin dashboard");
-                var segments = await _posRepository.GetCustomerSegmentsAsync();
-                
-                var counts = new CustomerSegmentCounts
-                {
-                    HighSpend = segments.Count(s => s.Segment == "VIP"),
-                    Frequent = segments.Count(s => s.Segment == "Loyal"),
-                    Recent = segments.Count(s => s.LastOrderDate > DateTime.Now.AddDays(-14)),
-                    AtRisk = segments.Count(s => s.Segment == "At-Risk"),
-                    New = segments.Count(s => s.VisitCount <= 1),
-                    Total = segments.Count()
-                };
-
-                return Ok(new { data = counts });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving customer segments");
-                return StatusCode(500, new { error = "Internal server error" });
-            }
-        }
+        #region Dashboard
 
         [HttpGet("dashboard/summary")]
         public async Task<IActionResult> GetDashboardSummary([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
             try
             {
-                var start = startDate ?? DateTime.Today.AddDays(-30);
-                var end = endDate ?? DateTime.Today.AddDays(1);
-                
-                var orders = await _posRepository.GetOrdersByDateRangeAsync(start, end);
-                var totalRevenue = orders.Sum(o => o.TotalAmount);
-                var totalOrders = orders.Count();
-                
-                // Get customer count
-                var segments = await _posRepository.GetCustomerSegmentsAsync();
-                
-                var stats = new
-                {
-                    totalRevenue = (int)(totalRevenue * 100), // Convert to cents for frontend consistency
-                    totalOrders = totalOrders,
-                    totalCustomers = segments.Count(),
-                    revenueGrowth = 15.5 // Dummy growth rate for now
-                };
-
-                return Ok(new { data = stats });
+                var summary = await _adminService.GetDashboardSummaryAsync(startDate, endDate);
+                return Ok(new { success = true, data = summary });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving dashboard summary");
-                return StatusCode(500, new { error = "Internal server error" });
+                _logger.LogError(ex, "Error getting dashboard summary");
+                return StatusCode(500, new { error = "Failed to retrieve dashboard data" });
             }
         }
 
         [HttpGet("dashboard/sales-chart")]
-        public async Task<IActionResult> GetSalesChart([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+        public async Task<IActionResult> GetSalesChart([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] string groupBy = "day")
         {
             try
             {
-                var start = startDate ?? DateTime.Today.AddDays(-30);
-                var end = endDate ?? DateTime.Today.AddDays(1);
-                
-                var orders = await _posRepository.GetOrdersByDateRangeAsync(start, end);
-                
-                var chartData = orders
-                    .GroupBy(o => o.SaleDateTime.Date)
-                    .Select(g => new { date = g.Key.ToString("yyyy-MM-dd"), sales = g.Sum(o => o.TotalAmount) })
-                    .OrderBy(x => x.date)
-                    .ToList();
-
-                return Ok(new { data = chartData });
+                var data = await _adminService.GetSalesChartDataAsync(startDate, endDate, groupBy);
+                return Ok(new { success = true, data = data });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving sales chart");
-                return StatusCode(500, new { error = "Internal server error" });
+                _logger.LogError(ex, "Error getting sales chart data");
+                return StatusCode(500, new { error = "Failed to retrieve chart data" });
             }
         }
 
         [HttpGet("dashboard/popular-items")]
-        public async Task<IActionResult> GetPopularItems([FromQuery] int limit = 10)
-        {
-            return Ok(new { data = new List<object>() }); // Placeholder
-        }
-
-        [HttpGet("orders/queue")]
-        public async Task<IActionResult> GetOrdersQueue([FromQuery] string? status, [FromQuery] int limit = 50)
+        public async Task<IActionResult> GetPopularItems([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] int limit = 10)
         {
             try
             {
-                // Mapping status to TransType (1=Sale, 2=Open)
-                int? transType = status?.ToLower() switch
-                {
-                    "open" => 2,
-                    "completed" => 1,
-                    _ => null
-                };
-
-                var today = DateTime.Today;
-                var orders = await _posRepository.GetOrdersByDateRangeAsync(today, today.AddDays(1));
-                
-                if (transType.HasValue)
-                    orders = orders.Where(o => o.TransType == transType.Value);
-
-                return Ok(new { data = orders.Take(limit) });
+                var items = await _adminService.GetPopularItemsAsync(startDate, endDate, limit);
+                return Ok(new { success = true, data = items });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving orders queue");
-                return StatusCode(500, new { error = "Internal server error" });
+                _logger.LogError(ex, "Error getting popular items");
+                return StatusCode(500, new { error = "Failed to retrieve popular items" });
             }
         }
+
+        #endregion
+
+        #region Order Queue
+
+        [HttpGet("orders/queue")]
+        public async Task<IActionResult> GetOrderQueue(
+            [FromQuery] string? status,
+            [FromQuery] string? paymentStatus,
+            [FromQuery] string? searchTerm,
+            [FromQuery] DateTime? startDate,
+            [FromQuery] DateTime? endDate,
+            [FromQuery] int limit = 50)
+        {
+            try
+            {
+                var orders = await _adminService.GetOrderQueueAsync(
+                    status, paymentStatus, searchTerm, startDate, endDate, limit);
+                return Ok(new { success = true, data = orders });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting order queue");
+                return StatusCode(500, new { error = "Failed to retrieve orders" });
+            }
+        }
+
+        [HttpGet("orders/{salesId}")]
+        public async Task<IActionResult> GetOrderDetail(int salesId)
+        {
+            try
+            {
+                var order = await _adminService.GetOrderDetailAsync(salesId);
+                if (order == null)
+                    return NotFound(new { error = "Order not found" });
+
+                return Ok(new { success = true, data = order });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting order detail for SalesID {SalesId}", salesId);
+                return StatusCode(500, new { error = "Failed to retrieve order details" });
+            }
+        }
+
+        [HttpPost("orders/{salesId}/refund")]
+        public async Task<IActionResult> ProcessRefund(int salesId, [FromBody] RefundRequest request)
+        {
+            try
+            {
+                // Extract admin user from auth context
+                var adminUserIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value 
+                                     ?? User.FindFirst("userId")?.Value ?? "1";
+                var adminEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value 
+                                 ?? User.FindFirst("email")?.Value ?? "admin@imidus.com";
+                
+                int.TryParse(adminUserIdStr, out int adminUserId);
+
+                var success = await _adminService.ProcessRefundAsync(salesId, request.Amount, adminUserId, adminEmail);
+                
+                if (success)
+                    return Ok(new { message = "Refund processed successfully" });
+                
+                return BadRequest(new { error = "Failed to process refund" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing refund for SalesID {SalesId}", salesId);
+                return StatusCode(500, new { error = "Failed to process refund" });
+            }
+        }
+
+        #endregion
+
+        #region Customers (CRM & RFM)
+
+        /// <summary>
+        /// Get customer list with RFM data and filtering
+        /// </summary>
+        /// <param name="segment">Filter by segment: high-spend, frequent, recent, at-risk, new</param>
+        /// <param name="searchTerm">Search by name, phone, or email</param>
+        /// <param name="limit">Max results (default 50)</param>
+        [HttpGet("customers")]
+        public async Task<IActionResult> GetCustomerList(
+            [FromQuery] string? segment,
+            [FromQuery] string? searchTerm,
+            [FromQuery] int limit = 50)
+        {
+            try
+            {
+                var customers = await _adminService.GetCustomerListAsync(segment, searchTerm, limit);
+                return Ok(new { success = true, data = customers });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting customer list");
+                return StatusCode(500, new { success = false, error = "Failed to retrieve customers" });
+            }
+        }
+
+        /// <summary>
+        /// Get detailed customer profile with RFM metrics
+        /// </summary>
+        [HttpGet("customers/{customerId:int}")]
+        public async Task<IActionResult> GetCustomerProfile(int customerId)
+        {
+            try
+            {
+                var profile = await _adminService.GetCustomerProfileAsync(customerId);
+                if (profile == null)
+                    return NotFound(new { success = false, error = "Customer not found" });
+
+                return Ok(new { success = true, data = profile });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting customer profile for {CustomerId}", customerId);
+                return StatusCode(500, new { success = false, error = "Failed to retrieve customer profile" });
+            }
+        }
+
+        /// <summary>
+        /// Get customer loyalty transaction history
+        /// </summary>
+        [HttpGet("customers/{customerId:int}/loyalty")]
+        public async Task<IActionResult> GetCustomerLoyalty(int customerId, [FromQuery] int limit = 50)
+        {
+            try
+            {
+                var loyalty = await _adminService.GetCustomerLoyaltyAsync(customerId, limit);
+                return Ok(new { success = true, data = loyalty });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting loyalty history for {CustomerId}", customerId);
+                return StatusCode(500, new { success = false, error = "Failed to retrieve loyalty history" });
+            }
+        }
+
+        /// <summary>
+        /// Get customer segment counts for RFM dashboard
+        /// </summary>
+        [HttpGet("customers/segments")]
+        public async Task<IActionResult> GetCustomerSegments()
+        {
+            try
+            {
+                var segments = await _adminService.GetCustomerSegmentCountsAsync();
+                return Ok(new { success = true, data = segments });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting customer segments");
+                return StatusCode(500, new { success = false, error = "Failed to retrieve customer segments" });
+            }
+        }
+
+        /// <summary>
+        /// Get customer order history
+        /// </summary>
+        [HttpGet("customers/{customerId:int}/history")]
+        public async Task<IActionResult> GetCustomerHistory(int customerId)
+        {
+            try
+            {
+                var history = await _adminService.GetCustomerHistoryAsync(customerId);
+                return Ok(new { success = true, data = history });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting customer history for {CustomerId}", customerId);
+                return StatusCode(500, new { success = false, error = "Failed to retrieve customer history" });
+            }
+        }
+
+        #endregion
+
+        #region Campaigns (Push Notifications)
+
+        [HttpGet("campaigns")]
+        public async Task<IActionResult> GetCampaigns()
+        {
+            try
+            {
+                var campaigns = await _adminService.GetCampaignsAsync();
+                return Ok(new { success = true, data = campaigns });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting campaigns");
+                return StatusCode(500, new { error = "Failed to retrieve campaigns" });
+            }
+        }
+
+        [HttpPost("campaigns")]
+        public async Task<IActionResult> CreateCampaign([FromBody] CampaignRequest request)
+        {
+            try
+            {
+                // Extract admin user info from claims
+                var adminUserIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "1";
+                var adminEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "admin@imidus.com";
+                int.TryParse(adminUserIdStr, out int adminUserId);
+
+                var campaign = await _adminService.CreateCampaignAsync(request, adminUserId, adminEmail);
+                return Ok(new { success = true, data = campaign });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating campaign");
+                return StatusCode(500, new { error = "Failed to create campaign" });
+            }
+        }
+
+        [HttpPost("campaigns/{campaignId}/send")]
+        public async Task<IActionResult> SendCampaign(int campaignId)
+        {
+            try
+            {
+                var result = await _adminService.SendCampaignAsync(campaignId);
+                return Ok(new { success = true, message = "Campaign sent", sentCount = result.RecipientsSent });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending campaign {CampaignId}", campaignId);
+                return StatusCode(500, new { error = "Failed to send campaign" });
+            }
+        }
+
+        #endregion
+
+        #region Menu Overrides (Overlay)
 
         [HttpGet("menu/overrides")]
         public async Task<IActionResult> GetMenuOverrides()
         {
             try
             {
-                var overlays = await _menuOverlayRepo.GetAllAsync();
-                return Ok(new { data = overlays });
+                var overrides = await _adminService.GetMenuOverridesAsync();
+                return Ok(new { success = true, data = overrides });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving menu overrides");
-                return StatusCode(500, new { error = "Internal server error" });
+                _logger.LogError(ex, "Error getting menu overrides");
+                return StatusCode(500, new { error = "Failed to retrieve menu overrides" });
             }
         }
+
+        [HttpPut("menu/overrides/{itemId}")]
+        public async Task<IActionResult> UpdateMenuOverride(int itemId, [FromBody] MenuOverrideRequest request)
+        {
+            try
+            {
+                // Extract admin user info from claims
+                var adminUserIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "1";
+                var adminEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "admin@imidus.com";
+                int.TryParse(adminUserIdStr, out int adminUserId);
+
+                var override_ = await _adminService.UpdateMenuOverrideAsync(itemId, request, adminUserId, adminEmail);
+                return Ok(new { success = true, data = override_ });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating menu override for item {ItemId}", itemId);
+                return StatusCode(500, new { error = "Failed to update menu override" });
+            }
+        }
+
+        #endregion
+
+        #region Birthday Rewards (Overlay)
+
+        [HttpGet("rewards/birthday")]
+        public async Task<IActionResult> GetBirthdayConfig()
+        {
+            try
+            {
+                var config = await _adminService.GetBirthdayRewardConfigAsync();
+                return Ok(new { success = true, data = config });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting birthday reward config");
+                return StatusCode(500, new { error = "Failed to retrieve birthday configuration" });
+            }
+        }
+
+        [HttpPut("rewards/birthday")]
+        public async Task<IActionResult> UpdateBirthdayConfig([FromBody] BirthdayRewardConfig config)
+        {
+            try
+            {
+                // Extract admin user info from claims
+                var adminUserIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "1";
+                var adminEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "admin@imidus.com";
+                int.TryParse(adminUserIdStr, out int adminUserId);
+
+                var success = await _adminService.UpdateBirthdayRewardConfigAsync(config, adminUserId, adminEmail);
+                if (success)
+                    return Ok(new { success = true, message = "Birthday configuration updated" });
+
+                return BadRequest(new { error = "Failed to update birthday configuration" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating birthday reward config");
+                return StatusCode(500, new { error = "Failed to update birthday configuration" });
+            }
+        }
+
+        #endregion
+
+        #region Activity Logs
 
         [HttpGet("logs")]
-        public async Task<IActionResult> GetActivityLogs([FromQuery] int limit = 50)
+        public async Task<IActionResult> GetActivityLogs([FromQuery] int limit = 100)
         {
             try
             {
-                var logs = await _activityRepo.GetRecentLogsAsync(limit);
-                return Ok(new { data = logs });
+                var logs = await _adminService.GetActivityLogsAsync(limit);
+                return Ok(new { success = true, data = logs });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving activity logs");
-                return StatusCode(500, new { error = "Internal server error" });
+                _logger.LogError(ex, "Error getting activity logs");
+                return StatusCode(500, new { error = "Failed to retrieve activity logs" });
             }
         }
 
-        /// <summary>
-        /// Get customers with full RFM analytics
-        /// </summary>
-        [HttpGet("analytics/customers")]
-        public async Task<IActionResult> GetCustomersWithRfm([FromQuery] RfmFilterQuery filter)
-        {
-            try
-            {
-                var rfmFilter = new RfmFilter
-                {
-                    MinSpend = filter.MinSpend,
-                    MaxSpend = filter.MaxSpend,
-                    MinVisits = filter.MinVisits,
-                    MaxVisits = filter.MaxVisits,
-                    RecencyDays = filter.RecencyDays,
-                    InactiveDays = filter.InactiveDays,
-                    Segment = filter.Segment,
-                    HasBirthdayToday = filter.HasBirthdayToday
-                };
-
-                var customers = await _analyticsRepo.GetCustomersWithRfmAsync(rfmFilter);
-                return Ok(new { data = customers });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving customer RFM data");
-                return StatusCode(500, new { error = "Internal server error" });
-            }
-        }
-
-        /// <summary>
-        /// Get single customer RFM profile
-        /// </summary>
-        [HttpGet("analytics/customers/{customerId}")]
-        public async Task<IActionResult> GetCustomerRfm(int customerId)
-        {
-            try
-            {
-                var customer = await _analyticsRepo.GetCustomerRfmAsync(customerId);
-                if (customer == null)
-                    return NotFound(new { error = "Customer not found" });
-
-                return Ok(new { data = customer });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving customer {CustomerId} RFM data", customerId);
-                return StatusCode(500, new { error = "Internal server error" });
-            }
-        }
-
-        /// <summary>
-        /// Get segment distribution
-        /// </summary>
-        [HttpGet("analytics/segments")]
-        public async Task<IActionResult> GetSegmentDistribution()
-        {
-            try
-            {
-                var allCustomers = await _analyticsRepo.GetCustomersWithRfmAsync(null);
-                var customerList = allCustomers.ToList();
-
-                var distribution = new
-                {
-                    VIP = customerList.Count(c => c.Segment == "VIP"),
-                    Loyal = customerList.Count(c => c.Segment == "Loyal"),
-                    Regular = customerList.Count(c => c.Segment == "Regular"),
-                    AtRisk = customerList.Count(c => c.Segment == "At-Risk"),
-                    New = customerList.Count(c => c.Segment == "New"),
-                    Total = customerList.Count
-                };
-
-                return Ok(new { data = distribution });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving segment distribution");
-                return StatusCode(500, new { error = "Internal server error" });
-            }
-        }
-
-        /// <summary>
-        /// Get RFM segments (Recency, Frequency, Monetary) for all customers
-        /// Returns segmentation: Champions, Loyal, Potential, At Risk, Lost, Regular
-        /// </summary>
-        [HttpGet("rfm/segments")]
-        public async Task<IActionResult> GetRFMSegments()
-        {
-            try
-            {
-                _logger.LogInformation("Calculating RFM segments for all customers");
-                var segments = await _rfmService.CalculateSegmentsAsync();
-                return Ok(new { data = segments, count = segments.Count });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error calculating RFM segments");
-                return StatusCode(500, new { error = "Failed to calculate RFM segments" });
-            }
-        }
-
-        /// <summary>
-        /// Get customers in a specific RFM segment
-        /// Segment values: Champions, Loyal, Potential, At Risk, Lost, Regular
-        /// </summary>
-        [HttpGet("rfm/segments/{segment}")]
-        public async Task<IActionResult> GetSegmentCustomers(string segment)
-        {
-            try
-            {
-                _logger.LogInformation("Retrieving customers for RFM segment: {Segment}", segment);
-                var customers = await _rfmService.GetSegmentCustomersAsync(segment);
-                return Ok(new { data = customers, count = customers.Count });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving customers for segment {Segment}", segment);
-                return StatusCode(500, new { error = "Failed to retrieve segment customers" });
-            }
-        }
-
-        /// <summary>
-        /// Get RFM segment statistics and distribution
-        /// </summary>
-        [HttpGet("rfm/stats")]
-        public async Task<IActionResult> GetRFMStats()
-        {
-            try
-            {
-                _logger.LogInformation("Retrieving RFM segment statistics");
-                var stats = await _rfmService.GetSegmentStatsAsync();
-                return Ok(new { data = stats });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving RFM statistics");
-                return StatusCode(500, new { error = "Failed to retrieve RFM statistics" });
-            }
-        }
-
-        /// <summary>
-        /// Get upcoming birthdays for the next N days
-        /// </summary>
-        [HttpGet("rewards/upcoming-birthdays")]
-        public async Task<IActionResult> GetUpcomingBirthdays([FromQuery] int days = 7)
-        {
-            try
-            {
-                _logger.LogInformation("Retrieving upcoming birthdays for next {Days} days", days);
-                var birthdays = await _birthdayService.GetUpcomingBirthdaysAsync(days);
-                return Ok(new { data = birthdays, count = birthdays.Count });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving upcoming birthdays");
-                return StatusCode(500, new { error = "Failed to retrieve upcoming birthdays" });
-            }
-        }
-
-        /// <summary>
-        /// Get current birthday reward configuration
-        /// </summary>
-        [HttpGet("rewards/birthday-config")]
-        public async Task<IActionResult> GetBirthdayRewardConfig()
-        {
-            try
-            {
-                _logger.LogInformation("Retrieving birthday reward configuration");
-                var config = await _birthdayService.GetConfigurationAsync();
-                return Ok(new { data = config });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving birthday reward configuration");
-                return StatusCode(500, new { error = "Failed to retrieve configuration" });
-            }
-        }
-
-        /// <summary>
-        /// Update birthday reward configuration
-        /// </summary>
-        [HttpPost("rewards/configure-birthday")]
-        public async Task<IActionResult> ConfigureBirthdayReward([FromBody] BirthdayRewardConfigRequest config)
-        {
-            try
-            {
-                _logger.LogInformation("Updating birthday reward configuration: {Points} points, Enabled={Enabled}",
-                    config.RewardPoints, config.Enabled);
-
-                var configToUpdate = new BirthdayRewardConfig
-                {
-                    RewardPoints = config.RewardPoints,
-                    Enabled = config.Enabled,
-                    LastModified = DateTime.UtcNow
-                };
-
-                await _birthdayService.UpdateConfigurationAsync(configToUpdate);
-                return Ok(new { success = true, message = "Birthday reward configuration updated" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating birthday reward configuration");
-                return StatusCode(500, new { error = "Failed to update configuration" });
-            }
-        }
+        #endregion
     }
 
-    public class RfmFilterQuery
+    public class RefundRequest
     {
-        public decimal? MinSpend { get; set; }
-        public decimal? MaxSpend { get; set; }
-        public int? MinVisits { get; set; }
-        public int? MaxVisits { get; set; }
-        public int? RecencyDays { get; set; }
-        public int? InactiveDays { get; set; }
-        public string? Segment { get; set; }
-        public bool? HasBirthdayToday { get; set; }
-    }
-
-    public class BirthdayRewardConfigRequest
-    {
-        public int RewardPoints { get; set; } = 500;
-        public bool Enabled { get; set; } = true;
+        public decimal Amount { get; set; }
+        public string? Reason { get; set; }
     }
 }

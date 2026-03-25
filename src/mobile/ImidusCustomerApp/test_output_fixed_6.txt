@@ -1,0 +1,310 @@
+
+> com.imidus.customer@0.0.1 test
+> jest --watchAll=false
+
+PASS __tests__/Debug.test.tsx
+  ● Console
+
+    console.log
+      Animated: true
+
+      at Object.log (__tests__/Debug.test.tsx:5:13)
+
+    console.log
+      Animated.spring: true
+
+      at Object.log (__tests__/Debug.test.tsx:7:15)
+
+    console.log
+      Animated.timing: true
+
+      at Object.log (__tests__/Debug.test.tsx:8:15)
+
+    console.log
+      Animated.Value: true
+
+      at Object.log (__tests__/Debug.test.tsx:9:15)
+
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "Warning: An update to AppNavigator inside a test was not wrapped in act(...).
+
+    When testing, code that causes React state updates should be wrapped into act(...):
+
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+        at AppNavigator (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/navigation/AppNavigator.tsx:23:31)
+        at Provider (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-redux/src/components/connect.tsx:693:13)
+        at App".
+
+      21 |
+      22 | const AppNavigator = () => {
+    > 23 |   const dispatch = useDispatch<AppDispatch>();
+         |                               ^
+      24 |   const {isAuthenticated, isLoading} = useSelector(
+      25 |     (state: RootState) => state.auth,
+      26 |   );
+
+      at AppNavigator (src/navigation/AppNavigator.tsx:23:31)
+      at Provider (node_modules/react-redux/src/components/connect.tsx:693:13)
+          at App".
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+      at printWarning (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:72:30)
+      at error (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:46:7)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16677:9)
+      at scheduleUpdateOnFiber (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14877:5)
+      at forceStoreRerender (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6994:5)
+      at Object.handleStoreChange [as callback] (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6970:7)
+      at node_modules/react-redux/src/connect/mergeProps.ts:42:12
+      at defaultNoopBatch (node_modules/react-redux/src/connect/mapStateToProps.ts:8:3)
+      at Object.notify (node_modules/react-redux/src/connect/mergeProps.ts:35:3)
+      at Object.notifyNestedSubs (node_modules/react-redux/src/utils/Subscription.ts:65:11)
+      at handleChangeWrapper (node_modules/react-redux/src/utils/Subscription.ts:69:13)
+      at listener (node_modules/@reduxjs/toolkit/src/autoBatchEnhancer.ts:79:67)
+      at node_modules/redux/src/createStore.ts:220:7
+          at Map.forEach (<anonymous>)
+      at Object.dispatch (node_modules/redux/src/createStore.ts:219:15)
+      at dispatch (node_modules/@reduxjs/toolkit/src/autoBatchEnhancer.ts:112:22)
+      at node_modules/@reduxjs/toolkit/src/serializableStateInvariantMiddleware.ts:169:22
+      at node_modules/redux-thunk/dist/cjs/redux-thunk.cjs:32:12
+      at node_modules/@reduxjs/toolkit/src/immutableStateInvariantMiddleware.ts:183:34
+      at node_modules/@reduxjs/toolkit/src/actionCreatorInvariantMiddleware.ts:29:12
+      at dispatch (node_modules/redux/src/applyMiddleware.ts:52:38)
+      at node_modules/@reduxjs/toolkit/src/createAsyncThunk.ts:399:13
+
+
+ReferenceError: You are trying to `import` a file after the Jest environment has been torn down. From __tests__/App.test.tsx.
+
+      at Object.get View [as View] (node_modules/react-native/index.js:82:12)
+      at GestureHandlerRootView (node_modules/react-native-gesture-handler/lib/commonjs/components/GestureHandlerRootView.js:78:39)
+      at renderWithHooks (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6351:18)
+      at mountIndeterminateComponent (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:9855:13)
+      at beginWork (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11312:16)
+      at performUnitOfWork (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15811:12)
+      at workLoopSync (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15745:5)
+      at renderRootSync (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15717:7)
+      at performSyncWorkOnRoot (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15422:20)
+      at flushSyncCallbacks (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2597:22)
+      at flushSyncCallbacksOnlyInLegacyMode (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2576:5)
+      at scheduleUpdateOnFiber (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14910:7)
+      at forceStoreRerender (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6994:5)
+      at Object.handleStoreChange [as callback] (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6970:7)
+      at node_modules/react-redux/src/connect/mergeProps.ts:42:12
+      at defaultNoopBatch (node_modules/react-redux/src/connect/mapStateToProps.ts:8:3)
+      at Object.notify (node_modules/react-redux/src/connect/mergeProps.ts:35:3)
+      at Object.notifyNestedSubs (node_modules/react-redux/src/utils/Subscription.ts:65:11)
+      at handleChangeWrapper (node_modules/react-redux/src/utils/Subscription.ts:69:13)
+      at listener (node_modules/@reduxjs/toolkit/src/autoBatchEnhancer.ts:79:67)
+      at node_modules/redux/src/createStore.ts:220:7
+          at Map.forEach (<anonymous>)
+      at Object.dispatch (node_modules/redux/src/createStore.ts:219:15)
+      at dispatch (node_modules/@reduxjs/toolkit/src/autoBatchEnhancer.ts:112:22)
+      at node_modules/@reduxjs/toolkit/src/serializableStateInvariantMiddleware.ts:169:22
+      at node_modules/redux-thunk/dist/cjs/redux-thunk.cjs:32:12
+      at node_modules/@reduxjs/toolkit/src/immutableStateInvariantMiddleware.ts:183:34
+      at node_modules/@reduxjs/toolkit/src/actionCreatorInvariantMiddleware.ts:29:12
+      at dispatch (node_modules/redux/src/applyMiddleware.ts:52:38)
+      at node_modules/@reduxjs/toolkit/src/createAsyncThunk.ts:399:13
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "Warning: React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: object. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+
+    Check the render method of `GestureHandlerRootView`.
+        at GestureHandlerRootView (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureHandlerRootView.js:73:20)
+        at length (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/stack/src/views/Stack/StackView.tsx:109:30)
+        at PreventRemoveProvider (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/core/src/PreventRemoveProvider.tsx:48:60)
+        at NavigationStateListenerProvider (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/core/src/useNavigationState.tsx:38:8)
+        at useComponent (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/core/src/useComponent.tsx:14:17)
+        at children (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/core/src/useComponent.tsx:26:26)
+        at UNSTABLE_router (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/stack/src/navigators/createStackNavigator.tsx:35:3)
+        at children (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/core/src/theming/ThemeProvider.tsx:12:43)
+        at navigatorKeyRef (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/core/src/EnsureSingleNavigator.tsx:21:9)
+        at BaseNavigationContainer (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/core/src/BaseNavigationContainer.tsx:68:6)
+        at linking (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/native/src/NavigationContainer.tsx:86:28)
+        at AppNavigator (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/navigation/AppNavigator.tsx:23:31)
+        at Provider (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-redux/src/components/connect.tsx:693:13)
+        at App".
+
+      21 |
+      22 | const AppNavigator = () => {
+    > 23 |   const dispatch = useDispatch<AppDispatch>();
+         |                               ^
+      24 |   const {isAuthenticated, isLoading} = useSelector(
+      25 |     (state: RootState) => state.auth,
+      26 |   );
+
+      at GestureHandlerRootView (node_modules/react-native-gesture-handler/lib/commonjs/components/GestureHandlerRootView.js:73:20)
+      at length (node_modules/@react-navigation/stack/src/views/Stack/StackView.tsx:109:30)
+      at PreventRemoveProvider (node_modules/@react-navigation/core/src/PreventRemoveProvider.tsx:48:60)
+      at NavigationStateListenerProvider (node_modules/@react-navigation/core/src/useNavigationState.tsx:38:8)
+      at useComponent (node_modules/@react-navigation/core/src/useComponent.tsx:14:17)
+      at children (node_modules/@react-navigation/core/src/useComponent.tsx:26:26)
+      at UNSTABLE_router (node_modules/@react-navigation/stack/src/navigators/createStackNavigator.tsx:35:3)
+      at children (node_modules/@react-navigation/core/src/theming/ThemeProvider.tsx:12:43)
+      at navigatorKeyRef (node_modules/@react-navigation/core/src/EnsureSingleNavigator.tsx:21:9)
+      at BaseNavigationContainer (node_modules/@react-navigation/core/src/BaseNavigationContainer.tsx:68:6)
+      at linking (node_modules/@react-navigation/native/src/NavigationContainer.tsx:86:28)
+      at AppNavigator (src/navigation/AppNavigator.tsx:23:31)
+      at Provider (node_modules/react-redux/src/components/connect.tsx:693:13)
+          at App".
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+      at printWarning (node_modules/react/cjs/react.development.js:209:30)
+      at error (node_modules/react/cjs/react.development.js:183:7)
+      at Object.createElementWithValidation [as createElement] (node_modules/react/cjs/react.development.js:2354:7)
+      at GestureHandlerRootView (node_modules/react-native-gesture-handler/lib/commonjs/components/GestureHandlerRootView.js:78:12)
+      at renderWithHooks (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6351:18)
+      at mountIndeterminateComponent (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:9855:13)
+      at beginWork (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11312:16)
+      at performUnitOfWork (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15811:12)
+      at workLoopSync (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15745:5)
+      at renderRootSync (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15717:7)
+      at performSyncWorkOnRoot (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15422:20)
+      at flushSyncCallbacks (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2597:22)
+      at flushSyncCallbacksOnlyInLegacyMode (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2576:5)
+      at scheduleUpdateOnFiber (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14910:7)
+      at forceStoreRerender (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6994:5)
+      at Object.handleStoreChange [as callback] (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6970:7)
+      at node_modules/react-redux/src/connect/mergeProps.ts:42:12
+      at defaultNoopBatch (node_modules/react-redux/src/connect/mapStateToProps.ts:8:3)
+      at Object.notify (node_modules/react-redux/src/connect/mergeProps.ts:35:3)
+      at Object.notifyNestedSubs (node_modules/react-redux/src/utils/Subscription.ts:65:11)
+      at handleChangeWrapper (node_modules/react-redux/src/utils/Subscription.ts:69:13)
+      at listener (node_modules/@reduxjs/toolkit/src/autoBatchEnhancer.ts:79:67)
+      at node_modules/redux/src/createStore.ts:220:7
+          at Map.forEach (<anonymous>)
+      at Object.dispatch (node_modules/redux/src/createStore.ts:219:15)
+      at dispatch (node_modules/@reduxjs/toolkit/src/autoBatchEnhancer.ts:112:22)
+      at node_modules/@reduxjs/toolkit/src/serializableStateInvariantMiddleware.ts:169:22
+      at node_modules/redux-thunk/dist/cjs/redux-thunk.cjs:32:12
+      at node_modules/@reduxjs/toolkit/src/immutableStateInvariantMiddleware.ts:183:34
+      at node_modules/@reduxjs/toolkit/src/actionCreatorInvariantMiddleware.ts:29:12
+      at dispatch (node_modules/redux/src/applyMiddleware.ts:52:38)
+      at node_modules/@reduxjs/toolkit/src/createAsyncThunk.ts:399:13
+
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "The above error occurred in the <Context.Provider> component:
+
+        at GestureHandlerRootView (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-native-gesture-handler/lib/commonjs/components/GestureHandlerRootView.js:73:20)
+        at length (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/stack/src/views/Stack/StackView.tsx:109:30)
+        at PreventRemoveProvider (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/core/src/PreventRemoveProvider.tsx:48:60)
+        at NavigationStateListenerProvider (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/core/src/useNavigationState.tsx:38:8)
+        at useComponent (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/core/src/useComponent.tsx:14:17)
+        at children (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/core/src/useComponent.tsx:26:26)
+        at UNSTABLE_router (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/stack/src/navigators/createStackNavigator.tsx:35:3)
+        at children (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/core/src/theming/ThemeProvider.tsx:12:43)
+        at navigatorKeyRef (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/core/src/EnsureSingleNavigator.tsx:21:9)
+        at BaseNavigationContainer (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/core/src/BaseNavigationContainer.tsx:68:6)
+        at linking (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@react-navigation/native/src/NavigationContainer.tsx:86:28)
+        at AppNavigator (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/src/navigation/AppNavigator.tsx:23:31)
+        at Provider (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-redux/src/components/connect.tsx:693:13)
+        at App
+
+    Consider adding an error boundary to your tree to customize error handling behavior.
+    Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.".
+
+      21 |
+      22 | const AppNavigator = () => {
+    > 23 |   const dispatch = useDispatch<AppDispatch>();
+         |                               ^
+      24 |   const {isAuthenticated, isLoading} = useSelector(
+      25 |     (state: RootState) => state.auth,
+      26 |   );
+
+      at GestureHandlerRootView (node_modules/react-native-gesture-handler/lib/commonjs/components/GestureHandlerRootView.js:73:20)
+      at length (node_modules/@react-navigation/stack/src/views/Stack/StackView.tsx:109:30)
+      at PreventRemoveProvider (node_modules/@react-navigation/core/src/PreventRemoveProvider.tsx:48:60)
+      at NavigationStateListenerProvider (node_modules/@react-navigation/core/src/useNavigationState.tsx:38:8)
+      at useComponent (node_modules/@react-navigation/core/src/useComponent.tsx:14:17)
+      at children (node_modules/@react-navigation/core/src/useComponent.tsx:26:26)
+      at UNSTABLE_router (node_modules/@react-navigation/stack/src/navigators/createStackNavigator.tsx:35:3)
+      at children (node_modules/@react-navigation/core/src/theming/ThemeProvider.tsx:12:43)
+      at navigatorKeyRef (node_modules/@react-navigation/core/src/EnsureSingleNavigator.tsx:21:9)
+      at BaseNavigationContainer (node_modules/@react-navigation/core/src/BaseNavigationContainer.tsx:68:6)
+      at linking (node_modules/@react-navigation/native/src/NavigationContainer.tsx:86:28)
+      at AppNavigator (src/navigation/AppNavigator.tsx:23:31)
+      at Provider (node_modules/react-redux/src/components/connect.tsx:693:13)
+          at App
+      Consider adding an error boundary to your tree to customize error handling behavior.
+      Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.".
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+      at logCapturedError (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:8661:23)
+      at update.callback (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:8694:5)
+      at callCallback (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:4092:12)
+      at commitUpdateQueue (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:4113:9)
+      at commitLayoutEffectOnFiber (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13232:13)
+      at commitLayoutMountEffects_complete (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14330:9)
+      at commitLayoutEffects_begin (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14316:7)
+      at commitLayoutEffects (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14301:3)
+      at commitRootImpl (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16062:5)
+      at commitRoot (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15933:5)
+      at performSyncWorkOnRoot (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15454:3)
+      at flushSyncCallbacks (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2597:22)
+      at flushSyncCallbacksOnlyInLegacyMode (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2576:5)
+      at scheduleUpdateOnFiber (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14910:7)
+      at forceStoreRerender (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6994:5)
+      at Object.handleStoreChange [as callback] (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6970:7)
+      at node_modules/react-redux/src/connect/mergeProps.ts:42:12
+      at defaultNoopBatch (node_modules/react-redux/src/connect/mapStateToProps.ts:8:3)
+      at Object.notify (node_modules/react-redux/src/connect/mergeProps.ts:35:3)
+      at Object.notifyNestedSubs (node_modules/react-redux/src/utils/Subscription.ts:65:11)
+      at handleChangeWrapper (node_modules/react-redux/src/utils/Subscription.ts:69:13)
+      at listener (node_modules/@reduxjs/toolkit/src/autoBatchEnhancer.ts:79:67)
+      at node_modules/redux/src/createStore.ts:220:7
+          at Map.forEach (<anonymous>)
+      at Object.dispatch (node_modules/redux/src/createStore.ts:219:15)
+      at dispatch (node_modules/@reduxjs/toolkit/src/autoBatchEnhancer.ts:112:22)
+      at node_modules/@reduxjs/toolkit/src/serializableStateInvariantMiddleware.ts:169:22
+      at node_modules/redux-thunk/dist/cjs/redux-thunk.cjs:32:12
+      at node_modules/@reduxjs/toolkit/src/immutableStateInvariantMiddleware.ts:183:34
+      at node_modules/@reduxjs/toolkit/src/actionCreatorInvariantMiddleware.ts:29:12
+      at dispatch (node_modules/redux/src/applyMiddleware.ts:52:38)
+      at node_modules/@reduxjs/toolkit/src/createAsyncThunk.ts:399:13
+
+/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:17518
+          throw new Error('Element type is invalid: expected a string (for built-in ' + 'components) or a class/function (for composite components) ' + ("but got: " + (type == null ? type : typeof type) + "." + info));
+                ^
+
+Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+
+Check the render method of `GestureHandlerRootView`.
+    at createFiberFromTypeAndProps (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:17518:17)
+    at createFiberFromElement (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:17544:15)
+    at reconcileSingleElement (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:5813:23)
+    at reconcileChildFibers (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:5871:35)
+    at reconcileChildren (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:9096:28)
+    at updateContextProvider (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:10904:3)
+    at beginWork (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11374:14)
+    at performUnitOfWork (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15811:12)
+    at workLoopSync (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15745:5)
+    at renderRootSync (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15717:7)
+    at performSyncWorkOnRoot (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15422:20)
+    at flushSyncCallbacks (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2597:22)
+    at flushSyncCallbacksOnlyInLegacyMode (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2576:5)
+    at scheduleUpdateOnFiber (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14910:7)
+    at forceStoreRerender (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6994:5)
+    at Object.handleStoreChange [as callback] (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6970:7)
+    at /home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-redux/src/connect/mergeProps.ts:42:12
+    at defaultNoopBatch (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-redux/src/connect/mapStateToProps.ts:8:3)
+    at Object.notify (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-redux/src/connect/mergeProps.ts:35:3)
+    at Object.notifyNestedSubs (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-redux/src/utils/Subscription.ts:65:11)
+    at handleChangeWrapper (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/react-redux/src/utils/Subscription.ts:69:13)
+    at listener (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@reduxjs/toolkit/src/autoBatchEnhancer.ts:79:67)
+    at /home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/redux/src/createStore.ts:220:7
+    at Map.forEach (<anonymous>)
+    at Object.dispatch (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/redux/src/createStore.ts:219:15)
+    at dispatch (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@reduxjs/toolkit/src/autoBatchEnhancer.ts:112:22)
+    at /home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@reduxjs/toolkit/src/serializableStateInvariantMiddleware.ts:169:22
+    at /home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/redux-thunk/dist/cjs/redux-thunk.cjs:32:12
+    at /home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@reduxjs/toolkit/src/immutableStateInvariantMiddleware.ts:183:34
+    at /home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@reduxjs/toolkit/src/actionCreatorInvariantMiddleware.ts:29:12
+    at dispatch (/home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/redux/src/applyMiddleware.ts:52:38)
+    at /home/kali/Desktop/TOAST/src/mobile/ImidusCustomerApp/node_modules/@reduxjs/toolkit/src/createAsyncThunk.ts:399:13
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at processImmediate (node:internal/timers:472:9)
+
+Node.js v25.8.1
