@@ -53,3 +53,12 @@ Thumbs.db
 # Database backups (large binary files)
 src/backend/db/backups/*.bak
 src/backend/db/backups/*.BAK
+
+# Tool folders
+.claude/
+.gemini/
+.agent/
+claude-mem/
+.claude-flow/
+delivery/
+deliverables/
