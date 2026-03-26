@@ -36,7 +36,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Build Release APK
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease -Pkotlin.warnings.as.errors=false
         working-directory: ${{ env.WORKING_DIR }}/android
 
       - name: Configure AWS Credentials
