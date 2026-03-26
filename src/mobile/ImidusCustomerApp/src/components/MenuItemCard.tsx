@@ -1,8 +1,9 @@
+import {Utensils} from 'lucide-react-native';
 import React from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {MenuItem, MenuItemSize} from '../types/menu.types';
 import {Colors} from '../theme/colors';
-import {Spacing, Elevation} from '../theme/spacing';
+import {Elevation, Spacing} from '../theme/spacing';
+import {MenuItem, MenuItemSize} from '../types/menu.types';
 
 interface Props {
   item: MenuItem;
@@ -12,13 +13,19 @@ interface Props {
 const getPriceDisplay = (sizes: MenuItemSize[]): string => {
   if (sizes.length === 0) return '';
 
-  const prices = sizes.map(s => s.price).sort((a, b) => a - b);
+  const prices = sizes
+    .map(s => s.price)
+    .filter(p => p !== undefined && p !== null && !isNaN(p))
+    .sort((a, b) => a - b);
+
+  if (prices.length === 0) return 'Price unavailable';
+
   const lowest = prices[0];
 
   if (prices.length === 1 || prices[0] === prices[prices.length - 1]) {
-    return `$${lowest.toFixed(2)}`;
+    return `$${(lowest || 0).toFixed(2)}`;
   }
-  return `from $${lowest.toFixed(2)}`;
+  return `from $${(lowest || 0).toFixed(2)}`;
 };
 
 export const MenuItemCard: React.FC<Props> = ({item, onPress}) => {
@@ -35,7 +42,7 @@ export const MenuItemCard: React.FC<Props> = ({item, onPress}) => {
         <Image source={{uri: item.imageUrl}} style={styles.image} />
       ) : (
         <View style={styles.imagePlaceholder}>
-          <Text style={styles.placeholderEmoji}>🍽️</Text>
+          <Utensils size={32} stroke={Colors.brandGold} opacity={0.5} />
         </View>
       )}
       <View style={styles.content}>

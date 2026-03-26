@@ -1,8 +1,64 @@
-name: Build MSI
+name: Build Windows MSI
+
 on:
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
+
 jobs:
-  build:
+  build-msi:
+    name: Build & Package MSI
     runs-on: windows-latest
+
     steps:
-      - run: echo "MSI workflow - manual trigger only"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.x"
+
+      - name: Restore dependencies
+        run: dotnet restore src/backend/IntegrationService.sln
+
+      - name: Build backend
+        run: dotnet build src/backend/IntegrationService.sln --configuration Release
+
+      - name: Publish backend API
+        run: |
+          dotnet publish src/backend/IntegrationService.API/IntegrationService.API.csproj `
+            --configuration Release `
+            --output src/backend/publish/api `
+            --runtime win-x64 `
+            --self-contained true
+
+      - name: Install WiX Toolset
+        run: dotnet tool install --global wix
+
+      - name: Build MSI package
+        shell: pwsh
+        run: |
+          cd src/backend/Installer
+          ./build-msi.ps1
+        env:
+          PUBLISH_DIR: ..\publish\api
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Upload MSI to S3
+        run: |
+          aws s3 cp src/backend/Installer/ImidusService.msi s3://inirestaurant/novatech/backend/ImidusService.msi
+          aws s3 cp src/backend/Installer/ImidusService.msi s3://inirestaurant/novatech/backend/ImidusService-${{ github.ref_name }}.msi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ImidusService-MSI
+          path: src/backend/Installer/ImidusService.msi

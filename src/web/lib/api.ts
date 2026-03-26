@@ -180,6 +180,7 @@ export const OrderAPI = {
     apiClient(`/Orders/${salesId}/complete-payment`, {
       method: "POST",
       body: JSON.stringify(data),
+      headers: { "X-Idempotency-Key": crypto.randomUUID() },
     }),
 
   getStatus: (id: number) => apiClient(`/Orders/${id}/status`),

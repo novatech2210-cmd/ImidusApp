@@ -108,11 +108,14 @@ namespace IntegrationService.API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create order");
+                _logger.LogError(ex, "Failed to create order. Exception: {Message}. Inner: {InnerMessage}", 
+                    ex.Message, ex.InnerException?.Message);
+                    
                 return StatusCode(500, new CreateOrderResponse
                 {
                     Success = false,
-                    Message = "An error occurred while creating your order. Please try again."
+                    Message = "An error occurred while creating your order. Please try again.",
+                    SalesId = 0
                 });
             }
         }
@@ -125,7 +128,8 @@ namespace IntegrationService.API.Controllers
         [ProducesResponseType(typeof(OrderCompletionResult), 400)]
         public async Task<IActionResult> CompletePayment(
             int salesId,
-            [FromBody] PaymentRequest paymentRequest)
+            [FromBody] PaymentRequest paymentRequest,
+            [FromHeader(Name = "X-Idempotency-Key")] string? idempotencyKey)
         {
             if (!ModelState.IsValid)
             {
@@ -133,6 +137,16 @@ namespace IntegrationService.API.Controllers
                 {
                     Success = false,
                     ErrorMessage = "Invalid payment request"
+                });
+            }
+
+            // Validate idempotency key
+            if (string.IsNullOrWhiteSpace(idempotencyKey))
+            {
+                return BadRequest(new OrderCompletionResult
+                {
+                    Success = false,
+                    ErrorMessage = "X-Idempotency-Key header is required"
                 });
             }
 
@@ -154,7 +168,8 @@ namespace IntegrationService.API.Controllers
 
                 var result = await _orderService.ProcessPaymentAndCompleteOrderAsync(
                     salesId,
-                    paymentRequest);
+                    paymentRequest,
+                    idempotencyKey);
 
                 if (result.Success)
                 {

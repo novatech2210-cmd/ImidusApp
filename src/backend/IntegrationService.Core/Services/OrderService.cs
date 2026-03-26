@@ -165,18 +165,11 @@ public class OrderService
             GSTAmt = gstTotal,
             PSTAmt = pstTotal,
             PST2Amt = pst2Total,
-            GSTRate = taxRates.GetValueOrDefault("GST", 0),
-            PSTRate = taxRates.GetValueOrDefault("PST", 0),
-            PST2Rate = taxRates.GetValueOrDefault("PST2", 0),
             CustomerID = request.CustomerId,
             TakeOutOrder = request.TakeOut,
             TableID = _settings.OnlineTableId,
             CashierID = _settings.OnlineCashierId,
-            StationID = _settings.OnlineStationId,
-            OnlineOrderCompanyID = _settings.OnlineCompanyId,
-            Guests = 1,
-            Locked = false,
-            PaymentCount = 0
+            Guests = 1
         };
 
         using var transaction = await _orderRepo.BeginTransactionAsync();

@@ -8,86 +8,86 @@
 
 export const Colors = {
   // ── CORE LUXURY SURFACES ────────────────────────────────────
-  background: '#F5F7FA', // Soft gray-white background
-  surface: '#FFFFFF', // Pure white cards
-  surfaceContainer: '#FFFFFF',
-  surfaceContainerLow: '#FBFCFD',
-  surfaceContainerHigh: '#F0F4F8',
-  surfaceContainerHighest: '#E2E8F0',
+  background: '#1A1A2E', // Midnight Navy background
+  surface: '#252538', // Dark slate cards
+  surfaceContainer: '#2D2D44',
+  surfaceContainerLow: '#1E1E30',
+  surfaceContainerHigh: '#363654',
+  surfaceContainerHighest: '#404060',
 
   // ── BRAND COLORS (Imperial Onyx) ────────────────────────────
-  brandBlue: '#0A1F3D', // Midnight Navy - primary dominance
-  brandBlueDark: '#051020',
-  brandBlueLight: '#152E52',
+  brandBlue: '#1E5AA8', // Brand Blue - primary dominance
+  brandBlueDark: '#154178',
+  brandBlueLight: '#2D75D4',
   brandGold: '#D4AF37', // Imperial Gold - luxury accents
   goldLight: '#E5C76B',
   goldDark: '#B08D26',
-  midnightNavy: '#0A1F3D',
-  darkBg: '#0A1F3D',
+  midnightNavy: '#1A1A2E',
+  darkBg: '#1A1A2E',
 
   // ── NEUTRAL SURFACES ────────────────────────────────────────
   white: '#FFFFFF',
-  lightBlue: '#F0F4F8',
-  lightGold: '#FFF9E6',
-  lightGray: '#F5F7FA',
-  midGray: '#E2E8F0',
+  lightBlue: '#2D75D4',
+  lightGold: '#FFF0C2',
+  lightGray: '#2D2D44',
+  midGray: '#404060',
 
-  // ── TEXT HIERARCHY (Midnight Navy based) ────────────────────
-  slate900: '#0A1F3D', // Primary text
-  slate800: '#1A2E44', // Strong text
-  slate700: '#2D3E50', // Medium text
-  slate600: '#4A5568', // Secondary text
-  slate500: '#718096', // Muted text
-  slate400: '#A0AEC0', // Hint text
-  textPrimary: '#0A1F3D',
-  textSecondary: '#4A5568',
-  textMuted: '#718096',
+  // ── TEXT HIERARCHY (Optimized for Dark Mode) ────────────────
+  slate900: '#FFFFFF', // Primary text
+  slate800: '#F7F9FC', // Strong text
+  slate700: '#EDF2F7', // Medium text
+  slate600: '#E2E8F0', // Secondary text
+  slate500: '#A0AEC0', // Muted text
+  slate400: '#718096', // Hint text
+  textPrimary: '#FFFFFF',
+  textSecondary: '#E2E8F0',
+  textMuted: '#A0AEC0',
   textOnDark: '#FFFFFF',
-  textOnGold: '#FFFFFF', // White looks better on gold in high-end UI
+  textOnGold: '#1A1A2E', // Dark text on gold button for readability
 
   // ── STATUS COLORS ───────────────────────────────────────────
-  error: '#E53E3E',
-  errorLight: '#FFF5F5',
-  success: '#38A169',
-  successLight: '#F0FFF4',
-  warning: '#D69E2E',
-  warningLight: '#FFFFF0',
-  info: '#3182CE',
-  infoLight: '#EBF8FF',
+  error: '#FF5C5C',
+  errorLight: 'rgba(255, 92, 92, 0.1)',
+  success: '#4ADE80',
+  successLight: 'rgba(74, 222, 128, 0.1)',
+  warning: '#FBBF24',
+  warningLight: 'rgba(251, 191, 36, 0.1)',
+  info: '#60A5FA',
+  infoLight: 'rgba(96, 165, 250, 0.1)',
 
   // ── GLASS / OVERLAY ─────────────────────────────────────────
-  overlay: 'rgba(10, 31, 61, 0.4)',
-  overlayLight: 'rgba(10, 31, 61, 0.2)',
-  cardShadow: 'rgba(10, 31, 61, 0.08)',
-  glassBg: 'rgba(255, 255, 255, 0.85)',
-  glassBgDark: 'rgba(10, 31, 61, 0.90)',
-  glassBorder: 'rgba(10, 31, 61, 0.05)',
-  glassShadow: 'rgba(10, 31, 61, 0.12)',
+  overlay: 'rgba(0, 0, 0, 0.6)',
+  overlayLight: 'rgba(0, 0, 0, 0.3)',
+  cardShadow: 'rgba(0, 0, 0, 0.4)',
+  glassBg: 'rgba(37, 37, 56, 0.85)',
+  glassBgDark: 'rgba(26, 26, 46, 0.90)',
+  glassBorder: 'rgba(255, 255, 255, 0.08)',
+  glassShadow: 'rgba(0, 0, 0, 0.5)',
 
   // ── INPUT FIELDS ────────────────────────────────────────────
-  inputBorder: '#E2E8F0',
-  inputBorderFocus: '#0A1F3D',
-  inputBackground: '#FFFFFF',
-  placeholderText: '#A0AEC0',
+  inputBorder: '#404060',
+  inputBorderFocus: '#1E5AA8',
+  inputBackground: '#2D2D44',
+  placeholderText: '#718096',
 
   // ── SEMANTIC ALIASES ────────────────────────────────────────
-  primary: '#0A1F3D', // Midnight Navy
-  primaryDark: '#051020',
-  primaryLight: '#152E52',
+  primary: '#1E5AA8', // Brand Blue
+  primaryDark: '#154178',
+  primaryLight: '#2D75D4',
   secondary: '#D4AF37', // Imperial Gold
-  border: 'transparent', // Favor surfaces over lines
-  text: '#0A1F3D',
+  border: '#363654',
+  text: '#FFFFFF',
 
   // ── ELEVATION LEVELS ────────────────────────────────────────
-  elevation0: '#F5F7FA', // Base background
-  elevation1: '#FFFFFF', // Surface
-  elevation2: '#FBFCFD', // Raised
-  elevation3: '#F3F5F7', // Dialogs
-  elevation4: '#EBEFF2', // Navigation
-  elevation5: '#E2E8F0', // Highest
+  elevation0: '#1A1A2E', // Base background
+  elevation1: '#252538', // Surface
+  elevation2: '#2D2D44', // Raised
+  elevation3: '#363654', // Dialogs
+  elevation4: '#404060', // Navigation
+  elevation5: '#4B4B70', // Highest
 
   // ── LEGACY ──────────────────────────────────────────────────
-  gray: '#718096',
+  gray: '#A0AEC0',
   goldButton: '#D4AF37',
 } as const;
 

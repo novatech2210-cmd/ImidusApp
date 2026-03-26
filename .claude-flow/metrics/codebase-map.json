@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-03-26T15:04:12.865Z",
+  "projectRoot": "/home/kali/Desktop/TOAST",
+  "structure": {
+    "hasPackageJson": true,
+    "hasTsConfig": false,
+    "hasClaudeConfig": true,
+    "hasClaudeFlow": true
+  },
+  "scannedAt": 1774537452865
+}

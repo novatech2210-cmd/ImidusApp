@@ -1,5 +1,7 @@
+import {Colors, Elevation, Spacing} from '@/theme';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {CheckCircle} from 'lucide-react-native';
 import {
   Platform,
   ScrollView,
@@ -10,7 +12,6 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {Colors, Spacing, Elevation} from '@/theme';
 
 type RootStackParamList = {
   Menu: undefined;
@@ -75,7 +76,7 @@ export default function OrderConfirmationScreen() {
         {/* Success Header */}
         <View style={styles.successSection}>
           <View style={styles.checkmarkCircle}>
-            <Text style={styles.checkmark}>✓</Text>
+            <CheckCircle size={40} color={Colors.white} strokeWidth={3} />
           </View>
           <Text style={styles.successTitle}>Thank You!</Text>
           <Text style={styles.successSubtitle}>
@@ -103,7 +104,7 @@ export default function OrderConfirmationScreen() {
                   </Text>
                 </View>
                 <Text style={styles.itemPrice}>
-                  ${(item.price * item.quantity).toFixed(2)}
+                  ${((item.price || 0) * (item.quantity || 0)).toFixed(2)}
                 </Text>
               </View>
             ))}
@@ -115,15 +116,21 @@ export default function OrderConfirmationScreen() {
           <View style={styles.section}>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Subtotal</Text>
-              <Text style={styles.totalValue}>${subtotal.toFixed(2)}</Text>
+              <Text style={styles.totalValue}>
+                ${(subtotal || 0).toFixed(2)}
+              </Text>
             </View>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>GST (6%)</Text>
-              <Text style={styles.totalValue}>${gstTotal.toFixed(2)}</Text>
+              <Text style={styles.totalValue}>
+                ${(gstTotal || 0).toFixed(2)}
+              </Text>
             </View>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>PST</Text>
-              <Text style={styles.totalValue}>${pstTotal.toFixed(2)}</Text>
+              <Text style={styles.totalValue}>
+                ${(pstTotal || 0).toFixed(2)}
+              </Text>
             </View>
 
             <View style={styles.grandTotalDivider} />
@@ -131,7 +138,7 @@ export default function OrderConfirmationScreen() {
             <View style={styles.grandTotalRow}>
               <Text style={styles.grandTotalLabel}>Total Paid</Text>
               <Text style={styles.grandTotalValue}>
-                ${orderTotal.toFixed(2)}
+                ${(orderTotal || 0).toFixed(2)}
               </Text>
             </View>
           </View>

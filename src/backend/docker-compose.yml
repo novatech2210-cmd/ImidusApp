@@ -30,10 +30,12 @@ services:
     env_file:
       - .env
     environment:
-      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
-      - ConnectionStrings__PosDatabase=${ConnectionStrings__PosDatabase:-Server=sqlserver;Database=INI_Restaurant;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;}
-      - ConnectionStrings__BackendDatabase=${ConnectionStrings__BackendDatabase:-Server=sqlserver;Database=IntegrationService;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;}
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__PosDatabase=Server=sqlserver;Database=INI_Restaurant;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;Encrypt=False;
+      - ConnectionStrings__BackendDatabase=Server=sqlserver;Database=IntegrationService;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;Encrypt=False;
+      - ConnectionStrings__IntegrationDatabase=Server=sqlserver;Database=IntegrationService;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;Encrypt=False;
     ports:
+
       - "5004:8080"
     depends_on:
       sqlserver:

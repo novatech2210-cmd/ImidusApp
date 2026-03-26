@@ -47,7 +47,7 @@ export function OrderSummary({
                 {item.quantity}x {item.name}
               </span>
               <span className="font-mono text-[#1A1A2E]">
-                ${(item.price * item.quantity).toFixed(2)}
+                ${((item.price || 0) * (item.quantity || 0)).toFixed(2)}
               </span>
             </div>
           ))}
@@ -57,30 +57,35 @@ export function OrderSummary({
         <div className="border-t border-[rgba(30,90,168,0.1)] pt-2 space-y-1">
           <div className="flex justify-between text-xs text-[#71717A]">
             <span>Subtotal</span>
-            <span className="font-mono">${subtotal.toFixed(2)}</span>
+            <span className="font-mono">${(subtotal || 0).toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-xs text-[#71717A]">
             <span>Tax (6%)</span>
-            <span className="font-mono">${gst.toFixed(2)}</span>
+            <span className="font-mono">${(gst || 0).toFixed(2)}</span>
           </div>
           {tipAmount > 0 && (
             <div className="flex justify-between text-xs text-[#71717A]">
               <span>Tip</span>
-              <span className="font-mono">${tipAmount.toFixed(2)}</span>
+              <span className="font-mono">${(tipAmount || 0).toFixed(2)}</span>
             </div>
           )}
           {loyaltyDiscount > 0 && (
             <div className="flex justify-between text-xs text-[#2E7D32]">
               <span>Loyalty Discount</span>
               <span className="font-mono text-[#2E7D32]">
-                -${loyaltyDiscount.toFixed(2)}
+                -${(loyaltyDiscount || 0).toFixed(2)}
               </span>
             </div>
           )}
           <div className="flex justify-between text-sm font-bold text-[#1A1A2E] pt-1">
             <span>Total</span>
             <span className="text-[#D4AF37]">
-              ${(total + tipAmount - loyaltyDiscount).toFixed(2)}
+              $
+              {(
+                (total || 0) +
+                (tipAmount || 0) -
+                (loyaltyDiscount || 0)
+              ).toFixed(2)}
             </span>
           </div>
         </div>
@@ -104,7 +109,7 @@ export function OrderSummary({
               <div className="text-xs text-[#71717A]">{item.sizeName}</div>
             </div>
             <span className="font-mono font-semibold text-[#1A1A2E]">
-              ${(item.price * item.quantity).toFixed(2)}
+              ${((item.price || 0) * (item.quantity || 0)).toFixed(2)}
             </span>
           </div>
         ))}
@@ -114,26 +119,28 @@ export function OrderSummary({
       <div className="border-t border-[rgba(30,90,168,0.08)] pt-4 space-y-2">
         <div className="flex justify-between text-[#4A4A5A]">
           <span>Subtotal</span>
-          <span className="font-mono">${subtotal.toFixed(2)}</span>
+          <span className="font-mono">${(subtotal || 0).toFixed(2)}</span>
         </div>
         <div className="flex justify-between text-[#4A4A5A]">
           <span>GST (6%)</span>
-          <span className="font-mono">${gst.toFixed(2)}</span>
+          <span className="font-mono">${(gst || 0).toFixed(2)}</span>
         </div>
         <div className="flex justify-between text-[#4A4A5A]">
           <span>PST (0%)</span>
-          <span className="font-mono">${pst.toFixed(2)}</span>
+          <span className="font-mono">${(pst || 0).toFixed(2)}</span>
         </div>
         {tipAmount > 0 && (
           <div className="flex justify-between text-[#4A4A5A]">
             <span>Tip</span>
-            <span className="font-mono">${tipAmount.toFixed(2)}</span>
+            <span className="font-mono">${(tipAmount || 0).toFixed(2)}</span>
           </div>
         )}
         {loyaltyDiscount > 0 && (
           <div className="flex justify-between text-[#2E7D32] font-semibold">
             <span>Loyalty Discount</span>
-            <span className="font-mono">-${loyaltyDiscount.toFixed(2)}</span>
+            <span className="font-mono">
+              -${(loyaltyDiscount || 0).toFixed(2)}
+            </span>
           </div>
         )}
       </div>
@@ -143,7 +150,10 @@ export function OrderSummary({
         <div className="flex justify-between text-xl font-bold">
           <span className="text-[#1A1A2E]">Total</span>
           <span className="text-[#D4AF37]">
-            ${(total + tipAmount - loyaltyDiscount).toFixed(2)}
+            $
+            {((total || 0) + (tipAmount || 0) - (loyaltyDiscount || 0)).toFixed(
+              2,
+            )}
           </span>
         </div>
       </div>

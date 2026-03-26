@@ -79,18 +79,12 @@ const SplashScreen = () => {
           },
         ]}>
         <Image
-          source={require('../assets/images/imidus_logo.png')}
+          source={require('../assets/images/imidus_logo_white.png')}
           style={styles.logoImage}
           resizeMode="contain"
         />
         <View style={styles.taglineContainer}>
-          <View style={styles.dot} />
-          <Text style={styles.tagline}>Order</Text>
-          <View style={styles.dot} />
-          <Text style={styles.tagline}>Track</Text>
-          <View style={styles.dot} />
-          <Text style={styles.tagline}>Earn</Text>
-          <View style={styles.dot} />
+          <Text style={styles.tagline}>Order · Track · Earn</Text>
         </View>
       </Animated.View>
 

@@ -67,7 +67,7 @@ namespace IntegrationService.Infrastructure.Data
         {
             const string sql = @"
                 SELECT
-                    i.ID AS ItemID,
+                    i.ItemID,
                     i.IName,
                     i.IName2,
                     i.ItemDescription,
@@ -89,7 +89,7 @@ namespace IntegrationService.Infrastructure.Data
                     i.Taste,
                     i.ScaleItem
                 FROM dbo.tblItem i
-                LEFT JOIN IntegrationService.dbo.MenuOverlays mo ON i.ID = mo.ItemId
+                LEFT JOIN IntegrationService.dbo.MenuOverlays mo ON i.ItemID = mo.ItemId
                 WHERE i.Status = 1
                   AND i.OnlineItem = 1
                 ORDER BY i.CategoryID, i.IName";
@@ -132,7 +132,7 @@ namespace IntegrationService.Infrastructure.Data
         {
             const string sql = @"
                 SELECT
-                    i.ID AS ItemID,
+                    i.ItemID,
                     i.IName,
                     i.IName2,
                     i.ItemDescription,
@@ -150,8 +150,8 @@ namespace IntegrationService.Infrastructure.Data
                     i.KitchenE,
                     i.Bar
                 FROM dbo.tblItem i
-                LEFT JOIN IntegrationService.dbo.MenuOverlays mo ON i.ID = mo.ItemId
-                WHERE i.ID = @ItemId";
+                LEFT JOIN IntegrationService.dbo.MenuOverlays mo ON i.ItemID = mo.ItemId
+                WHERE i.ItemID = @ItemId";
 
             using var connection = CreateConnection();
             var rawItem = await connection.QueryFirstOrDefaultAsync<dynamic>(sql, new { ItemId = itemId });
@@ -196,12 +196,12 @@ namespace IntegrationService.Infrastructure.Data
                     a.UnitPrice3,
                     a.OnHandQty,
                     a.ApplyNoDSC,
-                    s.ID AS SizeID,
+                    s.SizeID,
                     s.SizeName,
                     s.ShortName,
                     s.DisplayOrder
                 FROM dbo.tblAvailableSize a
-                INNER JOIN dbo.tblSize s ON a.SizeID = s.ID
+                INNER JOIN dbo.tblSize s ON a.SizeID = s.SizeID
                 WHERE a.ItemID = @ItemId
                 ORDER BY s.DisplayOrder";
 
@@ -229,18 +229,18 @@ namespace IntegrationService.Infrastructure.Data
         {
             const string sql = @"
                 SELECT 
-                    c.ID AS CategoryID,
-                    c.CatName,
+                    c.CategoryID,
+                    c.CName,
                     c.PrintOrder,
                     c.CategoryImageFilePath,
                     mo.OverrideImageUrl
                 FROM dbo.tblCategory c
-                INNER JOIN dbo.tblItem i ON c.ID = i.CategoryID
-                LEFT JOIN IntegrationService.dbo.MenuOverlays mo ON CAST(c.ID AS INT) = CAST(mo.CategoryId AS INT) AND mo.ItemId IS NULL
+                INNER JOIN dbo.tblItem i ON c.CategoryID = i.CategoryID
+                LEFT JOIN IntegrationService.dbo.MenuOverlays mo ON CAST(c.CategoryID AS INT) = CAST(mo.CategoryId AS INT) AND mo.ItemId IS NULL
                 WHERE c.Status = 1
                   AND i.OnlineItem = 1
                   AND i.Status = 1
-                GROUP BY c.ID, c.CatName, c.PrintOrder, c.CategoryImageFilePath, mo.OverrideImageUrl
+                GROUP BY c.CategoryID, c.CName, c.PrintOrder, c.CategoryImageFilePath, mo.OverrideImageUrl
                 ORDER BY c.PrintOrder";
 
             _logger.LogDebug("Fetching categories from POS database with potential overlays");
@@ -250,7 +250,7 @@ namespace IntegrationService.Infrastructure.Data
             var categories = rawCategories.Select(c => new Category
             {
                 CategoryID = (byte)c.CategoryID,
-                CName = (string)c.CatName,
+                CName = (string)c.CName,
                 PrintOrder = (int)(c.PrintOrder ?? 0),
                 CategoryImageFilePath = (string?)c.OverrideImageUrl ?? (string?)c.CategoryImageFilePath
             }).ToList();
@@ -444,37 +444,27 @@ namespace IntegrationService.Infrastructure.Data
                     TransType,
                     SubTotal,
                     DSCAmt,
-                    AlcoholDSCAmt,
                     GSTAmt,
                     PSTAmt,
                     PST2Amt,
-                    GSTRate,
-                    PSTRate,
-                    PST2Rate,
                     CustomerID,
                     CashierID,
                     TableID,
-                    StationID,
                     Guests,
                     TakeOutOrder,
                     DailyOrderNumber
                 )
                 VALUES (
                     @SaleDateTime,
-                    2,  -- TransType=2 (Open Order)
+                    2,  -- Open Order
                     @SubTotal,
                     @DSCAmt,
-                    @AlcoholDSCAmt,
                     @GSTAmt,
                     @PSTAmt,
                     @PST2Amt,
-                    @GSTRate,
-                    @PSTRate,
-                    @PST2Rate,
                     @CustomerID,
                     @CashierID,
                     @TableID,
-                    @StationID,
                     @Guests,
                     @TakeOutOrder,
                     @DailyOrderNumber
@@ -767,7 +757,7 @@ namespace IntegrationService.Infrastructure.Data
                 )
                 VALUES (
                     @SalesID, @ItemID, @SizeID, @Qty, @UnitPrice,
-                    @ItemName, @ItemName2, @SizeName, @Tastes, @SideDishes,
+                    @ItemName, COALESCE(@ItemName2, ''), @SizeName, COALESCE(@Tastes, ''), COALESCE(@SideDishes, ''),
                     @ApplyGST, @ApplyPST, @ApplyPST2, @DSCAmt,
                     COALESCE(@DSCAmtEmployee, 0), COALESCE(@DSCAmtType1, 0), COALESCE(@DSCAmtType2, 0),
                     COALESCE(@DayHourDiscountRate, 0), COALESCE(@PricePerWeightUnit, 0),
@@ -1178,10 +1168,7 @@ namespace IntegrationService.Infrastructure.Data
                         TipAmount,
                         AuthorizationNo,
                         BatchNo,
-                        SequenceNo,
-                        StationName,
                         Voided,
-                        TipAdjusted,
                         PaidDateTime
                     )
                     VALUES (
@@ -1191,10 +1178,7 @@ namespace IntegrationService.Infrastructure.Data
                         @TipAmount,
                         @AuthorizationNo,
                         @BatchNo,
-                        @SequenceNo,
-                        @StationName,
                         0,  -- Not voided
-                        0,  -- Tip not adjusted
                         GETDATE()
                     )";
 
@@ -1205,10 +1189,8 @@ namespace IntegrationService.Infrastructure.Data
                         payment.PaymentTypeID,
                         payment.PaidAmount,
                         payment.TipAmount,
-                        AuthorizationNo = (string?)null,
-                        BatchNo = (string?)null,
-                        payment.SequenceNo,
-                        StationName = (string?)null
+                        payment.AuthorizationNo,
+                        payment.BatchNo
                     },
                     localTransaction);
 
@@ -1341,11 +1323,11 @@ namespace IntegrationService.Infrastructure.Data
                 VALUES (
                     @SalesID,
                     @OnlineOrderCompanyID,
-                    @OnlineOrderNumber,
-                    @OnlineOrderCustomerName,
+                    COALESCE(@OnlineOrderNumber, ''),
+                    COALESCE(@OnlineOrderCustomerName, ''),
                     @DineInOrder,
-                    @ReservedTipAmt,
-                    @DeliveryChargeAmt
+                    COALESCE(@ReservedTipAmt, 0),
+                    COALESCE(@DeliveryChargeAmt, 0)
                 )";
 
             IDbConnection connection;
@@ -1401,9 +1383,9 @@ namespace IntegrationService.Infrastructure.Data
             // 3. Status checks TransType=1 (Completed)
             const string sql = @"
                 SELECT s.ID, s.TransType, s.CustomerID, s.DailyOrderNumber,
-                       s.SubTotal, s.GSTAmt as GstAmt, s.PSTAmt as PstAmt, s.PST2Amt as Pst2Amt, 
-                       s.DSCAmt as DscAmt,
-                       s.TableID, s.CashierID, s.StationID, s.SaleDateTime as SalesDate
+                       s.SubTotal, s.GSTAmt, s.PSTAmt, s.PST2Amt, 
+                       s.DSCAmt,
+                       s.TableID, s.CashierID, s.SaleDateTime
                 FROM dbo.tblSales s
                 INNER JOIN dbo.tblSalesOfOnlineOrders soo ON s.ID = soo.SalesID
                 WHERE s.TransType = 1

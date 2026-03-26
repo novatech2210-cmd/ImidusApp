@@ -468,5 +468,68 @@ namespace IntegrationService.Infrastructure.Data
             var rows = await connection.ExecuteAsync(sql, new { CustomerID = customerId });
             return rows > 0;
         }
+
+        // =============================================================================
+        // TERMINAL BRIDGE TRANSACTIONS
+        // =============================================================================
+
+        public async Task<TerminalBridgeTransaction> CreateTerminalTransactionAsync(TerminalBridgeTransaction transaction)
+        {
+            const string sql = @"
+                INSERT INTO TerminalBridgeTransactions (
+                    SalesID, OrderNumber, Amount, BridgeRequestId, BridgeRequestData, 
+                    Status, CreatedAt, UpdatedAt
+                ) VALUES (
+                    @SalesID, @OrderNumber, @Amount, @BridgeRequestId, @BridgeRequestData, 
+                    'pending', GETDATE(), GETDATE()
+                );
+                SELECT CAST(SCOPE_IDENTITY() as int);";
+
+            using var connection = CreateConnection();
+            transaction.Id = await connection.ExecuteScalarAsync<int>(sql, transaction);
+            return transaction;
+        }
+
+        public async Task<TerminalBridgeTransaction?> GetTerminalTransactionAsync(int id)
+        {
+            const string sql = "SELECT * FROM TerminalBridgeTransactions WHERE Id = @Id";
+            using var connection = CreateConnection();
+            return await connection.QueryFirstOrDefaultAsync<TerminalBridgeTransaction>(sql, new { Id = id });
+        }
+
+        public async Task<TerminalBridgeTransaction?> GetTerminalTransactionByBridgeIdAsync(string bridgeRequestId)
+        {
+            const string sql = "SELECT * FROM TerminalBridgeTransactions WHERE BridgeRequestId = @BridgeRequestId";
+            using var connection = CreateConnection();
+            return await connection.QueryFirstOrDefaultAsync<TerminalBridgeTransaction>(sql, new { BridgeRequestId = bridgeRequestId });
+        }
+
+        public async Task<bool> UpdateTerminalTransactionStatusAsync(int id, string status, string? statusMessage = null, string? authCode = null, string? transactionId = null, string? cardLastFour = null, string? cardType = null)
+        {
+            const string sql = @"
+                UPDATE TerminalBridgeTransactions
+                SET Status = @Status,
+                    StatusMessage = @StatusMessage,
+                    AuthCode = @AuthCode,
+                    TransactionId = @TransactionId,
+                    CardLastFour = @CardLastFour,
+                    CardType = @CardType,
+                    UpdatedAt = GETDATE(),
+                    CompletedAt = CASE WHEN @Status = 'approved' THEN GETDATE() ELSE CompletedAt END
+                WHERE Id = @Id";
+
+            using var connection = CreateConnection();
+            var rows = await connection.ExecuteAsync(sql, new
+            {
+                Id = id,
+                Status = status,
+                StatusMessage = statusMessage,
+                AuthCode = authCode,
+                TransactionId = transactionId,
+                CardLastFour = cardLastFour,
+                CardType = cardType
+            });
+            return rows > 0;
+        }
     }
 }

@@ -72,31 +72,18 @@ namespace IntegrationService.Core.Domain.Entities
         // Financial Totals
         public decimal SubTotal { get; set; }
         public decimal DSCAmt { get; set; }          // Discount Amount
-        public decimal AlcoholDSCAmt { get; set; }   // Alcohol-specific discount
         public decimal GSTAmt { get; set; }          // Goods & Services Tax
         public decimal PSTAmt { get; set; }          // Provincial Sales Tax
         public decimal PST2Amt { get; set; }         // Additional Tax
 
-        // Tax Rates (stored at transaction time for audit)
-        public decimal? GSTRate { get; set; }
-        public decimal? PSTRate { get; set; }
-        public decimal? PST2Rate { get; set; }
-
-        // Payment Tracking (aggregated by type)
-        public decimal CashPaidAmt { get; set; }
-        public decimal DebitPaidAmt { get; set; }
-        public decimal AmexPaidAmt { get; set; }
-        public decimal McPaidAmt { get; set; }       // MasterCard
-        public decimal CouponPaidAmt { get; set; }
-
-        // Tip Tracking
-        public decimal CashTipPaidAmt { get; set; }
-        public decimal CreditTipPaidAmt { get; set; }
-        public decimal DebitTipPaidAmt { get; set; }
-
         // Delivery/Online
         public decimal DeliveryChargeAmt { get; set; }
         public int? OnlineOrderCompanyID { get; set; }
+
+        // Tip Tracking (Stored in tblSales in some schemas, or linked)
+        public decimal CashTipPaidAmt { get; set; }
+        public decimal CreditTipPaidAmt { get; set; }
+        public decimal DebitTipPaidAmt { get; set; }
 
         // Foreign Keys
         public int? CustomerID { get; set; }
@@ -104,15 +91,9 @@ namespace IntegrationService.Core.Domain.Entities
         public int? TableID { get; set; }
         public int? StationID { get; set; }
 
-        // Customer Segmentation
-        public int? CustomerTypeID { get; set; }
-        public int? CustomerGroupID { get; set; }
-
-        // Order Metadata
+        // Metadata
         public int Guests { get; set; }
         public bool TakeOutOrder { get; set; }
-        public bool Locked { get; set; }
-        public int PaymentCount { get; set; }
 
         // Calculated Properties
         public decimal TotalAmount => SubTotal + GSTAmt + PSTAmt + PST2Amt - DSCAmt + DeliveryChargeAmt;
@@ -312,7 +293,6 @@ namespace IntegrationService.Core.Domain.Entities
     /// </summary>
     public class MenuItem
     {
-        /// <summary>Primary key. DB column is 'ID', aliased as ItemID in queries.</summary>
         public short ItemID { get; set; }
 
         // Names
@@ -403,7 +383,6 @@ namespace IntegrationService.Core.Domain.Entities
     /// </summary>
     public class Size
     {
-        /// <summary>Primary key. DB column is 'ID', aliased as SizeID in queries.</summary>
         public short SizeID { get; set; }
         public string SizeName { get; set; } = string.Empty;
         public string? ShortName { get; set; }
@@ -418,9 +397,7 @@ namespace IntegrationService.Core.Domain.Entities
     /// </summary>
     public class Category
     {
-        /// <summary>Primary key. DB column is 'ID', aliased as CategoryID in queries.</summary>
         public byte CategoryID { get; set; }
-        /// <summary>Category name. DB column is 'CatName', aliased as CName in queries.</summary>
         public string CName { get; set; } = string.Empty;
         public int PrintOrder { get; set; }
         public bool Status { get; set; }

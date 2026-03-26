@@ -1,5 +1,6 @@
 import BottomSheet from '@gorhom/bottom-sheet';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {AlertCircle, ShoppingCart, User} from 'lucide-react-native';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Animated,
   FlatList,
@@ -25,7 +26,7 @@ import {
 } from '../services/menuService';
 import {RootState} from '../store';
 import {addToCart} from '../store/cartSlice';
-import {Colors, Spacing, Elevation, TouchTarget, TextStyles} from '../theme';
+import {Colors, Elevation, Spacing, TextStyles, TouchTarget} from '../theme';
 import {Category, MenuItem, MenuItemSize} from '../types/menu.types';
 
 interface MenuSection {
@@ -201,7 +202,10 @@ const MenuScreen = ({navigation}: any) => {
     const isSelected = selectedCategoryId === item.categoryId;
     return (
       <TouchableOpacity
-        style={[styles.categoryButton, isSelected && styles.categoryButtonActive]}
+        style={[
+          styles.categoryButton,
+          isSelected && styles.categoryButtonActive,
+        ]}
         onPress={() => handleCategoryPress(item.categoryId, index)}>
         <Text
           style={[
@@ -255,7 +259,7 @@ const MenuScreen = ({navigation}: any) => {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorEmoji}>😕</Text>
+          <AlertCircle size={64} color={Colors.error} />
           <Text style={styles.errorTitle}>Connection Error</Text>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={loadMenu}>
@@ -276,12 +280,18 @@ const MenuScreen = ({navigation}: any) => {
               style={styles.profileButton}
               onPress={() => navigation.navigate('Profile')}>
               <View style={styles.avatarPlaceholder}>
-                <Text style={styles.avatarText}>👤</Text>
+                <User size={20} color={Colors.brandGold} />
               </View>
             </TouchableOpacity>
 
             <View style={styles.titleContainer}>
-              <Text style={styles.brandName}>IMIDUS</Text>
+              <Text
+                style={[
+                  TextStyles.wordmark,
+                  {fontSize: 22, color: Colors.brandGold},
+                ]}>
+                IMIDUSAPP
+              </Text>
               <View style={styles.syncContainer}>
                 <Animated.View
                   style={[
@@ -301,7 +311,7 @@ const MenuScreen = ({navigation}: any) => {
             <TouchableOpacity
               style={styles.cartButton}
               onPress={() => navigation.navigate('Cart')}>
-              <Text style={styles.cartIcon}>🛒</Text>
+              <ShoppingCart size={24} color={Colors.white} />
               {cartCount > 0 && (
                 <View style={styles.cartBadge}>
                   <Text style={styles.cartBadgeText}>{cartCount}</Text>
@@ -366,7 +376,7 @@ const MenuScreen = ({navigation}: any) => {
               start={{x: 0, y: 0}}
               end={{x: 1, y: 0}}>
               <Text style={styles.floatingCartText}>
-                View Cart · ${cartTotal.toFixed(2)}
+                View Cart · ${(cartTotal || 0).toFixed(2)}
               </Text>
               <View style={styles.floatingCartCount}>
                 <Text style={styles.floatingCartCountText}>{cartCount}</Text>
@@ -391,7 +401,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   headerSafeArea: {
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.surfaceContainerLow,
   },
   header: {
     paddingHorizontal: Spacing.md,

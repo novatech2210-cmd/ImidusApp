@@ -36,6 +36,12 @@ namespace IntegrationService.Core.Interfaces
         Task<bool> UpdateCustomerBirthdayAsync(int customerId, int month, int day);
         Task<(int? Month, int? Day)> GetCustomerBirthdayAsync(int customerId);
         Task<bool> RecordBirthdayRewardSentAsync(int customerId);
+
+        // Admin Portal extensions - Terminal Bridge
+        Task<TerminalBridgeTransaction> CreateTerminalTransactionAsync(TerminalBridgeTransaction transaction);
+        Task<TerminalBridgeTransaction?> GetTerminalTransactionAsync(int id);
+        Task<TerminalBridgeTransaction?> GetTerminalTransactionByBridgeIdAsync(string bridgeRequestId);
+        Task<bool> UpdateTerminalTransactionStatusAsync(int id, string status, string? statusMessage = null, string? authCode = null, string? transactionId = null, string? cardLastFour = null, string? cardType = null);
     }
 
     // Additional model classes for Admin Portal

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using IntegrationService.Core.Domain.Entities;
 using IntegrationService.Core.Interfaces;
@@ -24,17 +25,20 @@ namespace IntegrationService.Core.Services
         private readonly IPosRepository _posRepo;
         private readonly IPaymentService _paymentService;
         private readonly INotificationService _notificationService;
+        private readonly IIdempotencyRepository _idempotencyRepo;
         private readonly ILogger<OrderProcessingService> _logger;
 
         public OrderProcessingService(
             IPosRepository posRepository,
             IPaymentService paymentService,
             INotificationService notificationService,
+            IIdempotencyRepository idempotencyRepo,
             ILogger<OrderProcessingService> logger)
         {
             _posRepo = posRepository ?? throw new ArgumentNullException(nameof(posRepository));
             _paymentService = paymentService ?? throw new ArgumentNullException(nameof(paymentService));
             _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
+            _idempotencyRepo = idempotencyRepo ?? throw new ArgumentNullException(nameof(idempotencyRepo));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -46,6 +50,15 @@ namespace IntegrationService.Core.Services
         public async Task<Domain.Entities.OrderResult> CreateOrderAsync(CreateOrderRequest request, string idempotencyKey)
         {
             _logger.LogInformation("Creating order with idempotency key: {IdempotencyKey}", idempotencyKey);
+
+            // 1. Check if idempotency key exists
+            var existing = await _idempotencyRepo.GetByKeyAsync(idempotencyKey);
+            if (existing != null && !string.IsNullOrEmpty(existing.ResponseJson))
+            {
+                _logger.LogInformation("Returning cached response for idempotency key: {IdempotencyKey}", idempotencyKey);
+                return JsonSerializer.Deserialize<Domain.Entities.OrderResult>(existing.ResponseJson)
+                       ?? new Domain.Entities.OrderResult { Success = false, ErrorMessage = "Failed to deserialize cached response" };
+            }
 
             if (request == null || !request.Items.Any())
             {
@@ -69,22 +82,22 @@ namespace IntegrationService.Core.Services
 
             try
             {
-                // 1. Validate inventory for all items
+                // 2. Validate inventory for all items
                 await ValidateInventoryAsync(request.Items);
 
-                // 2. Get tax rates from POS configuration
+                // 3. Get tax rates from POS configuration
                 var taxRates = await _posRepo.GetTaxRatesAsync();
 
-                // 3. Get menu items for tax flags and kitchen routing
+                // 4. Get menu items for tax flags and kitchen routing
                 var menuItems = (await _posRepo.GetActiveMenuItemsAsync()).ToList();
 
-                // 4. Calculate order totals with per-item tax flags
+                // 5. Calculate order totals with per-item tax flags
                 var orderTotals = await CalculateOrderTotalsAsync(request.Items, taxRates, menuItems);
 
-                // 5. Get next daily order number
+                // 6. Get next daily order number
                 var dailyOrderNumber = await _posRepo.GetNextDailyOrderNumberAsync();
 
-                // 6. Create sale record with TransType=2 (OPEN ORDER)
+                // 7. Create sale record with TransType=2 (OPEN ORDER)
                 var sale = new PosTicket
                 {
                     SaleDateTime = DateTime.Now,
@@ -92,23 +105,14 @@ namespace IntegrationService.Core.Services
                     DailyOrderNumber = dailyOrderNumber,
                     SubTotal = orderTotals.SubTotal,
                     DSCAmt = 0,
-                    AlcoholDSCAmt = 0,
                     GSTAmt = orderTotals.GSTAmt,
                     PSTAmt = orderTotals.PSTAmt,
                     PST2Amt = orderTotals.PST2Amt,
-                    GSTRate = taxRates.GST,
-                    PSTRate = taxRates.PST,
-                    PST2Rate = taxRates.PST2,
                     CustomerID = request.CustomerID ?? 1,
                     CashierID = 999,  // Online cashier ID per project constants
                     TableID = 201,  // Online/takeout orders use TableID 201
-                    StationID = 2,  // DESKTOP-DEMO (online orders)
                     Guests = 1,
-                    TakeOutOrder = request.IsTakeout,
-                    DeliveryChargeAmt = request.DeliveryCharge,
-                    OnlineOrderCompanyID = request.OnlineOrderCompanyID,
-                    Locked = false,
-                    PaymentCount = 0
+                    TakeOutOrder = request.IsTakeout
                 };
 
                 var salesId = await _posRepo.CreateOpenOrderAsync(sale, transaction);
@@ -116,22 +120,22 @@ namespace IntegrationService.Core.Services
                 _logger.LogInformation("Created open order {SalesId} with order number {OrderNumber}",
                     salesId, dailyOrderNumber);
 
-                // 7. Insert items into tblPendingOrders (NOT tblSalesDetail!)
+                // 8. Insert items into tblPendingOrders (NOT tblSalesDetail!)
                 await InsertPendingOrderItemsAsync(salesId, request.Items, menuItems, transaction);
 
-                // 8. Decrease stock quantities
+                // 9. Decrease stock quantities
                 await DecreaseInventoryAsync(request.Items, transaction);
 
-                // 9. Process payment if auth code provided
+                // 10. Process payment if auth code provided
                 if (!string.IsNullOrEmpty(request.PaymentAuthCode))
                 {
                     await RecordPaymentAsync(salesId, orderTotals.TotalAmount, request, transaction);
 
-                    // 10. Complete the order (move items to tblSalesDetail, update TransType)
+                    // 11. Complete the order (move items to tblSalesDetail, update TransType)
                     await CompleteOrderInternalAsync(salesId, transaction);
                 }
 
-                // 11. Link to online order if applicable
+                // 12. Link to online order if applicable
                 if (request.OnlineOrderCompanyID.HasValue && !string.IsNullOrEmpty(request.OnlineOrderNumber))
                 {
                     await _posRepo.InsertOnlineSalesLinkAsync(new SalesOfOnlineOrder
@@ -150,7 +154,7 @@ namespace IntegrationService.Core.Services
 
                 _logger.LogInformation("Order {SalesId} created successfully", salesId);
 
-                return new Domain.Entities.OrderResult
+                var result = new Domain.Entities.OrderResult
                 {
                     Success = true,
                     SalesID = salesId,
@@ -158,6 +162,8 @@ namespace IntegrationService.Core.Services
                     TicketNumber = dailyOrderNumber.ToString(),
                     TotalAmount = orderTotals.TotalAmount
                 };
+
+                return result;
             }
             catch (InsufficientStockException ex)
             {
@@ -190,11 +196,21 @@ namespace IntegrationService.Core.Services
         public async Task<Models.OrderCompletionResult> ProcessPaymentAndCompleteOrderAsync(
             int salesId,
             Models.PaymentRequest paymentRequest,
+            string idempotencyKey,
             IDbTransaction? outerTransaction = null)
         {
             _logger.LogInformation(
-                "Starting payment processing for order {SalesId}, amount: ${Amount}",
-                salesId, paymentRequest.Amount);
+                "Starting payment processing for order {SalesId}, idempotency: {IdempotencyKey}, amount: ${Amount}",
+                salesId, idempotencyKey, paymentRequest.Amount);
+
+            // 1. Check idempotency
+            var existing = await _idempotencyRepo.GetByKeyAsync(idempotencyKey);
+            if (existing != null && !string.IsNullOrEmpty(existing.ResponseJson))
+            {
+                _logger.LogInformation("Returning cached payment response for idempotency key: {IdempotencyKey}", idempotencyKey);
+                return JsonSerializer.Deserialize<Models.OrderCompletionResult>(existing.ResponseJson)
+                       ?? new Models.OrderCompletionResult { Success = false, ErrorMessage = "Failed to deserialize cached response" };
+            }
 
             // Start transaction if not provided
             IDbTransaction? transaction = outerTransaction;
@@ -349,7 +365,15 @@ namespace IntegrationService.Core.Services
                         "Order {SalesId} completed successfully with payment {TransactionId}",
                         salesId, paymentResult.TransactionId);
 
-                    // Step 7: Send order confirmation push notification
+                    var completionResult = new Models.OrderCompletionResult
+                    {
+                        Success = true,
+                        TransactionId = paymentResult.TransactionId,
+                        TicketId = salesId,
+                        DailyOrderNumber = paymentRequest.DailyOrderNumber
+                    };
+
+                    // Step 7: Send order confirmation push notification (background)
                     if (paymentRequest.CustomerId.HasValue)
                     {
                         try
@@ -379,13 +403,7 @@ namespace IntegrationService.Core.Services
                         }
                     }
 
-                    return new Models.OrderCompletionResult
-                    {
-                        Success = true,
-                        TransactionId = paymentResult.TransactionId,
-                        TicketId = salesId,
-                        DailyOrderNumber = paymentRequest.DailyOrderNumber
-                    };
+                    return completionResult;
                 }
                 catch (Exception dbEx)
                 {

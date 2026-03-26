@@ -86,7 +86,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
           {/* Logo Section */}
           <View style={styles.logoSection}>
             <Image
-              source={require('../assets/images/imidus_logo.png')}
+              source={require('../assets/images/imidus_logo_white.png')}
               style={styles.logoImage}
               resizeMode="contain"
             />

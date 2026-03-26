@@ -1,4 +1,6 @@
-import React, {useState} from 'react';
+import {Colors, Spacing} from '@/theme';
+import {ArrowLeft, Minus, Plus, Utensils} from 'lucide-react-native';
+import {useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -11,7 +13,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch} from 'react-redux';
 import {addToCart} from '../store/cartSlice';
-import {Colors, Spacing, Elevation} from '@/theme';
 import {MenuItem, MenuItemSize} from '../types/menu.types';
 
 const ItemDetailScreen = ({route, navigation}: any) => {
@@ -48,7 +49,7 @@ const ItemDetailScreen = ({route, navigation}: any) => {
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}>
-            <Text style={styles.backButtonText}>←</Text>
+            <ArrowLeft size={24} color={Colors.white} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Item Details</Text>
           <View style={{width: 44}} />
@@ -61,7 +62,7 @@ const ItemDetailScreen = ({route, navigation}: any) => {
           <Image source={{uri: item.imageUrl}} style={styles.image} />
         ) : (
           <View style={[styles.image, styles.placeholderImage]}>
-            <Text style={styles.placeholderEmoji}>🍽️</Text>
+            <Utensils size={64} color={Colors.brandGold} opacity={0.3} />
             <Text style={styles.placeholderText}>No Image</Text>
           </View>
         )}
@@ -90,23 +91,26 @@ const ItemDetailScreen = ({route, navigation}: any) => {
                   key={size.sizeId}
                   style={[
                     styles.sizeButton,
-                    selectedSize?.sizeId === size.sizeId && styles.selectedSizeButton,
+                    selectedSize?.sizeId === size.sizeId &&
+                      styles.selectedSizeButton,
                   ]}
                   onPress={() => setSelectedSize(size)}
                   activeOpacity={0.7}>
                   <Text
                     style={[
                       styles.sizeText,
-                      selectedSize?.sizeId === size.sizeId && styles.selectedSizeText,
+                      selectedSize?.sizeId === size.sizeId &&
+                        styles.selectedSizeText,
                     ]}>
                     {size.sizeName}
                   </Text>
                   <Text
                     style={[
                       styles.priceText,
-                      selectedSize?.sizeId === size.sizeId && styles.selectedPriceText,
+                      selectedSize?.sizeId === size.sizeId &&
+                        styles.selectedPriceText,
                     ]}>
-                    ${size.price.toFixed(2)}
+                    ${(size.price || 0).toFixed(2)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -120,13 +124,13 @@ const ItemDetailScreen = ({route, navigation}: any) => {
               <TouchableOpacity
                 style={styles.quantityBtn}
                 onPress={() => setQuantity(Math.max(1, quantity - 1))}>
-                <Text style={styles.quantityBtnText}>−</Text>
+                <Minus size={20} color={Colors.textPrimary} />
               </TouchableOpacity>
               <Text style={styles.quantityText}>{quantity}</Text>
               <TouchableOpacity
                 style={[styles.quantityBtn, styles.quantityBtnAdd]}
                 onPress={() => setQuantity(quantity + 1)}>
-                <Text style={[styles.quantityBtnText, styles.quantityBtnAddText]}>+</Text>
+                <Plus size={20} color={Colors.white} />
               </TouchableOpacity>
             </View>
           </View>
@@ -137,7 +141,7 @@ const ItemDetailScreen = ({route, navigation}: any) => {
       <View style={styles.footer}>
         <View style={styles.totalContainer}>
           <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalValue}>${totalPrice.toFixed(2)}</Text>
+          <Text style={styles.totalValue}>${(totalPrice || 0).toFixed(2)}</Text>
         </View>
         <TouchableOpacity
           onPress={handleAddToCart}

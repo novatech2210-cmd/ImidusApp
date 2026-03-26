@@ -1,6 +1,8 @@
+import {Colors, Elevation, Spacing} from '@/theme';
 import Slider from '@react-native-community/slider';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {ArrowLeft} from 'lucide-react-native';
 import {useState} from 'react';
 import {
   ActivityIndicator,
@@ -11,16 +13,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useSelector} from 'react-redux';
-import PaymentForm from '../components/PaymentForm';
 import AuthorizeNetWebView from '../components/AuthorizeNetWebView';
-import {completePayment} from '../services/orderService';
-import {validateCardData, detectCardType} from '../services/paymentService';
+import PaymentForm from '../components/PaymentForm';
 import useAuthorizeNetTokenization from '../hooks/useAuthorizeNetTokenization';
+import {completePayment} from '../services/orderService';
+import {detectCardType, validateCardData} from '../services/paymentService';
 import {RootState} from '../store';
-import {Colors, Spacing, Elevation} from '@/theme';
 import {CardData} from '../types/payment.types';
 
 type RootStackParamList = {
@@ -91,13 +91,13 @@ export default function CheckoutScreen() {
     (state: RootState) => state.loyalty,
   );
 
-  const subtotal = orderTotal - gstTotal - pstTotal;
+  const subtotal = (orderTotal || 0) - (gstTotal || 0) - (pstTotal || 0);
   const maxRedeemablePoints = Math.min(
-    balance,
-    Math.floor(orderTotal * 100),
+    balance || 0,
+    Math.floor((orderTotal || 0) * 100),
   );
-  const discountAmount = pointsToRedeem / 100;
-  const finalTotal = Math.max(0, orderTotal - discountAmount);
+  const discountAmount = (pointsToRedeem || 0) / 100;
+  const finalTotal = Math.max(0, (orderTotal || 0) - discountAmount);
 
   const handlePaymentSubmit = async (cardData: CardData) => {
     setError(undefined);
@@ -157,7 +157,10 @@ export default function CheckoutScreen() {
     }
   };
 
-  const onTokenReceived = (token: {dataDescriptor: string; dataValue: string}) => {
+  const onTokenReceived = (token: {
+    dataDescriptor: string;
+    dataValue: string;
+  }) => {
     handleTokenReceived(token);
   };
 
@@ -208,7 +211,7 @@ export default function CheckoutScreen() {
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}>
-            <Text style={styles.backButtonText}>←</Text>
+            <ArrowLeft size={24} color={Colors.textPrimary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Checkout</Text>
           <View style={{width: 44}} />
@@ -224,7 +227,7 @@ export default function CheckoutScreen() {
               <Text style={styles.pointsBadge}>{balance} pts</Text>
             </View>
             <Text style={styles.balanceText}>
-              Available: ${(balance / 100).toFixed(2)} USD
+              Available: ${((balance || 0) / 100).toFixed(2)} USD
             </Text>
 
             <Slider
@@ -244,7 +247,7 @@ export default function CheckoutScreen() {
                 Redeeming: {pointsToRedeem} pts
               </Text>
               <Text style={styles.discountText}>
-                -${discountAmount.toFixed(2)}
+                -${(discountAmount || 0).toFixed(2)}
               </Text>
             </View>
 
@@ -264,21 +267,27 @@ export default function CheckoutScreen() {
 
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Subtotal</Text>
-            <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
+            <Text style={styles.summaryValue}>
+              ${(subtotal || 0).toFixed(2)}
+            </Text>
           </View>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>GST (6%)</Text>
-            <Text style={styles.summaryValue}>${gstTotal.toFixed(2)}</Text>
+            <Text style={styles.summaryValue}>
+              ${(gstTotal || 0).toFixed(2)}
+            </Text>
           </View>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>PST</Text>
-            <Text style={styles.summaryValue}>${pstTotal.toFixed(2)}</Text>
+            <Text style={styles.summaryValue}>
+              ${(pstTotal || 0).toFixed(2)}
+            </Text>
           </View>
           {pointsToRedeem > 0 && (
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Points Discount</Text>
               <Text style={styles.discountValue}>
-                -${discountAmount.toFixed(2)}
+                -${(discountAmount || 0).toFixed(2)}
               </Text>
             </View>
           )}
@@ -287,7 +296,9 @@ export default function CheckoutScreen() {
 
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalValue}>${finalTotal.toFixed(2)}</Text>
+            <Text style={styles.totalValue}>
+              ${(finalTotal || 0).toFixed(2)}
+            </Text>
           </View>
         </View>
 

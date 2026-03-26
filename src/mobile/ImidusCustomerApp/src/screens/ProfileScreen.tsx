@@ -1,3 +1,4 @@
+import {ArrowLeft, ChevronRight} from 'lucide-react-native';
 import {useEffect} from 'react';
 import {
   ActivityIndicator,
@@ -15,7 +16,7 @@ import {AppDispatch, RootState} from '../store';
 import {logoutUser} from '../store/authSlice';
 import {fetchCustomerLoyalty, fetchLoyaltyHistory} from '../store/loyaltySlice';
 import {Colors} from '../theme/colors';
-import {Spacing, Elevation} from '../theme/spacing';
+import {Elevation, Spacing} from '../theme/spacing';
 
 const ProfileScreen = ({navigation}: any) => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -50,7 +51,7 @@ const ProfileScreen = ({navigation}: any) => {
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}>
-            <Text style={styles.backButtonText}>←</Text>
+            <ArrowLeft size={24} color={Colors.white} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Profile</Text>
           <View style={{width: 44}} />
@@ -90,9 +91,7 @@ const ProfileScreen = ({navigation}: any) => {
           ) : (
             <>
               <Text style={styles.loyaltyPoints}>{balance}</Text>
-              <Text style={styles.loyaltyVoice}>
-                points available
-              </Text>
+              <Text style={styles.loyaltyVoice}>points available</Text>
               <View style={styles.divider} />
               <View style={styles.loyaltyConversion}>
                 <Text style={styles.loyaltyConversionText}>
@@ -109,7 +108,9 @@ const ProfileScreen = ({navigation}: any) => {
             <Text style={styles.sectionTitle}>Recent Activity</Text>
             <FlatList
               data={transactions}
-              keyExtractor={(item, index) => item?.id?.toString() ?? `order-${index}`}
+              keyExtractor={(item, index) =>
+                item?.id?.toString() ?? `order-${index}`
+              }
               renderItem={({item}) => (
                 <View style={styles.transactionRow}>
                   <View style={styles.transactionLeft}>
@@ -145,19 +146,19 @@ const ProfileScreen = ({navigation}: any) => {
           <Text style={styles.sectionTitle}>Account Settings</Text>
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>Order History</Text>
-            <Text style={styles.menuItemArrow}>→</Text>
+            <ChevronRight size={20} color={Colors.textMuted} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>Saved Addresses</Text>
-            <Text style={styles.menuItemArrow}>→</Text>
+            <ChevronRight size={20} color={Colors.textMuted} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>Payment Methods</Text>
-            <Text style={styles.menuItemArrow}>→</Text>
+            <ChevronRight size={20} color={Colors.textMuted} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>Notifications</Text>
-            <Text style={styles.menuItemArrow}>→</Text>
+            <ChevronRight size={20} color={Colors.textMuted} />
           </TouchableOpacity>
         </View>
 

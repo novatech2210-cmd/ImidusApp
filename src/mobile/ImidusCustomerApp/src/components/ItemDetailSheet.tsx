@@ -1,10 +1,16 @@
-import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
 import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+import React, {useEffect, useState} from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {MenuItem, MenuItemSize} from '../types/menu.types';
 import {Colors} from '../theme/colors';
-import {Spacing, Elevation} from '../theme/spacing';
+import {Spacing} from '../theme/spacing';
+import {MenuItem, MenuItemSize} from '../types/menu.types';
 
 interface ItemDetailSheetProps {
   item: MenuItem | null;
@@ -74,23 +80,26 @@ export const ItemDetailSheet: React.FC<ItemDetailSheetProps> = ({
                 key={size.sizeId}
                 style={[
                   styles.sizeChip,
-                  selectedSize?.sizeId === size.sizeId && styles.sizeChipSelected,
+                  selectedSize?.sizeId === size.sizeId &&
+                    styles.sizeChipSelected,
                 ]}
                 onPress={() => setSelectedSize(size)}
                 activeOpacity={0.7}>
                 <Text
                   style={[
                     styles.sizeChipText,
-                    selectedSize?.sizeId === size.sizeId && styles.sizeChipTextSelected,
+                    selectedSize?.sizeId === size.sizeId &&
+                      styles.sizeChipTextSelected,
                   ]}>
                   {size.sizeName}
                 </Text>
                 <Text
                   style={[
                     styles.sizeChipPrice,
-                    selectedSize?.sizeId === size.sizeId && styles.sizeChipPriceSelected,
+                    selectedSize?.sizeId === size.sizeId &&
+                      styles.sizeChipPriceSelected,
                   ]}>
-                  ${size.price.toFixed(2)}
+                  ${(size.price || 0).toFixed(2)}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -109,7 +118,11 @@ export const ItemDetailSheet: React.FC<ItemDetailSheetProps> = ({
               <TouchableOpacity
                 style={[styles.quantityButton, styles.quantityButtonAdd]}
                 onPress={() => setQuantity(quantity + 1)}>
-                <Text style={[styles.quantityButtonText, styles.quantityButtonAddText]}>
+                <Text
+                  style={[
+                    styles.quantityButtonText,
+                    styles.quantityButtonAddText,
+                  ]}>
                   +
                 </Text>
               </TouchableOpacity>
@@ -142,7 +155,7 @@ export const ItemDetailSheet: React.FC<ItemDetailSheetProps> = ({
                   styles.addButtonPrice,
                   !selectedSize && styles.addButtonTextDisabled,
                 ]}>
-                ${totalPrice.toFixed(2)}
+                ${(totalPrice || 0).toFixed(2)}
               </Text>
             </LinearGradient>
           </TouchableOpacity>

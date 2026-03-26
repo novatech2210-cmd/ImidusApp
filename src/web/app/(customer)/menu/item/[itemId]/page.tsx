@@ -208,7 +208,7 @@ export default function ItemDetailPage() {
                       </span>
                     </div>
                     <span className="font-bold text-[#D4AF37]">
-                      ${size.price.toFixed(2)}
+                      ${(size.price || 0).toFixed(2)}
                     </span>
                   </button>
                 ))}
@@ -246,7 +246,7 @@ export default function ItemDetailPage() {
               <div className="flex items-center justify-between mb-4">
                 <span className="text-gray-600">Total</span>
                 <span className="text-3xl font-bold text-[#D4AF37]">
-                  ${itemTotal.toFixed(2)}
+                  ${(itemTotal || 0).toFixed(2)}
                 </span>
               </div>
 

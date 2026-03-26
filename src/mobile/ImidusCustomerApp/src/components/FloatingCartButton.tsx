@@ -52,7 +52,7 @@ export default function FloatingCartButton({
             <Text style={styles.countText}>{cartCount}</Text>
           </View>
           <View style={styles.divider} />
-          <Text style={styles.totalText}>${cartTotal.toFixed(2)}</Text>
+          <Text style={styles.totalText}>${(cartTotal || 0).toFixed(2)}</Text>
         </View>
       </Animated.View>
     </TouchableOpacity>

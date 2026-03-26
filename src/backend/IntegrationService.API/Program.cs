@@ -112,6 +112,9 @@ builder.Services.AddOptions<JwtSettings>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
+builder.Services.AddOptions<TerminalSettings>()
+    .BindConfiguration("TerminalSettings");
+
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 if (jwtSettings != null && !string.IsNullOrEmpty(jwtSettings.Secret))
@@ -219,8 +222,11 @@ else
 builder.Services.AddScoped<INotificationService, FcmNotificationService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
-// Milestone 4 Admin Portal Service
 builder.Services.AddScoped<AdminPortalService>();
+
+// Milestone 5 Terminal Bridge Service
+builder.Services.AddHttpClient<ITerminalBridgeService, TerminalBridgeService>();
+builder.Services.AddScoped<ITerminalBridgeService, TerminalBridgeService>();
 
 // Add SendGrid
 builder.Services.AddSendGrid(options =>
@@ -357,6 +363,49 @@ using (var scope = app.Services.CreateScope())
                         IsActive BIT NOT NULL DEFAULT 1
                     )");
                 logger.LogInformation("Created Users table in IntegrationService database");
+            }
+
+            // IdempotencyKeys table
+            var idempotencyKeysExists = await Dapper.SqlMapper.ExecuteScalarAsync<int>(conn, "SELECT COUNT(*) FROM sys.tables WHERE name = 'IdempotencyKeys'");
+            if (idempotencyKeysExists == 0)
+            {
+                await Dapper.SqlMapper.ExecuteAsync(conn, @"
+                    CREATE TABLE IdempotencyKeys (
+                        IdempotencyKey NVARCHAR(100) PRIMARY KEY,
+                        RequestHash NVARCHAR(100) NOT NULL,
+                        ResponseJson NVARCHAR(MAX) NULL,
+                        StatusCode INT NOT NULL,
+                        CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+                        ExpiresAt DATETIME2 NOT NULL
+                    )");
+                logger.LogInformation("Created IdempotencyKeys table in IntegrationService database");
+            }
+
+            // TerminalBridgeTransactions table
+            var terminalTransactionsExists = await Dapper.SqlMapper.ExecuteScalarAsync<int>(conn, "SELECT COUNT(*) FROM sys.tables WHERE name = 'TerminalBridgeTransactions'");
+            if (terminalTransactionsExists == 0)
+            {
+                await Dapper.SqlMapper.ExecuteAsync(conn, @"
+                    CREATE TABLE TerminalBridgeTransactions (
+                        Id INT IDENTITY(1,1) PRIMARY KEY,
+                        SalesID INT NOT NULL,
+                        OrderNumber NVARCHAR(50) NOT NULL,
+                        Amount DECIMAL(18,2) NOT NULL,
+                        BridgeRequestId NVARCHAR(100) NOT NULL UNIQUE,
+                        BridgeRequestData NVARCHAR(MAX) NULL,
+                        BridgeResponseData NVARCHAR(MAX) NULL,
+                        Status NVARCHAR(50) NOT NULL DEFAULT 'pending',
+                        StatusMessage NVARCHAR(MAX) NULL,
+                        CardLastFour NVARCHAR(4) NULL,
+                        CardType NVARCHAR(50) NULL,
+                        AuthCode NVARCHAR(100) NULL,
+                        TransactionId NVARCHAR(100) NULL,
+                        ReceiptData NVARCHAR(MAX) NULL,
+                        CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+                        UpdatedAt DATETIME2 NULL,
+                        CompletedAt DATETIME2 NULL
+                    )");
+                logger.LogInformation("Created TerminalBridgeTransactions table in IntegrationService database");
             }
         }
         catch (Exception ex)

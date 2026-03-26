@@ -216,25 +216,6 @@ export default function CheckoutPage() {
     fetchSuggestions();
   }, [items.length, total]);
 
-  // Check if cart is empty
-  if (items.length === 0 && step !== "success") {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-4">
-        <div className="card card-body text-center max-w-md w-full">
-          <h2 className="text-2xl font-bold text-[#1A1A2E] mb-4">
-            Your cart is empty
-          </h2>
-          <p className="text-[#71717A] mb-6">
-            Add some items from our menu to checkout.
-          </p>
-          <Link href="/menu" className="btn btn-primary w-full">
-            Browse Menu
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   /**
    * Handle customer info form submission
    * Performs customer lookup and creates order
@@ -499,6 +480,9 @@ export default function CheckoutPage() {
       customerId,
       clearCart,
       router,
+      useLoyalty,
+      pointsToRedeem,
+      loyaltyDiscount,
     ],
   );
 
@@ -616,6 +600,24 @@ export default function CheckoutPage() {
       0,
     );
   };
+  // Check if cart is empty
+  if (items.length === 0 && step !== "success") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-4">
+        <div className="card card-body text-center max-w-md w-full">
+          <h2 className="text-2xl font-bold text-[#1A1A2E] mb-4">
+            Your cart is empty
+          </h2>
+          <p className="text-[#71717A] mb-6">
+            Add some items from our menu to checkout.
+          </p>
+          <Link href="/menu" className="btn btn-primary w-full">
+            Browse Menu
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
@@ -869,7 +871,7 @@ export default function CheckoutPage() {
                         Discount
                       </p>
                       <p className="text-lg font-mono font-bold text-[#2E7D32]">
-                        -${loyaltyDiscount.toFixed(2)}
+                        -${(loyaltyDiscount || 0).toFixed(2)}
                       </p>
                     </div>
                   </div>

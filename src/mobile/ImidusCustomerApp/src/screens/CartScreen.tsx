@@ -1,3 +1,5 @@
+import {Colors, Elevation, Spacing} from '@/theme';
+import {ArrowLeft, Minus, Plus, ShoppingCart} from 'lucide-react-native';
 import React from 'react';
 import {
   Alert,
@@ -13,7 +15,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import {createOrder} from '../services/orderService';
 import {RootState} from '../store';
 import {removeFromCart, updateQuantity} from '../store/cartSlice';
-import {Colors, Spacing, Elevation} from '@/theme';
 
 const CartScreen = ({navigation}: any) => {
   const cartItems = useSelector((state: RootState) => state.cart.items);
@@ -73,7 +74,7 @@ const CartScreen = ({navigation}: any) => {
         <View style={styles.itemInfo}>
           <Text style={styles.itemName}>{item.itemName}</Text>
           <Text style={styles.itemSize}>{item.sizeName}</Text>
-          <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
+          <Text style={styles.itemPrice}>${(item.price || 0).toFixed(2)}</Text>
         </View>
 
         <View style={styles.rightSection}>
@@ -92,7 +93,7 @@ const CartScreen = ({navigation}: any) => {
                   dispatch(removeFromCart(item.id));
                 }
               }}>
-              <Text style={styles.qtyBtnText}>−</Text>
+              <Minus size={18} stroke={Colors.textPrimary} />
             </TouchableOpacity>
             <Text style={styles.quantityText}>{item.quantity}</Text>
             <TouchableOpacity
@@ -105,11 +106,11 @@ const CartScreen = ({navigation}: any) => {
                   }),
                 )
               }>
-              <Text style={[styles.qtyBtnText, styles.qtyBtnAddText]}>+</Text>
+              <Plus size={18} color={Colors.white} />
             </TouchableOpacity>
           </View>
           <Text style={styles.itemTotal}>
-            ${(item.price * item.quantity).toFixed(2)}
+            ${((item.price || 0) * (item.quantity || 0)).toFixed(2)}
           </Text>
         </View>
       </View>
@@ -123,7 +124,7 @@ const CartScreen = ({navigation}: any) => {
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}>
-            <Text style={styles.backButtonText}>←</Text>
+            <ArrowLeft size={24} color={Colors.white} />
           </TouchableOpacity>
           <View style={styles.headerCenter}>
             <Text style={styles.title}>Your Cart</Text>
@@ -135,7 +136,7 @@ const CartScreen = ({navigation}: any) => {
 
       {cartItems.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyEmoji}>🛒</Text>
+          <ShoppingCart size={80} color={Colors.brandGold} opacity={0.3} />
           <Text style={styles.emptyTitle}>Your cart is empty</Text>
           <Text style={styles.emptySubtitle}>
             Add items from the menu to get started
@@ -166,7 +167,9 @@ const CartScreen = ({navigation}: any) => {
             <View style={styles.summaryCard}>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Subtotal</Text>
-                <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
+                <Text style={styles.summaryValue}>
+                  ${(subtotal || 0).toFixed(2)}
+                </Text>
               </View>
               <Text style={styles.footerNote}>
                 Taxes calculated at checkout
@@ -189,7 +192,9 @@ const CartScreen = ({navigation}: any) => {
                 <Text style={styles.checkoutButtonText}>
                   {loading ? 'Creating Order...' : 'Proceed to Checkout'}
                 </Text>
-                <Text style={styles.checkoutTotal}>${subtotal.toFixed(2)}</Text>
+                <Text style={styles.checkoutTotal}>
+                  ${(subtotal || 0).toFixed(2)}
+                </Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>

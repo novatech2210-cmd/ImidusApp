@@ -34,6 +34,7 @@ namespace IntegrationService.Core.Interfaces
         Task<Models.OrderCompletionResult> ProcessPaymentAndCompleteOrderAsync(
             int salesId,
             Models.PaymentRequest paymentRequest,
+            string idempotencyKey,
             IDbTransaction? outerTransaction = null);
 
         /// <summary>

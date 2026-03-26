@@ -101,5 +101,5 @@ export const formatOrderDate = (dateString: string): string => {
  * Format currency amount
  */
 export const formatCurrency = (amount: number): string => {
-  return `$${amount.toFixed(2)}`;
+  return `$${(amount || 0).toFixed(2)}`;
 };

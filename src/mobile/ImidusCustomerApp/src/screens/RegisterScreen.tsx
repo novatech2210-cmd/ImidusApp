@@ -1,5 +1,6 @@
 import {Colors, Spacing} from '@/theme';
 import {useIsFocused} from '@react-navigation/native';
+import {Eye, EyeOff} from 'lucide-react-native';
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
@@ -161,7 +162,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
             {/* Header */}
             <View style={styles.headerWrapper}>
               <Image
-                source={require('../assets/images/imidus_logo.png')}
+                source={require('../assets/images/imidus_logo_white.png')}
                 style={styles.logoImage}
                 resizeMode="contain"
               />
@@ -290,9 +291,11 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
                   <TouchableOpacity
                     style={styles.eyeButton}
                     onPress={() => setShowPassword(!showPassword)}>
-                    <Text style={styles.eyeButtonText}>
-                      {showPassword ? 'Hide' : 'Show'}
-                    </Text>
+                    {showPassword ? (
+                      <EyeOff size={20} color={Colors.brandGold} />
+                    ) : (
+                      <Eye size={20} color={Colors.brandGold} />
+                    )}
                   </TouchableOpacity>
                 </View>
                 {errors.password && (
@@ -325,9 +328,11 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
                     onPress={() =>
                       setShowConfirmPassword(!showConfirmPassword)
                     }>
-                    <Text style={styles.eyeButtonText}>
-                      {showConfirmPassword ? 'Hide' : 'Show'}
-                    </Text>
+                    {showConfirmPassword ? (
+                      <EyeOff size={20} color={Colors.brandGold} />
+                    ) : (
+                      <Eye size={20} color={Colors.brandGold} />
+                    )}
                   </TouchableOpacity>
                 </View>
                 {errors.confirmPassword && (
