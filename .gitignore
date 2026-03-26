@@ -1,17 +1,14 @@
 # Recursively ignore dependencies and build outputs
-**/node_modules/
-**/.next/
-**/build/
-**/dist/
-**/out/
-
-# Mobile Artifacts
+**/*.tar.gz
+*.zip
+*.msi
+*.exe
 *.apk
 *.ipa
-deliverables/
-delivery/
-
-# .NET
+node_modules/
+.next/
+dist/
+build/
 bin/
 obj/
 *.user

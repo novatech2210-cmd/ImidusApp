@@ -1,7 +1,7 @@
 {
   "name": "toast",
   "version": "1.0.0",
-  "description": "<<<<<<< HEAD # Imidus ======= # ImidusApp Restaurant POS",
+  "description": "# ImidusApp Restaurant POS",
   "main": "index.js",
   "directories": {
     "doc": "docs"
