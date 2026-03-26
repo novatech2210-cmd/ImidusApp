@@ -13,7 +13,7 @@ jobs:
   build-ios:
     runs-on: macos-14
     timeout-minutes: 60
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,20 +25,15 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
       - name: Install Node dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           echo "=== Installing dependencies ==="
-          pnpm install --frozen-lockfile
-          
+          npm install
+
           echo "=== Verifying react-native-svg version ==="
           grep '"react-native-svg"' package.json
-          
+
           echo "=== Verifying React Native ==="
           ls -lh node_modules/react-native/scripts/react_native_pods.rb
 
@@ -62,9 +57,9 @@ jobs:
         run: |
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-          
+
           echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-          
+
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH

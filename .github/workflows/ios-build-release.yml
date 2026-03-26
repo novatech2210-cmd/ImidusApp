@@ -46,21 +46,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "pnpm"
-          cache-dependency-path: ${{ env.WORKING_DIR }}/pnpm-lock.yaml
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - name: Install Dependencies
         working-directory: ${{ env.WORKING_DIR }}
-        run: pnpm install --frozen-lockfile
+        run: npm install
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -91,7 +79,7 @@ jobs:
           path: |
             ${{ env.WORKING_DIR }}/ios/Pods
             ${{ env.WORKING_DIR }}/node_modules
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-pods-
 
