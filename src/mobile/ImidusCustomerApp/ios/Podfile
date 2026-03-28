@@ -3,6 +3,9 @@ require_relative '../node_modules/react-native/scripts/react_native_pods'
 platform :ios, '15.0'
 prepare_react_native_project!
 
+# Enable modular headers for Firebase compatibility
+use_modular_headers!
+
 target 'ImidusCustomerApp' do
   config = use_native_modules!
   flags = get_default_flags()
