@@ -1,0 +1,54 @@
+name: iOS Debug Build (No Signing)
+
+on:
+  workflow_dispatch:
+
+env:
+  WORKING_DIR: src/mobile/ImidusCustomerApp
+
+jobs:
+  build:
+    name: Build iOS Debug
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: npm install --legacy-peer-deps
+
+      - name: Install Pods
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        run: pod install
+
+      - name: Build for Simulator
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        run: |
+          xcodebuild \
+            -workspace ImidusCustomerApp.xcworkspace \
+            -scheme ImidusCustomerApp \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -derivedDataPath build \
+            build
+
+      - name: Create App Archive
+        working-directory: ${{ env.WORKING_DIR }}/ios/build/Build/Products/Debug-iphonesimulator
+        run: |
+          mkdir -p Payload
+          cp -r ImidusCustomerApp.app Payload/
+          zip -r ImidusCustomerApp-Debug.ipa Payload/
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ImidusCustomerApp-Debug-IPA
+          path: ${{ env.WORKING_DIR }}/ios/build/Build/Products/Debug-iphonesimulator/ImidusCustomerApp-Debug.ipa
+          retention-days: 7
