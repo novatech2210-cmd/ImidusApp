@@ -1,8 +1,8 @@
 "use client";
 
-import Link from 'next/link';
 import { useCart } from "@/context/CartContext";
-import { ShoppingBagIcon } from '@heroicons/react/24/solid';
+import { ShoppingBagIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
 
 export function OrderPanel() {
   const { items, subtotal, tax, total, count, clearCart } = useCart();
@@ -40,8 +40,12 @@ export function OrderPanel() {
                 d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
               />
             </svg>
-            <p className="font-bold uppercase tracking-tighter text-xs">Your cart is empty</p>
-            <p className="text-[10px] mt-1 opacity-70">Add items from the menu</p>
+            <p className="font-bold uppercase tracking-tighter text-xs">
+              Your cart is empty
+            </p>
+            <p className="text-[10px] mt-1 opacity-70">
+              Add items from the menu
+            </p>
           </div>
         ) : (
           items.map((item) => (
@@ -73,11 +77,13 @@ export function OrderPanel() {
       <div className="p-4 border-t border-[rgba(30,90,168,0.08)] space-y-3 bg-[rgba(253,246,227,0.3)]">
         <div className="flex justify-between items-center text-[#4A4A5A] text-xs font-bold tracking-wide">
           <span>Subtotal</span>
-          <span className="font-mono">${subtotal.toFixed(2)}</span>
+          <span className="font-mono">${(subtotal || 0).toFixed(2)}</span>
         </div>
         <div className="flex justify-between items-center text-[#4A4A5A] text-xs font-bold tracking-wide">
           <span>Tax (6%)</span>
-          <span className="font-mono">${(subtotal * 0.06).toFixed(2)}</span>
+          <span className="font-mono">
+            ${((subtotal || 0) * 0.06).toFixed(2)}
+          </span>
         </div>
 
         <div className="bg-white p-3 rounded-lg border border-[rgba(212,175,55,0.3)]">
@@ -85,9 +91,7 @@ export function OrderPanel() {
             <span className="text-[#71717A] text-[9px] uppercase font-black tracking-wider">
               Total
             </span>
-            <span className="price text-xl">
-              ${total.toFixed(2)}
-            </span>
+            <span className="price text-xl">${(total || 0).toFixed(2)}</span>
           </div>
           <p className="text-[9px] text-[#71717A] text-right italic">
             Incl. 6% GST
@@ -96,7 +100,7 @@ export function OrderPanel() {
 
         <Link
           href="/cart"
-          className={`block w-full btn btn-gold text-center py-3 ${items.length === 0 ? 'opacity-50 pointer-events-none' : ''}`}
+          className={`block w-full btn btn-gold text-center py-3 ${items.length === 0 ? "opacity-50 pointer-events-none" : ""}`}
         >
           View Cart & Checkout
         </Link>

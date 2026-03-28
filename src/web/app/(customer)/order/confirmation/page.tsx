@@ -1,5 +1,6 @@
 "use client";
 
+import { useCart } from "@/context/CartContext";
 import { OrderAPI } from "@/lib/api";
 import {
   CalendarIcon,
@@ -32,6 +33,7 @@ interface OrderDetails {
 }
 
 function OrderConfirmationContent() {
+  const { clearCart } = useCart(); // Destructured clearCart from useCart
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -173,7 +175,9 @@ function OrderConfirmationContent() {
     };
 
     fetchOrderDetails();
-  }, [orderId, isScheduled]);
+    // Clear cart once we land on confirmation page
+    clearCart();
+  }, [orderId, isScheduled, clearCart]); // clearCart is now a stable function from useCart
 
   /**
    * Handle print functionality

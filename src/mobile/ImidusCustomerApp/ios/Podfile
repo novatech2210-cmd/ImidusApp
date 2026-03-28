@@ -1,6 +1,6 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 
-platform :ios, '14.0'
+platform :ios, '15.0'
 prepare_react_native_project!
 
 target 'ImidusCustomerApp' do
@@ -30,7 +30,7 @@ target 'ImidusCustomerApp' do
 
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |build_config|
-        build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
+        build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
         build_config.build_settings['RCT_NEW_ARCH_ENABLED'] = '0'
       end
     end

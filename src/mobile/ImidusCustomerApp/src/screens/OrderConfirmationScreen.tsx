@@ -1,9 +1,7 @@
-import {Colors, Elevation, Spacing} from '@/theme';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {CheckCircle} from 'lucide-react-native';
+import {useEffect} from 'react';
 import {
   Platform,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,83 +9,69 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {useDispatch} from 'react-redux';
+import {clearCart} from '../store/cartSlice';
+import {Colors} from '../theme/colors';
+import {Elevation, Spacing} from '../theme/spacing';
 
-type RootStackParamList = {
-  Menu: undefined;
-  OrderConfirmation: {
-    transactionId: string;
-    ticketId: number;
-    dailyOrderNumber: number;
-    orderItems: Array<{
-      name: string;
-      quantity: number;
-      size: string;
-      price: number;
-    }>;
-    subtotal: number;
-    gstTotal: number;
-    pstTotal: number;
-    orderTotal: number;
-    paymentMethod: string;
-    last4Digits: string;
-  };
-};
+interface OrderConfirmationScreenProps {
+  route: any;
+  navigation: any;
+}
 
-type OrderConfirmationScreenRouteProp = RouteProp<
-  RootStackParamList,
-  'OrderConfirmation'
->;
-type NavigationProp = StackNavigationProp<RootStackParamList>;
-
-export default function OrderConfirmationScreen() {
-  const navigation = useNavigation<NavigationProp>();
-  const route = useRoute<OrderConfirmationScreenRouteProp>();
-
+export default function OrderConfirmationScreen({
+  route,
+  navigation,
+}: OrderConfirmationScreenProps) {
+  const dispatch = useDispatch();
   const {
     transactionId,
-    ticketId,
     dailyOrderNumber,
-    orderItems,
-    subtotal,
-    gstTotal,
-    pstTotal,
-    orderTotal,
-    paymentMethod,
-    last4Digits,
-  } = route.params;
+    orderItems = [],
+    subtotal = 0,
+    gstTotal = 0,
+    pstTotal = 0,
+    orderTotal = 0,
+    paymentMethod = 'Card',
+    last4Digits = '****',
+  } = route.params || {};
+
+  // Clear cart on successful completion
+  useEffect(() => {
+    dispatch(clearCart());
+  }, [dispatch]);
 
   const handleDone = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{name: 'Menu'}],
-    });
+    navigation.popToTop();
+    navigation.navigate('Menu');
   };
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView edges={['top']} style={styles.headerSafe}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Order Complete</Text>
-        </View>
-      </SafeAreaView>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Order Confirmed</Text>
+      </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}>
         {/* Success Header */}
         <View style={styles.successSection}>
           <View style={styles.checkmarkCircle}>
-            <CheckCircle size={40} color={Colors.white} strokeWidth={3} />
+            <Text style={styles.checkmark}>✓</Text>
           </View>
           <Text style={styles.successTitle}>Thank You!</Text>
           <Text style={styles.successSubtitle}>
-            Your order has been placed successfully
+            Your order has been received successfully.
           </Text>
         </View>
 
         {/* Order Number Card */}
         <View style={styles.orderNumberCard}>
           <Text style={styles.orderNumberLabel}>ORDER NUMBER</Text>
-          <Text style={styles.orderNumberValue}>#{dailyOrderNumber}</Text>
+          <Text style={styles.orderNumberValue}>
+            #{dailyOrderNumber || 'N/A'}
+          </Text>
         </View>
 
         {/* Receipt Card */}
@@ -95,19 +79,22 @@ export default function OrderConfirmationScreen() {
           {/* Order Items */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>ITEMS</Text>
-            {orderItems.map((item, index) => (
-              <View key={index} style={styles.itemRow}>
-                <View style={styles.itemDetails}>
-                  <Text style={styles.itemName}>{item.name}</Text>
-                  <Text style={styles.itemSize}>
-                    {item.size} × {item.quantity}
+            {Array.isArray(orderItems) &&
+              orderItems.map((item: any, index: number) => (
+                <View key={index} style={styles.itemRow}>
+                  <View style={styles.itemDetails}>
+                    <Text style={styles.itemName}>
+                      {item.name || 'Unknown Item'}
+                    </Text>
+                    <Text style={styles.itemSize}>
+                      {item.sizeName || 'Regular'} × {item.quantity || 1}
+                    </Text>
+                  </View>
+                  <Text style={styles.itemPrice}>
+                    ${((item.price || 0) * (item.quantity || 0)).toFixed(2)}
                   </Text>
                 </View>
-                <Text style={styles.itemPrice}>
-                  ${((item.price || 0) * (item.quantity || 0)).toFixed(2)}
-                </Text>
-              </View>
-            ))}
+              ))}
           </View>
 
           <View style={styles.divider} />
@@ -145,7 +132,7 @@ export default function OrderConfirmationScreen() {
 
           <View style={styles.divider} />
 
-          {/* Payment Method */}
+          {/* Payment Info */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>PAYMENT</Text>
             <View style={styles.paymentRow}>
@@ -159,7 +146,9 @@ export default function OrderConfirmationScreen() {
           {/* Transaction ID */}
           <View style={styles.transactionSection}>
             <Text style={styles.transactionLabel}>Transaction ID</Text>
-            <Text style={styles.transactionValue}>{transactionId}</Text>
+            <Text style={styles.transactionValue}>
+              {transactionId || 'N/A'}
+            </Text>
           </View>
         </View>
 
@@ -175,7 +164,7 @@ export default function OrderConfirmationScreen() {
         {/* Done Button */}
         <TouchableOpacity onPress={handleDone} activeOpacity={0.8}>
           <LinearGradient
-            colors={[Colors.brandBlue, Colors.brandBlueDark]}
+            colors={[Colors.brandBlue, '#0A1F3D']}
             style={styles.doneButton}
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}>
@@ -183,7 +172,7 @@ export default function OrderConfirmationScreen() {
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -192,12 +181,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  headerSafe: {
-    backgroundColor: Colors.surface,
-  },
   header: {
     paddingVertical: Spacing.md,
     alignItems: 'center',
+    backgroundColor: Colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
@@ -237,6 +224,7 @@ const styles = StyleSheet.create({
   successSubtitle: {
     fontSize: 16,
     color: Colors.textSecondary,
+    textAlign: 'center',
   },
   orderNumberCard: {
     backgroundColor: Colors.surface,
@@ -373,22 +361,22 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   infoCard: {
-    backgroundColor: Colors.infoLight,
+    backgroundColor: 'rgba(30, 90, 168, 0.05)',
     borderRadius: 16,
     padding: Spacing.md,
     marginBottom: Spacing.md,
     borderLeftWidth: 4,
-    borderLeftColor: Colors.info,
+    borderLeftColor: Colors.brandBlue,
   },
   infoTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.info,
+    color: Colors.brandBlue,
     marginBottom: 6,
   },
   infoText: {
     fontSize: 14,
-    color: Colors.info,
+    color: Colors.brandBlue,
     lineHeight: 20,
   },
   doneButton: {

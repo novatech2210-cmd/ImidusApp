@@ -448,12 +448,10 @@ export default function CheckoutPage() {
           await new Promise((resolve) => setTimeout(resolve, 500));
 
           setProcessingStep("success");
-          clearCart();
-
           // Navigate after showing success briefly
           setTimeout(() => {
             router.push(
-              `/order/confirmation?orderId=${paymentResponse.dailyOrderNumber}&total=${orderTotal}&transactionId=${paymentResponse.transactionId}&orderNumber=${paymentResponse.dailyOrderNumber}`,
+              `/order/confirmation?orderId=${paymentResponse.ticketId}&total=${orderTotal}&transactionId=${paymentResponse.transactionId}&orderNumber=${paymentResponse.dailyOrderNumber}`,
             );
           }, 1000);
         }

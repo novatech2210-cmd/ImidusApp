@@ -192,6 +192,63 @@ namespace IntegrationService.API.Controllers
         }
 
         /// <summary>
+        /// Get order details by sales ID or daily order number
+        /// </summary>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(OrderHistoryDto), 200)]
+        [ProducesResponseType(typeof(OrderHistoryDto), 404)]
+        public async Task<IActionResult> GetOrder(string id)
+        {
+            try
+            {
+                PosTicket? order = null;
+
+                // Try to parse as integer ID (salesId)
+                if (int.TryParse(id, out int salesId))
+                {
+                    order = await _orderService.GetOrderAsync(salesId);
+                }
+
+                // If not found, it might be a DailyOrderNumber?
+                // For now, assume it's primarily by SalesId as that's unique.
+                
+                if (order == null)
+                {
+                    return NotFound(new { error = $"Order {id} not found" });
+                }
+
+                // Map to the "Order" interface expected by the web frontend
+                var response = new
+                {
+                    id = order.ID.ToString(),
+                    orderNumber = order.DailyOrderNumber.ToString(),
+                    transactionId = order.Payments?.FirstOrDefault()?.AuthorizationNo ?? "",
+                    items = order.Items?.Select(i => (object)new
+                    {
+                        id = i.ItemID.ToString(),
+                        name = i.ItemName,
+                        quantity = (int)i.Qty,
+                        price = i.UnitPrice,
+                        total = i.UnitPrice * i.Qty
+                    }).ToList() ?? new List<object>(),
+                    subtotal = order.SubTotal,
+                    gst = order.GSTAmt,
+                    pst = order.PSTAmt + order.PST2Amt,
+                    total = order.SubTotal + order.GSTAmt + order.PSTAmt + order.PST2Amt - order.DSCAmt,
+                    createdAt = order.SaleDateTime.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                    status = order.TransType == 1 ? "completed" : "received"
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get order details for {Id}", id);
+                return StatusCode(500, new { error = "An error occurred while retrieving order details" });
+            }
+        }
+
+        /// <summary>
         /// Get order history for a customer
         /// SSOT Compliant: Reads from POS database (ground truth)
         /// </summary>

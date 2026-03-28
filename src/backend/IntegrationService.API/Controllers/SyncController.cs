@@ -148,7 +148,7 @@ namespace IntegrationService.API.Controllers
         }
 
         /// <summary>
-        /// Force a sync check (for manual refresh)
+        /// Manual sync check triggered from {IP}
         /// Still read-only, just refreshes cached data from POS
         /// </summary>
         [HttpPost("check")]
@@ -157,6 +157,7 @@ namespace IntegrationService.API.Controllers
             _logger.LogInformation("Manual sync check triggered from {IP}", HttpContext.Connection.RemoteIpAddress);
             return await GetSyncStatus();
         }
+
     }
 
     /// <summary>
