@@ -1,8 +1,20 @@
- post_install do
-    # Add this line to fix missing header file error
-    pod "React" , :path => '../node_modules/react-native/'
-    pod "React-Core" , :path => '../node_modules/react-native/'
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
 
-    # Existing configuration
-    # Your other configurations here
+target 'ImidusCustomerApp' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  pod 'React', :path => '../node_modules/react-native', :subspecs => ['Core', 'CxxBridge', 'DevSupport', 'RCTImage', 'RCTNetwork', 'RCTText', 'RCTWebView']
+  pod 'React-Core'
+
+  # Add your other pods here
+
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['HEADER_SEARCH_PATHS'] = ['$(inherited)', '${PODS_ROOT}/Headers/Public', '${PODS_ROOT}/React/*', '${PODS_ROOT}/React-Core/*']
+      end
+    end
   end
+end
