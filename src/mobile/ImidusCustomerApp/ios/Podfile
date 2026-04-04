@@ -1,41 +1,8 @@
-require_relative '../node_modules/react-native/scripts/react_native_pods'
+ post_install do
+    # Add this line to fix missing header file error
+    pod "React" , :path => '../node_modules/react-native/'
+    pod "React-Core" , :path => '../node_modules/react-native/'
 
-platform :ios, '15.0'
-prepare_react_native_project!
-
-# Enable modular headers for Firebase compatibility
-use_modular_headers!
-
-target 'ImidusCustomerApp' do
-  config = use_native_modules!
-  flags = get_default_flags()
-
-  use_react_native!(
-    :path => config[:reactNativePath],
-    :hermes_enabled => flags[:hermes_enabled],
-    :fabric_enabled => false,
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
-  )
-  
-  # Manually add react-native-svg without codegen
-  pod 'RNSVG', :path => '../node_modules/react-native-svg'
-
-  target 'ImidusCustomerAppTests' do
-    inherit! :complete
+    # Existing configuration
+    # Your other configurations here
   end
-
-  post_install do |installer|
-    react_native_post_install(
-      installer,
-      config[:reactNativePath],
-      :mac_catalyst_enabled => false
-    )
-
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |build_config|
-        build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
-        build_config.build_settings['RCT_NEW_ARCH_ENABLED'] = '0'
-      end
-    end
-  end
-end
