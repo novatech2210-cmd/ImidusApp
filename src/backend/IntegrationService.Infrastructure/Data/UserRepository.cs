@@ -317,5 +317,40 @@ namespace IntegrationService.Infrastructure.Data
             var rows = await connection.ExecuteAsync(sql, new { AdminUserId = adminUserId });
             return rows > 0;
         }
+
+        /// <summary>
+        /// Increment admin failed login attempts
+        /// </summary>
+        public async Task<bool> IncrementAdminFailedAttemptsAsync(int adminUserId)
+        {
+            const string sql = @"
+                UPDATE AdminUsers
+                SET FailedLoginAttempts = FailedLoginAttempts + 1
+                WHERE Id = @AdminUserId";
+
+            using var connection = CreateConnection();
+            var rows = await connection.ExecuteAsync(sql, new { AdminUserId = adminUserId });
+            return rows > 0;
+        }
+
+        /// <summary>
+        /// Lock out admin user until specified time
+        /// </summary>
+        public async Task<bool> LockoutAdminAsync(int adminUserId, DateTime lockoutUntil)
+        {
+            const string sql = @"
+                UPDATE AdminUsers
+                SET LockoutUntil = @LockoutUntil,
+                    FailedLoginAttempts = 0
+                WHERE Id = @AdminUserId";
+
+            using var connection = CreateConnection();
+            var rows = await connection.ExecuteAsync(sql, new { AdminUserId = adminUserId, LockoutUntil = lockoutUntil });
+
+            if (rows > 0)
+                _logger.LogWarning("Locked out admin user ID {AdminUserId} until {LockoutUntil}", adminUserId, lockoutUntil);
+
+            return rows > 0;
+        }
     }
 }

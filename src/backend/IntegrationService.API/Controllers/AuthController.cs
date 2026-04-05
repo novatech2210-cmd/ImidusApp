@@ -337,7 +337,19 @@ namespace IntegrationService.API.Controllers
                 if (!isValid)
                 {
                     _logger.LogWarning("Invalid password for admin user {Email}", request.Email);
-                    // Add logic to increment failed attempts and lockout if needed
+
+                    // Increment failed attempts
+                    await _userRepository.IncrementAdminFailedAttemptsAsync(adminUser.Id);
+
+                    // Lock out after 5 failed attempts
+                    if (adminUser.FailedLoginAttempts + 1 >= 5)
+                    {
+                        var lockoutUntil = DateTime.UtcNow.AddMinutes(15);
+                        await _userRepository.LockoutAdminAsync(adminUser.Id, lockoutUntil);
+                        _logger.LogWarning("Locked out admin user {Email} after 5 failed attempts", request.Email);
+                        return Unauthorized(new { error = "Too many failed attempts. Account locked for 15 minutes." });
+                    }
+
                     return Unauthorized(new { error = "Invalid credentials" });
                 }
 

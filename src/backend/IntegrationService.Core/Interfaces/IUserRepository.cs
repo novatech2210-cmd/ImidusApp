@@ -78,5 +78,15 @@ namespace IntegrationService.Core.Interfaces
         /// Update admin user last login and reset failed attempts
         /// </summary>
         Task<bool> UpdateAdminLastLoginAsync(int adminUserId);
+
+        /// <summary>
+        /// Increment admin failed login attempts
+        /// </summary>
+        Task<bool> IncrementAdminFailedAttemptsAsync(int adminUserId);
+
+        /// <summary>
+        /// Lock out admin user until specified time
+        /// </summary>
+        Task<bool> LockoutAdminAsync(int adminUserId, DateTime lockoutUntil);
     }
 }

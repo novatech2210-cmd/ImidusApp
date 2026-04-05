@@ -229,7 +229,8 @@ namespace IntegrationService.Core.Services
 
                 if (paymentRequest.PointsToRedeem > 0)
                 {
-                    pointsDiscount = paymentRequest.PointsToRedeem / 100.0m;
+                    // Per AGENTS.md: Loyalty redeem = $0.40 per point (tblMisc DRPR = '40@1')
+                    pointsDiscount = paymentRequest.PointsToRedeem * 0.40m;
                     _logger.LogInformation(
                         "Applying points redemption for order {SalesId}: {Points} points = ${Discount} discount",
                         salesId, paymentRequest.PointsToRedeem, pointsDiscount);
@@ -283,7 +284,7 @@ namespace IntegrationService.Core.Services
                     {
                         SalesID = salesId,
                         PaymentTypeID = 0,  // Will be auto-mapped from CardType
-                        PaidAmount = paymentRequest.Amount,
+                        PaidAmount = requestToCharge.Amount,
                         TipAmount = 0,  // Tip handled separately if needed
                         AuthorizationNo = paymentResult.TransactionId?.Length > 20 
                             ? paymentResult.TransactionId.Substring(0, 20) 
@@ -325,8 +326,8 @@ namespace IntegrationService.Core.Services
                     // Step 5: Record loyalty points (NEW)
                     if (paymentRequest.CustomerId.HasValue)
                     {
-                        // Calculate points earned (1 point per $1 spent, floor to integer)
-                        int pointsEarned = (int)Math.Floor(paymentRequest.Amount);
+                        // Per AGENTS.md: Loyalty earn = 1 pt per $10 spent (tblMisc SRPR = '10@1')
+                        int pointsEarned = (int)Math.Floor(paymentRequest.Amount / 10m);
                         int pointsRedeemed = paymentRequest.PointsToRedeem;
 
                         bool pointsRecorded = await _posRepo.RecordPointsTransactionAsync(
