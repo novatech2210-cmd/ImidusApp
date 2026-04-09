@@ -18,8 +18,8 @@ namespace IntegrationService.Core.Services
             var customer = await _customerRepo.GetCustomerByIdAsync(customerId);
             if (customer == null) return;
 
-            // 1:1 Point to Dollar ratio
-            decimal pointsToAdd = Math.Floor(saleAmount);
+            // Per AGENTS.md: Loyalty earn = 1 pt per $10 spent (tblMisc SRPR = '10@1')
+            decimal pointsToAdd = Math.Floor(saleAmount / 10m);
             decimal newPoints = customer.EarnedPoints + pointsToAdd;
 
             await _customerRepo.UpdateLoyaltyPointsAsync(customerId, newPoints);
